@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "78925276663",
+    "project_id": "ruang-keluarga-315704",
+    "storage_bucket": "ruang-keluarga-315704.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:78925276663:android:cd4420af5fb8b4129f7af2",
+        "android_client_info": {
+          "package_name": "com.ruangkeluarga"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "78925276663-a8dsulv7rq22c3gsu9c4mdm86fh124j4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ruangkeluarga",
+            "certificate_hash": "2df758cb79175210e1cca0b09525f4e9b3525d81"
+          }
+        },
+        {
+          "client_id": "78925276663-urjebq8gu6etab5gokbu3vfefn0e11og.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCTWrG4jmikcH-vaGfSDyBC6qvjEOsi1Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "78925276663-urjebq8gu6etab5gokbu3vfefn0e11og.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

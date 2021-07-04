@@ -1,0 +1,221 @@
+import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:geocoder/geocoder.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'package:location/location.dart';
+import 'package:ruangkeluarga/model/content_rk_model.dart';
+import 'package:ruangkeluarga/model/rk_user_model.dart';
+import 'package:ruangkeluarga/utils/api_service.dart';
+import 'package:ruangkeluarga/utils/base_service/base_service.dart';
+import 'package:ruangkeluarga/utils/base_service/rk_base_service.dart';
+import 'package:ruangkeluarga/utils/rk_api_service.dart';
+
+class MediaRepository {
+  BaseService _mediaService = ApiService();
+  RKBaseService _rkService = RKApiService();
+
+  static Map<String, String> noAuthHeaders = {"Content-Type": "application/json"};
+
+  static Map<String, String> authHeaders = {};
+
+  Future<List<Media>> fetchMediaList(String value) async {
+    dynamic response = await _mediaService.getResponse(value);
+    final jsonData = response['results'] as List;
+    List<Media> mediaList = jsonData.map((tagJson) => Media.fromJson(tagJson)).toList();
+    return mediaList;
+  }
+
+  Future<List<User>> loginUser(String email, String gToken, String fcmToken, String version) async {
+    dynamic response = await _rkService.getResponseLogin(email,gToken,fcmToken,version);
+    final jsonData = response['results'] as List;
+    List<User> userList = jsonData.map((tagJson) => User.fromJson(tagJson)).toList();
+    return userList;
+  }
+
+  Future<Response> loginParent(String email, String gToken, String fcmToken, String version) async {
+    var url = _rkService.baseUrl + '/user/userLogin';
+    Map<String, String> json = {"emailUser": "$email", "googleToken": "$gToken", "fcmToken": "$fcmToken", "version": "$version"};
+    print('param login parent : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<dynamic> uploadImage(filepath, url) async {
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+    request.files.add(http.MultipartFile('image',
+        File(filepath).readAsBytes().asStream(), File(filepath).lengthSync(),
+        filename: filepath.split("/").last));
+    var res = await request.send();
+    return res;
+  }
+
+  Future<Response> registerParent(String email, String name, String token, String photo,
+      nohp, String alamat, String status, String accessToken) async {
+    var url = _rkService.baseUrl + '/user/register';
+    Map<String, dynamic> json = {"emailUser": "$email", "name": "$name", "devices": {"device": "Android",
+      "fcmToken": "$token", "versi": "1.0"},
+      "photo": "$photo", "phoneNumber": "$nohp", "address": "$alamat", "parentStatus": "$status",
+      "accessCode": "$accessToken"};
+    print('param register parent : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> inviteChild(String email, String childEmail, String nohp, String childName,
+      int childAge, String childStudyLevel, int childOfNumber, int childNumber) async {
+    var url = _rkService.baseUrl + '/user/invite';
+    Map<String, dynamic> json = {"emailUser": "$email", "childEmail": "$childEmail", "phoneNumber": "$nohp",
+      "childName": "$childName", "childAge": childAge, "childStudyLevel": "$childStudyLevel", "childOfNumber": childOfNumber,
+      "childNumber": childNumber};
+    print('param register parent : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> saveChildUsage(String email, String usageDate, List<dynamic> data) async {
+    var url = _rkService.baseUrl + '/user/appUsage';
+    Map<String, dynamic> json = {"emailUser": "$email", "appUsageDate": "$usageDate", "appUsages": data};
+    print('param child usage : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> fetchAppUsageFilter(String email, String usageDate) async {
+    var url = _rkService.baseUrl + '/user/appUsageFilter';
+    Map<String, dynamic> json = {"whereKeyValues": {
+      "emailUser": "$email",
+      "appUsageDate": "$usageDate"
+    }};
+    print('param app usage filter : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> fetchAppUsageFilterRange(String email, String startDate, String endDate) async {
+    var url = _rkService.baseUrl + '/user/appUsageFilter';
+    Map<String, dynamic> json = {"whereKeyValues": {
+      "emailUser": "$email",
+      "appUsageDate": {
+        "\$gte": "$startDate",
+        "\$lte": "$endDate"
+      }
+    }};
+    print('param app usage filter : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> saveContacts(String email, List<dynamic> contact) async {
+    var url = _rkService.baseUrl + '/user/contactAdd';
+    Map<String, dynamic> json = {"emailUser": "$email", "contacts": contact};
+    print('param child contact : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> fetchContact(String email) async {
+    var url = _rkService.baseUrl + '/user/contactFilter';
+    Map<String, dynamic> json = {"whereKeyValues": {
+      "emailUser": "$email"
+    }};
+    print('param fetch contact : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> saveAppList(String email, List<dynamic> appName) async {
+    var url = _rkService.baseUrl + '/user/appDeviceAdd';
+    Map<String, dynamic> json = {"emailUser": "$email", "appName": appName};
+    print('param save appList : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> fetchAppList(String email) async {
+    var url = _rkService.baseUrl + '/user/appDeviceFilter';
+    Map<String, dynamic> json = {
+      "whereKeyValues": {"emailUser": "$email"}
+    };
+    print('param fetch appList : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> saveUserLocation(String email, LocationData location, String dates) async {
+    final coordinates = new Coordinates(location.latitude, location.longitude);
+    var addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
+    var url = _rkService.baseUrl + '/user/timeLineAdd';
+    var place = "";
+    if(addresses[0].thoroughfare != null) {
+      place = addresses[0].thoroughfare;
+    } else {
+      place = addresses[0].addressLine;
+    }
+    Map<String, dynamic> json = {
+      "emailUser": "$email",
+      "location": {
+        "place": "$place",
+        "type": "Point",
+        "coordinates": [
+          "${location.latitude}",
+          "${location.longitude}"
+        ]
+      },
+      "dateTimeHistory": "$dates"
+    };
+    print('param save user location : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> fetchUserLocation(String email, String dates) async {
+    var url = _rkService.baseUrl + '/user/timeLineFilter';
+    Map<String, dynamic> json = {
+      "whereKeyValues": {
+        "emailUser": "$email",
+        "dateTimeHistory": "$dates"
+      }
+    };
+    print('param fetch user location list : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> fetchFilterUserLocation(String email, String startDate, String endDate) async {
+    var url = _rkService.baseUrl + '/user/timeLineFilter';
+    Map<String, dynamic> json = {
+      "whereKeyValues": {
+        "emailUser": "$email",
+        "dateTimeHistory": {
+          "\$gte": "$startDate",
+          "\$lte": "$endDate"
+        }
+      }
+    };
+    print('param fetch filter user location list : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> fetchCurrentUserLocation(String email, String childEmail) async {
+    var url = _rkService.baseUrl + '/user/childCurrentLocationRequest';
+    Map<String, dynamic> json = {
+      "parentEmailUser": "$email",
+      "childEmailUser": "$childEmail"
+    };
+    print('param fetch current user location : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> saveIconApp(String email, String appName, String appId, String appIcon) async {
+    var url = _rkService.baseUrl + '/user/appIconAdd';
+    Map<String, dynamic> json = {"emailUser": "$email", "appName": appName, "appId": appId, "appIcon": appIcon};
+    print('param save icon app : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+}

@@ -1,0 +1,42 @@
+import 'dart:io';
+
+import 'package:ruangkeluarga/model/content_rk_model.dart';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:meta/meta.dart';
+import 'package:ruangkeluarga/utils/api_exception.dart';
+import 'package:ruangkeluarga/utils/base_service/base_service.dart';
+
+class ApiService extends BaseService {
+  @override
+  Future getResponse(String url) async {
+    dynamic responseJson;
+    try {
+      final response = await http.get(Uri.parse(mediaBaseUrl + url));
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException('No Internet Connection');
+    }
+    return responseJson;
+  }
+
+  @visibleForTesting
+  dynamic returnResponse(http.Response response) {
+    switch (response.statusCode) {
+      case 200:
+        dynamic responseJson = jsonDecode(response.body);
+        return responseJson;
+      case 400:
+        throw BadRequestException(response.body.toString());
+      case 401:
+      case 403:
+        throw UnauthorisedException(response.body.toString());
+      case 500:
+      default:
+        throw FetchDataException(
+            'Error occured while communication with server' +
+                ' with status code : ${response.statusCode}');
+    }
+  }
+}
