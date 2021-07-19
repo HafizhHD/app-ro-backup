@@ -4,12 +4,15 @@ import 'dart:ui';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app_lock/flutter_app_lock.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:http/http.dart';
+import 'package:ruangkeluarga/main.dart';
+import 'package:ruangkeluarga/model/rk_child_app_icon_list.dart';
 import 'package:ruangkeluarga/model/rk_child_model.dart';
 import 'package:ruangkeluarga/model/rk_user_model.dart';
 import 'package:ruangkeluarga/parent/view/detail_child_view.dart';
@@ -192,7 +195,58 @@ class _HomeParentPageState extends State<HomeParentPage> {
     }
   }
 
+  void onMessageListen() {
+    FirebaseMessaging.instance.getInitialMessage().then((value) => {
+      if(value != null) {
+        print('remote message ${value.data}')
+      }
+    });
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      // if(message.data.length > 0) {
+      //   flutterLocalNotificationsPlugin.show(
+      //       message.data.hashCode,
+      //       message.data['title'],
+      //       message.data['content'],
+      //       NotificationDetails(
+      //         android: AndroidNotificationDetails(
+      //           channel.id,
+      //           channel.name,
+      //           channel.description,
+      //           // TODO add a proper drawable resource to android, for now using
+      //           //      one that already exists in example app.
+      //           icon: android?.smallIcon,
+      //         ),
+      //       ));
+      // } else
+      if (notification != null) {
+        flutterLocalNotificationsPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+              android: AndroidNotificationDetails(
+                channel.id,
+                channel.name,
+                channel.description,
+                // TODO add a proper drawable resource to android, for now using
+                //      one that already exists in example app.
+                icon: 'launch_background',
+                styleInformation: BigTextStyleInformation(notification.body.toString())
+              ),
+            ));
+      }
+    });
+  }
+
   void setBindingData() async {
+    String token = '';
+    await _firebaseMessaging.getToken().then((fcmToken) {
+      token = fcmToken!;
+    });
+    print('fcm $token');
     prefs = await SharedPreferences.getInstance();
     userName = prefs.getString(rkUserName)!;
     emailUser = prefs.getString(rkEmailUser)!;
@@ -238,12 +292,34 @@ class _HomeParentPageState extends State<HomeParentPage> {
     }
   }
 
+  void onLoadAppIcon() async {
+    prefs = await SharedPreferences.getInstance();
+    Response response = await MediaRepository().fetchAppIconList();
+    if(response.statusCode == 200) {
+      print('response load icon ${response.body}');
+      var json = jsonDecode(response.body);
+      if(json['resultCode'] == 'OK') {
+        var appIcons = json['appIcons'];
+        await prefs.setString('rkBaseUrlAppIcon', json['baseUrl']);
+        if(appIcons != null) {
+          // List<AppIconList> data = List<AppIconList>.from(
+          //     appIcons.map((model) => AppIconList.fromJson(model)));
+          // String datx = jsonEncode(appIcons);
+          await prefs.setString('rkListAppIcons', response.body);
+        }
+      }
+    } else {
+      print('response ${response.statusCode}');
+    }
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    onLoadAppIcon();
     setBindingData();
+    onMessageListen();
     // getUsageStatistik();
   }
 
@@ -350,6 +426,22 @@ class _HomeParentPageState extends State<HomeParentPage> {
                 // ...
                 // Then close the drawer
                 Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text('Statistik Penggunaan'), leading: Icon(Icons.supervised_user_circle,color: Colors.black),
+              onTap: () {
+                // Then close the drawer
+                Navigator.pop(context);
+                // Update the state of the app
+              },
+            ),
+            ListTile(
+              title: Text('Addon'), leading: Icon(Icons.supervised_user_circle,color: Colors.black),
+              onTap: () {
+                // Then close the drawer
+                Navigator.pop(context);
+                // Update the state of the app
               },
             ),
             ListTile(
@@ -693,21 +785,21 @@ class _HomeParentPageState extends State<HomeParentPage> {
               ]
             )
           ),
-          SlidingUpPanel(
-            renderPanelSheet: false,
-            backdropEnabled: true,
-            minHeight: 130,
-            parallaxEnabled: true,
-            parallaxOffset: .5,
-            maxHeight: MediaQuery.of(context).size.height,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
-            // panel: _floatingPanel(),
-            panelBuilder: (ScrollController sc) => _scrollingList(sc),
-            collapsed: _floatingCollapsed(),
-            onPanelSlide: (position) => {
-              _changed(position)
-            },
-          ),
+          // SlidingUpPanel(
+          //   renderPanelSheet: false,
+          //   backdropEnabled: true,
+          //   minHeight: 130,
+          //   parallaxEnabled: true,
+          //   parallaxOffset: .5,
+          //   maxHeight: MediaQuery.of(context).size.height,
+          //   borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
+          //   // panel: _floatingPanel(),
+          //   panelBuilder: (ScrollController sc) => _scrollingList(sc),
+          //   collapsed: _floatingCollapsed(),
+          //   onPanelSlide: (position) => {
+          //     _changed(position)
+          //   },
+          // ),
         ],
       )
     );

@@ -137,7 +137,8 @@ class MediaRepository {
   Future<Response> fetchAppList(String email) async {
     var url = _rkService.baseUrl + '/user/appDeviceFilter';
     Map<String, dynamic> json = {
-      "whereKeyValues": {"emailUser": "$email"}
+      "whereKeyValues": {"emailUser": "$email"},
+      "limit": 1000
     };
     print('param fetch appList : $json');
     Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
@@ -211,10 +212,121 @@ class MediaRepository {
     return response;
   }
 
-  Future<Response> saveIconApp(String email, String appName, String appId, String appIcon) async {
+  Future<Response> saveIconApp(String email, String appName, String appId, String appIcon, String category) async {
     var url = _rkService.baseUrl + '/user/appIconAdd';
-    Map<String, dynamic> json = {"emailUser": "$email", "appName": appName, "appId": appId, "appIcon": appIcon};
+    Map<String, dynamic> json = {"emailUser": "$email", "appName": appName, "appId": appId, "appIcon": appIcon,
+    "appCategory": category};
     print('param save icon app : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> blackListContactAdd(String email, String name, String phoneNumber, String label) async {
+    var url = _rkService.baseUrl + '/user/contactBlackListAdd';
+    Map<String, dynamic> json = {
+      "emailUser": "$email",
+      "contact": {
+        "name": "$name",
+        "phones": ["$phoneNumber"]
+      },
+      "label": "Test Black List"
+    };
+    print('param blacklist contact : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> blContactNotification(String email, String name, String phoneNumber,
+      String contactTime, String contactType) async {
+    var url = _rkService.baseUrl + '/user/contactBlackListNotification';
+    Map<String, dynamic> json = {
+      "emailUser": "$email",
+      "contact": {
+        "name": "$name",
+        "phones": ["$phoneNumber"]
+      },
+      "contactTime": "$contactTime",
+      "contactType": "$contactType"
+    };
+    print('param blacklist contact notif : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> fetchAppIconList() async {
+    var url = _rkService.baseUrl + '/user/appIconFilter';
+    Map<String, dynamic> json = {"limit": 1000};
+    print('param app icon list : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> saveSchedule(String email, String scheduleName, String deviceUsageStartTime,
+      String deviceUsageEndTime, String status) async {
+    var url = _rkService.baseUrl + '/user/deviceUsageScheduleAdd';
+    List<String> listData = [];
+    if(scheduleName == 'everyday') {
+      listData = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+    } else if(scheduleName == 'weekday') {
+      listData = ["mon", "tue", "wed", "thu", "fri"];
+    } else {
+      listData = ["sat", "sun"];
+    }
+    Map<String, dynamic> json = {
+      "emailUser": "$email", "scheduleName": "$scheduleName", "deviceUsageStartTime": "$deviceUsageStartTime",
+      "deviceUsageEndTime": "$deviceUsageEndTime", "deviceUsageDays": listData, "status": "$status"
+    };
+    print('param save schedule : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> shceduleUpdate(String email, String scheduleName, String deviceUsageStartTime,
+      String deviceUsageEndTime, String status) async {
+    var url = _rkService.baseUrl + '/user/deviceUsageScheduleUpdate';
+    List<String> listData = [];
+    if(scheduleName == 'everyday') {
+      listData = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+    } else if(scheduleName == 'weekday') {
+      listData = ["mon", "tue", "wed", "thu", "fri"];
+    } else {
+      listData = ["sat", "sun"];
+    }
+    Map<String, dynamic> json = {"whereKeyValues": {
+      "emailUser": "$email"
+    }, "newKeyValues": {
+      "emailUser": "$email", "scheduleName": "$scheduleName", "deviceUsageStartTime": "$deviceUsageStartTime",
+      "deviceUsageEndTime": "$deviceUsageEndTime", "deviceUsageDays": listData, "status": "$status"
+    }};
+    print('param schedule update : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> addLimitUsage(String email, dynamic appCategory, int limit, String status) async {
+    var url = _rkService.baseUrl + '/user/appUsageLimitAdd';
+    Map<String, dynamic> json = {"emailUser": "$email", "appCategory": appCategory, "limit": limit, "status": status};
+    print('param add limit usage : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> fetchLimitUsageFilter(String email) async {
+    var url = _rkService.baseUrl + '/user/appUsageLimitFilter';
+    Map<String, dynamic> json = {"whereKeyValues": {
+      "emailUser": "$email"
+    }};
+    print('param limit usage filter : $json');
+    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> removeAppLimit(String email, String category) async {
+    var url = _rkService.baseUrl + '/user/appUsageLimitRemove';
+    Map<String, dynamic> json = {"whereKeyValues": {
+      "emailUser": "$email", "appCategory": '$category'
+    }};
+    print('param limit usage filter : $json');
     Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }

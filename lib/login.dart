@@ -101,10 +101,60 @@ class _LoginState extends State<LoginPage> {
         if(jsonUser != null) {
           List<dynamic> childsData = jsonUser['childs'];
           await prefs.setString(rkUserType, jsonUser['userType']);
-          if(childsData.length > 0) {
-            await prefs.setString("rkChildName", childsData[0]['name']);
-            await prefs.setString("rkChildEmail", childsData[0]['email']);
+          if(childsData != null) {
+            if(childsData.length > 0) {
+              await prefs.setString("rkChildName", childsData[0]['name']);
+              await prefs.setString("rkChildEmail", childsData[0]['email']);
 
+              await prefs.setBool(isPrefLogin, true);
+              if(jsonUser['userType'] == "child") {
+                _serviceEnabled = await location.serviceEnabled();
+                if (!_serviceEnabled) {
+                  _serviceEnabled = await location.requestService();
+                  if (!_serviceEnabled) {
+                    return;
+                  }
+                }
+                _permissionGranted = await location.hasPermission();
+                if (_permissionGranted == PermissionStatus.DENIED) {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) =>
+                      SetupPermissionChildPage(title: 'ruang keluarga', name: jsonUser['nameUser'])));
+                } else {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) =>
+                      HomeChildPage(title: 'ruang keluarga', email: childsData[0]['email'],
+                        name: childsData[0]['name'],)));
+                }
+              } else {
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) =>
+                    HomeParentPage(title: 'ruang keluarga')));
+              }
+            }
+            else {
+              await prefs.setBool(isPrefLogin, true);
+              if(jsonUser['userType'] == "child") {
+                _serviceEnabled = await location.serviceEnabled();
+                if (!_serviceEnabled) {
+                  _serviceEnabled = await location.requestService();
+                  if (!_serviceEnabled) {
+                    return;
+                  }
+                }
+                _permissionGranted = await location.hasPermission();
+                if (_permissionGranted == PermissionStatus.DENIED) {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) =>
+                      SetupPermissionChildPage(title: 'ruang keluarga', name: jsonUser['nameUser'])));
+                } else {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) =>
+                      HomeChildPage(title: 'ruang keluarga', email: jsonUser['emailUser'],
+                          name: jsonUser['nameUser'])));
+                }
+              } else {
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) =>
+                        HomeParentPage(title: 'ruang keluarga')));
+              }
+            }
+          } else {
             await prefs.setBool(isPrefLogin, true);
             if(jsonUser['userType'] == "child") {
               _serviceEnabled = await location.serviceEnabled();
@@ -120,30 +170,8 @@ class _LoginState extends State<LoginPage> {
                     SetupPermissionChildPage(title: 'ruang keluarga', name: jsonUser['nameUser'])));
               } else {
                 Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) =>
-                    HomeChildPage(title: 'ruang keluarga', email: childsData[0]['email'],
-                      name: childsData[0]['name'],)));
-              }
-            } else {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) =>
-                  HomeParentPage(title: 'ruang keluarga')));
-            }
-          } else {
-            if(jsonUser['userType'] == "child") {
-              _serviceEnabled = await location.serviceEnabled();
-              if (!_serviceEnabled) {
-                _serviceEnabled = await location.requestService();
-                if (!_serviceEnabled) {
-                  return;
-                }
-              }
-              _permissionGranted = await location.hasPermission();
-              if (_permissionGranted == PermissionStatus.DENIED) {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) =>
-                    SetupPermissionChildPage(title: 'ruang keluarga', name: jsonUser['nameUser'])));
-              } else {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) =>
-                    HomeChildPage(title: 'ruang keluarga', email: childsData[0]['email'],
-                      name: childsData[0]['name'],)));
+                    HomeChildPage(title: 'ruang keluarga', email: jsonUser['emailUser'],
+                        name: jsonUser['nameUser'])));
               }
             } else {
               Navigator.of(context).pushReplacement(
@@ -151,6 +179,8 @@ class _LoginState extends State<LoginPage> {
                       HomeParentPage(title: 'ruang keluarga')));
             }
           }
+        } else {
+
         }
       } else {
         await prefs.setBool(isPrefLogin, false);

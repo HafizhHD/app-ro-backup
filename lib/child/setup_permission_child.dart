@@ -373,12 +373,17 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
                           if(_hasPermission == true) {
                             if(_permissionGranted == Locs.PermissionStatus.GRANTED) {
                               if(permissionName == 'Location') {
-                                permissionName = 'App Usage';
-                                levelStep = 'Step 3';
-                                titleStep = 'App Usage';
-                                subTitleStep = 'Kami membutuhkan App Usage Permission pada perangkat anak untuk memonitoring penggunaan aplikasi/game anak.';
-                                _serviceAppUsage = false;
-                                setState(() {});
+                                // permissionName = 'App Usage';
+                                // levelStep = 'Step 3';
+                                // titleStep = 'App Usage';
+                                // subTitleStep = 'Kami membutuhkan App Usage Permission pada perangkat anak untuk memonitoring penggunaan aplikasi/game anak.';
+                                // _serviceAppUsage = false;
+                                // setState(() {});
+                                if (!_serviceAppUsage) {
+                                  getUsageStatistik();
+                                } else {
+                                  getUsageStatistik();
+                                }
                               } else {
                                 if (!_serviceAppUsage) {
                                   getUsageStatistik();

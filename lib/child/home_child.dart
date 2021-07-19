@@ -3,9 +3,12 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:io';
 import 'dart:math';
+import 'package:admin/admin.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/http.dart';
 // ignore: import_of_legacy_library_into_null_safe
@@ -18,11 +21,17 @@ import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:location/location.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:ruangkeluarga/child/sos_record_video.dart';
+import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/model/rk_callLog_model.dart';
+import 'package:ruangkeluarga/model/rk_child_app_icon_list.dart';
+import 'package:ruangkeluarga/model/rk_child_apps.dart';
+import 'package:ruangkeluarga/model/rk_child_blacklist_contact.dart';
 import 'package:ruangkeluarga/utils/constant.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
+import 'package:usage_stats/usage_stats.dart';
 
 import '../plugin_device_app.dart';
 
@@ -63,16 +72,25 @@ class _HomeChildPageState extends State<HomeChildPage> {
   bool _serviceEnabled = false;
   late PermissionStatus _permissionGranted;
   late LocationData _locationData;
+  List<BlackListContact> blackListData = [];
 
   void getUsageStatistik() async {
     prefs = await SharedPreferences.getInstance();
     try {
       List<Application> appData = await getListApps();
       var outputFormat = DateFormat('HH');
+      var outputFormatMinute = DateFormat('mm');
+      var outputFormatSecond = DateFormat('ss');
       var outputDate = outputFormat.format(DateTime.now());
+      var outputDateMinute = outputFormatMinute.format(DateTime.now());
+      var outputDateSecond = outputFormatSecond.format(DateTime.now());
       // DateTime endDate = outputFormat.parse(outputDate);
       DateTime endDate = new DateTime.now();
-      DateTime startDate = endDate.subtract(Duration(hours: int.parse(outputDate)));
+      // DateTime startDate = endDate.subtract(Duration(hours: int.parse(outputDate)));
+      DateTime startDate = endDate.subtract(Duration(hours: int.parse(outputDate),
+        minutes: int.parse(outputDateMinute),
+        seconds: int.parse(outputDateSecond)
+      ));
       // DateTime startDate = outputFormat.parse(outputDate);
       List<AppUsageInfo> infoList = await AppUsage.getAppUsage(startDate, endDate);
 
@@ -88,21 +106,41 @@ class _HomeChildPageState extends State<HomeChildPage> {
             nameApp = infoList[i].appName;
           }
 
-          // var photo;
-          // if(iconApp is ApplicationWithIcon) {
-          //   photo = base64Encode(iconApp.icon);
-          // } else {
-          //   photo = null;
-          // }
-          var temp = {
-            'count': 0,
-            'appName': nameApp,
-            'packageId': infoList[i].packageName,
-            'duration': infoList[i].usage.inSeconds,
-            'icon': null
-          };
-          dataList.add(temp);
+          var cat = "other";
+          for(int xz = 0; xz < appData.length; xz++) {
+            if(infoList[i].packageName == appData[xz].packageName) {
+              if(appData[xz].category.toString().split('.')[1] != 'undefined') {
+                cat = appData[xz].category.toString().split('.')[1];
+              }
+              break;
+            }
+          }
 
+          if(infoList[i].packageName == 'com.google.android.youtube') {
+            var temp = {
+              'count': 0,
+              'appName': nameApp,
+              'packageId': infoList[i].packageName,
+              'duration': infoList[i].usage.inSeconds,
+              'icon': null,
+              'appCategory': cat
+            };
+            dataList.add(temp);
+          }
+          else if(infoList[i].packageName.contains('com.android') ||
+              infoList[i].packageName.contains('com.google.android') ||
+              infoList[i].packageName.contains('com.miui')) {
+          } else {
+            var temp = {
+              'count': 0,
+              'appName': nameApp,
+              'packageId': infoList[i].packageName,
+              'duration': infoList[i].usage.inSeconds,
+              'icon': null,
+              'appCategory': cat
+            };
+            dataList.add(temp);
+          }
         }
         onSaveUsage(dataList);
       }
@@ -134,25 +172,332 @@ class _HomeChildPageState extends State<HomeChildPage> {
     return appData;
   }
 
+
+
   void getDataListApps() async {
-    List<Application> appData = await DeviceApps.getInstalledApplications(
-        includeAppIcons: true,
-        includeSystemApps: false,
-        onlyAppsWithLaunchIntent: false
-    );
-    List<dynamic> appName = [];
-    for(int i = 0; i < appData.length; i++) {
-      appName.add({
-        "appName": appData[i].appName,
-        "packageId": appData[i].packageName,
-        "blacklist": false,
-      });
-    }
-    Response response = await MediaRepository().saveAppList(prefs.getString(rkEmailUser)!, appName);
+    prefs = await SharedPreferences.getInstance();
+    Response response = await MediaRepository().fetchAppList(widget.email);
     if(response.statusCode == 200) {
-      print('save appList ${response.body}');
+      print('isi response fetch appList : ${response.body}');
+      var json = jsonDecode(response.body);
+      if(json['resultCode'] == 'OK') {
+        if(json['appdevices'].length > 0) {
+          var appDevices = json['appdevices'][0];
+          List<ApplicationInstalled> data = List<ApplicationInstalled>.from(
+              appDevices['appName'].map((model) =>
+                  ApplicationInstalled.fromJson(model)));
+
+          List<Application> appData = await DeviceApps.getInstalledApplications(
+              includeAppIcons: true,
+              includeSystemApps: false,
+              onlyAppsWithLaunchIntent: false
+          );
+          List<dynamic> appName = [];
+          bool _isAppNew = false;
+          for (int i = 0; i < appData.length; i++) {
+            bool flag = false;
+            int indeks = 0;
+            for(int j = 0; j < data.length; j++) {
+              if(appData[1].packageName == data[j].packageId) {
+                flag = true;
+                indeks = j;
+                break;
+              }
+            }
+            var cat = "";
+            if(appData[i].category.toString().split('.')[1] == 'undefined') {
+              cat = "other";
+            } else {
+              cat = appData[i].category.toString().split('.')[1];
+            }
+            if(flag) {
+              appName.add({
+                "appName": appData[i].appName,
+                "packageId": appData[i].packageName,
+                "blacklist": data[indeks].blacklist,
+                "appCategory": cat,
+              });
+            } else {
+              _isAppNew = true;
+              appName.add({
+                "appName": appData[i].appName,
+                "packageId": appData[i].packageName,
+                "blacklist": false,
+                "appCategory": cat,
+              });
+            }
+          }
+          if(_isAppNew) {
+            Response response = await MediaRepository().saveAppList(
+                prefs.getString(rkEmailUser)!, appName);
+            if (response.statusCode == 200) {
+              print('save appList ${response.body}');
+              var json = jsonDecode(response.body);
+              if(json['statusCode'] == 'OK') {
+                await prefs.setBool('rkGetListAppInstall', true);
+              }
+            } else {
+              print('gagal get appLits ${response.statusCode}');
+            }
+          }
+          /*if(prefs.getBool('rkGetListAppInstall') != null) {
+            if(prefs.getBool('rkGetListAppInstall') == false) {
+
+            }
+          }
+          else {
+            List<Application> appData = await DeviceApps.getInstalledApplications(
+                includeAppIcons: true,
+                includeSystemApps: false,
+                onlyAppsWithLaunchIntent: false
+            );
+            List<dynamic> appName = [];
+            for (int i = 0; i < appData.length; i++) {
+              bool flag = false;
+              int indeks = 0;
+              for(int j = 0; j < data.length; j++) {
+                if(appData[1].packageName == data[j].packageId) {
+                  flag = true;
+                  indeks = j;
+                  break;
+                }
+              }
+              if(flag) {
+                appName.add({
+                  "appName": appData[i].appName,
+                  "packageId": appData[i].packageName,
+                  "blacklist": data[indeks].packageId,
+                });
+              } else {
+                appName.add({
+                  "appName": appData[i].appName,
+                  "packageId": appData[i].packageName,
+                  "blacklist": false,
+                });
+              }
+            }
+            Response response = await MediaRepository().saveAppList(
+                prefs.getString(rkEmailUser)!, appName);
+            if (response.statusCode == 200) {
+              print('save appList ${response.body}');
+              var json = jsonDecode(response.body);
+              if(json['statusCode'] == "OK") {
+                await prefs.setBool('rkGetListAppInstall', true);
+              }
+            } else {
+              print('gagal get appLits ${response.statusCode}');
+            }
+          }*/
+        } else {
+          if(prefs.getBool('rkGetListAppInstall') != null) {
+            if(prefs.getBool('rkGetListAppInstall') == false) {
+              List<Application> appData = await DeviceApps.getInstalledApplications(
+                  includeAppIcons: true,
+                  includeSystemApps: false,
+                  onlyAppsWithLaunchIntent: false
+              );
+              List<dynamic> appName = [];
+              for (int i = 0; i < appData.length; i++) {
+                var cat = "";
+                if(appData[i].category.toString().split('.')[1] == 'undefined') {
+                  cat = "other";
+                } else {
+                  cat = appData[i].category.toString().split('.')[1];
+                }
+                appName.add({
+                  "appName": appData[i].appName,
+                  "packageId": appData[i].packageName,
+                  "blacklist": false,
+                  "appCategory": cat,
+                });
+              }
+              Response response = await MediaRepository().saveAppList(
+                  prefs.getString(rkEmailUser)!, appName);
+              if (response.statusCode == 200) {
+                print('save appList ${response.body}');
+                var json = jsonDecode(response.body);
+                if(json['statusCode'] == 'OK') {
+                  await prefs.setBool('rkGetListAppInstall', true);
+                }
+              } else {
+                print('gagal get appLits ${response.statusCode}');
+              }
+            }
+          }
+          else {
+            List<Application> appData = await DeviceApps.getInstalledApplications(
+                includeAppIcons: true,
+                includeSystemApps: false,
+                onlyAppsWithLaunchIntent: false
+            );
+            List<dynamic> appName = [];
+            for (int i = 0; i < appData.length; i++) {
+              var cat = "";
+              if(appData[i].category.toString().split('.')[1] == 'undefined') {
+                cat = "other";
+              } else {
+                cat = appData[i].category.toString().split('.')[1];
+              }
+              appName.add({
+                "appName": appData[i].appName,
+                "packageId": appData[i].packageName,
+                "blacklist": false,
+                "appCategory": cat,
+              });
+            }
+            Response response = await MediaRepository().saveAppList(
+                prefs.getString(rkEmailUser)!, appName);
+            if (response.statusCode == 200) {
+              print('save appList ${response.body}');
+              var json = jsonDecode(response.body);
+              if(json['statusCode'] == "OK") {
+                await prefs.setBool('rkGetListAppInstall', true);
+              }
+            } else {
+              print('gagal get appLits ${response.statusCode}');
+            }
+          }
+        }
+      } else {
+        if(prefs.getBool('rkGetListAppInstall') != null) {
+          if(prefs.getBool('rkGetListAppInstall') == false) {
+            List<Application> appData = await DeviceApps.getInstalledApplications(
+                includeAppIcons: true,
+                includeSystemApps: false,
+                onlyAppsWithLaunchIntent: false
+            );
+            List<dynamic> appName = [];
+            for (int i = 0; i < appData.length; i++) {
+              var cat = "";
+              if(appData[i].category.toString().split('.')[1] == 'undefined') {
+                cat = "other";
+              } else {
+                cat = appData[i].category.toString().split('.')[1];
+              }
+              appName.add({
+                "appName": appData[i].appName,
+                "packageId": appData[i].packageName,
+                "blacklist": false,
+                "appCategory": cat,
+              });
+            }
+            Response response = await MediaRepository().saveAppList(
+                prefs.getString(rkEmailUser)!, appName);
+            if (response.statusCode == 200) {
+              print('save appList ${response.body}');
+              var json = jsonDecode(response.body);
+              if(json['statusCode'] == 'OK') {
+                await prefs.setBool('rkGetListAppInstall', true);
+              }
+            } else {
+              print('gagal get appLits ${response.statusCode}');
+            }
+          }
+        }
+        else {
+          List<Application> appData = await DeviceApps.getInstalledApplications(
+              includeAppIcons: true,
+              includeSystemApps: false,
+              onlyAppsWithLaunchIntent: false
+          );
+          List<dynamic> appName = [];
+          for (int i = 0; i < appData.length; i++) {
+            var cat = "";
+            if(appData[i].category.toString().split('.')[1] == 'undefined') {
+              cat = "other";
+            } else {
+              cat = appData[i].category.toString().split('.')[1];
+            }
+            appName.add({
+              "appName": appData[i].appName,
+              "packageId": appData[i].packageName,
+              "blacklist": false,
+              "appCategory": cat,
+            });
+          }
+          Response response = await MediaRepository().saveAppList(
+              prefs.getString(rkEmailUser)!, appName);
+          if (response.statusCode == 200) {
+            print('save appList ${response.body}');
+            var json = jsonDecode(response.body);
+            if(json['statusCode'] == "OK") {
+              await prefs.setBool('rkGetListAppInstall', true);
+            }
+          } else {
+            print('gagal get appLits ${response.statusCode}');
+          }
+        }
+      }
     } else {
-      print('gagal get appLits ${response.statusCode}');
+      print('isi response fetch appList : ${response.statusCode}');
+      if(prefs.getBool('rkGetListAppInstall') != null) {
+        if(prefs.getBool('rkGetListAppInstall') == false) {
+          List<Application> appData = await DeviceApps.getInstalledApplications(
+              includeAppIcons: true,
+              includeSystemApps: false,
+              onlyAppsWithLaunchIntent: false
+          );
+          List<dynamic> appName = [];
+          for (int i = 0; i < appData.length; i++) {
+            var cat = "";
+            if(appData[i].category.toString().split('.')[1] == 'undefined') {
+              cat = "other";
+            } else {
+              cat = appData[i].category.toString().split('.')[1];
+            }
+            appName.add({
+              "appName": appData[i].appName,
+              "packageId": appData[i].packageName,
+              "blacklist": false,
+              "appCategory": cat,
+            });
+          }
+          Response response = await MediaRepository().saveAppList(
+              prefs.getString(rkEmailUser)!, appName);
+          if (response.statusCode == 200) {
+            print('save appList ${response.body}');
+            var json = jsonDecode(response.body);
+            if(json['statusCode'] == 'OK') {
+              await prefs.setBool('rkGetListAppInstall', true);
+            }
+          } else {
+            print('gagal get appLits ${response.statusCode}');
+          }
+        }
+      }
+      else {
+        List<Application> appData = await DeviceApps.getInstalledApplications(
+            includeAppIcons: true,
+            includeSystemApps: false,
+            onlyAppsWithLaunchIntent: false
+        );
+        List<dynamic> appName = [];
+        for (int i = 0; i < appData.length; i++) {
+          var cat = "";
+          if(appData[i].category.toString().split('.')[1] == 'undefined') {
+            cat = "other";
+          } else {
+            cat = appData[i].category.toString().split('.')[1];
+          }
+          appName.add({
+            "appName": appData[i].appName,
+            "packageId": appData[i].packageName,
+            "blacklist": false,
+            "appCategory": cat,
+          });
+        }
+        Response response = await MediaRepository().saveAppList(
+            prefs.getString(rkEmailUser)!, appName);
+        if (response.statusCode == 200) {
+          print('save appList ${response.body}');
+          var json = jsonDecode(response.body);
+          if(json['statusCode'] == "OK") {
+            await prefs.setBool('rkGetListAppInstall', true);
+          }
+        } else {
+          print('gagal get appLits ${response.statusCode}');
+        }
+      }
     }
   }
 
@@ -196,12 +541,23 @@ class _HomeChildPageState extends State<HomeChildPage> {
   }
 
   Future _fetchContacts() async {
+    prefs = await SharedPreferences.getInstance();
     if (!await FlutterContacts.requestPermission()) {
       setState(() => _permissionDenied = true);
     } else {
-      final contacts = await FlutterContacts.getContacts(withProperties: true, withPhoto: true);
-      // setState(() => _contacts = contacts);
-      onSaveContact(contacts);
+      if(prefs.getBool('rkGetContactList') != null) {
+        if(prefs.getBool('rkGetContactList') == false) {
+          final contacts = await FlutterContacts.getContacts(
+              withProperties: true, withPhoto: true);
+          await prefs.setBool('rkGetContactList', true);
+          onSaveContact(contacts);
+        }
+      } else {
+        final contacts = await FlutterContacts.getContacts(
+            withProperties: true, withPhoto: true);
+        await prefs.setBool('rkGetContactList', true);
+        onSaveContact(contacts);
+      }
     }
   }
 
@@ -297,13 +653,73 @@ class _HomeChildPageState extends State<HomeChildPage> {
   }
 
   void onGetIconApps() async {
-    List<Application> appData = await DeviceApps.getInstalledApplications(
-        includeAppIcons: true,
-        includeSystemApps: false,
-        onlyAppsWithLaunchIntent: false
-    );
-    listItemApps = appData;
-    onSaveIconApps(0);
+    prefs = await SharedPreferences.getInstance();
+    Response response = await MediaRepository().fetchAppIconList();
+    if(response.statusCode == 200) {
+      print('response load icon ${response.body}');
+      var json = jsonDecode(response.body);
+      if(json['resultCode'] == 'OK') {
+        var appIcons = json['appIcons'];
+        await prefs.setString('rkBaseUrlAppIcon', json['baseUrl']);
+        if(appIcons != null) {
+          List<AppIconList> data = List<AppIconList>.from(
+              appIcons.map((model) => AppIconList.fromJson(model)));
+
+          List<Application> appData = await DeviceApps.getInstalledApplications(
+              includeAppIcons: true,
+              includeSystemApps: false,
+              onlyAppsWithLaunchIntent: false
+          );
+
+          for(int i = 0; i < appData.length; i++) {
+            bool flag = false;
+            for(int j = 0; j < data.length; j++) {
+              if(appData[i].packageName == data[j].appId) {
+                flag = true;
+                break;
+              }
+            }
+            if(!flag) {
+              listItemApps.add(appData[i]);
+            }
+          }
+
+          onSaveIconApps(0);
+        } else {
+          List<Application> appData = await DeviceApps.getInstalledApplications(
+              includeAppIcons: true,
+              includeSystemApps: false,
+              onlyAppsWithLaunchIntent: false
+          );
+          listItemApps = appData;
+          onSaveIconApps(0);
+        }
+      }
+    } else {
+      print('response ${response.statusCode}');
+    }
+    /*if(prefs.getBool('rkGetListIcon') != null) {
+      if(prefs.getBool('rkGetListIcon') == false) {
+        List<Application> appData = await DeviceApps.getInstalledApplications(
+            includeAppIcons: true,
+            includeSystemApps: false,
+            onlyAppsWithLaunchIntent: false
+        );
+        listItemApps = appData;
+        await prefs.setBool('rkGetListIcon', true);
+        onSaveIconApps(0);
+      }
+    }
+    else {
+      List<Application> appData = await DeviceApps.getInstalledApplications(
+          includeAppIcons: true,
+          includeSystemApps: false,
+          onlyAppsWithLaunchIntent: false
+      );
+      listItemApps = appData;
+      await prefs.setBool('rkGetListIcon', true);
+      onSaveIconApps(0);
+    }*/
   }
 
   void onSaveIconApps(int indeks) async {
@@ -311,12 +727,16 @@ class _HomeChildPageState extends State<HomeChildPage> {
       Application? iconApp = listItemApps[indeks];
       var photo;
       if(iconApp is ApplicationWithIcon) {
-        photo = base64Encode(iconApp.icon);
+        photo = "data:image/png;base64,${base64Encode(iconApp.icon)}";
       } else {
         photo = null;
       }
+      var category = 'other';
+      if(iconApp.category.toString().split('.')[1] != 'undefined') {
+        category = iconApp.category.toString().split('.')[1];
+      }
       Response response = await MediaRepository().saveIconApp(
-          prefs.getString(rkEmailUser)!, iconApp.appName, iconApp.packageName, photo);
+          prefs.getString(rkEmailUser)!, iconApp.appName, iconApp.packageName, photo, category);
       if (response.statusCode == 200) {
         print('save iconApp ${response.body}');
         indeks++;
@@ -333,17 +753,90 @@ class _HomeChildPageState extends State<HomeChildPage> {
     }
   }
 
-  void onGetCallLog() async {
-    // Iterable<CallLogEntry> entries = await CallLog.get();
-    var now = DateTime.now();
-    int from = now.subtract(Duration(days: 1)).millisecondsSinceEpoch;
-    int to = now.subtract(Duration(days: 0)).millisecondsSinceEpoch;
-    Iterable<CallLogEntry> entries = await CallLog.query(
-      dateFrom: from,
-      dateTo: to,
-      number: '02139509951'
-    );
-    print('data $entries');
+  void onGetCallLog(int indeks) async {
+    prefs = await SharedPreferences.getInstance();
+    if(indeks < blackListData.length) {
+      var now = DateTime.now();
+      int timestamps = prefs.getInt("timestamp") ?? 0;
+      int from = 0;
+      if (timestamps > 0) {
+        from = timestamps;
+      } else {
+        from = now
+            .subtract(Duration(days: 1))
+            .millisecondsSinceEpoch;
+      }
+      // from = now.subtract(Duration(days: 1)).millisecondsSinceEpoch;
+      int to = now
+          .subtract(Duration(days: 0))
+          .millisecondsSinceEpoch;
+      if(blackListData[indeks].contact['name'] == null) {
+        Iterable<CallLogEntry> entries = await CallLog.query(
+            dateFrom: from,
+            dateTo: to,
+            number: '${blackListData[indeks].contact['phones'][0]}'
+        );
+        print('data $entries');
+        if (entries.length > 0) {
+          await prefs.setInt("timestamp", entries
+              .elementAt(0)
+              .timestamp ?? 0);
+          var date = DateTime.fromMillisecondsSinceEpoch(entries
+              .elementAt(0)
+              .timestamp! * 1000);
+          Response response = await MediaRepository().blContactNotification(
+              widget.email, entries
+              .elementAt(0)
+              .name
+              .toString(), entries
+              .elementAt(0)
+              .number
+              .toString(),
+              date.toString(), entries
+              .elementAt(0)
+              .callType
+              .toString()
+              .split('.')[1]);
+
+          if (response.statusCode == 200) {
+            print('response notif blacklist ${response.body}');
+            onGetCallLog(indeks++);
+          } else {
+            print('error blacklist notif ${response.statusCode}');
+            onGetCallLog(indeks++);
+          }
+        }
+      } else {
+        Iterable<CallLogEntry> entries = await CallLog.query(
+            dateFrom: from,
+            dateTo: to,
+            name: '${blackListData[indeks].contact['name']}'
+        );
+        print('data $entries');
+        if (entries.length > 0) {
+          await prefs.setInt("timestamp", entries
+              .elementAt(0)
+              .timestamp ?? 0);
+          var date = DateTime.fromMillisecondsSinceEpoch(entries
+              .elementAt(0)
+              .timestamp! * 1000);
+          Response response = await MediaRepository().blContactNotification(
+              widget.email,
+              entries.elementAt(0).name.toString(),
+              entries.elementAt(0).number.toString(),
+              date.toString(),
+              entries.elementAt(0).callType.toString().split('.')[1]);
+
+          if (response.statusCode == 200) {
+            print('response notif blacklist ${response.body}');
+            onGetCallLog(indeks++);
+          } else {
+            print('error blacklist notif ${response.statusCode}');
+            onGetCallLog(indeks++);
+          }
+        }
+      }
+    }
   }
 
   void onLogin() async {
@@ -366,23 +859,102 @@ class _HomeChildPageState extends State<HomeChildPage> {
         var tokenApps = jsonDataResult['token'];
         await prefs.setString(rkTokenApps, tokenApps);
         var jsonUser = jsonDataResult['user'];
+        var blackList = jsonUser['blacklistNumbers'];
+        List<BlackListContact> data = List<BlackListContact>.from(
+            blackList.map((model) => BlackListContact.fromJson(model)));
+        if(data != null && data.length > 0) {
+          blackListData = data;
+          onGetCallLog(0);
+        }
       }
     } else {
       print('no user found');
     }
   }
 
+  void onGetSMS() async {
+    SmsQuery query = new SmsQuery();
+  }
+
+  void onUsageNew() async {
+    UsageStats.grantUsagePermission();
+    DateTime endDate = new DateTime.now();
+    DateTime startDate = DateTime(endDate.year, endDate.month, 3, 0, 0, 0);
+    List<EventUsageInfo> queryEvents =
+    await UsageStats.queryEvents(startDate, endDate);
+    // query usage stats
+    List<UsageInfo> usageStats = await UsageStats.queryUsageStats(startDate, endDate);
+    // query aggregated Usage statistics
+    Map<String, UsageInfo> queryAndAggregateUsageStats = await UsageStats.queryAndAggregateUsageStats(startDate, endDate);
+    // query configurations
+    List<ConfigurationInfo> configurations = await UsageStats.queryConfiguration(startDate, endDate);
+    // query eventStats API Level 28
+    List<EventInfo> eventStats = await UsageStats.queryEventStats(startDate, endDate);
+    var events = queryEvents.reversed.toList();
+  }
+
+  void onMessageListen() {
+    FirebaseMessaging.instance.getInitialMessage().then((value) => {
+      if(value != null) {
+        print('remote message ${value.data}')
+      }
+    });
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      // if(message.data.length > 0) {
+      //   flutterLocalNotificationsPlugin.show(
+      //       message.data.hashCode,
+      //       message.data['title'],
+      //       message.data['content'],
+      //       NotificationDetails(
+      //         android: AndroidNotificationDetails(
+      //           channel.id,
+      //           channel.name,
+      //           channel.description,
+      //           // TODO add a proper drawable resource to android, for now using
+      //           //      one that already exists in example app.
+      //           icon: android?.smallIcon,
+      //         ),
+      //       ));
+      // } else
+      if (notification != null) {
+        flutterLocalNotificationsPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+              android: AndroidNotificationDetails(
+                  channel.id,
+                  channel.name,
+                  channel.description,
+                  // TODO add a proper drawable resource to android, for now using
+                  //      one that already exists in example app.
+                  icon: 'launch_background',
+                  styleInformation: BigTextStyleInformation(notification.body.toString())
+              ),
+            ));
+      }
+    });
+  }
+
+  void onTestAdmin() {
+    Admin.enable();
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    onMessageListen();
     onLogin();
     onGetIconApps();
     getUsageStatistik();
     _fetchContacts();
     getDataListApps();
     fetchUserLocation();
-    onGetCallLog();
+    // onUsageNew();
   }
 
   @override
@@ -586,15 +1158,21 @@ class _HomeChildPageState extends State<HomeChildPage> {
                         ),
                       ),
                     ),
-                    Container(
-                      margin: EdgeInsets.only(left: 10.0),
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          'SOS',
-                          style: TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold),
+                    GestureDetector(
+                      child: Container(
+                        margin: EdgeInsets.only(left: 10.0),
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            'SOS',
+                            style: TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ),
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
+                            SOSRecordVideoPage()));
+                      },
                     )
                   ],
                 ),
