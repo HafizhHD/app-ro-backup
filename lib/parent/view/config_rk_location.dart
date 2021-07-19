@@ -126,7 +126,7 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
     markers.clear();
     var outputFormat = DateFormat('yyyy-MM-dd');
     var startDate = outputFormat.format(rangeDate[0]);
-    var endDate = outputFormat.format(rangeDate[1]);
+    var endDate = outputFormat.format(rangeDate[rangeDate.length - 1]);
     Response response = await MediaRepository().fetchFilterUserLocation(widget.email, startDate, endDate);
     if(response.statusCode == 200) {
       var json = jsonDecode(response.body);
@@ -370,7 +370,6 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                           ),
                         ),
                         Container(
-                          height: 400,
                           width: MediaQuery.of(context).size.width,
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -420,11 +419,11 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                                               selectedDates: selectedDates,
                                               isWithoutDialog: false,
                                               done: (date) {
-                                                setState(() {
-                                                  selectedDates = date;
-                                                  print('select date : $selectedDates');
-                                                  fetchFilterMarker(selectedDates);
-                                                });
+                                                selectedDates = [];
+                                                selectedDates = date;
+                                                print('select date : $selectedDates');
+                                                fetchFilterMarker(selectedDates);
+                                                setState(() {});
                                               },
                                             ));
                                       },

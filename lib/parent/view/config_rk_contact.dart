@@ -39,6 +39,12 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
           var contacts = json['contacts'][0];
           List<Contact> data = List<Contact>.from(
               contacts['contacts'].map((model) => Contact.fromJson(model)));
+          List<Contact> fixDt = [];
+          for(int i = 0; i < data.length; i++) {
+            if(data[i].name == '' || data[i].phone == null || data[i].phone!.length <= 0) {} else {
+              fixDt.add(data[i]);
+            }
+          }
           return data;
         } else {
           return [];
@@ -49,6 +55,15 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
     } else {
       print('isi response fetch contact : ${response.statusCode}');
       return [];
+    }
+  }
+
+  void onBlacklistContact(String name, String phone) async {
+    Response response = await MediaRepository().blackListContactAdd(widget.email, name, phone, "");
+    if(response.statusCode == 200) {
+      print('response blacklist contact ${response.body}');
+    } else {
+      print('error response ${response.statusCode}');
     }
   }
 
@@ -125,28 +140,85 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                         child: ListView.builder(
                             itemBuilder: (BuildContext context, int position) {
                               Contact app = apps[position];
-                              return Column(
-                                children: <Widget>[
-                                  ListTile(
-                                    leading: Icon(
-                                      Icons.android_outlined,
-                                      color: Colors.green,
+                              var phones = "";
+                              if(app.phone != null && app.phone!.length > 0) {
+                                phones = app.phone![0];
+                              }
+
+                              if(phones == "") {
+                                return Column(
+                                  children: <Widget>[
+                                    ListTile(
+                                      leading: Icon(
+                                        Icons.android_outlined,
+                                        color: Colors.green,
+                                      ),
+                                      title: Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text('${app.name}', style: TextStyle(
+                                              fontSize: 14, fontWeight: FontWeight.bold
+                                          )),
+                                        ],
+                                      ),
+                                      // title: Text('${app.name}'),
+                                      trailing: CupertinoSwitch(
+                                        value: listSwitchValue[position],
+                                        onChanged: (bool value) {
+                                          onBlacklistContact(app.name.toString(), app.phone![0].toString());
+                                          setState(() {
+                                            listSwitchValue[position] = value;
+                                          });
+                                        },
+                                      ),
                                     ),
-                                    title: Text('${app.name}'),
-                                    trailing: CupertinoSwitch(
-                                      value: listSwitchValue[position],
-                                      onChanged: (bool value) {
-                                        setState(() {
-                                          listSwitchValue[position] = value;
-                                        });
-                                      },
+                                    const Divider(
+                                      height: 1.0,
+                                    )
+                                  ],
+                                );
+                              }
+                              else {
+                                return Column(
+                                  children: <Widget>[
+                                    ListTile(
+                                      leading: Icon(
+                                        Icons.android_outlined,
+                                        color: Colors.green,
+                                      ),
+                                      title: Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text('${app.name}', style: TextStyle(
+                                              fontSize: 14, fontWeight: FontWeight.bold
+                                          )),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text('$phones', style: TextStyle(
+                                              fontSize: 12
+                                          ))
+                                        ],
+                                      ),
+                                      // title: Text('${app.name}'),
+                                      trailing: CupertinoSwitch(
+                                        value: listSwitchValue[position],
+                                        onChanged: (bool value) {
+                                          onBlacklistContact(app.name.toString(), app.phone![0].toString());
+                                          setState(() {
+                                            listSwitchValue[position] = value;
+                                          });
+                                        },
+                                      ),
                                     ),
-                                  ),
-                                  const Divider(
-                                    height: 1.0,
-                                  )
-                                ],
-                              );
+                                    const Divider(
+                                      height: 1.0,
+                                    )
+                                  ],
+                                );
+                              }
                             },
                             itemCount: apps.length),
                       );

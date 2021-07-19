@@ -324,6 +324,61 @@ class _RKConfigAccessInternetPageState extends State<RKConfigAccessInternetPage>
                             ]
                         ),
                       ),
+                      Container(
+                        height: 150,
+                        margin: EdgeInsets.only(top: 10.0, bottom: 5.0),
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey,
+                              blurRadius: 3.0,
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                margin: EdgeInsets.all(10.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      child: Text(
+                                        'Radikalisme',
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ),
+                                    Container(
+                                      child: CupertinoSwitch(
+                                        value: _switchValueKencan,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _switchValueKencan = value;
+                                          });
+                                        },
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                height: 50,
+                                margin: EdgeInsets.only(left: 10.0, right: 10.0),
+                                child: Text(
+                                    'Pemblokiran akses internet ke situs yang memfasilitasi untuk '
+                                        'melakukan kontak dengan orang lain dengan tujuan membangun '
+                                        'hubungan personal, romantik atau hubungan sexual. Termasuk '
+                                        'memblokir akses ke situs perjudian seperti perjudian, lotere, kasino.'
+                                ),
+                              )
+                            ]
+                        ),
+                      ),
                     ]
                   ),
                 ),
