@@ -9,13 +9,10 @@ class SOSRecordVideo extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'ruang keluarga',
-      theme: ThemeData(
-          primarySwatch: Colors.whiteLight
-      ),
+      theme: ThemeData(primaryColor: Colors.white70),
       home: SOSRecordVideoPage(),
     );
   }
-
 }
 
 class SOSRecordVideoPage extends StatefulWidget {
@@ -24,7 +21,6 @@ class SOSRecordVideoPage extends StatefulWidget {
 }
 
 class _SOSRecordVideoPageState extends State<SOSRecordVideoPage> {
-
   CameraController? controller;
   String videoPath = "";
 
@@ -36,8 +32,7 @@ class _SOSRecordVideoPageState extends State<SOSRecordVideoPage> {
   void setCamerasBinding() async {
     // Get the listonNewCameraSelected of available cameras.
     // Then set the first camera as selected.
-    availableCameras()
-        .then((availableCameras) {
+    availableCameras().then((availableCameras) {
       cameras = availableCameras;
 
       if (cameras.length > 0) {
@@ -51,8 +46,7 @@ class _SOSRecordVideoPageState extends State<SOSRecordVideoPage> {
           );
         });
       }
-    })
-        .catchError((err) {
+    }).catchError((err) {
       print('Error: $err.code\nError Message: $err.message');
     });
   }
@@ -83,9 +77,7 @@ class _SOSRecordVideoPageState extends State<SOSRecordVideoPage> {
               decoration: BoxDecoration(
                 color: Colors.black,
                 border: Border.all(
-                  color: controller != null && controller!.value.isRecordingVideo
-                      ? Colors.redAccent
-                      : Colors.grey,
+                  color: controller != null && controller!.value.isRecordingVideo ? Colors.redAccent : Colors.grey,
                   width: 3.0,
                 ),
               ),
@@ -155,12 +147,8 @@ class _SOSRecordVideoPageState extends State<SOSRecordVideoPage> {
         alignment: Alignment.centerLeft,
         child: FlatButton.icon(
             onPressed: _onSwitchCamera,
-            icon: Icon(
-                _getCameraLensIcon(lensDirection)
-            ),
-            label: Text("${lensDirection.toString()
-                .substring(lensDirection.toString().indexOf('.')+1)}")
-        ),
+            icon: Icon(_getCameraLensIcon(lensDirection)),
+            label: Text("${lensDirection.toString().substring(lensDirection.toString().indexOf('.') + 1)}")),
       ),
     );
   }
@@ -177,20 +165,12 @@ class _SOSRecordVideoPageState extends State<SOSRecordVideoPage> {
             IconButton(
               icon: const Icon(Icons.videocam),
               color: Colors.blue,
-              onPressed: controller != null &&
-                  controller!.value.isInitialized &&
-                  !controller!.value.isRecordingVideo
-                  ? _onRecordButtonPressed
-                  : null,
+              onPressed: controller != null && controller!.value.isInitialized && !controller!.value.isRecordingVideo ? _onRecordButtonPressed : null,
             ),
             IconButton(
               icon: const Icon(Icons.stop),
               color: Colors.red,
-              onPressed: controller != null &&
-                  controller!.value.isInitialized &&
-                  controller!.value.isRecordingVideo
-                  ? _onStopButtonPressed
-                  : null,
+              onPressed: controller != null && controller!.value.isInitialized && controller!.value.isRecordingVideo ? _onStopButtonPressed : null,
             )
           ],
         ),
@@ -237,9 +217,7 @@ class _SOSRecordVideoPageState extends State<SOSRecordVideoPage> {
   }
 
   void _onSwitchCamera() {
-    selectedCameraIdx = selectedCameraIdx < cameras.length - 1
-        ? selectedCameraIdx + 1
-        : 0;
+    selectedCameraIdx = selectedCameraIdx < cameras.length - 1 ? selectedCameraIdx + 1 : 0;
     CameraDescription selectedCamera = cameras[selectedCameraIdx];
 
     _onCameraSwitched(selectedCamera);
@@ -253,14 +231,14 @@ class _SOSRecordVideoPageState extends State<SOSRecordVideoPage> {
     _startVideoRecording().then((String filePath) {
       if (filePath != null) {
         print('file path : $filePath');
-      //   Fluttertoast.showToast(
-      //       msg: 'Recording video started',
-      //       toastLength: Toast.LENGTH_SHORT,
-      //       gravity: ToastGravity.CENTER,
-      //       timeInSecForIos: 1,
-      //       backgroundColor: Colors.grey,
-      //       textColor: Colors.white
-      //   );
+        //   Fluttertoast.showToast(
+        //       msg: 'Recording video started',
+        //       toastLength: Toast.LENGTH_SHORT,
+        //       gravity: ToastGravity.CENTER,
+        //       timeInSecForIos: 1,
+        //       backgroundColor: Colors.grey,
+        //       textColor: Colors.white
+        //   );
       }
     });
   }

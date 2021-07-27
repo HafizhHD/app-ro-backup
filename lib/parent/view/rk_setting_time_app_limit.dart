@@ -10,7 +10,6 @@ class RKSettingAppLimit extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp();
   }
-
 }
 
 class RKSettingAppLimitPage extends StatefulWidget {
@@ -25,7 +24,6 @@ class RKSettingAppLimitPage extends StatefulWidget {
 }
 
 class _RKSettingAppLimitPageState extends State<RKSettingAppLimitPage> {
-
   String timeSet = 'Set';
   int timeLimitHourSet = 0;
   int timeLimiteSet = 0;
@@ -87,12 +85,12 @@ class _RKSettingAppLimitPageState extends State<RKSettingAppLimitPage> {
 
   void onSaveTimeLimit(BuildContext context) async {
     Response response = await MediaRepository().addLimitUsage(widget.email, widget.name, timeLimiteSet, 'Aktif');
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       _showToastSuccess();
-      Navigator.pop(context,true);
+      Navigator.pop(context, true);
     } else {
       _showToastFailed();
-      Navigator.pop(context,true);
+      Navigator.pop(context, true);
     }
   }
 
@@ -108,9 +106,9 @@ class _RKSettingAppLimitPageState extends State<RKSettingAppLimitPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.name, style: TextStyle(color: Colors.darkGrey)),
-        backgroundColor: Colors.whiteLight,
-        iconTheme: IconThemeData(color: Colors.darkGrey),
+        title: Text(widget.name, style: TextStyle(color: Colors.grey.shade700)),
+        backgroundColor: Colors.white70,
+        iconTheme: IconThemeData(color: Colors.grey.shade700),
         actions: <Widget>[
           GestureDetector(
             child: Container(
@@ -130,7 +128,7 @@ class _RKSettingAppLimitPageState extends State<RKSettingAppLimitPage> {
           ),
           /*IconButton(onPressed: () {}, icon: Icon(
             Icons.add,
-            color: Colors.darkGrey,
+            color: Colors.grey.shade700,
           ),),*/
         ],
       ),
@@ -142,10 +140,7 @@ class _RKSettingAppLimitPageState extends State<RKSettingAppLimitPage> {
         child: Column(
           children: [
             Container(
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
+              width: MediaQuery.of(context).size.width,
               margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
               height: 50,
               color: Colors.grey,
@@ -171,23 +166,22 @@ class _RKSettingAppLimitPageState extends State<RKSettingAppLimitPage> {
                       ),
                       onTap: () {
                         var outputFormat = DateFormat('H:m');
-                        DatePicker.showTimePicker(context, showTitleActions: true,
-                            onChanged: (date) {
-                              print('change $date in time zone ' +
-                                  date.timeZoneOffset.inHours.toString());
-                            }, onConfirm: (date) {
-                              print('confirm ${outputFormat.format(date)}');
-                              setState(() {
-                                timeLimitHourSet = int.parse(outputFormat.format(date).split(":")[0]) * 60;
-                                timeLimiteSet = timeLimitHourSet + int.parse(outputFormat.format(date).split(":")[1]);
-                                print('confirm ${outputFormat.format(date)}');
-                                if(int.parse(outputFormat.format(date).split(":")[1]) == 0) {
-                                  timeSet = "${outputFormat.format(date).split(":")[0]}jam, Setiap Hari";
-                                } else {
-                                  timeSet = "${int.parse(outputFormat.format(date).split(":")[0])}jam${int.parse(outputFormat.format(date).split(":")[1])}min, Setiap Hari";
-                                }
-                              });
-                            }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
+                        DatePicker.showTimePicker(context, showTitleActions: true, onChanged: (date) {
+                          print('change $date in time zone ' + date.timeZoneOffset.inHours.toString());
+                        }, onConfirm: (date) {
+                          print('confirm ${outputFormat.format(date)}');
+                          setState(() {
+                            timeLimitHourSet = int.parse(outputFormat.format(date).split(":")[0]) * 60;
+                            timeLimiteSet = timeLimitHourSet + int.parse(outputFormat.format(date).split(":")[1]);
+                            print('confirm ${outputFormat.format(date)}');
+                            if (int.parse(outputFormat.format(date).split(":")[1]) == 0) {
+                              timeSet = "${outputFormat.format(date).split(":")[0]}jam, Setiap Hari";
+                            } else {
+                              timeSet =
+                                  "${int.parse(outputFormat.format(date).split(":")[0])}jam${int.parse(outputFormat.format(date).split(":")[1])}min, Setiap Hari";
+                            }
+                          });
+                        }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
                       },
                     )
                   ],
@@ -197,9 +191,7 @@ class _RKSettingAppLimitPageState extends State<RKSettingAppLimitPage> {
             Container(
               margin: EdgeInsets.all(10.0),
               width: MediaQuery.of(context).size.width,
-              child: Text(
-                  'Batas penggunaan gadget akan di aktifkan ke semua device yang terhubung kedalam email ini'
-              ),
+              child: Text('Batas penggunaan gadget akan di aktifkan ke semua device yang terhubung kedalam email ini'),
             ),
             Container(
               margin: EdgeInsets.only(top: 50.0, left: 10.0, right: 10.0, bottom: 5.0),
@@ -210,33 +202,28 @@ class _RKSettingAppLimitPageState extends State<RKSettingAppLimitPage> {
               ),
             ),
             Container(
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
+              width: MediaQuery.of(context).size.width,
               height: 50,
               color: Colors.grey,
               child: Align(
-              alignment: Alignment.centerLeft,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(left: 10.0),
-                    child: Text(
-                      '${widget.name}',
-                      style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(left: 10.0),
+                      child: Text(
+                        '${widget.name}',
+                        style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
             )
           ],
         ),
       ),
     );
   }
-
 }
-

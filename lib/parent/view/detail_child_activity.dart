@@ -17,7 +17,6 @@ class DetailChildActivity extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp();
   }
-
 }
 
 class DetailChildActivityPage extends StatefulWidget {
@@ -36,7 +35,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
   var types = 'week';
   bool _showSystemApps = false;
   bool _onlyLaunchableApps = false;
-  int perPage  = 7;
+  int perPage = 7;
   int present = 0;
   int usageDatas = 0;
   int usageDataBar = 0;
@@ -59,10 +58,10 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
   String avgTimeDaily = '0s';
   String totalToday = '0s';
   String dateToday = '00.01';
-  var dtx = [0,0,0,0,0,0,0];
-  var dty = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'];
-  var dtxDaily = [0,0,0,0,0,0,0];
-  var dtyDaily = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'];
+  var dtx = [0, 0, 0, 0, 0, 0, 0];
+  var dty = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+  var dtxDaily = [0, 0, 0, 0, 0, 0, 0];
+  var dtyDaily = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
   int countUsage = 1;
   String lineWeekStatus = 'Minggu Lalu';
 
@@ -131,8 +130,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
           present = itemsTmp.length + indeks;
         }
       });
-    }
-    else {
+    } else {
       setState(() {
         // int indeks = apps.length - items.length;
         int indeks = _ListDays.length - _ItemsDays.length;
@@ -183,7 +181,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
     int jam = 0;
     int menit = 0;
     int detik = 0;
-    for(int i = 0; i < infoList.length; i++) {
+    for (int i = 0; i < infoList.length; i++) {
       var dt = infoList[i].usage.toString().split(".")[0];
       var dataUsage = dt.split(":");
       jam = jam + int.parse(dataUsage[0]);
@@ -211,7 +209,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
 
   Future<List<AppUsageInfo>> getUsageStats() async {
     try {
-     /* appsListData = await getListApps();
+      /* appsListData = await getListApps();
       DateTime endDate = findLastDateOfTheWeek(DateTime.now());
       // DateTime startDate = endDate.subtract(Duration(hours: 1));
       DateTime startDate = findFirstDateOfTheWeek(DateTime.now());
@@ -275,31 +273,29 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
       List<dynamic> tmpReturn = [];
       List<dynamic> dataList = [];
       Response response = await MediaRepository().fetchAppUsageFilter(widget.email, outputDate);
-      if(response.statusCode == 200) {
+      if (response.statusCode == 200) {
         print('isi response filter app usage : ${response.body}');
         var json = jsonDecode(response.body);
         if (json['resultCode'] == "OK") {
           var jsonDataResult = json['appUsages'] as List;
-          if(jsonDataResult.length == 0) {
+          if (jsonDataResult.length == 0) {
             return [];
           } else {
             tmpReturn = jsonDataResult[jsonDataResult.length - 1]['appUsages'] as List;
             tmpReturn.sort((a, b) {
               var aUsage = a['duration']; //before -> var adate = a.expiry;
               var bUsage = b['duration']; //before -> var bdate = b.expiry;
-              return bUsage.compareTo(
-                  aUsage); //to get the order other way just switch `adate & bdate`
+              return bUsage.compareTo(aUsage); //to get the order other way just switch `adate & bdate`
             });
 
-            if(prefs!.getString('rkListAppIcons') != null) {
+            if (prefs!.getString('rkListAppIcons') != null) {
               var respList = jsonDecode(prefs!.getString('rkListAppIcons')!);
               var listIcons = respList['appIcons'];
-              List<AppIconList> dataListIconApps = List<AppIconList>.from(
-                  listIcons.map((model) => AppIconList.fromJson(model)));
+              List<AppIconList> dataListIconApps = List<AppIconList>.from(listIcons.map((model) => AppIconList.fromJson(model)));
               var imageUrl = "${prefs!.getString('rkBaseUrlAppIcon')}";
               bool flagX = false;
               int indeksX = 0;
-              for(int i = 0; i < tmpReturn.length; i++) {
+              for (int i = 0; i < tmpReturn.length; i++) {
                 if (dataListIconApps.length > 0) {
                   for (int x = 0; x < dataListIconApps.length; x++) {
                     if (tmpReturn[i]['packageId'] == dataListIconApps[x].appId) {
@@ -313,8 +309,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                       "packageId": "${tmpReturn[i]['packageId']}",
                       "appName": tmpReturn[i]['appName'],
                       "duration": tmpReturn[i]['duration'],
-                      "icon": "${imageUrl +
-                          dataListIconApps[indeksX].appIcon.toString()}"
+                      "icon": "${imageUrl + dataListIconApps[indeksX].appIcon.toString()}"
                     });
                   } else {
                     dataList.add({
@@ -329,11 +324,9 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               dataList.sort((a, b) {
                 var aUsage = a['duration']; //before -> var adate = a.expiry;
                 var bUsage = b['duration']; //before -> var bdate = b.expiry;
-                return bUsage.compareTo(
-                    aUsage); //to get the order other way just switch `adate & bdate`
+                return bUsage.compareTo(aUsage); //to get the order other way just switch `adate & bdate`
               });
-            }
-            else {
+            } else {
               dataList = tmpReturn;
             }
           }
@@ -370,7 +363,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
   String getNameAppsFromList(String package) {
     String name = "";
     for (int i = 0; i < itemsApp.length; i++) {
-      if(itemsApp[i].packageName == package) {
+      if (itemsApp[i].packageName == package) {
         name = itemsApp[i].appName;
       }
     }
@@ -379,7 +372,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
 
   Application? getIconAppsFromList(String package) {
     for (int i = 0; i < itemsApp.length; i++) {
-      if(itemsApp[i].packageName == package) {
+      if (itemsApp[i].packageName == package) {
         return itemsApp[i];
       }
     }
@@ -393,17 +386,17 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
     var startDate = outputFormat.format(findFirstDateOfTheWeek(DateTime.now()));
     var endDate = outputFormat.format(findLastDateOfTheWeek(DateTime.now()));
     Response response = await MediaRepository().fetchAppUsageFilterRange(widget.email, startDate, endDate);
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       print('isi response filter app usage : ${response.body}');
       var json = jsonDecode(response.body);
       if (json['resultCode'] == "OK") {
         var jsonDataResult = json['appUsages'] as List;
         await prefs!.setString("childAppUsage", jsonEncode(jsonDataResult));
-        if(jsonDataResult.length == 0) {
+        if (jsonDataResult.length == 0) {
           await prefs!.setInt("dataMinggu${widget.email}", 0);
         } else {
           countUsage = jsonDataResult.length;
-          for(int j = 0; j < jsonDataResult.length; j++) {
+          for (int j = 0; j < jsonDataResult.length; j++) {
             var data = jsonDataResult[j]['appUsages'] as List;
             for (int i = 0; i < data.length; i++) {
               var jsonDt = data[i];
@@ -431,28 +424,28 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
     List<dynamic> tmpxData = [];
     List<dynamic> dataList = [];
     Response response = await MediaRepository().fetchAppUsageFilterRange(widget.email, startDate, endDate);
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       print('isi response filter app usage : ${response.body}');
       var json = jsonDecode(response.body);
       if (json['resultCode'] == "OK") {
         var jsonDataResult = json['appUsages'] as List;
-        if(jsonDataResult.length == 0) {
+        if (jsonDataResult.length == 0) {
           return [];
         } else {
           tmpFilterReturn = jsonDataResult[0]['appUsages'] as List;
           List<dynamic> refData = [];
-          for(int y = 1; y < jsonDataResult.length; y++) {
+          for (int y = 1; y < jsonDataResult.length; y++) {
             List<dynamic> filterTmp = jsonDataResult[y]['appUsages'] as List;
             tmpxData = tmpFilterReturn;
             tmpFilterReturn = [];
-            for(int w = 0; w < tmpxData.length; w++) {
+            for (int w = 0; w < tmpxData.length; w++) {
               bool flag = false;
-              for(int z = 0; z < filterTmp.length; z++) {
-                if(tmpxData[w]['packageId'] == filterTmp[z]['packageId']) {
+              for (int z = 0; z < filterTmp.length; z++) {
+                if (tmpxData[w]['packageId'] == filterTmp[z]['packageId']) {
                   int durasi = int.parse(tmpxData[w]['duration'].toString()) + int.parse(filterTmp[z]['duration'].toString());
                   bool flagData = false;
-                  for(int i = 0; i < tmpFilterReturn.length; i++) {
-                    if(filterTmp[z]['packageId'] == tmpFilterReturn[i]['packageId']) {
+                  for (int i = 0; i < tmpFilterReturn.length; i++) {
+                    if (filterTmp[z]['packageId'] == tmpFilterReturn[i]['packageId']) {
                       flagData = true;
                       tmpFilterReturn.removeAt(i);
                       tmpFilterReturn.add({
@@ -465,7 +458,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                       break;
                     }
                   }
-                  if(!flagData) {
+                  if (!flagData) {
                     tmpFilterReturn.add({
                       "count": 0,
                       "appName": "${tmpxData[w]['appName']}",
@@ -475,16 +468,15 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                     });
                   }
                   flag = true;
-                }
-                else {
+                } else {
                   bool flagData = false;
-                  for(int i = 0; i < tmpFilterReturn.length; i++) {
-                    if(filterTmp[z]['packageId'] == tmpFilterReturn[i]['packageId']) {
+                  for (int i = 0; i < tmpFilterReturn.length; i++) {
+                    if (filterTmp[z]['packageId'] == tmpFilterReturn[i]['packageId']) {
                       flagData = true;
                       break;
                     }
                   }
-                  if(!flagData) {
+                  if (!flagData) {
                     tmpFilterReturn.add({
                       "count": 0,
                       "appName": "${filterTmp[z]['appName']}",
@@ -496,15 +488,15 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                 }
               }
 
-              if(!flag) {
+              if (!flag) {
                 bool flagData = false;
-                for(int i = 0; i < tmpFilterReturn.length; i++) {
-                  if(tmpxData[w]['packageId'] == tmpFilterReturn[i]['packageId']) {
+                for (int i = 0; i < tmpFilterReturn.length; i++) {
+                  if (tmpxData[w]['packageId'] == tmpFilterReturn[i]['packageId']) {
                     flagData = true;
                     break;
                   }
                 }
-                if(!flagData) {
+                if (!flagData) {
                   tmpFilterReturn.add({
                     "count": 0,
                     "appName": "${tmpxData[w]['appName']}",
@@ -531,8 +523,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
           tmpFilterReturn.sort((a, b) {
             var aUsage = a['duration']; //before -> var adate = a.expiry;
             var bUsage = b['duration']; //before -> var bdate = b.expiry;
-            return bUsage.compareTo(
-                aUsage); //to get the order other way just switch `adate & bdate`
+            return bUsage.compareTo(aUsage); //to get the order other way just switch `adate & bdate`
           });
 
           print('fix data $tmpFilterReturn');
@@ -637,7 +628,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
 
     print('last $usageLast');
 
-    dtx = [usageFirst,usageSecond,usageThird,usageFour,usageFive,usageSix,usageLast];
+    dtx = [usageFirst, usageSecond, usageThird, usageFour, usageFive, usageSix, usageLast];
     setState(() {});
   }
 
@@ -645,13 +636,13 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
     prefs = await SharedPreferences.getInstance();
     int seconds = 0;
     Response response = await MediaRepository().fetchAppUsageFilter(widget.email, tanggal);
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       print('isi response filter app usage : ${response.body}');
       var json = jsonDecode(response.body);
       if (json['resultCode'] == "OK") {
         var jsonDataResult = json['appUsages'] as List;
         await prefs!.setString("childAppUsage", jsonEncode(jsonDataResult));
-        if(jsonDataResult.length == 0) {
+        if (jsonDataResult.length == 0) {
           await prefs!.setInt("dataMinggu${widget.email}", 0);
         } else {
           var data = jsonDataResult[jsonDataResult.length - 1]['appUsages'] as List;
@@ -672,19 +663,19 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
 
   String setDayName(String name) {
     String days = 'Minggu';
-    if(name == 'Sunday') {
+    if (name == 'Sunday') {
       days = 'Minggu';
-    } else if(name == 'Monday') {
+    } else if (name == 'Monday') {
       days = 'Senin';
-    } else if(name == 'Tuesday') {
+    } else if (name == 'Tuesday') {
       days = 'Selasa';
-    } else if(name == 'Wednesday') {
+    } else if (name == 'Wednesday') {
       days = 'Rabu';
-    } else if(name == 'Thursday') {
+    } else if (name == 'Thursday') {
       days = 'Kamis';
-    } else if(name == 'Friday') {
+    } else if (name == 'Friday') {
       days = 'Jum\'at';
-    } else if(name == 'Saturday') {
+    } else if (name == 'Saturday') {
       days = 'Sabtu';
     }
 
@@ -696,17 +687,17 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
     int seconds = await getDailyUsageStatistik(dateFormat.format(DateTime.now()));
     int sec = seconds;
     int totalHour = 0;
-    if(sec >= 3600) {
+    if (sec >= 3600) {
       totalHour = seconds ~/ 3600;
       sec = sec - (totalHour * 3600);
     }
     int totalMenit = 0;
-    if(sec >= 60) {
+    if (sec >= 60) {
       totalMenit = sec ~/ 60;
       sec = sec - (totalMenit * 60);
     }
-    if(totalHour == 0) {
-      if(totalMenit == 0) {
+    if (totalHour == 0) {
+      if (totalMenit == 0) {
         avgTimeDaily = '${sec}s';
       } else {
         avgTimeDaily = '${totalMenit}m ${sec}s';
@@ -728,20 +719,20 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
     usageDataBar = usageDatas;
     usageDatas = usageDataBar ~/ 3600;
     int secs = usageDataBar;
-    if(secs > 0) {
+    if (secs > 0) {
       int tmpAvg = secs ~/ countUsage;
       int totalHour = 0;
-      if(tmpAvg >= 3600) {
+      if (tmpAvg >= 3600) {
         totalHour = tmpAvg ~/ 3600;
         tmpAvg = tmpAvg - (totalHour * 3600);
       }
       int totalMenit = 0;
-      if(tmpAvg >= 60) {
+      if (tmpAvg >= 60) {
         totalMenit = tmpAvg ~/ 60;
         tmpAvg = tmpAvg - (totalMenit * 60);
       }
-      if(totalHour == 0) {
-        if(totalMenit == 0) {
+      if (totalHour == 0) {
+        if (totalMenit == 0) {
           avgTime = '${tmpAvg}s';
         } else {
           avgTime = '${totalMenit}m ${tmpAvg}s';
@@ -757,17 +748,17 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
 
     int sec = secs;
     int totalHour = 0;
-    if(sec >= 3600) {
+    if (sec >= 3600) {
       totalHour = secs ~/ 3600;
       sec = sec - (totalHour * 3600);
     }
     int totalMenit = 0;
-    if(sec >= 60) {
+    if (sec >= 60) {
       totalMenit = sec ~/ 60;
       sec = sec - (totalMenit * 60);
     }
-    if(totalHour == 0) {
-      if(totalMenit == 0) {
+    if (totalHour == 0) {
+      if (totalMenit == 0) {
         totalScreenTime = '${sec}s';
       } else {
         totalScreenTime = '${totalMenit}m ${sec}s';
@@ -799,20 +790,20 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
     // calculateDayliScreen();
     var outputFormat = DateFormat('EEEE');
     String dayName = setDayName(outputFormat.format(DateTime.now()));
-    if(dayName == "Senin") {
-      dtxDaily = [dtx[0],0,0,0,0,0,0];
+    if (dayName == "Senin") {
+      dtxDaily = [dtx[0], 0, 0, 0, 0, 0, 0];
     } else if (dayName == "Selasa") {
-      dtxDaily = [0,dtx[1],0,0,0,0,0];
+      dtxDaily = [0, dtx[1], 0, 0, 0, 0, 0];
     } else if (dayName == "Rabu") {
-      dtxDaily = [0,0,dtx[2],0,0,0,0];
+      dtxDaily = [0, 0, dtx[2], 0, 0, 0, 0];
     } else if (dayName == "Kamis") {
-      dtxDaily = [0,0,0,dtx[3],0,0,0];
+      dtxDaily = [0, 0, 0, dtx[3], 0, 0, 0];
     } else if (dayName == "Jumat") {
-      dtxDaily = [0,0,0,0,dtx[4],0,0];
+      dtxDaily = [0, 0, 0, 0, dtx[4], 0, 0];
     } else if (dayName == "Sabtu") {
-      dtxDaily = [0,0,0,0,0,dtx[5],0];
+      dtxDaily = [0, 0, 0, 0, 0, dtx[5], 0];
     } else {
-      dtxDaily = [0,0,0,0,0,0,dtx[6]];
+      dtxDaily = [0, 0, 0, 0, 0, 0, dtx[6]];
     }
     return charts.BarChart(
       _createRandomDataDaily(),
@@ -824,112 +815,97 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Detil Waktu Layar', style: TextStyle(color: Colors.darkGrey)),
-        backgroundColor: Colors.whiteLight,
-        iconTheme: IconThemeData(color: Colors.darkGrey),
-      ),
-      backgroundColor: Colors.white,
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        color: Colors.grey[300],
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Flexible(
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0, bottom: 10.0),
-                        height: 42,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[700],
-                          borderRadius: BorderRadius.circular(10.0)
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            GestureDetector(
-                              child: AnimatedContainer(
-                                margin: EdgeInsets.only(left: 2.0),
-                                height: 40,
-                                width: MediaQuery.of(context).size.width * 0.443,
-                                decoration: BoxDecoration(
-                                    color: activeColor,
-                                    borderRadius: BorderRadius.circular(10.0)
-                                ),
-                                duration: const Duration(seconds: 0),
-                                curve: Curves.easeInOutCirc,
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    'Mingguan',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              ),
-                              onTap: () => {
-                                setState(() {
-                                  activeColor = Colors.grey[400];
-                                  inactiveColor = Colors.grey[700];
-                                  types = 'week';
-                                })
-                              },
-                            ),
-                            GestureDetector(
-                              child: AnimatedContainer(
-                                margin: EdgeInsets.only(right: 2.0),
-                                height: 40,
-                                width: MediaQuery.of(context).size.width * 0.443,
-                                decoration: BoxDecoration(
-                                    color: inactiveColor,
-                                    borderRadius: BorderRadius.circular(10.0)
-                                ),
-                                duration: const Duration(seconds: 0),
-                                curve: Curves.easeInOutCirc,
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    'Harian',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              ),
-                              onTap: () => {
-                                setState(() {
-                                  inactiveColor = Colors.grey[400];
-                                  activeColor = Colors.grey[700];
-                                  types = 'day';
-                                })
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      onShowLastData(types),
-                      onBodyPage(types),
-                      Container(
-                        margin: EdgeInsets.only(top: 5.0, left: 20.0, right: 20.0, bottom: 5.0),
-                        child: Text('Update today $dateToday',
-                            style: TextStyle(fontSize: 14)),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        appBar: AppBar(
+          title: Text('Detil Waktu Layar', style: TextStyle(color: Colors.grey.shade700)),
+          backgroundColor: Colors.white70,
+          iconTheme: IconThemeData(color: Colors.grey.shade700),
+        ),
+        backgroundColor: Colors.white,
+        body: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            color: Colors.grey[300],
+            child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Flexible(
+                child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0, bottom: 5.0),
-                            child: Text('MOST USED',
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.bold)),
+                            margin: EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0, bottom: 10.0),
+                            height: 42,
+                            decoration: BoxDecoration(color: Colors.grey[700], borderRadius: BorderRadius.circular(10.0)),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                GestureDetector(
+                                  child: AnimatedContainer(
+                                    margin: EdgeInsets.only(left: 2.0),
+                                    height: 40,
+                                    width: MediaQuery.of(context).size.width * 0.443,
+                                    decoration: BoxDecoration(color: activeColor, borderRadius: BorderRadius.circular(10.0)),
+                                    duration: const Duration(seconds: 0),
+                                    curve: Curves.easeInOutCirc,
+                                    child: Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        'Mingguan',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                  onTap: () => {
+                                    setState(() {
+                                      activeColor = Colors.grey[400];
+                                      inactiveColor = Colors.grey[700];
+                                      types = 'week';
+                                    })
+                                  },
+                                ),
+                                GestureDetector(
+                                  child: AnimatedContainer(
+                                    margin: EdgeInsets.only(right: 2.0),
+                                    height: 40,
+                                    width: MediaQuery.of(context).size.width * 0.443,
+                                    decoration: BoxDecoration(color: inactiveColor, borderRadius: BorderRadius.circular(10.0)),
+                                    duration: const Duration(seconds: 0),
+                                    curve: Curves.easeInOutCirc,
+                                    child: Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        'Harian',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                  onTap: () => {
+                                    setState(() {
+                                      inactiveColor = Colors.grey[400];
+                                      activeColor = Colors.grey[700];
+                                      types = 'day';
+                                    })
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
-                          /*Container(
+                          onShowLastData(types),
+                          onBodyPage(types),
+                          Container(
+                            margin: EdgeInsets.only(top: 5.0, left: 20.0, right: 20.0, bottom: 5.0),
+                            child: Text('Update today $dateToday', style: TextStyle(fontSize: 14)),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0, bottom: 5.0),
+                                child: Text('MOST USED', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                              ),
+                              /*Container(
                             margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0, bottom: 5.0),
                             child: Text('LIHAT KATEGORI',
                               style: TextStyle(
@@ -938,36 +914,28 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                                 color: Colors.blueAccent)
                               ),
                           )*/
+                            ],
+                          ),
+                          onLoadMostUsage(types)
                         ],
                       ),
-                      onLoadMostUsage(types)
-                    ],
-                  ),
-                )
-              ),
-            )
-          ]
-        )
-      )
-    );
+                    )),
+              )
+            ])));
   }
 
   Widget onShowLastData(String type) {
-    if(type == 'week') {
+    if (type == 'week') {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Container(
             margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0, bottom: 5.0),
-            child: Text(widget.name,
-                style: TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold)),
+            child: Text(widget.name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ),
           Container(
             margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0, bottom: 5.0),
-            child: Text('$lineWeekStatus',
-                style: TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xffFF018786))),
+            child: Text('$lineWeekStatus', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xffFF018786))),
           )
         ],
       );
@@ -977,15 +945,11 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
         children: <Widget>[
           Container(
             margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0, bottom: 5.0),
-            child: Text(widget.name,
-                style: TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold)),
+            child: Text(widget.name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ),
           Container(
             margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0, bottom: 5.0),
-            child: Text('$lineWeekStatus',
-                style: TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xffFF018786))),
+            child: Text('$lineWeekStatus', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xffFF018786))),
           )
         ],
       );
@@ -997,10 +961,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
       return Container(
         height: 400,
         margin: EdgeInsets.only(bottom: 10.0),
-        width: MediaQuery
-            .of(context)
-            .size
-            .width,
+        width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
@@ -1012,15 +973,11 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
         ),
         child: onMostWeekData(),
       );
-    }
-    else {
+    } else {
       return Container(
         height: 400,
         margin: EdgeInsets.only(bottom: 10.0),
-        width: MediaQuery
-            .of(context)
-            .size
-            .width,
+        width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
@@ -1063,40 +1020,38 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               usageData = "${jam.toString()}h ${menit.toString()}m";
             }
 
-            return (index >= values.length) ?
-            Container(
-              color: Colors.greenAccent,
-              child: FlatButton(
-                child: Text("Load More"),
-                onPressed: () {},
-              ),
-            )
-                :
-            Column(
-              children: <Widget>[
-                ListTile(
-                  leading: tmpApp is ApplicationWithIcon
-                      ? CircleAvatar(
-                    backgroundImage: MemoryImage(tmpApp.icon),
-                    backgroundColor: Colors.white,
+            return (index >= values.length)
+                ? Container(
+                    color: Colors.greenAccent,
+                    child: FlatButton(
+                      child: Text("Load More"),
+                      onPressed: () {},
+                    ),
                   )
-                      : Icon(
-                    Icons.android_outlined,
-                    color: Colors.green,
-                  ),
-                  title: Text('${tmpApp?.appName ?? app.appName}'),
-                  // title: Text('${app.appName}'),
-                  subtitle: Text(usageData),
-                ),
-                const Divider(
-                  height: 1.0,
-                )
-              ],
-            );
+                : Column(
+                    children: <Widget>[
+                      ListTile(
+                        leading: tmpApp is ApplicationWithIcon
+                            ? CircleAvatar(
+                                backgroundImage: MemoryImage(tmpApp.icon),
+                                backgroundColor: Colors.white,
+                              )
+                            : Icon(
+                                Icons.android_outlined,
+                                color: Colors.green,
+                              ),
+                        title: Text('${tmpApp?.appName ?? app.appName}'),
+                        // title: Text('${app.appName}'),
+                        subtitle: Text(usageData),
+                      ),
+                      const Divider(
+                        height: 1.0,
+                      )
+                    ],
+                  );
           },
         );
-      }
-      else {
+      } else {
         return new ListView.builder(
           itemCount: values.length + 1,
           itemBuilder: (BuildContext context, int index) {
@@ -1104,7 +1059,6 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
             Application? tmpApp;
             String usageData = "0s";
             if (index == values.length) {
-
             } else {
               app = values[index];
               tmpApp = getIconAppsFromList(app.packageName);
@@ -1127,48 +1081,43 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               }
             }
 
-            return (index == values.length) ?
-            GestureDetector(
-              child: Container(
-                margin: EdgeInsets.all(20.0),
-                child: Text(
-                  'Show More',
-                  style: TextStyle(color: Colors.blueAccent),
-                ),
-              ),
-              onTap: () =>
-              {
-                showMoredata(types)
-              },
-            )
-                :
-            Column(
-              children: <Widget>[
-                ListTile(
-                  leading: tmpApp is ApplicationWithIcon
-                      ? CircleAvatar(
-                    backgroundImage: MemoryImage(tmpApp.icon),
-                    backgroundColor: Colors.white,
+            return (index == values.length)
+                ? GestureDetector(
+                    child: Container(
+                      margin: EdgeInsets.all(20.0),
+                      child: Text(
+                        'Show More',
+                        style: TextStyle(color: Colors.blueAccent),
+                      ),
+                    ),
+                    onTap: () => {showMoredata(types)},
                   )
-                      : Icon(
-                    Icons.android_outlined,
-                    color: Colors.green,
-                  ),
-                  // onTap: () => onAppClicked(context, app),
-                  // title: Text('${app.appName} (${app.packageName})'),
-                  title: Text('${tmpApp?.appName ?? app.appName}'),
-                  subtitle: Text(usageData),
-                ),
-                const Divider(
-                  height: 1.0,
-                )
-              ],
-            );
+                : Column(
+                    children: <Widget>[
+                      ListTile(
+                        leading: tmpApp is ApplicationWithIcon
+                            ? CircleAvatar(
+                                backgroundImage: MemoryImage(tmpApp.icon),
+                                backgroundColor: Colors.white,
+                              )
+                            : Icon(
+                                Icons.android_outlined,
+                                color: Colors.green,
+                              ),
+                        // onTap: () => onAppClicked(context, app),
+                        // title: Text('${app.appName} (${app.packageName})'),
+                        title: Text('${tmpApp?.appName ?? app.appName}'),
+                        subtitle: Text(usageData),
+                      ),
+                      const Divider(
+                        height: 1.0,
+                      )
+                    ],
+                  );
           },
         );
       }
-    }
-    else {
+    } else {
       if (values.length >= _infosDays.length) {
         return new ListView.builder(
           itemCount: values.length,
@@ -1194,40 +1143,38 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               usageData = "${jam.toString()}h ${menit.toString()}m";
             }
 
-            return (index >= values.length) ?
-            Container(
-              color: Colors.greenAccent,
-              child: FlatButton(
-                child: Text("Load More"),
-                onPressed: () {},
-              ),
-            )
-                :
-            Column(
-              children: <Widget>[
-                ListTile(
-                  leading: tmpApp is ApplicationWithIcon
-                      ? CircleAvatar(
-                    backgroundImage: MemoryImage(tmpApp.icon),
-                    backgroundColor: Colors.white,
+            return (index >= values.length)
+                ? Container(
+                    color: Colors.greenAccent,
+                    child: FlatButton(
+                      child: Text("Load More"),
+                      onPressed: () {},
+                    ),
                   )
-                      : Icon(
-                    Icons.android_outlined,
-                    color: Colors.green,
-                  ),
-                  title: Text('${tmpApp?.appName ?? app.appName}'),
-                  // title: Text('${app.appName}'),
-                  subtitle: Text(usageData),
-                ),
-                const Divider(
-                  height: 1.0,
-                )
-              ],
-            );
+                : Column(
+                    children: <Widget>[
+                      ListTile(
+                        leading: tmpApp is ApplicationWithIcon
+                            ? CircleAvatar(
+                                backgroundImage: MemoryImage(tmpApp.icon),
+                                backgroundColor: Colors.white,
+                              )
+                            : Icon(
+                                Icons.android_outlined,
+                                color: Colors.green,
+                              ),
+                        title: Text('${tmpApp?.appName ?? app.appName}'),
+                        // title: Text('${app.appName}'),
+                        subtitle: Text(usageData),
+                      ),
+                      const Divider(
+                        height: 1.0,
+                      )
+                    ],
+                  );
           },
         );
-      }
-      else {
+      } else {
         return new ListView.builder(
           itemCount: values.length + 1,
           itemBuilder: (BuildContext context, int index) {
@@ -1235,7 +1182,6 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
             Application? tmpApp;
             String usageData = "0s";
             if (index == values.length) {
-
             } else {
               app = values[index];
               tmpApp = getIconAppsFromList(app.packageName);
@@ -1258,48 +1204,45 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               }
             }
 
-            return (index == values.length) ?
-            GestureDetector(
-              child: Container(
-                margin: EdgeInsets.all(20.0),
-                child: Text(
-                  'Show More',
-                  style: TextStyle(color: Colors.blueAccent),
-                ),
-              ),
-              onTap: () =>
-              {
-                showMoredata(types)
-              },
-            )
-                :
-            Column(
-              children: <Widget>[
-                ListTile(
-                  leading: tmpApp is ApplicationWithIcon
-                      ? CircleAvatar(
-                    backgroundImage: MemoryImage(tmpApp.icon),
-                    backgroundColor: Colors.white,
+            return (index == values.length)
+                ? GestureDetector(
+                    child: Container(
+                      margin: EdgeInsets.all(20.0),
+                      child: Text(
+                        'Show More',
+                        style: TextStyle(color: Colors.blueAccent),
+                      ),
+                    ),
+                    onTap: () => {showMoredata(types)},
                   )
-                      : Icon(
-                    Icons.android_outlined,
-                    color: Colors.green,
-                  ),
-                  // onTap: () => onAppClicked(context, app),
-                  // title: Text('${app.appName} (${app.packageName})'),
-                  title: Text('${tmpApp?.appName ?? app.appName}'),
-                  subtitle: Text(usageData),
-                ),
-                const Divider(
-                  height: 1.0,
-                )
-              ],
-            );
+                : Column(
+                    children: <Widget>[
+                      ListTile(
+                        leading: tmpApp is ApplicationWithIcon
+                            ? CircleAvatar(
+                                backgroundImage: MemoryImage(tmpApp.icon),
+                                backgroundColor: Colors.white,
+                              )
+                            : Icon(
+                                Icons.android_outlined,
+                                color: Colors.green,
+                              ),
+                        // onTap: () => onAppClicked(context, app),
+                        // title: Text('${app.appName} (${app.packageName})'),
+                        title: Text('${tmpApp?.appName ?? app.appName}'),
+                        subtitle: Text(usageData),
+                      ),
+                      const Divider(
+                        height: 1.0,
+                      )
+                    ],
+                  );
           },
         );
       }
     }
   }
+
   Widget createListViewTemp(BuildContext context, List<dynamic> snapshot) {
     List<dynamic> values = snapshot;
     if (types == 'week') {
@@ -1311,12 +1254,12 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
             Application? tmpApp = getIconAppsFromList(app['packageId']);
             var secs = app['duration'];
             int jam = 0;
-            if(secs >= 3600) {
+            if (secs >= 3600) {
               jam = secs ~/ 3600;
               secs = secs - (jam * 3600);
             }
             int menit = 0;
-            if(secs >= 60) {
+            if (secs >= 60) {
               menit = secs ~/ 60;
               secs = secs - (menit * 60);
             }
@@ -1332,162 +1275,144 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               usageData = "${jam.toString()}h ${menit.toString()}m";
             }
 
-            if(app['icon'] == '' || app['icon'] == null) {
-              if(app['duration'] > 480) {
-                return (index >= values.length) ?
-                Container(
-                  color: Colors.greenAccent,
-                  child: FlatButton(
-                    child: Text("Load More"),
-                    onPressed: () {},
-                  ),
-                )
-                    :
-                Column(
-                  children: <Widget>[
-                    ListTile(
-                      leading: Icon(
-                        Icons.android_outlined,
-                        color: Colors.green,
-                      ),
-                      title: Text('${app['appName']}'),
-                      subtitle: Row(
+            if (app['icon'] == '' || app['icon'] == null) {
+              if (app['duration'] > 480) {
+                return (index >= values.length)
+                    ? Container(
+                        color: Colors.greenAccent,
+                        child: FlatButton(
+                          child: Text("Load More"),
+                          onPressed: () {},
+                        ),
+                      )
+                    : Column(
                         children: <Widget>[
-                          Container(
-                            width: (app['duration'] / values[0]['duration']) * 200,
-                            height: 5,
-                            margin: EdgeInsets.only(right: 10.0),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Color(0xffFF018786)
+                          ListTile(
+                            leading: Icon(
+                              Icons.android_outlined,
+                              color: Colors.green,
+                            ),
+                            title: Text('${app['appName']}'),
+                            subtitle: Row(
+                              children: <Widget>[
+                                Container(
+                                  width: (app['duration'] / values[0]['duration']) * 200,
+                                  height: 5,
+                                  margin: EdgeInsets.only(right: 10.0),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                                ),
+                                Text(usageData)
+                              ],
                             ),
                           ),
-                          Text(usageData)
+                          const Divider(
+                            height: 1.0,
+                          )
                         ],
-                      ),
-                    ),
-                    const Divider(
-                      height: 1.0,
-                    )
-                  ],
-                );
+                      );
               } else {
-                return (index >= values.length) ?
-                Container(
-                  color: Colors.greenAccent,
-                  child: FlatButton(
-                    child: Text("Load More"),
-                    onPressed: () {},
-                  ),
-                )
-                    :
-                Column(
-                  children: <Widget>[
-                    ListTile(
-                      leading: Icon(
-                        Icons.android_outlined,
-                        color: Colors.green,
-                      ),
-                      title: Text('${app['appName']}'),
-                      subtitle: Row(
+                return (index >= values.length)
+                    ? Container(
+                        color: Colors.greenAccent,
+                        child: FlatButton(
+                          child: Text("Load More"),
+                          onPressed: () {},
+                        ),
+                      )
+                    : Column(
                         children: <Widget>[
-                          Container(
-                            width: 10,
-                            height: 5,
-                            margin: EdgeInsets.only(right: 10.0),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Color(0xffFF018786)
+                          ListTile(
+                            leading: Icon(
+                              Icons.android_outlined,
+                              color: Colors.green,
+                            ),
+                            title: Text('${app['appName']}'),
+                            subtitle: Row(
+                              children: <Widget>[
+                                Container(
+                                  width: 10,
+                                  height: 5,
+                                  margin: EdgeInsets.only(right: 10.0),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                                ),
+                                Text(usageData)
+                              ],
                             ),
                           ),
-                          Text(usageData)
+                          const Divider(
+                            height: 1.0,
+                          )
                         ],
-                      ),
-                    ),
-                    const Divider(
-                      height: 1.0,
-                    )
-                  ],
-                );
+                      );
               }
-            }
-            else {
-              if(app['duration'] > 480) {
-                return (index >= values.length) ?
-                Container(
-                  color: Colors.greenAccent,
-                  child: FlatButton(
-                    child: Text("Load More"),
-                    onPressed: () {},
-                  ),
-                )
-                    :
-                Column(
-                  children: <Widget>[
-                    ListTile(
-                      leading: Image.network('${app['icon']}'),
-                      title: Text('${app['appName']}'),
-                      subtitle: Row(
+            } else {
+              if (app['duration'] > 480) {
+                return (index >= values.length)
+                    ? Container(
+                        color: Colors.greenAccent,
+                        child: FlatButton(
+                          child: Text("Load More"),
+                          onPressed: () {},
+                        ),
+                      )
+                    : Column(
                         children: <Widget>[
-                          Container(
-                            width: (app['duration'] / values[0]['duration']) * 200,
-                            height: 5,
-                            margin: EdgeInsets.only(right: 10.0),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Color(0xffFF018786)
+                          ListTile(
+                            leading: Image.network('${app['icon']}'),
+                            title: Text('${app['appName']}'),
+                            subtitle: Row(
+                              children: <Widget>[
+                                Container(
+                                  width: (app['duration'] / values[0]['duration']) * 200,
+                                  height: 5,
+                                  margin: EdgeInsets.only(right: 10.0),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                                ),
+                                Text(usageData)
+                              ],
                             ),
                           ),
-                          Text(usageData)
+                          const Divider(
+                            height: 1.0,
+                          )
                         ],
-                      ),
-                    ),
-                    const Divider(
-                      height: 1.0,
-                    )
-                  ],
-                );
+                      );
               } else {
-                return (index >= values.length) ?
-                Container(
-                  color: Colors.greenAccent,
-                  child: FlatButton(
-                    child: Text("Load More"),
-                    onPressed: () {},
-                  ),
-                )
-                    :
-                Column(
-                  children: <Widget>[
-                    ListTile(
-                      leading: Image.network('${app['icon']}'),
-                      title: Text('${app['appName']}'),
-                      subtitle: Row(
+                return (index >= values.length)
+                    ? Container(
+                        color: Colors.greenAccent,
+                        child: FlatButton(
+                          child: Text("Load More"),
+                          onPressed: () {},
+                        ),
+                      )
+                    : Column(
                         children: <Widget>[
-                          Container(
-                            width: 10,
-                            height: 5,
-                            margin: EdgeInsets.only(right: 10.0),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Color(0xffFF018786)
+                          ListTile(
+                            leading: Image.network('${app['icon']}'),
+                            title: Text('${app['appName']}'),
+                            subtitle: Row(
+                              children: <Widget>[
+                                Container(
+                                  width: 10,
+                                  height: 5,
+                                  margin: EdgeInsets.only(right: 10.0),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                                ),
+                                Text(usageData)
+                              ],
                             ),
                           ),
-                          Text(usageData)
+                          const Divider(
+                            height: 1.0,
+                          )
                         ],
-                      ),
-                    ),
-                    const Divider(
-                      height: 1.0,
-                    )
-                  ],
-                );
+                      );
               }
             }
           },
         );
-      }
-      else {
+      } else {
         return new ListView.builder(
           itemCount: values.length + 1,
           itemBuilder: (BuildContext context, int index) {
@@ -1495,20 +1420,18 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
             // Application? tmpApp;
             String usageData = "0s";
             if (index == values.length) {
-
-            }
-            else {
+            } else {
               app = values[index];
               // tmpApp = getIconAppsFromList(app['packageId']);
               var secs = app['duration'];
               int jam = 0;
               int sec = secs;
-              if(secs >= 3600) {
+              if (secs >= 3600) {
                 jam = secs ~/ 3600;
                 sec = sec - (jam * 3600);
               }
               int menit = 0;
-              if(sec >= 60) {
+              if (sec >= 60) {
                 menit = sec ~/ 60;
                 sec = sec - (menit * 60);
               }
@@ -1524,163 +1447,145 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               }
             }
 
-            if(app['icon'] == '' || app['icon'] == null) {
-              if(app['duration'] > 480) {
-                return (index >= values.length) ?
-                Container(
-                  color: Colors.greenAccent,
-                  child: FlatButton(
-                    child: Text("Load More"),
-                    onPressed: () {},
-                  ),
-                )
-                    :
-                Column(
-                  children: <Widget>[
-                    ListTile(
-                      leading: Icon(
-                        Icons.android_outlined,
-                        color: Colors.green,
-                      ),
-                      title: Text('${app['appName']}'),
-                      subtitle: Row(
+            if (app['icon'] == '' || app['icon'] == null) {
+              if (app['duration'] > 480) {
+                return (index >= values.length)
+                    ? Container(
+                        color: Colors.greenAccent,
+                        child: FlatButton(
+                          child: Text("Load More"),
+                          onPressed: () {},
+                        ),
+                      )
+                    : Column(
                         children: <Widget>[
-                          Container(
-                            width: (app['duration'] / values[0]['duration']) * 200,
-                            height: 5,
-                            margin: EdgeInsets.only(right: 10.0),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Color(0xffFF018786)
+                          ListTile(
+                            leading: Icon(
+                              Icons.android_outlined,
+                              color: Colors.green,
+                            ),
+                            title: Text('${app['appName']}'),
+                            subtitle: Row(
+                              children: <Widget>[
+                                Container(
+                                  width: (app['duration'] / values[0]['duration']) * 200,
+                                  height: 5,
+                                  margin: EdgeInsets.only(right: 10.0),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                                ),
+                                Text(usageData)
+                              ],
                             ),
                           ),
-                          Text(usageData)
+                          const Divider(
+                            height: 1.0,
+                          )
                         ],
-                      ),
-                    ),
-                    const Divider(
-                      height: 1.0,
-                    )
-                  ],
-                );
+                      );
               } else {
-                return (index >= values.length) ?
-                Container(
-                  color: Colors.greenAccent,
-                  child: FlatButton(
-                    child: Text("Load More"),
-                    onPressed: () {},
-                  ),
-                )
-                    :
-                Column(
-                  children: <Widget>[
-                    ListTile(
-                      leading: Icon(
-                        Icons.android_outlined,
-                        color: Colors.green,
-                      ),
-                      title: Text('${app['appName']}'),
-                      subtitle: Row(
+                return (index >= values.length)
+                    ? Container(
+                        color: Colors.greenAccent,
+                        child: FlatButton(
+                          child: Text("Load More"),
+                          onPressed: () {},
+                        ),
+                      )
+                    : Column(
                         children: <Widget>[
-                          Container(
-                            width: 10,
-                            height: 5,
-                            margin: EdgeInsets.only(right: 10.0),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Color(0xffFF018786)
+                          ListTile(
+                            leading: Icon(
+                              Icons.android_outlined,
+                              color: Colors.green,
+                            ),
+                            title: Text('${app['appName']}'),
+                            subtitle: Row(
+                              children: <Widget>[
+                                Container(
+                                  width: 10,
+                                  height: 5,
+                                  margin: EdgeInsets.only(right: 10.0),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                                ),
+                                Text(usageData)
+                              ],
                             ),
                           ),
-                          Text(usageData)
+                          const Divider(
+                            height: 1.0,
+                          )
                         ],
-                      ),
-                    ),
-                    const Divider(
-                      height: 1.0,
-                    )
-                  ],
-                );
+                      );
               }
-            }
-            else {
-              if(app['duration'] > 480) {
-                return (index >= values.length) ?
-                Container(
-                  color: Colors.greenAccent,
-                  child: FlatButton(
-                    child: Text("Load More"),
-                    onPressed: () {},
-                  ),
-                )
-                    :
-                Column(
-                  children: <Widget>[
-                    ListTile(
-                      leading: Image.network('${app['icon']}'),
-                      title: Text('${app['appName']}'),
-                      subtitle: Row(
+            } else {
+              if (app['duration'] > 480) {
+                return (index >= values.length)
+                    ? Container(
+                        color: Colors.greenAccent,
+                        child: FlatButton(
+                          child: Text("Load More"),
+                          onPressed: () {},
+                        ),
+                      )
+                    : Column(
                         children: <Widget>[
-                          Container(
-                            width: (app['duration'] / values[0]['duration']) * 200,
-                            height: 5,
-                            margin: EdgeInsets.only(right: 10.0),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Color(0xffFF018786)
+                          ListTile(
+                            leading: Image.network('${app['icon']}'),
+                            title: Text('${app['appName']}'),
+                            subtitle: Row(
+                              children: <Widget>[
+                                Container(
+                                  width: (app['duration'] / values[0]['duration']) * 200,
+                                  height: 5,
+                                  margin: EdgeInsets.only(right: 10.0),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                                ),
+                                Text(usageData)
+                              ],
                             ),
                           ),
-                          Text(usageData)
+                          const Divider(
+                            height: 1.0,
+                          )
                         ],
-                      ),
-                    ),
-                    const Divider(
-                      height: 1.0,
-                    )
-                  ],
-                );
+                      );
               } else {
-                return (index >= values.length) ?
-                Container(
-                  color: Colors.greenAccent,
-                  child: FlatButton(
-                    child: Text("Load More"),
-                    onPressed: () {},
-                  ),
-                )
-                    :
-                Column(
-                  children: <Widget>[
-                    ListTile(
-                      leading: Image.network('${app['icon']}'),
-                      title: Text('${app['appName']}'),
-                      subtitle: Row(
+                return (index >= values.length)
+                    ? Container(
+                        color: Colors.greenAccent,
+                        child: FlatButton(
+                          child: Text("Load More"),
+                          onPressed: () {},
+                        ),
+                      )
+                    : Column(
                         children: <Widget>[
-                          Container(
-                            width: 10,
-                            height: 5,
-                            margin: EdgeInsets.only(right: 10.0),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Color(0xffFF018786)
+                          ListTile(
+                            leading: Image.network('${app['icon']}'),
+                            title: Text('${app['appName']}'),
+                            subtitle: Row(
+                              children: <Widget>[
+                                Container(
+                                  width: 10,
+                                  height: 5,
+                                  margin: EdgeInsets.only(right: 10.0),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                                ),
+                                Text(usageData)
+                              ],
                             ),
                           ),
-                          Text(usageData)
+                          const Divider(
+                            height: 1.0,
+                          )
                         ],
-                      ),
-                    ),
-                    const Divider(
-                      height: 1.0,
-                    )
-                  ],
-                );
+                      );
               }
             }
           },
         );
       }
-    }
-    else {
+    } else {
       if (values.length >= _ListDays.length) {
         return new ListView.builder(
           itemCount: values.length,
@@ -1689,12 +1594,12 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
             Application? tmpApp = getIconAppsFromList(app['packageId']);
             var secs = app['duration'];
             int jam = 0;
-            if(secs >= 3600) {
+            if (secs >= 3600) {
               jam = secs ~/ 3600;
               secs = secs - (jam * 3600);
             }
             int menit = 0;
-            if(secs >= 60) {
+            if (secs >= 60) {
               menit = secs ~/ 60;
               secs = secs - (menit * 60);
             }
@@ -1710,162 +1615,144 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               usageData = "${jam.toString()}h ${menit.toString()}m";
             }
 
-            if(app['icon'] == '' || app['icon'] == null) {
-              if(app['duration'] > 480) {
-                return (index >= values.length) ?
-                Container(
-                  color: Colors.greenAccent,
-                  child: FlatButton(
-                    child: Text("Load More"),
-                    onPressed: () {},
-                  ),
-                )
-                    :
-                Column(
-                  children: <Widget>[
-                    ListTile(
-                      leading: Icon(
-                        Icons.android_outlined,
-                        color: Colors.green,
-                      ),
-                      title: Text('${app['appName']}'),
-                      subtitle: Row(
+            if (app['icon'] == '' || app['icon'] == null) {
+              if (app['duration'] > 480) {
+                return (index >= values.length)
+                    ? Container(
+                        color: Colors.greenAccent,
+                        child: FlatButton(
+                          child: Text("Load More"),
+                          onPressed: () {},
+                        ),
+                      )
+                    : Column(
                         children: <Widget>[
-                          Container(
-                            width: (app['duration'] / values[0]['duration']) * 200,
-                            height: 5,
-                            margin: EdgeInsets.only(right: 10.0),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Color(0xffFF018786)
+                          ListTile(
+                            leading: Icon(
+                              Icons.android_outlined,
+                              color: Colors.green,
+                            ),
+                            title: Text('${app['appName']}'),
+                            subtitle: Row(
+                              children: <Widget>[
+                                Container(
+                                  width: (app['duration'] / values[0]['duration']) * 200,
+                                  height: 5,
+                                  margin: EdgeInsets.only(right: 10.0),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                                ),
+                                Text(usageData)
+                              ],
                             ),
                           ),
-                          Text(usageData)
+                          const Divider(
+                            height: 1.0,
+                          )
                         ],
-                      ),
-                    ),
-                    const Divider(
-                      height: 1.0,
-                    )
-                  ],
-                );
+                      );
               } else {
-                return (index >= values.length) ?
-                Container(
-                  color: Colors.greenAccent,
-                  child: FlatButton(
-                    child: Text("Load More"),
-                    onPressed: () {},
-                  ),
-                )
-                    :
-                Column(
-                  children: <Widget>[
-                    ListTile(
-                      leading: Icon(
-                        Icons.android_outlined,
-                        color: Colors.green,
-                      ),
-                      title: Text('${app['appName']}'),
-                      subtitle: Row(
+                return (index >= values.length)
+                    ? Container(
+                        color: Colors.greenAccent,
+                        child: FlatButton(
+                          child: Text("Load More"),
+                          onPressed: () {},
+                        ),
+                      )
+                    : Column(
                         children: <Widget>[
-                          Container(
-                            width: 10,
-                            height: 5,
-                            margin: EdgeInsets.only(right: 10.0),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Color(0xffFF018786)
+                          ListTile(
+                            leading: Icon(
+                              Icons.android_outlined,
+                              color: Colors.green,
+                            ),
+                            title: Text('${app['appName']}'),
+                            subtitle: Row(
+                              children: <Widget>[
+                                Container(
+                                  width: 10,
+                                  height: 5,
+                                  margin: EdgeInsets.only(right: 10.0),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                                ),
+                                Text(usageData)
+                              ],
                             ),
                           ),
-                          Text(usageData)
+                          const Divider(
+                            height: 1.0,
+                          )
                         ],
-                      ),
-                    ),
-                    const Divider(
-                      height: 1.0,
-                    )
-                  ],
-                );
+                      );
               }
-            }
-            else {
-              if(app['duration'] > 480) {
-                return (index >= values.length) ?
-                Container(
-                  color: Colors.greenAccent,
-                  child: FlatButton(
-                    child: Text("Load More"),
-                    onPressed: () {},
-                  ),
-                )
-                    :
-                Column(
-                  children: <Widget>[
-                    ListTile(
-                      leading: Image.network('${app['icon']}'),
-                      title: Text('${app['appName']}'),
-                      subtitle: Row(
+            } else {
+              if (app['duration'] > 480) {
+                return (index >= values.length)
+                    ? Container(
+                        color: Colors.greenAccent,
+                        child: FlatButton(
+                          child: Text("Load More"),
+                          onPressed: () {},
+                        ),
+                      )
+                    : Column(
                         children: <Widget>[
-                          Container(
-                            width: (app['duration'] / values[0]['duration']) * 200,
-                            height: 5,
-                            margin: EdgeInsets.only(right: 10.0),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Color(0xffFF018786)
+                          ListTile(
+                            leading: Image.network('${app['icon']}'),
+                            title: Text('${app['appName']}'),
+                            subtitle: Row(
+                              children: <Widget>[
+                                Container(
+                                  width: (app['duration'] / values[0]['duration']) * 200,
+                                  height: 5,
+                                  margin: EdgeInsets.only(right: 10.0),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                                ),
+                                Text(usageData)
+                              ],
                             ),
                           ),
-                          Text(usageData)
+                          const Divider(
+                            height: 1.0,
+                          )
                         ],
-                      ),
-                    ),
-                    const Divider(
-                      height: 1.0,
-                    )
-                  ],
-                );
+                      );
               } else {
-                return (index >= values.length) ?
-                Container(
-                  color: Colors.greenAccent,
-                  child: FlatButton(
-                    child: Text("Load More"),
-                    onPressed: () {},
-                  ),
-                )
-                    :
-                Column(
-                  children: <Widget>[
-                    ListTile(
-                      leading: Image.network('${app['icon']}'),
-                      title: Text('${app['appName']}'),
-                      subtitle: Row(
+                return (index >= values.length)
+                    ? Container(
+                        color: Colors.greenAccent,
+                        child: FlatButton(
+                          child: Text("Load More"),
+                          onPressed: () {},
+                        ),
+                      )
+                    : Column(
                         children: <Widget>[
-                          Container(
-                            width: 10,
-                            height: 5,
-                            margin: EdgeInsets.only(right: 10.0),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Color(0xffFF018786)
+                          ListTile(
+                            leading: Image.network('${app['icon']}'),
+                            title: Text('${app['appName']}'),
+                            subtitle: Row(
+                              children: <Widget>[
+                                Container(
+                                  width: 10,
+                                  height: 5,
+                                  margin: EdgeInsets.only(right: 10.0),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                                ),
+                                Text(usageData)
+                              ],
                             ),
                           ),
-                          Text(usageData)
+                          const Divider(
+                            height: 1.0,
+                          )
                         ],
-                      ),
-                    ),
-                    const Divider(
-                      height: 1.0,
-                    )
-                  ],
-                );
+                      );
               }
             }
           },
         );
-      }
-      else {
+      } else {
         return new ListView.builder(
           itemCount: values.length + 1,
           itemBuilder: (BuildContext context, int index) {
@@ -1873,20 +1760,18 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
             // Application? tmpApp;
             String usageData = "0s";
             if (index == values.length) {
-
-            }
-            else {
+            } else {
               app = values[index];
               // tmpApp = getIconAppsFromList(app['packageId']);
               var secs = app['duration'];
               int jam = 0;
               int sec = secs;
-              if(secs >= 3600) {
+              if (secs >= 3600) {
                 jam = secs ~/ 3600;
                 sec = sec - (jam * 3600);
               }
               int menit = 0;
-              if(sec >= 60) {
+              if (sec >= 60) {
                 menit = sec ~/ 60;
                 sec = sec - (menit * 60);
               }
@@ -1902,156 +1787,139 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               }
             }
 
-            if(app['icon'] == '' || app['icon'] == null) {
-              if(app['duration'] > 480) {
-                return (index >= values.length) ?
-                Container(
-                  color: Colors.greenAccent,
-                  child: FlatButton(
-                    child: Text("Load More"),
-                    onPressed: () {},
-                  ),
-                )
-                    :
-                Column(
-                  children: <Widget>[
-                    ListTile(
-                      leading: Icon(
-                        Icons.android_outlined,
-                        color: Colors.green,
-                      ),
-                      title: Text('${app['appName']}'),
-                      subtitle: Row(
+            if (app['icon'] == '' || app['icon'] == null) {
+              if (app['duration'] > 480) {
+                return (index >= values.length)
+                    ? Container(
+                        color: Colors.greenAccent,
+                        child: FlatButton(
+                          child: Text("Load More"),
+                          onPressed: () {},
+                        ),
+                      )
+                    : Column(
                         children: <Widget>[
-                          Container(
-                            width: (app['duration'] / values[0]['duration']) * 200,
-                            height: 5,
-                            margin: EdgeInsets.only(right: 10.0),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Color(0xffFF018786)
+                          ListTile(
+                            leading: Icon(
+                              Icons.android_outlined,
+                              color: Colors.green,
+                            ),
+                            title: Text('${app['appName']}'),
+                            subtitle: Row(
+                              children: <Widget>[
+                                Container(
+                                  width: (app['duration'] / values[0]['duration']) * 200,
+                                  height: 5,
+                                  margin: EdgeInsets.only(right: 10.0),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                                ),
+                                Text(usageData)
+                              ],
                             ),
                           ),
-                          Text(usageData)
+                          const Divider(
+                            height: 1.0,
+                          )
                         ],
-                      ),
-                    ),
-                    const Divider(
-                      height: 1.0,
-                    )
-                  ],
-                );
+                      );
               } else {
-                return (index >= values.length) ?
-                Container(
-                  color: Colors.greenAccent,
-                  child: FlatButton(
-                    child: Text("Load More"),
-                    onPressed: () {},
-                  ),
-                )
-                    :
-                Column(
-                  children: <Widget>[
-                    ListTile(
-                      leading: Icon(
-                        Icons.android_outlined,
-                        color: Colors.green,
-                      ),
-                      title: Text('${app['appName']}'),
-                      subtitle: Row(
+                return (index >= values.length)
+                    ? Container(
+                        color: Colors.greenAccent,
+                        child: FlatButton(
+                          child: Text("Load More"),
+                          onPressed: () {},
+                        ),
+                      )
+                    : Column(
                         children: <Widget>[
-                          Container(
-                            width: 10,
-                            height: 5,
-                            margin: EdgeInsets.only(right: 10.0),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Color(0xffFF018786)
+                          ListTile(
+                            leading: Icon(
+                              Icons.android_outlined,
+                              color: Colors.green,
+                            ),
+                            title: Text('${app['appName']}'),
+                            subtitle: Row(
+                              children: <Widget>[
+                                Container(
+                                  width: 10,
+                                  height: 5,
+                                  margin: EdgeInsets.only(right: 10.0),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                                ),
+                                Text(usageData)
+                              ],
                             ),
                           ),
-                          Text(usageData)
+                          const Divider(
+                            height: 1.0,
+                          )
                         ],
-                      ),
-                    ),
-                    const Divider(
-                      height: 1.0,
-                    )
-                  ],
-                );
+                      );
               }
-            }
-            else {
-              if(app['duration'] > 480) {
-                return (index >= values.length) ?
-                Container(
-                  color: Colors.greenAccent,
-                  child: FlatButton(
-                    child: Text("Load More"),
-                    onPressed: () {},
-                  ),
-                )
-                    :
-                Column(
-                  children: <Widget>[
-                    ListTile(
-                      leading: Image.network('${app['icon']}'),
-                      title: Text('${app['appName']}'),
-                      subtitle: Row(
+            } else {
+              if (app['duration'] > 480) {
+                return (index >= values.length)
+                    ? Container(
+                        color: Colors.greenAccent,
+                        child: FlatButton(
+                          child: Text("Load More"),
+                          onPressed: () {},
+                        ),
+                      )
+                    : Column(
                         children: <Widget>[
-                          Container(
-                            width: (app['duration'] / values[0]['duration']) * 200,
-                            height: 5,
-                            margin: EdgeInsets.only(right: 10.0),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Color(0xffFF018786)
+                          ListTile(
+                            leading: Image.network('${app['icon']}'),
+                            title: Text('${app['appName']}'),
+                            subtitle: Row(
+                              children: <Widget>[
+                                Container(
+                                  width: (app['duration'] / values[0]['duration']) * 200,
+                                  height: 5,
+                                  margin: EdgeInsets.only(right: 10.0),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                                ),
+                                Text(usageData)
+                              ],
                             ),
                           ),
-                          Text(usageData)
+                          const Divider(
+                            height: 1.0,
+                          )
                         ],
-                      ),
-                    ),
-                    const Divider(
-                      height: 1.0,
-                    )
-                  ],
-                );
+                      );
               } else {
-                return (index >= values.length) ?
-                Container(
-                  color: Colors.greenAccent,
-                  child: FlatButton(
-                    child: Text("Load More"),
-                    onPressed: () {},
-                  ),
-                )
-                    :
-                Column(
-                  children: <Widget>[
-                    ListTile(
-                      leading: Image.network('${app['icon']}'),
-                      title: Text('${app['appName']}'),
-                      subtitle: Row(
+                return (index >= values.length)
+                    ? Container(
+                        color: Colors.greenAccent,
+                        child: FlatButton(
+                          child: Text("Load More"),
+                          onPressed: () {},
+                        ),
+                      )
+                    : Column(
                         children: <Widget>[
-                          Container(
-                            width: 10,
-                            height: 5,
-                            margin: EdgeInsets.only(right: 10.0),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Color(0xffFF018786)
+                          ListTile(
+                            leading: Image.network('${app['icon']}'),
+                            title: Text('${app['appName']}'),
+                            subtitle: Row(
+                              children: <Widget>[
+                                Container(
+                                  width: 10,
+                                  height: 5,
+                                  margin: EdgeInsets.only(right: 10.0),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                                ),
+                                Text(usageData)
+                              ],
                             ),
                           ),
-                          Text(usageData)
+                          const Divider(
+                            height: 1.0,
+                          )
                         ],
-                      ),
-                    ),
-                    const Divider(
-                      height: 1.0,
-                    )
-                  ],
-                );
+                      );
               }
             }
           },
@@ -2091,9 +1959,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                   margin: EdgeInsets.only(left: 10.0),
                   child: Text(
                     avgTime,
-                    style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                 ),
                 // Container(
@@ -2104,7 +1970,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                 //         margin: EdgeInsets.only(right: 10.0),
                 //         child: Icon(
                 //           Icons.arrow_circle_down,
-                //           color: Colors.darkGrey,
+                //           color: Colors.grey.shade700,
                 //         ),
                 //       ),
                 //       Text(
@@ -2213,16 +2079,13 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
             Container(
               margin: EdgeInsets.only(left: 10.0, right: 10.0),
               width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                  border: Border.all(
-                      width: 0.2, color: Colors.grey)),
+              decoration: BoxDecoration(border: Border.all(width: 0.2, color: Colors.grey)),
             ),
             GestureDetector(
               child: Container(
                   margin: EdgeInsets.all(10.0),
                   child: Row(
-                    mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         'Total Waktu Layar',
@@ -2245,8 +2108,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
           ],
         ),
       );
-    }
-    else {
+    } else {
       return Container(
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
@@ -2276,9 +2138,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                   margin: EdgeInsets.only(left: 10.0),
                   child: Text(
                     '$avgTimeDaily',
-                    style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -2291,9 +2151,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
             Container(
               margin: EdgeInsets.only(left: 10.0, right: 10.0),
               width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                  border: Border.all(
-                      width: 0.2, color: Colors.grey)),
+              decoration: BoxDecoration(border: Border.all(width: 0.2, color: Colors.grey)),
             ),
             // GestureDetector(
             //   child: Container(
@@ -2308,7 +2166,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
             //           ),
             //           Icon(
             //             Icons.keyboard_arrow_right,
-            //             color: Colors.darkGrey,
+            //             color: Colors.grey.shade700,
             //           )
             //         ],
             //       )),
@@ -2334,12 +2192,10 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
   Widget onMostWeekDataTemp() {
     return FutureBuilder<List<AppUsageInfo>>(
       future: getUsageStats(),
-      builder: (BuildContext context,
-          AsyncSnapshot<List<AppUsageInfo>> data) {
+      builder: (BuildContext context, AsyncSnapshot<List<AppUsageInfo>> data) {
         if (data.data == null) {
           return const Center(child: CircularProgressIndicator());
-        }
-        else {
+        } else {
           _infos = data.data!;
           if (items.length >= (present + perPage)) {
             return createListView(context, items);
@@ -2356,8 +2212,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
             } else {
               limit = items.length + perPage;
             }
-            for (int i = items.length; i <
-                limit; i++) {
+            for (int i = items.length; i < limit; i++) {
               items.add(_infos[i]);
             }
             return createListView(context, items);
@@ -2411,17 +2266,16 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
       },
     );
   }
+
   Widget onMostWeekData() {
     return FutureBuilder<List<dynamic>>(
       future: getDataUsageStatistik(),
-      builder: (BuildContext context,
-          AsyncSnapshot<List<dynamic>> data) {
+      builder: (BuildContext context, AsyncSnapshot<List<dynamic>> data) {
         if (data.data == null) {
           return const Center(child: CircularProgressIndicator());
-        }
-        else {
+        } else {
           _infos = data.data!;
-          if(_infos.length == 0) {
+          if (_infos.length == 0) {
             return Center(
               child: Text(
                 'Tidak ada data.',
@@ -2431,8 +2285,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
           } else {
             if (itemsTmp.length >= (present + perPage)) {
               return createListViewTemp(context, itemsTmp);
-            }
-            else {
+            } else {
               // int tmp = _infos.length - (present + perPage);
               int tmp = _infos.length - itemsTmp.length;
               int limit = 0;
@@ -2445,8 +2298,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               } else {
                 limit = itemsTmp.length + perPage;
               }
-              for (int i = itemsTmp.length; i <
-                  limit; i++) {
+              for (int i = itemsTmp.length; i < limit; i++) {
                 itemsTmp.add(_infos[i]);
               }
               return createListViewTemp(context, itemsTmp);
@@ -2460,12 +2312,10 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
   Widget onMostDayTemp() {
     return FutureBuilder<List<AppUsageInfo>>(
       future: getUsageStatsDailyTemp(),
-      builder: (BuildContext context,
-          AsyncSnapshot<List<AppUsageInfo>> data) {
+      builder: (BuildContext context, AsyncSnapshot<List<AppUsageInfo>> data) {
         if (data.data == null) {
           return const Center(child: CircularProgressIndicator());
-        }
-        else {
+        } else {
           _infosDays = data.data!;
           if (itemsDays.length >= (present + perPage)) {
             return createListView(context, itemsDays);
@@ -2481,8 +2331,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
             } else {
               limit = itemsDays.length + perPage;
             }
-            for (int i = itemsDays.length; i <
-                limit; i++) {
+            for (int i = itemsDays.length; i < limit; i++) {
               itemsDays.add(_infosDays[i]);
             }
             return createListView(context, itemsDays);
@@ -2491,17 +2340,16 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
       },
     );
   }
+
   Widget onMostDay() {
     return FutureBuilder<List<dynamic>>(
       future: getUsageStatsDaily(),
-      builder: (BuildContext context,
-          AsyncSnapshot<List<dynamic>> data) {
+      builder: (BuildContext context, AsyncSnapshot<List<dynamic>> data) {
         if (data.data == null) {
           return const Center(child: CircularProgressIndicator());
-        }
-        else {
+        } else {
           _ListDays = data.data!;
-          if(_ListDays.length == 0) {
+          if (_ListDays.length == 0) {
             return Center(
               child: Text(
                 'Tidak ada data.',
@@ -2523,8 +2371,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               } else {
                 limit = _ItemsDays.length + perPage;
               }
-              for (int i = _ItemsDays.length; i <
-                  limit; i++) {
+              for (int i = _ItemsDays.length; i < limit; i++) {
                 _ItemsDays.add(_ListDays[i]);
               }
               return createListViewTemp(context, _ItemsDays);

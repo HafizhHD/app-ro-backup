@@ -33,13 +33,10 @@ class HomeParent extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'ruang keluarga',
-      theme: ThemeData(
-        primarySwatch: Colors.whiteLight
-      ),
+      theme: ThemeData(primaryColor: Colors.white70),
       home: HomeParentPage(title: 'ruang keluarga'),
     );
   }
-
 }
 
 class HomeParentPage extends StatefulWidget {
@@ -111,13 +108,13 @@ class _HomeParentPageState extends State<HomeParentPage> {
     var outputFormat = DateFormat('yyyy-MM-dd');
     var outputDate = outputFormat.format(DateTime.now());
     Response response = await MediaRepository().fetchAppUsageFilter(prefs.getString("rkChildEmail").toString(), outputDate);
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       print('isi response filter app usage : ${response.body}');
       var json = jsonDecode(response.body);
       if (json['resultCode'] == "OK") {
         var jsonDataResult = json['appUsages'] as List;
         await prefs.setString("childAppUsage", jsonEncode(jsonDataResult));
-        if(jsonDataResult.length == 0) {
+        if (jsonDataResult.length == 0) {
           await prefs.setInt("dataMinggu${prefs.getString("rkChildEmail")}", 0);
         } else {
           var data = jsonDataResult[1]['appUsages'] as List;
@@ -138,11 +135,8 @@ class _HomeParentPageState extends State<HomeParentPage> {
 
   void getListApps() async {
     try {
-      List<Application> appData = await DeviceApps.getInstalledApplications(
-          includeAppIcons: true,
-          includeSystemApps: true,
-          onlyAppsWithLaunchIntent: true
-      );
+      List<Application> appData =
+          await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: true, onlyAppsWithLaunchIntent: true);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       itemsApp = appData;
       prefs.setString("appsLists", json.encode(itemsApp));
@@ -160,13 +154,8 @@ class _HomeParentPageState extends State<HomeParentPage> {
     await _firebaseMessaging.getToken().then((fcmToken) {
       token = fcmToken!;
     });
-    Response response = await MediaRepository().loginParent(
-        prefs.getString(rkEmailUser)!,
-        prefs.getString(accessGToken)!,
-        token,
-        '1.0'
-    );
-    if(response.statusCode == 200) {
+    Response response = await MediaRepository().loginParent(prefs.getString(rkEmailUser)!, prefs.getString(accessGToken)!, token, '1.0');
+    if (response.statusCode == 200) {
       print("user exist ${response.body}");
       var json = jsonDecode(response.body);
       if (json['resultCode'] == "OK") {
@@ -174,13 +163,13 @@ class _HomeParentPageState extends State<HomeParentPage> {
         var tokenApps = jsonDataResult['token'];
         await prefs.setString(rkTokenApps, tokenApps);
         var jsonUser = jsonDataResult['user'];
-        if(jsonUser != null) {
+        if (jsonUser != null) {
           List<dynamic> childsData = jsonUser['childs'];
           await prefs.setString(rkUserType, jsonUser['userType']);
           await prefs.setString("rkChildName", childsData[0]['name']);
           await prefs.setString("rkChildEmail", childsData[0]['email']);
           // Iterable l = json.decode(jsonUser['childs']) as List;
-          List<Child> data = List<Child>.from(jsonUser['childs'].map((model)=> Child.fromJson(model)));
+          List<Child> data = List<Child>.from(jsonUser['childs'].map((model) => Child.fromJson(model)));
           return data;
         } else {
           return [];
@@ -197,10 +186,8 @@ class _HomeParentPageState extends State<HomeParentPage> {
 
   void onMessageListen() {
     FirebaseMessaging.instance.getInitialMessage().then((value) => {
-      if(value != null) {
-        print('remote message ${value.data}')
-      }
-    });
+          if (value != null) {print('remote message ${value.data}')}
+        });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification? notification = message.notification;
@@ -227,15 +214,11 @@ class _HomeParentPageState extends State<HomeParentPage> {
             notification.title,
             notification.body,
             NotificationDetails(
-              android: AndroidNotificationDetails(
-                channel.id,
-                channel.name,
-                channel.description,
-                // TODO add a proper drawable resource to android, for now using
-                //      one that already exists in example app.
-                icon: 'launch_background',
-                styleInformation: BigTextStyleInformation(notification.body.toString())
-              ),
+              android: AndroidNotificationDetails(channel.id, channel.name, channel.description,
+                  // TODO add a proper drawable resource to android, for now using
+                  //      one that already exists in example app.
+                  icon: 'launch_background',
+                  styleInformation: BigTextStyleInformation(notification.body.toString())),
             ));
       }
     });
@@ -250,7 +233,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
     prefs = await SharedPreferences.getInstance();
     userName = prefs.getString(rkUserName)!;
     emailUser = prefs.getString(rkEmailUser)!;
-    if(prefs.getString("rkChildName") != null) {
+    if (prefs.getString("rkChildName") != null) {
       childName = prefs.getString("rkChildName")!;
     } else {
       List<User> data = json.decode(prefs.getString(rkChilds)!);
@@ -295,13 +278,13 @@ class _HomeParentPageState extends State<HomeParentPage> {
   void onLoadAppIcon() async {
     prefs = await SharedPreferences.getInstance();
     Response response = await MediaRepository().fetchAppIconList();
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       print('response load icon ${response.body}');
       var json = jsonDecode(response.body);
-      if(json['resultCode'] == 'OK') {
+      if (json['resultCode'] == 'OK') {
         var appIcons = json['appIcons'];
         await prefs.setString('rkBaseUrlAppIcon', json['baseUrl']);
-        if(appIcons != null) {
+        if (appIcons != null) {
           // List<AppIconList> data = List<AppIconList>.from(
           //     appIcons.map((model) => AppIconList.fromJson(model)));
           // String datx = jsonEncode(appIcons);
@@ -329,393 +312,387 @@ class _HomeParentPageState extends State<HomeParentPage> {
     // log('response data : $apiResponse');
     FlutterStatusbarcolor.setStatusBarColor(Color(0xff05745F));
     return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  "ruang",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey, fontSize: 18),
-                ),
-                Text(
-                  " keluarga",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xffFF018786), fontSize: 18),
-                )
-              ],
-            ),
-          ],
-        ),
-        backgroundColor: Colors.whiteLight,
-        iconTheme: IconThemeData(color: Colors.darkGrey),
-        actions: <Widget>[
-          IconButton(onPressed: () {}, icon: Icon(
-            Icons.notifications,
-            color: Colors.darkGrey,
-          ),),
-          IconButton(onPressed: () {}, icon: Icon(
-            Icons.mail_outline,
-            color: Colors.darkGrey,
-          ),),
-          IconButton(onPressed: () {}, icon: Icon(
-            Icons.help,
-            color: Colors.darkGrey,
-          ),)
-        ],
-      ),
-      drawer: Drawer(
-        child: ListView(
-// Important: Remove any padding from the ListView.
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xff3BDFD2),
-                    Color(0xff05745F),
-                  ],
-                )
+        appBar: AppBar(
+          title: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "ruang",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey, fontSize: 18),
+                  ),
+                  Text(
+                    " keluarga",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xffFF018786), fontSize: 18),
+                  )
+                ],
               ),
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 20.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 10.0),
-                      child: Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Text(
-                          '$userName',
-                          style: TextStyle(color: Colors.white, fontSize: 18),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      child: Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Text(
-                          '$emailUser',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              )
+            ],
+          ),
+          backgroundColor: Colors.white70,
+          iconTheme: IconThemeData(color: Colors.grey.shade700),
+          actions: <Widget>[
+            IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.notifications,
+                color: Colors.grey.shade700,
+              ),
             ),
-            ListTile(
-              title: Text('Home'), leading: Icon(Icons.home_filled,color: Colors.black),
-              onTap: () {
-              // Update the state of the app
-              // ...
-              // Then close the drawer
-                Navigator.pop(context);
-              },
+            IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.mail_outline,
+                color: Colors.grey.shade700,
+              ),
             ),
-            ListTile(
-              title: Text('Profil'), leading: Icon(Icons.person,color: Colors.black),
-              onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('Statistik Penggunaan'), leading: Icon(Icons.supervised_user_circle,color: Colors.black),
-              onTap: () {
-                // Then close the drawer
-                Navigator.pop(context);
-                // Update the state of the app
-              },
-            ),
-            ListTile(
-              title: Text('Addon'), leading: Icon(Icons.supervised_user_circle,color: Colors.black),
-              onTap: () {
-                // Then close the drawer
-                Navigator.pop(context);
-                // Update the state of the app
-              },
-            ),
-            ListTile(
-              title: Text('Child'), leading: Icon(Icons.supervised_user_circle,color: Colors.black),
-              onTap: () {
-                // Then close the drawer
-                Navigator.pop(context);
-                // Update the state of the app
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
-                    InviteMoreChildPage(title: 'ruang keluarga')));
-              },
-            ),
-            ListTile(
-              title: Text('FAQ'), leading: Icon(Icons.help,color: Colors.black),
-              onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('Kebijakan Privasi'), leading: Icon(Icons.privacy_tip,color: Colors.black),
-              onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('Tentang'), leading: Icon(Icons.info,color: Colors.black),
-              onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('Keluar'), leading: Icon(Icons.exit_to_app_outlined,color: Colors.black),
-              onTap: () => showDialog<String>(
-                context: context,
-                builder: (BuildContext context) => AlertDialog(
-                    title: const Text('Konfirmasi'),
-                    content: const Text('Apakah anda yakin ingin keluar aplikasi ?'),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () => Navigator.pop(context, 'Cancel'),
-                        child: const Text('Cancel', style: TextStyle(color: Color(0xff05745F))),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.pop(context, 'OK'),
-                        child: const Text('OK', style: TextStyle(color: Color(0xff05745F))),
-                      ),
-                    ],
-                )
-              )
+            IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.help,
+                color: Colors.grey.shade700,
+              ),
             )
           ],
         ),
-      ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                Container(
-                  height: 170.0,
-                  margin: const EdgeInsets.all(10.0), //Same as `blurRadius` i guess
+        drawer: Drawer(
+          child: ListView(
+// Important: Remove any padding from the ListView.
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              DrawerHeader(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.0),
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey,
-                        blurRadius: 3.0,
-                      ),
+                      gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xff3BDFD2),
+                      Color(0xff05745F),
                     ],
-                  ),
-                  child: ListView.builder(
-                    padding: EdgeInsets.all(5.0),
-                    shrinkWrap: false,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 2,
-                    itemBuilder: (BuildContext context, int index) => Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: GestureDetector(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Container(
-                              width: MediaQuery.of(context).size.width * 0.85,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  color: Color(0xffFF018786)
-                              ),
-                                // child: Center(child: Text('Dummy Card Text', style: TextStyle(color: Colors.black)))
-                              child: Image.asset(
-                                'assets/images/ic_digital_parenting_one.png'
-                              ),
+                  )),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 20.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 10.0),
+                          child: Align(
+                            alignment: Alignment.bottomLeft,
+                            child: Text(
+                              '$userName',
+                              style: TextStyle(color: Colors.white, fontSize: 18),
                             ),
-                          ],
+                          ),
                         ),
-                        onTap: () => {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
-                              DetailContentRKPage(title: 'Detil Konten')))
-                        },
+                        Container(
+                          child: Align(
+                            alignment: Alignment.bottomLeft,
+                            child: Text(
+                              '$emailUser',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  )),
+              ListTile(
+                title: Text('Home'),
+                leading: Icon(Icons.home_filled, color: Colors.black),
+                onTap: () {
+                  // Update the state of the app
+                  // ...
+                  // Then close the drawer
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Text('Profil'),
+                leading: Icon(Icons.person, color: Colors.black),
+                onTap: () {
+                  // Update the state of the app
+                  // ...
+                  // Then close the drawer
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Text('Statistik Penggunaan'),
+                leading: Icon(Icons.supervised_user_circle, color: Colors.black),
+                onTap: () {
+                  // Then close the drawer
+                  Navigator.pop(context);
+                  // Update the state of the app
+                },
+              ),
+              ListTile(
+                title: Text('Addon'),
+                leading: Icon(Icons.supervised_user_circle, color: Colors.black),
+                onTap: () {
+                  // Then close the drawer
+                  Navigator.pop(context);
+                  // Update the state of the app
+                },
+              ),
+              ListTile(
+                title: Text('Child'),
+                leading: Icon(Icons.supervised_user_circle, color: Colors.black),
+                onTap: () {
+                  // Then close the drawer
+                  Navigator.pop(context);
+                  // Update the state of the app
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => InviteMoreChildPage(title: 'ruang keluarga')));
+                },
+              ),
+              ListTile(
+                title: Text('FAQ'),
+                leading: Icon(Icons.help, color: Colors.black),
+                onTap: () {
+                  // Update the state of the app
+                  // ...
+                  // Then close the drawer
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Text('Kebijakan Privasi'),
+                leading: Icon(Icons.privacy_tip, color: Colors.black),
+                onTap: () {
+                  // Update the state of the app
+                  // ...
+                  // Then close the drawer
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Text('Tentang'),
+                leading: Icon(Icons.info, color: Colors.black),
+                onTap: () {
+                  // Update the state of the app
+                  // ...
+                  // Then close the drawer
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                  title: Text('Keluar'),
+                  leading: Icon(Icons.exit_to_app_outlined, color: Colors.black),
+                  onTap: () => showDialog<String>(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                            title: const Text('Konfirmasi'),
+                            content: const Text('Apakah anda yakin ingin keluar aplikasi ?'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, 'Cancel'),
+                                child: const Text('Cancel', style: TextStyle(color: Color(0xff05745F))),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, 'OK'),
+                                child: const Text('OK', style: TextStyle(color: Color(0xff05745F))),
+                              ),
+                            ],
+                          )))
+            ],
+          ),
+        ),
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+                child: Column(children: <Widget>[
+              Container(
+                height: 170.0,
+                margin: const EdgeInsets.all(10.0), //Same as `blurRadius` i guess
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey,
+                      blurRadius: 3.0,
+                    ),
+                  ],
+                ),
+                child: ListView.builder(
+                  padding: EdgeInsets.all(5.0),
+                  shrinkWrap: false,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 2,
+                  itemBuilder: (BuildContext context, int index) => Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: GestureDetector(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.85,
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                            // child: Center(child: Text('Dummy Card Text', style: TextStyle(color: Colors.black)))
+                            child: Image.asset('assets/images/ic_digital_parenting_one.png'),
+                          ),
+                        ],
                       ),
+                      onTap: () => {Navigator.of(context).push(MaterialPageRoute(builder: (context) => DetailContentRKPage(title: 'Detil Konten')))},
                     ),
                   ),
                 ),
-                Container(
-                  height: 250.0,
-                  margin: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0), //Same as `blurRadius` i guess
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.0),
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey,
-                        blurRadius: 3.0,
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.all(10.0),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.0),
-                            color: Colors.white
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
+              ),
+              Container(
+                height: 250.0,
+                margin: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0), //Same as `blurRadius` i guess
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey,
+                      blurRadius: 3.0,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.all(10.0),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.white),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                              child: Row(
+                            children: [
+                              Container(
+                                child: Icon(
+                                  Icons.supervised_user_circle,
+                                  size: 24.0,
+                                  semanticLabel: 'Text to announce in accessibility modes',
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(left: 10.0),
                                 child: Row(
                                   children: [
-                                    Container(
-                                      child: Icon(
-                                        Icons.supervised_user_circle,
-                                        size: 24.0,
-                                        semanticLabel: 'Text to announce in accessibility modes',
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        'Aktifitas',
+                                        style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
                                       ),
                                     ),
-                                    Container(
-                                      margin: const EdgeInsets.only(left: 10.0),
-                                      child: Row(
-                                        children: [
-                                          Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(
-                                              'Aktifitas',
-                                              style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(
-                                              ' Anak',
-                                              style: TextStyle(color: Color(0xffFF018786), fontWeight: FontWeight.bold),
-                                            ),
-                                          )
-                                        ],
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        ' Anak',
+                                        style: TextStyle(color: Color(0xffFF018786), fontWeight: FontWeight.bold),
                                       ),
                                     )
                                   ],
-                                )
-                            ),
-                            GestureDetector(
-                              child: Container(
-                                  child: Container(
-                                    child: Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        'Tambah Anak',
-                                        style: TextStyle(color: Color(0xffFF018786), fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  )
-                              ),
-                              onTap: () {
-                                Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
-                                    InviteMoreChildPage(title: 'ruang keluarga')));
-                              },
-                            )
-                          ],
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
-                        height: 195,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.0),
-                            color: Colors.white
-                        ),
-                        child: _childDataLayout(),
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  height: 400,
-                  margin: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0), //Same as `blurRadius` i guess
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.0),
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey,
-                        blurRadius: 3.0,
-                      ),
-                    ],
-                  ),
-                  child: ListView.builder(
-                    itemBuilder: (BuildContext context, int position) {
-                      return Container(
-                        height: 200,
-                        margin: const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
-                        child: YoutubePlayerBuilder(
-                          player: YoutubePlayer(
-                            controller: setupYTPlayer(position),
-                            showVideoProgressIndicator: true,
-                            progressIndicatorColor: Colors.blueAccent,
-                            topActions: <Widget>[
-                              const SizedBox(width: 8.0),
-                              Expanded(
-                                child: Text(
-                                  _controller.metadata.title,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18.0,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
                                 ),
-                              ),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.settings,
-                                  color: Colors.white,
-                                  size: 25.0,
-                                ),
-                                onPressed: () {
-                                  log('Settings Tapped!');
-                                },
-                              ),
+                              )
                             ],
-                            onReady: () {
-                              _isPlayerReady = true;
+                          )),
+                          GestureDetector(
+                            child: Container(
+                                child: Container(
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  'Tambah Anak',
+                                  style: TextStyle(color: Color(0xffFF018786), fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            )),
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(builder: (context) => InviteMoreChildPage(title: 'ruang keluarga')));
                             },
-                            onEnded: (data) {
-                              _controller
-                                  .load(_ids[(_ids.indexOf(data.videoId) + 1) % _ids.length]);
-                              // _showSnackBar('Next Video Started!');
-                            },
-                          ),
-                          builder: (context, player) => Scaffold(
-                            body: ListView(
-                              children: [
-                                player,
-                              ],
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
+                      height: 195,
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.white),
+                      child: _childDataLayout(),
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                height: 400,
+                margin: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0), //Same as `blurRadius` i guess
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey,
+                      blurRadius: 3.0,
+                    ),
+                  ],
+                ),
+                child: ListView.builder(
+                  itemBuilder: (BuildContext context, int position) {
+                    return Container(
+                      height: 200,
+                      margin: const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+                      child: YoutubePlayerBuilder(
+                        player: YoutubePlayer(
+                          controller: setupYTPlayer(position),
+                          showVideoProgressIndicator: true,
+                          progressIndicatorColor: Colors.blueAccent,
+                          topActions: <Widget>[
+                            const SizedBox(width: 8.0),
+                            Expanded(
+                              child: Text(
+                                _controller.metadata.title,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18.0,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
                             ),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.settings,
+                                color: Colors.white,
+                                size: 25.0,
+                              ),
+                              onPressed: () {
+                                log('Settings Tapped!');
+                              },
+                            ),
+                          ],
+                          onReady: () {
+                            _isPlayerReady = true;
+                          },
+                          onEnded: (data) {
+                            _controller.load(_ids[(_ids.indexOf(data.videoId) + 1) % _ids.length]);
+                            // _showSnackBar('Next Video Started!');
+                          },
+                        ),
+                        builder: (context, player) => Scaffold(
+                          body: ListView(
+                            children: [
+                              player,
+                            ],
                           ),
                         ),
-                      );
-                    },
-                    itemCount: _ids.length,
-                  ),
+                      ),
+                    );
+                  },
+                  itemCount: _ids.length,
                 ),
-                /*Container(
+              ),
+              /*Container(
                   margin: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0), //Same as `blurRadius` i guess
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10.0),
@@ -782,27 +759,24 @@ class _HomeParentPageState extends State<HomeParentPage> {
                     ],
                   ),
                 ),*/
-              ]
-            )
-          ),
-          // SlidingUpPanel(
-          //   renderPanelSheet: false,
-          //   backdropEnabled: true,
-          //   minHeight: 130,
-          //   parallaxEnabled: true,
-          //   parallaxOffset: .5,
-          //   maxHeight: MediaQuery.of(context).size.height,
-          //   borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
-          //   // panel: _floatingPanel(),
-          //   panelBuilder: (ScrollController sc) => _scrollingList(sc),
-          //   collapsed: _floatingCollapsed(),
-          //   onPanelSlide: (position) => {
-          //     _changed(position)
-          //   },
-          // ),
-        ],
-      )
-    );
+            ])),
+            // SlidingUpPanel(
+            //   renderPanelSheet: false,
+            //   backdropEnabled: true,
+            //   minHeight: 130,
+            //   parallaxEnabled: true,
+            //   parallaxOffset: .5,
+            //   maxHeight: MediaQuery.of(context).size.height,
+            //   borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
+            //   // panel: _floatingPanel(),
+            //   panelBuilder: (ScrollController sc) => _scrollingList(sc),
+            //   collapsed: _floatingCollapsed(),
+            //   onPanelSlide: (position) => {
+            //     _changed(position)
+            //   },
+            // ),
+          ],
+        ));
   }
 
   Widget get _space => const SizedBox(height: 10);
@@ -851,52 +825,47 @@ class _HomeParentPageState extends State<HomeParentPage> {
 
   Widget _childDataLayout() {
     return FutureBuilder<List<Child>>(
-      future: onLogin(),
-      builder: (BuildContext context,
-        AsyncSnapshot<List<Child>> data) {
-        if (data.data == null) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        else {
-          childsList = data.data!;
-          if(childsList.length > 0) {
-            return ListView.builder(
-              shrinkWrap: false,
-              scrollDirection: Axis.horizontal,
-              itemCount: childsList.length,
-              itemBuilder: (BuildContext context, int index) => Card(
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.88,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                          color: Color(0xffFF018786)
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.all(10.0),
-                            child: Align(
-                              child: Text(
-                                '${childsList[index].name}',
-                                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+        future: onLogin(),
+        builder: (BuildContext context, AsyncSnapshot<List<Child>> data) {
+          if (data.data == null) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            childsList = data.data!;
+            if (childsList.length > 0) {
+              return ListView.builder(
+                shrinkWrap: false,
+                scrollDirection: Axis.horizontal,
+                itemCount: childsList.length,
+                itemBuilder: (BuildContext context, int index) => Card(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.88,
+                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.all(10.0),
+                              child: Align(
+                                child: Text(
+                                  '${childsList[index].name}',
+                                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                                ),
                               ),
                             ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.all(10.0),
-                            child: Align(
-                              child: Text(
-                                'Screen Time : ${prefs.getString("averageTime${childsList[index].email}") ?? '-'}',
-                                style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                            Container(
+                              margin: EdgeInsets.all(10.0),
+                              child: Align(
+                                child: Text(
+                                  'Screen Time : ${prefs.getString("averageTime${childsList[index].email}") ?? '-'}',
+                                  style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                                ),
                               ),
                             ),
-                          ),
-                          /*Container(
+                            /*Container(
                             margin: EdgeInsets.only(left: 20.0, right: 10.0),
                             child: Text(
                               'Skor Sekarang',
@@ -937,127 +906,113 @@ class _HomeParentPageState extends State<HomeParentPage> {
                               ],
                             ),
                           ),*/
-                          GestureDetector(
-                            child: Container(
-                              margin: EdgeInsets.only(left: 20.0, right: 10.0, top: 20.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Container(
-                                    child: Text(
-                                      'Lihat selengkapnya',
-                                      style: TextStyle(color: Colors.white),
+                            GestureDetector(
+                              child: Container(
+                                margin: EdgeInsets.only(left: 20.0, right: 10.0, top: 20.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Container(
+                                      child: Text(
+                                        'Lihat selengkapnya',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
                                     ),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(left: 20.0),
-                                    child: Icon(
-                                      Icons.keyboard_arrow_right_rounded,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            onTap: () => {
-                              Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
-                                  DetailChildPage(title: 'Kontrol dan Konfigurasi', name: '${childsList[index].name}',
-                                      email: '${childsList[index].email}')))
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-          else {
-            return Center(
-              child: Text('No data.'),
-            );
-          }
-        }
-      }
-    );
-  }
-
-  Widget _floatingCollapsed(){
-    return Container(
-      height: 80,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(50.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey,
-            blurRadius: 3.0,
-          ),
-        ],
-      ),
-      margin: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 30.0),
-      child: Container(
-        child: Stack(
-          children: <Widget>[
-            SizedBox(
-              height: 12.0,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 30,
-                  height: 5,
-                  margin: EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
-                      color: Colors.grey[500],
-                      borderRadius: BorderRadius.all(Radius.circular(12.0))),
-                ),
-              ],
-            ),
-            Container(
-              height: 70,
-              margin: EdgeInsets.only(top: 25.0, left: 25.0, right: 10.0, bottom: 10.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(12.0))),
-              child: ListView.builder(
-                shrinkWrap: false,
-                scrollDirection: Axis.horizontal,
-                itemCount: 1,
-                itemBuilder: (BuildContext context, int index) =>
-                    Container(
-                      margin: EdgeInsets.only(left: 5.0, right: 5.0),
-                      child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Container(
-                                width: 70,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50.0),
-                                    border: Border.all(
-                                        width: 0.2, color: Colors.grey),
-                                    color: Colors.white
+                                    Container(
+                                      margin: EdgeInsets.only(left: 20.0),
+                                      child: Icon(
+                                        Icons.keyboard_arrow_right_rounded,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  ],
                                 ),
-                                child: Center(child: Image.asset('assets/images/person.png', width: 40, height: 40))
+                              ),
+                              onTap: () => {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => DetailChildPage(
+                                        title: 'Kontrol dan Konfigurasi', name: '${childsList[index].name}', email: '${childsList[index].email}')))
+                              },
                             ),
                           ],
-                        )
-                    ),
-              ),
-            )
-          ],
-        ),
-      )
-    );
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            } else {
+              return Center(
+                child: Text('No data.'),
+              );
+            }
+          }
+        });
   }
 
-  Widget _floatingPanel(){
+  Widget _floatingCollapsed() {
+    return Container(
+        height: 80,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(50.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey,
+              blurRadius: 3.0,
+            ),
+          ],
+        ),
+        margin: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 30.0),
+        child: Container(
+          child: Stack(
+            children: <Widget>[
+              SizedBox(
+                height: 12.0,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 30,
+                    height: 5,
+                    margin: EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(color: Colors.grey[500], borderRadius: BorderRadius.all(Radius.circular(12.0))),
+                  ),
+                ],
+              ),
+              Container(
+                height: 70,
+                margin: EdgeInsets.only(top: 25.0, left: 25.0, right: 10.0, bottom: 10.0),
+                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(12.0))),
+                child: ListView.builder(
+                  shrinkWrap: false,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 1,
+                  itemBuilder: (BuildContext context, int index) => Container(
+                      margin: EdgeInsets.only(left: 5.0, right: 5.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Container(
+                              width: 70,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(50.0), border: Border.all(width: 0.2, color: Colors.grey), color: Colors.white),
+                              child: Center(child: Image.asset('assets/images/person.png', width: 40, height: 40))),
+                        ],
+                      )),
+                ),
+              )
+            ],
+          ),
+        ));
+  }
+
+  Widget _floatingPanel() {
     return AnimatedOpacity(
       opacity: _opacity,
-      onEnd: (){
-        if(_opacity > 0.02) {
+      onEnd: () {
+        if (_opacity > 0.02) {
           WidgetsBinding.instance!.addPostFrameCallback((_) => _isVisibleChange(true));
         } else {
           WidgetsBinding.instance!.addPostFrameCallback((_) => _isVisibleChange(false));
@@ -1067,10 +1022,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
       child: Visibility(
           visible: flag,
           child: Container(
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(20.0))
-            ),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(20.0))),
             child: Container(
               child: Stack(
                 children: <Widget>[
@@ -1084,9 +1036,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
                         width: 30,
                         height: 5,
                         margin: EdgeInsets.all(10.0),
-                        decoration: BoxDecoration(
-                            color: Colors.grey[500],
-                            borderRadius: BorderRadius.all(Radius.circular(12.0))),
+                        decoration: BoxDecoration(color: Colors.grey[500], borderRadius: BorderRadius.all(Radius.circular(12.0))),
                       ),
                     ],
                   ),
@@ -1095,9 +1045,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
                       Container(
                         height: 120,
                         margin: EdgeInsets.only(top: 30.0, left: 10.0, right: 10.0, bottom: 10.0),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(Radius.circular(12.0))),
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(12.0))),
                         child: Stack(
                           children: <Widget>[
                             Container(
@@ -1115,19 +1063,14 @@ class _HomeParentPageState extends State<HomeParentPage> {
                                 itemCount: 4,
                                 itemBuilder: (BuildContext context, int index) => Card(
                                     child: Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Container(
-                                            width: 80,
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10.0),
-                                                color: Colors.white
-                                            ),
-                                            child: Center(child: Image.asset('assets/images/person.png', width: 50, height: 50))
-                                        ),
-                                      ],
-                                    )
-                                ),
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Container(
+                                        width: 80,
+                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.white),
+                                        child: Center(child: Image.asset('assets/images/person.png', width: 50, height: 50))),
+                                  ],
+                                )),
                               ),
                             )
                           ],
@@ -1136,9 +1079,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
                       Container(
                         height: 120,
                         margin: EdgeInsets.only(top: 30.0, left: 10.0, right: 10.0, bottom: 10.0),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(Radius.circular(12.0))),
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(12.0))),
                         child: Stack(
                           children: <Widget>[
                             Container(
@@ -1156,19 +1097,14 @@ class _HomeParentPageState extends State<HomeParentPage> {
                                 itemCount: 4,
                                 itemBuilder: (BuildContext context, int index) => Card(
                                     child: Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Container(
-                                            width: 80,
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10.0),
-                                                color: Colors.white
-                                            ),
-                                            child: Center(child: Image.asset('assets/images/person.png', width: 50, height: 50))
-                                        ),
-                                      ],
-                                    )
-                                ),
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Container(
+                                        width: 80,
+                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.white),
+                                        child: Center(child: Image.asset('assets/images/person.png', width: 50, height: 50))),
+                                  ],
+                                )),
                               ),
                             )
                           ],
@@ -1177,9 +1113,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
                       Container(
                         height: 120,
                         margin: EdgeInsets.only(top: 30.0, left: 10.0, right: 10.0, bottom: 10.0),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(Radius.circular(12.0))),
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(12.0))),
                         child: Stack(
                           children: <Widget>[
                             Container(
@@ -1197,19 +1131,14 @@ class _HomeParentPageState extends State<HomeParentPage> {
                                 itemCount: 4,
                                 itemBuilder: (BuildContext context, int index) => Card(
                                     child: Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Container(
-                                            width: 80,
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10.0),
-                                                color: Colors.white
-                                            ),
-                                            child: Center(child: Image.asset('assets/images/person.png', width: 50, height: 50))
-                                        ),
-                                      ],
-                                    )
-                                ),
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Container(
+                                        width: 80,
+                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.white),
+                                        child: Center(child: Image.asset('assets/images/person.png', width: 50, height: 50))),
+                                  ],
+                                )),
                               ),
                             )
                           ],
@@ -1218,9 +1147,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
                       Container(
                         height: 120,
                         margin: EdgeInsets.only(top: 30.0, left: 10.0, right: 10.0, bottom: 10.0),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(Radius.circular(12.0))),
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(12.0))),
                         child: Stack(
                           children: <Widget>[
                             Container(
@@ -1238,19 +1165,14 @@ class _HomeParentPageState extends State<HomeParentPage> {
                                 itemCount: 4,
                                 itemBuilder: (BuildContext context, int index) => Card(
                                     child: Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Container(
-                                            width: 80,
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10.0),
-                                                color: Colors.white
-                                            ),
-                                            child: Center(child: Image.asset('assets/images/person.png', width: 50, height: 50))
-                                        ),
-                                      ],
-                                    )
-                                ),
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Container(
+                                        width: 80,
+                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.white),
+                                        child: Center(child: Image.asset('assets/images/person.png', width: 50, height: 50))),
+                                  ],
+                                )),
                               ),
                             )
                           ],
@@ -1259,9 +1181,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
                       Container(
                         height: 120,
                         margin: EdgeInsets.only(top: 30.0, left: 10.0, right: 10.0, bottom: 10.0),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(Radius.circular(12.0))),
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(12.0))),
                         child: Stack(
                           children: <Widget>[
                             Container(
@@ -1279,19 +1199,14 @@ class _HomeParentPageState extends State<HomeParentPage> {
                                 itemCount: 4,
                                 itemBuilder: (BuildContext context, int index) => Card(
                                     child: Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Container(
-                                            width: 80,
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10.0),
-                                                color: Colors.white
-                                            ),
-                                            child: Center(child: Image.asset('assets/images/person.png', width: 50, height: 50))
-                                        ),
-                                      ],
-                                    )
-                                ),
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Container(
+                                        width: 80,
+                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.white),
+                                        child: Center(child: Image.asset('assets/images/person.png', width: 50, height: 50))),
+                                  ],
+                                )),
                               ),
                             )
                           ],
@@ -1306,11 +1221,11 @@ class _HomeParentPageState extends State<HomeParentPage> {
     );
   }
 
-  Widget _scrollingList(ScrollController sc){
+  Widget _scrollingList(ScrollController sc) {
     return AnimatedOpacity(
       opacity: _opacity,
-      onEnd: (){
-        if(_opacity > 0.02) {
+      onEnd: () {
+        if (_opacity > 0.02) {
           WidgetsBinding.instance!.addPostFrameCallback((_) => _isVisibleChange(true));
         } else {
           WidgetsBinding.instance!.addPostFrameCallback((_) => _isVisibleChange(false));
@@ -1320,76 +1235,61 @@ class _HomeParentPageState extends State<HomeParentPage> {
       child: Visibility(
           visible: flag,
           child: Container(
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(20.0))
-            ),
-            child: Container(
-              margin: EdgeInsets.only(top: 10.0, bottom: 100.0),
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(20.0))
-              ),
-              child: ListView.builder(
-                controller: sc,
-                itemCount: 5,
-                itemBuilder: (BuildContext context, int i){
-                  return Container(
-                    child: Stack(
-                      children: <Widget>[
-                        Column(
-                          children: [
-                            Container(
-                              height: 125,
-                              margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0, bottom: 10.0),
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.all(Radius.circular(12.0))),
-                              child: Stack(
-                                children: <Widget>[
-                                  Container(
-                                    margin: EdgeInsets.only(top: 10.0, left: 15.0, right: 10.0, bottom: 10.0),
-                                    child: Text(
-                                      'My AddOn',
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                    ),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(top: 40.0, left: 10.0, right: 10.0, bottom: 5.0),
-                                    child: ListView.builder(
-                                      shrinkWrap: false,
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount: 1,
-                                      itemBuilder: (BuildContext context, int index) => Card(
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.max,
-                                            children: [
-                                              Container(
-                                                  width: 80,
-                                                  decoration: BoxDecoration(
-                                                      borderRadius: BorderRadius.circular(10.0),
-                                                      color: Colors.white
-                                                  ),
-                                                  child: Center(child: Image.asset('assets/images/person.png', width: 50, height: 50))
-                                              ),
-                                            ],
-                                          )
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(20.0))),
+              child: Container(
+                margin: EdgeInsets.only(top: 10.0, bottom: 100.0),
+                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(20.0))),
+                child: ListView.builder(
+                  controller: sc,
+                  itemCount: 5,
+                  itemBuilder: (BuildContext context, int i) {
+                    return Container(
+                      child: Stack(
+                        children: <Widget>[
+                          Column(
+                            children: [
+                              Container(
+                                height: 125,
+                                margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0, bottom: 10.0),
+                                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(12.0))),
+                                child: Stack(
+                                  children: <Widget>[
+                                    Container(
+                                      margin: EdgeInsets.only(top: 10.0, left: 15.0, right: 10.0, bottom: 10.0),
+                                      child: Text(
+                                        'My AddOn',
+                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                       ),
                                     ),
-                                  )
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            )
-          )
-      ),
+                                    Container(
+                                      margin: EdgeInsets.only(top: 40.0, left: 10.0, right: 10.0, bottom: 5.0),
+                                      child: ListView.builder(
+                                        shrinkWrap: false,
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: 1,
+                                        itemBuilder: (BuildContext context, int index) => Card(
+                                            child: Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          children: [
+                                            Container(
+                                                width: 80,
+                                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.white),
+                                                child: Center(child: Image.asset('assets/images/person.png', width: 50, height: 50))),
+                                          ],
+                                        )),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ))),
     );
   }
 

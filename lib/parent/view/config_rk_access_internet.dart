@@ -27,28 +27,25 @@ class _RKConfigAccessInternetPageState extends State<RKConfigAccessInternetPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title, style: TextStyle(color: Colors.darkGrey)),
-        backgroundColor: Colors.whiteLight,
-        iconTheme: IconThemeData(color: Colors.darkGrey),
-      ),
-      backgroundColor: Colors.grey[300],
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        color: Colors.grey[300],
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Flexible(
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+        appBar: AppBar(
+          title: Text(widget.title, style: TextStyle(color: Colors.grey.shade700)),
+          backgroundColor: Colors.white70,
+          iconTheme: IconThemeData(color: Colors.grey.shade700),
+        ),
+        backgroundColor: Colors.grey[300],
+        body: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          color: Colors.grey[300],
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Flexible(
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: SingleChildScrollView(
+                    child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Container(
                         width: MediaQuery.of(context).size.width,
                         margin: EdgeInsets.only(top: 10.0),
@@ -64,9 +61,7 @@ class _RKConfigAccessInternetPageState extends State<RKConfigAccessInternetPage>
                       ),
                       Container(
                         margin: EdgeInsets.all(20.0),
-                        child: Text('Kontrol Instant',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold)),
+                        child: Text('Kontrol Instant', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                       ),
                       Container(
                         height: 80,
@@ -84,8 +79,7 @@ class _RKConfigAccessInternetPageState extends State<RKConfigAccessInternetPage>
                           child: Container(
                             margin: EdgeInsets.all(10.0),
                             child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Container(
                                   child: Text(
@@ -121,45 +115,38 @@ class _RKConfigAccessInternetPageState extends State<RKConfigAccessInternetPage>
                             ),
                           ],
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              margin: EdgeInsets.all(10.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    child: Text(
-                                      'Safe Search',
-                                      style: TextStyle(fontSize: 16),
-                                    ),
+                        child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Container(
+                            margin: EdgeInsets.all(10.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  child: Text(
+                                    'Safe Search',
+                                    style: TextStyle(fontSize: 16),
                                   ),
-                                  Container(
-                                    child: CupertinoSwitch(
-                                      value: _switchValueSafeSearch,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _switchValueSafeSearch = value;
-                                        });
-                                      },
-                                    ),
-                                  )
-                                ],
-                              ),
+                                ),
+                                Container(
+                                  child: CupertinoSwitch(
+                                    value: _switchValueSafeSearch,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _switchValueSafeSearch = value;
+                                      });
+                                    },
+                                  ),
+                                )
+                              ],
                             ),
-                            Container(
-                              height: 50,
-                              margin: EdgeInsets.only(left: 10.0, right: 10.0),
-                              child: Text(
-                                'SafeSearch merupakan fitur untuk menyembunyikan hasil pencarian'
-                                'eksplit, ini berupaya untuk menyehatkan hasil pencarian pada internet.'
-                              ),
-                            )
-                          ]
-                        ),
+                          ),
+                          Container(
+                            height: 50,
+                            margin: EdgeInsets.only(left: 10.0, right: 10.0),
+                            child: Text('SafeSearch merupakan fitur untuk menyembunyikan hasil pencarian'
+                                'eksplit, ini berupaya untuk menyehatkan hasil pencarian pada internet.'),
+                          )
+                        ]),
                       ),
                       Container(
                         height: 150,
@@ -174,46 +161,39 @@ class _RKConfigAccessInternetPageState extends State<RKConfigAccessInternetPage>
                             ),
                           ],
                         ),
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                margin: EdgeInsets.all(10.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Container(
-                                      child: Text(
-                                        'Pornografi',
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                    ),
-                                    Container(
-                                      child: CupertinoSwitch(
-                                        value: _switchValuePorno,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _switchValuePorno = value;
-                                          });
-                                        },
-                                      ),
-                                    )
-                                  ],
+                        child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Container(
+                            margin: EdgeInsets.all(10.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  child: Text(
+                                    'Pornografi',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                height: 50,
-                                margin: EdgeInsets.only(left: 10.0, right: 10.0),
-                                child: Text(
-                                    'Pemblokiran akses internet untuk semua konten dewasa'
-                                    ' (17+ tahun atau lebih), yang mana menghadirkan atau '
-                                    'memperlihatkan konten sexual atau porno.'
-                                ),
-                              )
-                            ]
-                        ),
+                                Container(
+                                  child: CupertinoSwitch(
+                                    value: _switchValuePorno,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _switchValuePorno = value;
+                                      });
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height: 50,
+                            margin: EdgeInsets.only(left: 10.0, right: 10.0),
+                            child: Text('Pemblokiran akses internet untuk semua konten dewasa'
+                                ' (17+ tahun atau lebih), yang mana menghadirkan atau '
+                                'memperlihatkan konten sexual atau porno.'),
+                          )
+                        ]),
                       ),
                       Container(
                         height: 150,
@@ -228,46 +208,39 @@ class _RKConfigAccessInternetPageState extends State<RKConfigAccessInternetPage>
                             ),
                           ],
                         ),
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                margin: EdgeInsets.all(10.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Container(
-                                      child: Text(
-                                        'Obat-obatan/Aborsi',
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                    ),
-                                    Container(
-                                      child: CupertinoSwitch(
-                                        value: _switchValueAborsi,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _switchValueAborsi = value;
-                                          });
-                                        },
-                                      ),
-                                    )
-                                  ],
+                        child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Container(
+                            margin: EdgeInsets.all(10.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  child: Text(
+                                    'Obat-obatan/Aborsi',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                height: 50,
-                                margin: EdgeInsets.only(left: 10.0, right: 10.0),
-                                child: Text(
-                                    'Pemblokiran akses internet ke situs yang mana secara legal'
-                                    ' mempromosikan obat-obatan, rokok, senjata, produk alkohol dan asesorisnya.'
-                                    ' Termasuk informasi tentang aborsi.'
-                                ),
-                              )
-                            ]
-                        ),
+                                Container(
+                                  child: CupertinoSwitch(
+                                    value: _switchValueAborsi,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _switchValueAborsi = value;
+                                      });
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height: 50,
+                            margin: EdgeInsets.only(left: 10.0, right: 10.0),
+                            child: Text('Pemblokiran akses internet ke situs yang mana secara legal'
+                                ' mempromosikan obat-obatan, rokok, senjata, produk alkohol dan asesorisnya.'
+                                ' Termasuk informasi tentang aborsi.'),
+                          )
+                        ]),
                       ),
                       Container(
                         height: 150,
@@ -282,47 +255,40 @@ class _RKConfigAccessInternetPageState extends State<RKConfigAccessInternetPage>
                             ),
                           ],
                         ),
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                margin: EdgeInsets.all(10.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Container(
-                                      child: Text(
-                                        'Kencan/Perjudian',
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                    ),
-                                    Container(
-                                      child: CupertinoSwitch(
-                                        value: _switchValueKencan,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _switchValueKencan = value;
-                                          });
-                                        },
-                                      ),
-                                    )
-                                  ],
+                        child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Container(
+                            margin: EdgeInsets.all(10.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  child: Text(
+                                    'Kencan/Perjudian',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                height: 50,
-                                margin: EdgeInsets.only(left: 10.0, right: 10.0),
-                                child: Text(
-                                    'Pemblokiran akses internet ke situs yang memfasilitasi untuk '
-                                    'melakukan kontak dengan orang lain dengan tujuan membangun '
-                                    'hubungan personal, romantik atau hubungan sexual. Termasuk '
-                                    'memblokir akses ke situs perjudian seperti perjudian, lotere, kasino.'
-                                ),
-                              )
-                            ]
-                        ),
+                                Container(
+                                  child: CupertinoSwitch(
+                                    value: _switchValueKencan,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _switchValueKencan = value;
+                                      });
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height: 50,
+                            margin: EdgeInsets.only(left: 10.0, right: 10.0),
+                            child: Text('Pemblokiran akses internet ke situs yang memfasilitasi untuk '
+                                'melakukan kontak dengan orang lain dengan tujuan membangun '
+                                'hubungan personal, romantik atau hubungan sexual. Termasuk '
+                                'memblokir akses ke situs perjudian seperti perjudian, lotere, kasino.'),
+                          )
+                        ]),
                       ),
                       Container(
                         height: 150,
@@ -337,57 +303,47 @@ class _RKConfigAccessInternetPageState extends State<RKConfigAccessInternetPage>
                             ),
                           ],
                         ),
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                margin: EdgeInsets.all(10.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Container(
-                                      child: Text(
-                                        'Radikalisme',
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                    ),
-                                    Container(
-                                      child: CupertinoSwitch(
-                                        value: _switchValueKencan,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _switchValueKencan = value;
-                                          });
-                                        },
-                                      ),
-                                    )
-                                  ],
+                        child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Container(
+                            margin: EdgeInsets.all(10.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  child: Text(
+                                    'Radikalisme',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                height: 50,
-                                margin: EdgeInsets.only(left: 10.0, right: 10.0),
-                                child: Text(
-                                    'Pemblokiran akses internet ke situs yang memfasilitasi untuk '
-                                        'melakukan kontak dengan orang lain dengan tujuan membangun '
-                                        'hubungan personal, romantik atau hubungan sexual. Termasuk '
-                                        'memblokir akses ke situs perjudian seperti perjudian, lotere, kasino.'
-                                ),
-                              )
-                            ]
-                        ),
+                                Container(
+                                  child: CupertinoSwitch(
+                                    value: _switchValueKencan,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _switchValueKencan = value;
+                                      });
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height: 50,
+                            margin: EdgeInsets.only(left: 10.0, right: 10.0),
+                            child: Text('Pemblokiran akses internet ke situs yang memfasilitasi untuk '
+                                'melakukan kontak dengan orang lain dengan tujuan membangun '
+                                'hubungan personal, romantik atau hubungan sexual. Termasuk '
+                                'memblokir akses ke situs perjudian seperti perjudian, lotere, kasino.'),
+                          )
+                        ]),
                       ),
-                    ]
+                    ]),
                   ),
                 ),
-              ),
-            )
-          ],
-        ),
-      )
-    );
+              )
+            ],
+          ),
+        ));
   }
-
 }

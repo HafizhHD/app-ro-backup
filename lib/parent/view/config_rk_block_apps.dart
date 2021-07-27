@@ -32,41 +32,39 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
   Future<List<AppListWithIcons>> fetchAppList() async {
     prefs = await SharedPreferences.getInstance();
     Response response = await MediaRepository().fetchAppList(widget.email);
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       print('isi response fetch appList : ${response.body}');
       var json = jsonDecode(response.body);
-      if(json['resultCode'] == 'OK') {
-        if(json['appdevices'].length > 0) {
+      if (json['resultCode'] == 'OK') {
+        if (json['appdevices'].length > 0) {
           var appDevices = json['appdevices'][0];
           List<dynamic> tmpData = appDevices['appName'];
           List<dynamic> dataList = [];
           bool flag = false;
-          List<ApplicationInstalled> dataIconApps = List<ApplicationInstalled>.from(
-              tmpData.map((model) => ApplicationInstalled.fromJson(model)));
-          for(int i = 0; i < dataIconApps.length; i++) {
-            if(prefs.getString('rkListAppIcons') != null) {
+          List<ApplicationInstalled> dataIconApps = List<ApplicationInstalled>.from(tmpData.map((model) => ApplicationInstalled.fromJson(model)));
+          for (int i = 0; i < dataIconApps.length; i++) {
+            if (prefs.getString('rkListAppIcons') != null) {
               flag = true;
               var respList = jsonDecode(prefs.getString('rkListAppIcons')!);
               var listIcons = respList['appIcons'];
-              List<AppIconList> dataListIconApps = List<AppIconList>.from(
-                  listIcons.map((model) => AppIconList.fromJson(model)));
+              List<AppIconList> dataListIconApps = List<AppIconList>.from(listIcons.map((model) => AppIconList.fromJson(model)));
               var imageUrl = "${prefs.getString('rkBaseUrlAppIcon')}";
               bool flagX = false;
               int indeksX = 0;
-              if(dataListIconApps.length > 0) {
-                for(int x = 0; x < dataListIconApps.length; x++) {
-                  if(dataIconApps[i].packageId == dataListIconApps[x].appId) {
+              if (dataListIconApps.length > 0) {
+                for (int x = 0; x < dataListIconApps.length; x++) {
+                  if (dataIconApps[i].packageId == dataListIconApps[x].appId) {
                     indeksX = x;
                     flagX = true;
                     break;
                   }
                 }
-                if(flagX) {
+                if (flagX) {
                   dataList.add({
                     "appName": "${dataIconApps[i].appName}",
                     "packageId": "${dataIconApps[i].packageId}",
                     "blacklist": dataIconApps[i].blacklist,
-                    "appIcons": "${imageUrl+dataListIconApps[indeksX].appIcon.toString()}"
+                    "appIcons": "${imageUrl + dataListIconApps[indeksX].appIcon.toString()}"
                   });
                 } else {
                   dataList.add({
@@ -76,24 +74,19 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
                     "appIcons": ""
                   });
                 }
-              }
-              else {
+              } else {
                 flag = false;
                 break;
               }
-            }
-            else {
+            } else {
               break;
             }
           }
-          if(flag) {
-            List<AppListWithIcons> data = List<AppListWithIcons>.from(
-                dataList.map((model) =>
-                    AppListWithIcons.fromJson(model)));
+          if (flag) {
+            List<AppListWithIcons> data = List<AppListWithIcons>.from(dataList.map((model) => AppListWithIcons.fromJson(model)));
             return data;
-          }
-          else {
-            for(int i = 0; i < dataIconApps.length; i++) {
+          } else {
+            for (int i = 0; i < dataIconApps.length; i++) {
               dataList.add({
                 "appName": "${dataIconApps[i].appName}",
                 "packageId": "${dataIconApps[i].packageId}",
@@ -101,9 +94,7 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
                 "appIcons": ""
               });
             }
-            List<AppListWithIcons> data = List<AppListWithIcons>.from(
-                dataList.map((model) =>
-                    AppListWithIcons.fromJson(model)));
+            List<AppListWithIcons> data = List<AppListWithIcons>.from(dataList.map((model) => AppListWithIcons.fromJson(model)));
             return data;
           }
         } else {
@@ -133,9 +124,9 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Blok Aplikasi/Games', style: TextStyle(color: Colors.darkGrey)),
-        backgroundColor: Colors.whiteLight,
-        iconTheme: IconThemeData(color: Colors.darkGrey),
+        title: Text('Blok Aplikasi/Games', style: TextStyle(color: Colors.grey.shade700)),
+        backgroundColor: Colors.white70,
+        iconTheme: IconThemeData(color: Colors.grey.shade700),
       ),
       backgroundColor: Colors.white,
       body: Container(
@@ -180,7 +171,7 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
                     return const Center(child: CircularProgressIndicator());
                   } else {
                     List<AppListWithIcons> apps = data.data!;
-                    apps.sort((a,b) {
+                    apps.sort((a, b) {
                       var aName = a.appName;
                       var bName = b.appName;
                       return aName!.compareTo(bName!);
@@ -190,20 +181,19 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
                       listSwitchValue.add(dt.blacklist!);
                     }
 
-                    if(apps.length == 0) {
+                    if (apps.length == 0) {
                       return Align(
                         child: Text(
                           'Tidak ada data.',
                           style: TextStyle(color: Colors.black, fontSize: 18),
                         ),
                       );
-                    }
-                    else {
+                    } else {
                       return Scrollbar(
                         child: ListView.builder(
                             itemBuilder: (BuildContext context, int position) {
                               AppListWithIcons app = apps[position];
-                              if(app.appIcons == '') {
+                              if (app.appIcons == '') {
                                 return Column(
                                   children: <Widget>[
                                     ListTile(
