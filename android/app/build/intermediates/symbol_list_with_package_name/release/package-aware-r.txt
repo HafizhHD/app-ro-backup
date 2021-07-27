@@ -977,7 +977,6 @@ layout support_simple_spinner_dropdown_item
 layout toast_custom
 menu menu_main
 mipmap ic_launcher
-raw history
 string abc_action_bar_home_description
 string abc_action_bar_up_description
 string abc_action_menu_overflow_description
@@ -1207,7 +1206,6 @@ style Base_Widget_AppCompat_Toolbar
 style Base_Widget_AppCompat_Toolbar_Button_Navigation
 style InAppWebViewTheme
 style LaunchTheme
-style NoActionBarTheme
 style NormalTheme
 style Platform_AppCompat
 style Platform_AppCompat_Light

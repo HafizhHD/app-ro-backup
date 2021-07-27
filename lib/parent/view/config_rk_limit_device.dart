@@ -13,7 +13,6 @@ class RKConfigLimitDevice extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp();
   }
-
 }
 
 class RKConfigLimitDevicetPage extends StatefulWidget {
@@ -47,22 +46,21 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
   void onSaveSchedule(String status) async {
     String startTime = "07:00";
     String endTime = "22:00";
-    if(type == 'everyday') {
+    if (type == 'everyday') {
       startTime = startDateEveryday;
       endTime = endDateEveryday;
-    } else if(type == 'weekday') {
+    } else if (type == 'weekday') {
       startTime = startDateWeekday;
       endTime = endDateWeekday;
     } else {
       startTime = startDateWeekend;
       endTime = endDateWeekend;
     }
-    Response response = await MediaRepository().saveSchedule(widget.email, type,
-        startTime, endTime, status);
-    if(response.statusCode == 200) {
+    Response response = await MediaRepository().saveSchedule(widget.email, type, startTime, endTime, status);
+    if (response.statusCode == 200) {
       // print('isi response save schedule ${response.body}');
       var json = jsonDecode(response.body);
-      if(json['resultCode'] == 'OK') {
+      if (json['resultCode'] == 'OK') {
         print('isi response save schedule ${response.body}');
       } else {
         print('isi response nok save schedule ${response.body}');
@@ -75,22 +73,21 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
   void onUpdateSchedule(String status) async {
     String startTime = "07:00";
     String endTime = "22:00";
-    if(type == 'everyday') {
+    if (type == 'everyday') {
       startTime = startDateEveryday;
       endTime = endDateEveryday;
-    } else if(type == 'weekday') {
+    } else if (type == 'weekday') {
       startTime = startDateWeekday;
       endTime = endDateWeekday;
     } else {
       startTime = startDateWeekend;
       endTime = endDateWeekend;
     }
-    Response response = await MediaRepository().shceduleUpdate(widget.email, type,
-        startTime, endTime, status);
-    if(response.statusCode == 200) {
+    Response response = await MediaRepository().shceduleUpdate(widget.email, type, startTime, endTime, status);
+    if (response.statusCode == 200) {
       // print('isi response save schedule ${response.body}');
       var json = jsonDecode(response.body);
-      if(json['resultCode'] == 'OK') {
+      if (json['resultCode'] == 'OK') {
         print('isi response update schedule ${response.body}');
       } else {
         print('isi response nok update schedule ${response.body}');
@@ -104,14 +101,17 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title, style: TextStyle(color: Colors.darkGrey)),
-        backgroundColor: Colors.whiteLight,
-        iconTheme: IconThemeData(color: Colors.darkGrey),
+        title: Text(widget.title, style: TextStyle(color: Colors.grey.shade700)),
+        backgroundColor: Colors.white70,
+        iconTheme: IconThemeData(color: Colors.grey.shade700),
         actions: <Widget>[
-          IconButton(onPressed: () {}, icon: Icon(
-            Icons.add,
-            color: Colors.darkGrey,
-          ),),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.add,
+              color: Colors.grey.shade700,
+            ),
+          ),
         ],
       ),
       backgroundColor: Colors.grey[300],
@@ -127,86 +127,77 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 child: SingleChildScrollView(
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          margin: EdgeInsets.only(top: 10.0),
-                          height: 50,
-                          color: Colors.white,
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Text(
-                              '${widget.name}',
-                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
+                  child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      margin: EdgeInsets.only(top: 10.0),
+                      height: 50,
+                      color: Colors.white,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${widget.name}',
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.all(20.0),
+                      child: Text('Kontrol Instant', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    ),
+                    Container(
+                      height: 60,
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey,
+                            blurRadius: 3.0,
                           ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.all(20.0),
-                          child: Text('Kontrol Instant',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold)),
-                        ),
-                        Container(
-                          height: 60,
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey,
-                                blurRadius: 3.0,
+                        ],
+                      ),
+                      child: Align(
+                        child: Container(
+                          margin: EdgeInsets.all(10.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                child: Text(
+                                  'Mode Penjadwalan',
+                                  style: TextStyle(fontSize: 16),
+                                ),
                               ),
+                              Container(
+                                child: CupertinoSwitch(
+                                  value: _switchValueFilter,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _switchValueFilter = value;
+                                      if (_switchValueFilter) {
+                                        onSaveSchedule('Aktif');
+                                      } else {
+                                        onUpdateSchedule('Tidak Aktif');
+                                      }
+                                    });
+                                  },
+                                ),
+                              )
                             ],
                           ),
-                          child: Align(
-                            child: Container(
-                              margin: EdgeInsets.all(10.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    child: Text(
-                                      'Mode Penjadwalan',
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                  ),
-                                  Container(
-                                    child: CupertinoSwitch(
-                                      value: _switchValueFilter,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _switchValueFilter = value;
-                                          if(_switchValueFilter) {
-                                            onSaveSchedule('Aktif');
-                                          } else {
-                                            onUpdateSchedule('Tidak Aktif');
-                                          }
-                                        });
-                                      },
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
                         ),
-                        Container(
-                          margin: EdgeInsets.only(left: 10.0, right: 10.0, top: 5.0, bottom: 10.0),
-                          child: Text(
-                              'Atur jadwal penggunaan hp anak anda'
-                          ),
-                        ),
-                        onLoadEveryDay(_switchValueFilter, _switchValueEveryday),
-                        onLoadEveryWeekDay(_switchValueFilter, _switchValueEveryWeekDay),
-                        onLoadEveryWeekEnd(_switchValueFilter, _switchValueEveryWeekEnd),
-                        onLoadDate(_switchValueFilter, type),
-                      ]
-                  ),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(left: 10.0, right: 10.0, top: 5.0, bottom: 10.0),
+                      child: Text('Atur jadwal penggunaan hp anak anda'),
+                    ),
+                    onLoadEveryDay(_switchValueFilter, _switchValueEveryday),
+                    onLoadEveryWeekDay(_switchValueFilter, _switchValueEveryWeekDay),
+                    onLoadEveryWeekEnd(_switchValueFilter, _switchValueEveryWeekEnd),
+                    onLoadDate(_switchValueFilter, type),
+                  ]),
                 ),
               ),
             )
@@ -217,8 +208,8 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
   }
 
   Widget onLoadDate(bool flag, String type) {
-    if(flag) {
-      if(type == 'everyday') {
+    if (flag) {
+      if (type == 'everyday') {
         return Container(
           margin: EdgeInsets.only(top: 30.0),
           width: MediaQuery.of(context).size.width,
@@ -238,8 +229,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
                 Container(
                   margin: EdgeInsets.all(10.0),
                   child: Row(
-                    mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
                         child: Text(
@@ -251,17 +241,15 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
                         child: GestureDetector(
                           onTap: () {
                             var outputFormat = DateFormat('HH:mm');
-                            DatePicker.showTimePicker(context, showTitleActions: true,
-                                onChanged: (date) {
-                                  print('change $date in time zone ' +
-                                      date.timeZoneOffset.inHours.toString());
-                                }, onConfirm: (date) {
-                                  print('confirm ${outputFormat.format(date)}');
-                                  setState(() {
-                                    startDateEveryday = outputFormat.format(date);
-                                    onUpdateSchedule('Active');
-                                  });
-                                }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
+                            DatePicker.showTimePicker(context, showTitleActions: true, onChanged: (date) {
+                              print('change $date in time zone ' + date.timeZoneOffset.inHours.toString());
+                            }, onConfirm: (date) {
+                              print('confirm ${outputFormat.format(date)}');
+                              setState(() {
+                                startDateEveryday = outputFormat.format(date);
+                                onUpdateSchedule('Active');
+                              });
+                            }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
                           },
                           child: Text(
                             '$startDateEveryday',
@@ -280,8 +268,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
                 Container(
                   margin: EdgeInsets.all(10.0),
                   child: Row(
-                    mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
                         child: Text(
@@ -293,17 +280,15 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
                         child: GestureDetector(
                           onTap: () {
                             var outputFormat = DateFormat('HH:mm');
-                            DatePicker.showTimePicker(context, showTitleActions: true,
-                                onChanged: (date) {
-                                  print('change $date in time zone ' +
-                                      date.timeZoneOffset.inHours.toString());
-                                }, onConfirm: (date) {
-                                  print('confirm ${outputFormat.format(date)}');
-                                  setState(() {
-                                    endDateEveryday = outputFormat.format(date);
-                                    onUpdateSchedule('Active');
-                                  });
-                                }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
+                            DatePicker.showTimePicker(context, showTitleActions: true, onChanged: (date) {
+                              print('change $date in time zone ' + date.timeZoneOffset.inHours.toString());
+                            }, onConfirm: (date) {
+                              print('confirm ${outputFormat.format(date)}');
+                              setState(() {
+                                endDateEveryday = outputFormat.format(date);
+                                onUpdateSchedule('Active');
+                              });
+                            }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
                           },
                           child: Text(
                             '$endDateEveryday',
@@ -318,8 +303,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
             ),
           ),
         );
-      }
-      else if (type == 'weekday') {
+      } else if (type == 'weekday') {
         /*return Container(
         margin: EdgeInsets.only(top: 30.0),
         width: MediaQuery.of(context).size.width,
@@ -641,8 +625,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
                 Container(
                   margin: EdgeInsets.all(10.0),
                   child: Row(
-                    mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
                         child: Text(
@@ -654,17 +637,15 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
                         child: GestureDetector(
                           onTap: () {
                             var outputFormat = DateFormat('HH:mm');
-                            DatePicker.showTimePicker(context, showTitleActions: true,
-                                onChanged: (date) {
-                                  print('change $date in time zone ' +
-                                      date.timeZoneOffset.inHours.toString());
-                                }, onConfirm: (date) {
-                                  print('confirm ${outputFormat.format(date)}');
-                                  setState(() {
-                                    startDateWeekday = outputFormat.format(date);
-                                    onUpdateSchedule('Active');
-                                  });
-                                }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
+                            DatePicker.showTimePicker(context, showTitleActions: true, onChanged: (date) {
+                              print('change $date in time zone ' + date.timeZoneOffset.inHours.toString());
+                            }, onConfirm: (date) {
+                              print('confirm ${outputFormat.format(date)}');
+                              setState(() {
+                                startDateWeekday = outputFormat.format(date);
+                                onUpdateSchedule('Active');
+                              });
+                            }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
                           },
                           child: Text(
                             '$startDateWeekday',
@@ -683,8 +664,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
                 Container(
                   margin: EdgeInsets.all(10.0),
                   child: Row(
-                    mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
                         child: Text(
@@ -696,17 +676,15 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
                         child: GestureDetector(
                           onTap: () {
                             var outputFormat = DateFormat('HH:mm');
-                            DatePicker.showTimePicker(context, showTitleActions: true,
-                                onChanged: (date) {
-                                  print('change $date in time zone ' +
-                                      date.timeZoneOffset.inHours.toString());
-                                }, onConfirm: (date) {
-                                  print('confirm ${outputFormat.format(date)}');
-                                  setState(() {
-                                    endDateWeekday = outputFormat.format(date);
-                                    onUpdateSchedule('Active');
-                                  });
-                                }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
+                            DatePicker.showTimePicker(context, showTitleActions: true, onChanged: (date) {
+                              print('change $date in time zone ' + date.timeZoneOffset.inHours.toString());
+                            }, onConfirm: (date) {
+                              print('confirm ${outputFormat.format(date)}');
+                              setState(() {
+                                endDateWeekday = outputFormat.format(date);
+                                onUpdateSchedule('Active');
+                              });
+                            }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
                           },
                           child: Text(
                             '$endDateWeekday',
@@ -721,8 +699,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
             ),
           ),
         );
-      }
-      else {
+      } else {
         return Container(
           margin: EdgeInsets.only(top: 30.0),
           width: MediaQuery.of(context).size.width,
@@ -742,8 +719,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
                 Container(
                   margin: EdgeInsets.all(10.0),
                   child: Row(
-                    mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
                         child: Text(
@@ -755,17 +731,15 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
                         child: GestureDetector(
                           onTap: () {
                             var outputFormat = DateFormat('HH:mm');
-                            DatePicker.showTimePicker(context, showTitleActions: true,
-                                onChanged: (date) {
-                                  print('change $date in time zone ' +
-                                      date.timeZoneOffset.inHours.toString());
-                                }, onConfirm: (date) {
-                                  print('confirm ${outputFormat.format(date)}');
-                                  setState(() {
-                                    startDateWeekend = outputFormat.format(date);
-                                    onUpdateSchedule('Active');
-                                  });
-                                }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
+                            DatePicker.showTimePicker(context, showTitleActions: true, onChanged: (date) {
+                              print('change $date in time zone ' + date.timeZoneOffset.inHours.toString());
+                            }, onConfirm: (date) {
+                              print('confirm ${outputFormat.format(date)}');
+                              setState(() {
+                                startDateWeekend = outputFormat.format(date);
+                                onUpdateSchedule('Active');
+                              });
+                            }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
                           },
                           child: Text(
                             '$startDateWeekend',
@@ -784,8 +758,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
                 Container(
                   margin: EdgeInsets.all(10.0),
                   child: Row(
-                    mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
                         child: Text(
@@ -797,17 +770,15 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
                         child: GestureDetector(
                           onTap: () {
                             var outputFormat = DateFormat('HH:mm');
-                            DatePicker.showTimePicker(context, showTitleActions: true,
-                                onChanged: (date) {
-                                  print('change $date in time zone ' +
-                                      date.timeZoneOffset.inHours.toString());
-                                }, onConfirm: (date) {
-                                  print('confirm ${outputFormat.format(date)}');
-                                  setState(() {
-                                    endDateWeekend = outputFormat.format(date);
-                                    onUpdateSchedule('Active');
-                                  });
-                                }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
+                            DatePicker.showTimePicker(context, showTitleActions: true, onChanged: (date) {
+                              print('change $date in time zone ' + date.timeZoneOffset.inHours.toString());
+                            }, onConfirm: (date) {
+                              print('confirm ${outputFormat.format(date)}');
+                              setState(() {
+                                endDateWeekend = outputFormat.format(date);
+                                onUpdateSchedule('Active');
+                              });
+                            }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
                           },
                           child: Text(
                             '$endDateWeekend',
@@ -829,13 +800,10 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
   }
 
   Widget onLoadEveryDay(bool flag, bool flagIsActive) {
-    if(flag) {
+    if (flag) {
       return Container(
         margin: EdgeInsets.only(top: 10.0),
-        width: MediaQuery
-            .of(context)
-            .size
-            .width,
+        width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
@@ -861,8 +829,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
           child: Container(
             margin: EdgeInsets.all(10.0),
             child: Row(
-              mainAxisAlignment:
-              MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
                   margin: EdgeInsets.only(left: 10.0),
@@ -883,12 +850,9 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
   }
 
   Widget onLoadEveryWeekDay(bool flag, bool flagIsActive) {
-    if(flag) {
+    if (flag) {
       return Container(
-        width: MediaQuery
-            .of(context)
-            .size
-            .width,
+        width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
@@ -913,8 +877,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
           child: Container(
             margin: EdgeInsets.all(10.0),
             child: Row(
-              mainAxisAlignment:
-              MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
                   margin: EdgeInsets.only(left: 10.0),
@@ -935,7 +898,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
   }
 
   Widget onActiveEveryDay(bool flag) {
-    if(flag) {
+    if (flag) {
       return Icon(
         Icons.alarm_on_outlined,
         color: Color(0xff05745F),
@@ -949,7 +912,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
   }
 
   Widget onActiveWeekDay(bool flag) {
-    if(flag) {
+    if (flag) {
       return Icon(
         Icons.alarm_on_outlined,
         color: Color(0xff05745F),
@@ -963,7 +926,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
   }
 
   Widget onActiveWeekEnd(bool flag) {
-    if(flag) {
+    if (flag) {
       return Icon(
         Icons.alarm_on_outlined,
         color: Color(0xff05745F),
@@ -977,7 +940,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
   }
 
   Widget onLoadEveryWeekEnd(bool flag, bool flagIsActive) {
-    if(flag) {
+    if (flag) {
       return GestureDetector(
         onTap: () {
           setState(() {
@@ -991,10 +954,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
           });
         },
         child: Container(
-          width: MediaQuery
-              .of(context)
-              .size
-              .width,
+          width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
             color: Colors.white,
             boxShadow: [
@@ -1010,8 +970,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
               Container(
                 margin: EdgeInsets.all(10.0),
                 child: Row(
-                  mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
                       margin: EdgeInsets.only(left: 10.0),
@@ -1032,5 +991,4 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
       return Container();
     }
   }
-
 }

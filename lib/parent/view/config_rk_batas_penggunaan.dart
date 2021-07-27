@@ -13,7 +13,6 @@ class RKConfigBatasPenggunaan extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp();
   }
-
 }
 
 class RKConfigBatasPenggunaanPage extends StatefulWidget {
@@ -28,7 +27,6 @@ class RKConfigBatasPenggunaanPage extends StatefulWidget {
 }
 
 class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPage> {
-
   bool _isLimitActive = false;
   bool checkSocial = false;
   bool checkGames = false;
@@ -37,7 +35,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
 
   Future<List<dynamic>> getData() async {
     Response response = await MediaRepository().fetchLimitUsageFilter(widget.email);
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       print('isi response filter app usage : ${response.body}');
       var json = jsonDecode(response.body);
       if (json['resultCode'] == "OK") {
@@ -67,17 +65,16 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
   Future<List<AppListWithIcons>> fetchAppList() async {
     // prefs = await SharedPreferences.getInstance();
     Response response = await MediaRepository().fetchAppList(widget.email);
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       print('isi response fetch appList : ${response.body}');
       var json = jsonDecode(response.body);
-      if(json['resultCode'] == 'OK') {
-        if(json['appdevices'].length > 0) {
+      if (json['resultCode'] == 'OK') {
+        if (json['appdevices'].length > 0) {
           var appDevices = json['appdevices'][0];
           List<dynamic> tmpData = appDevices['appName'];
           List<dynamic> dataList = [];
           bool flag = false;
-          List<ApplicationInstalled> dataIconApps = List<ApplicationInstalled>.from(
-              tmpData.map((model) => ApplicationInstalled.fromJson(model)));
+          List<ApplicationInstalled> dataIconApps = List<ApplicationInstalled>.from(tmpData.map((model) => ApplicationInstalled.fromJson(model)));
           /*for(int i = 0; i < dataIconApps.length; i++) {
             if(prefs.getString('rkListAppIcons') != null) {
               flag = true;
@@ -121,14 +118,11 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
               break;
             }
           }*/
-          if(flag) {
-            List<AppListWithIcons> data = List<AppListWithIcons>.from(
-                dataList.map((model) =>
-                    AppListWithIcons.fromJson(model)));
+          if (flag) {
+            List<AppListWithIcons> data = List<AppListWithIcons>.from(dataList.map((model) => AppListWithIcons.fromJson(model)));
             return data;
-          }
-          else {
-            for(int i = 0; i < dataIconApps.length; i++) {
+          } else {
+            for (int i = 0; i < dataIconApps.length; i++) {
               dataList.add({
                 "appName": "${dataIconApps[i].appName}",
                 "packageId": "${dataIconApps[i].packageId}",
@@ -136,9 +130,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                 "appIcons": ""
               });
             }
-            List<AppListWithIcons> data = List<AppListWithIcons>.from(
-                dataList.map((model) =>
-                    AppListWithIcons.fromJson(model)));
+            List<AppListWithIcons> data = List<AppListWithIcons>.from(dataList.map((model) => AppListWithIcons.fromJson(model)));
             return data;
           }
         } else {
@@ -155,7 +147,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
 
   void onRemoveData(String category) async {
     Response response = await MediaRepository().removeAppLimit(widget.email, category);
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       print('isi response remove app usage : ${response.body}');
       var json = jsonDecode(response.body);
       if (json['resultCode'] == "OK") {
@@ -171,9 +163,9 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title, style: TextStyle(color: Colors.darkGrey)),
-        backgroundColor: Colors.whiteLight,
-        iconTheme: IconThemeData(color: Colors.darkGrey),
+        title: Text(widget.title, style: TextStyle(color: Colors.grey.shade700)),
+        backgroundColor: Colors.white70,
+        iconTheme: IconThemeData(color: Colors.grey.shade700),
         actions: <Widget>[
           GestureDetector(
             child: Container(
@@ -186,13 +178,13 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
               ),
             ),
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
-                  RKTambahBatasanPage(title: widget.title, name: widget.name, email: widget.email)));
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => RKTambahBatasanPage(title: widget.title, name: widget.name, email: widget.email)));
             },
           ),
           /*IconButton(onPressed: () {}, icon: Icon(
             Icons.add,
-            color: Colors.darkGrey,
+            color: Colors.grey.shade700,
           ),),*/
         ],
       ),
@@ -207,25 +199,22 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
           children: [
             Flexible(
                 child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        /*onShowActive(_isLimitActive),*/
-                        Container(
-                          margin: EdgeInsets.all(20.0),
-                          child: Text(
-                              'Atur batas penggunaan gadget anak anda berdasarkan kategori yang dipilih.'
-                          ),
-                        ),
-                        onLoadDataActive(true),
-                      ],
+              width: MediaQuery.of(context).size.width,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    /*onShowActive(_isLimitActive),*/
+                    Container(
+                      margin: EdgeInsets.all(20.0),
+                      child: Text('Atur batas penggunaan gadget anak anda berdasarkan kategori yang dipilih.'),
                     ),
-                  ),
-                )
-            )
+                    onLoadDataActive(true),
+                  ],
+                ),
+              ),
+            ))
           ],
         ),
       ),
@@ -233,18 +222,14 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
   }
 
   Widget onShowActive(bool flag) {
-    if(flag) {
+    if (flag) {
       return Container(
-        width: MediaQuery
-            .of(context)
-            .size
-            .width,
+        width: MediaQuery.of(context).size.width,
         margin: EdgeInsets.only(top: 20.0),
         height: 50,
         color: Colors.white,
         child: Row(
-          mainAxisAlignment:
-          MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
               margin: EdgeInsets.only(left: 20.0),
@@ -275,16 +260,12 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
   }
 
   Widget onLoadDataActive(bool flag) {
-    if(flag) {
+    if (flag) {
       return Container(
-        height: MediaQuery
-            .of(context)
-            .size
-            .height,
+        height: MediaQuery.of(context).size.height,
         child: FutureBuilder<List<dynamic>>(
             future: getData(),
-            builder: (BuildContext context,
-                AsyncSnapshot<List<dynamic>> data) {
+            builder: (BuildContext context, AsyncSnapshot<List<dynamic>> data) {
               if (data.data == null) {
                 return Container();
               } else {
@@ -302,8 +283,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                         int limitMinute = app['limit'] % 60;
                         if (limitHour > 0) {
                           if (limitMinute > 0) {
-                            limitTime =
-                            "${limitHour}hrs${limitMinute}min, Setiap Hari";
+                            limitTime = "${limitHour}hrs${limitMinute}min, Setiap Hari";
                           } else {
                             limitTime = "${limitHour}hrs, Setiap Hari";
                           }
@@ -312,10 +292,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                         }
                         return GestureDetector(
                           child: Container(
-                            width: MediaQuery
-                                .of(context)
-                                .size
-                                .width,
+                            width: MediaQuery.of(context).size.width,
                             margin: EdgeInsets.only(bottom: 5.0),
                             height: 50,
                             color: Colors.white,
@@ -330,10 +307,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                                       alignment: Alignment.centerLeft,
                                       child: Text(
                                         '${app['appCategory']}',
-                                        style: TextStyle(
-                                            color: Color(0xffFF018786),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14),
+                                        style: TextStyle(color: Color(0xffFF018786), fontWeight: FontWeight.bold, fontSize: 14),
                                       ),
                                     ),
                                     Align(
@@ -378,10 +352,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                                                               alignment: Alignment.centerLeft,
                                                               child: Text(
                                                                 'Time',
-                                                                style: TextStyle(
-                                                                    color: Colors.white,
-                                                                    fontWeight: FontWeight.bold,
-                                                                    fontSize: 14),
+                                                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                                                               ),
                                                             ),
                                                             Container(
@@ -390,10 +361,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                                                                 alignment: Alignment.centerLeft,
                                                                 child: Text(
                                                                   '$limitTime',
-                                                                  style: TextStyle(
-                                                                      color: Colors.white,
-                                                                      fontWeight: FontWeight.bold,
-                                                                      fontSize: 14),
+                                                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                                                                 ),
                                                               ),
                                                             )
@@ -401,21 +369,19 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                                                         ),
                                                       ],
                                                     ),
-                                                  )
-                                              ),
+                                                  )),
+                                            ),
+                                            Container(
+                                              margin: EdgeInsets.all(10.0),
+                                              width: MediaQuery.of(context).size.width,
+                                              child:
+                                                  Text('Batas penggunaan gadget akan di aktifkan ke semua device yang terhubung kedalam email ini'),
                                             ),
                                             Container(
                                               margin: EdgeInsets.all(10.0),
                                               width: MediaQuery.of(context).size.width,
                                               child: Text(
-                                                'Batas penggunaan gadget akan di aktifkan ke semua device yang terhubung kedalam email ini'
-                                              ),
-                                            ),
-                                            Container(
-                                              margin: EdgeInsets.all(10.0),
-                                              width: MediaQuery.of(context).size.width,
-                                              child: Text(
-                                                  'Kategori, Aplikasi dan Website',
+                                                'Kategori, Aplikasi dan Website',
                                                 style: TextStyle(fontWeight: FontWeight.bold),
                                               ),
                                             ),
@@ -429,10 +395,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                                                   margin: EdgeInsets.only(left: 20.0),
                                                   child: Text(
                                                     '${app['appCategory']}',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 14),
+                                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                                                   ),
                                                 ),
                                               ),
@@ -449,10 +412,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                                                     margin: EdgeInsets.only(left: 20.0),
                                                     child: Text(
                                                       'Hapus Batasan',
-                                                      style: TextStyle(
-                                                          color: Colors.red,
-                                                          fontWeight: FontWeight.bold,
-                                                          fontSize: 14),
+                                                      style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 14),
                                                     ),
                                                   ),
                                                 ),
@@ -464,24 +424,19 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                                             )
                                           ],
                                         ),
-                                      )
-                                  );
-                                }
-                            );
+                                      ));
+                                });
                           },
                         );
-                      }
-                  );
+                      });
                 } else {
                   return Container();
                 }
               }
-            }
-        ),
+            }),
       );
     } else {
       return Container();
     }
   }
-
 }

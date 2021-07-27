@@ -42,13 +42,10 @@ class HomeChild extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'ruang keluarga',
-      theme: ThemeData(
-          primarySwatch: Colors.whiteLight
-      ),
+      // theme: ThemeData(primarySwatch: Colors.white54),
       home: HomeChildPage(title: 'ruang keluarga', email: '', name: ''),
     );
   }
-
 }
 
 class HomeChildPage extends StatefulWidget {
@@ -87,19 +84,17 @@ class _HomeChildPageState extends State<HomeChildPage> {
       // DateTime endDate = outputFormat.parse(outputDate);
       DateTime endDate = new DateTime.now();
       // DateTime startDate = endDate.subtract(Duration(hours: int.parse(outputDate)));
-      DateTime startDate = endDate.subtract(Duration(hours: int.parse(outputDate),
-        minutes: int.parse(outputDateMinute),
-        seconds: int.parse(outputDateSecond)
-      ));
+      DateTime startDate =
+          endDate.subtract(Duration(hours: int.parse(outputDate), minutes: int.parse(outputDateMinute), seconds: int.parse(outputDateSecond)));
       // DateTime startDate = outputFormat.parse(outputDate);
       List<AppUsageInfo> infoList = await AppUsage.getAppUsage(startDate, endDate);
 
-      if(infoList.length > 0) {
+      if (infoList.length > 0) {
         // SharedPreferences prefs = await SharedPreferences.getInstance();
         // prefs.setString("usageLists", json.encode(infoList));
         // prefs.commit();
         List<dynamic> dataList = [];
-        for(int i = 0; i < infoList.length; i++) {
+        for (int i = 0; i < infoList.length; i++) {
           Application? iconApp = getIconAppsFromList(infoList[i].packageName);
           var nameApp = getNameAppsFromList(infoList[i].packageName);
           if (nameApp == "") {
@@ -107,16 +102,16 @@ class _HomeChildPageState extends State<HomeChildPage> {
           }
 
           var cat = "other";
-          for(int xz = 0; xz < appData.length; xz++) {
-            if(infoList[i].packageName == appData[xz].packageName) {
-              if(appData[xz].category.toString().split('.')[1] != 'undefined') {
+          for (int xz = 0; xz < appData.length; xz++) {
+            if (infoList[i].packageName == appData[xz].packageName) {
+              if (appData[xz].category.toString().split('.')[1] != 'undefined') {
                 cat = appData[xz].category.toString().split('.')[1];
               }
               break;
             }
           }
 
-          if(infoList[i].packageName == 'com.google.android.youtube') {
+          if (infoList[i].packageName == 'com.google.android.youtube') {
             var temp = {
               'count': 0,
               'appName': nameApp,
@@ -126,8 +121,7 @@ class _HomeChildPageState extends State<HomeChildPage> {
               'appCategory': cat
             };
             dataList.add(temp);
-          }
-          else if(infoList[i].packageName.contains('com.android') ||
+          } else if (infoList[i].packageName.contains('com.android') ||
               infoList[i].packageName.contains('com.google.android') ||
               infoList[i].packageName.contains('com.miui')) {
           } else {
@@ -162,55 +156,46 @@ class _HomeChildPageState extends State<HomeChildPage> {
   }
 
   Future<List<Application>> getListApps() async {
-    List<Application> appData = await DeviceApps.getInstalledApplications(
-        includeAppIcons: true,
-        includeSystemApps: false,
-        onlyAppsWithLaunchIntent: false
-    );
+    List<Application> appData =
+        await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: false, onlyAppsWithLaunchIntent: false);
 
     itemsApp = appData;
     return appData;
   }
 
-
-
   void getDataListApps() async {
     prefs = await SharedPreferences.getInstance();
     Response response = await MediaRepository().fetchAppList(widget.email);
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       print('isi response fetch appList : ${response.body}');
       var json = jsonDecode(response.body);
-      if(json['resultCode'] == 'OK') {
-        if(json['appdevices'].length > 0) {
+      if (json['resultCode'] == 'OK') {
+        if (json['appdevices'].length > 0) {
           var appDevices = json['appdevices'][0];
-          List<ApplicationInstalled> data = List<ApplicationInstalled>.from(
-              appDevices['appName'].map((model) =>
-                  ApplicationInstalled.fromJson(model)));
+          List<ApplicationInstalled> data =
+              List<ApplicationInstalled>.from(appDevices['appName'].map((model) => ApplicationInstalled.fromJson(model)));
 
-          List<Application> appData = await DeviceApps.getInstalledApplications(
-              includeAppIcons: true,
-              includeSystemApps: false,
-              onlyAppsWithLaunchIntent: false
-          );
+          List<Application> appData =
+              await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: false, onlyAppsWithLaunchIntent: false);
           List<dynamic> appName = [];
           bool _isAppNew = false;
           for (int i = 0; i < appData.length; i++) {
             bool flag = false;
             int indeks = 0;
-            for(int j = 0; j < data.length; j++) {
-              if(appData[1].packageName == data[j].packageId) {
+            for (int j = 0; j < data.length; j++) {
+              if (appData[1].packageName == data[j].packageId) {
                 flag = true;
                 indeks = j;
                 break;
               }
             }
             var cat = "";
-            if(appData[i].category.toString().split('.')[1] == 'undefined') {
+            if (appData[i].category.toString().split('.')[1] == 'undefined') {
               cat = "other";
             } else {
               cat = appData[i].category.toString().split('.')[1];
             }
-            if(flag) {
+            if (flag) {
               appName.add({
                 "appName": appData[i].appName,
                 "packageId": appData[i].packageName,
@@ -227,13 +212,12 @@ class _HomeChildPageState extends State<HomeChildPage> {
               });
             }
           }
-          if(_isAppNew) {
-            Response response = await MediaRepository().saveAppList(
-                prefs.getString(rkEmailUser)!, appName);
+          if (_isAppNew) {
+            Response response = await MediaRepository().saveAppList(prefs.getString(rkEmailUser)!, appName);
             if (response.statusCode == 200) {
               print('save appList ${response.body}');
               var json = jsonDecode(response.body);
-              if(json['statusCode'] == 'OK') {
+              if (json['statusCode'] == 'OK') {
                 await prefs.setBool('rkGetListAppInstall', true);
               }
             } else {
@@ -289,17 +273,14 @@ class _HomeChildPageState extends State<HomeChildPage> {
             }
           }*/
         } else {
-          if(prefs.getBool('rkGetListAppInstall') != null) {
-            if(prefs.getBool('rkGetListAppInstall') == false) {
-              List<Application> appData = await DeviceApps.getInstalledApplications(
-                  includeAppIcons: true,
-                  includeSystemApps: false,
-                  onlyAppsWithLaunchIntent: false
-              );
+          if (prefs.getBool('rkGetListAppInstall') != null) {
+            if (prefs.getBool('rkGetListAppInstall') == false) {
+              List<Application> appData =
+                  await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: false, onlyAppsWithLaunchIntent: false);
               List<dynamic> appName = [];
               for (int i = 0; i < appData.length; i++) {
                 var cat = "";
-                if(appData[i].category.toString().split('.')[1] == 'undefined') {
+                if (appData[i].category.toString().split('.')[1] == 'undefined') {
                   cat = "other";
                 } else {
                   cat = appData[i].category.toString().split('.')[1];
@@ -311,29 +292,24 @@ class _HomeChildPageState extends State<HomeChildPage> {
                   "appCategory": cat,
                 });
               }
-              Response response = await MediaRepository().saveAppList(
-                  prefs.getString(rkEmailUser)!, appName);
+              Response response = await MediaRepository().saveAppList(prefs.getString(rkEmailUser)!, appName);
               if (response.statusCode == 200) {
                 print('save appList ${response.body}');
                 var json = jsonDecode(response.body);
-                if(json['statusCode'] == 'OK') {
+                if (json['statusCode'] == 'OK') {
                   await prefs.setBool('rkGetListAppInstall', true);
                 }
               } else {
                 print('gagal get appLits ${response.statusCode}');
               }
             }
-          }
-          else {
-            List<Application> appData = await DeviceApps.getInstalledApplications(
-                includeAppIcons: true,
-                includeSystemApps: false,
-                onlyAppsWithLaunchIntent: false
-            );
+          } else {
+            List<Application> appData =
+                await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: false, onlyAppsWithLaunchIntent: false);
             List<dynamic> appName = [];
             for (int i = 0; i < appData.length; i++) {
               var cat = "";
-              if(appData[i].category.toString().split('.')[1] == 'undefined') {
+              if (appData[i].category.toString().split('.')[1] == 'undefined') {
                 cat = "other";
               } else {
                 cat = appData[i].category.toString().split('.')[1];
@@ -345,12 +321,11 @@ class _HomeChildPageState extends State<HomeChildPage> {
                 "appCategory": cat,
               });
             }
-            Response response = await MediaRepository().saveAppList(
-                prefs.getString(rkEmailUser)!, appName);
+            Response response = await MediaRepository().saveAppList(prefs.getString(rkEmailUser)!, appName);
             if (response.statusCode == 200) {
               print('save appList ${response.body}');
               var json = jsonDecode(response.body);
-              if(json['statusCode'] == "OK") {
+              if (json['statusCode'] == "OK") {
                 await prefs.setBool('rkGetListAppInstall', true);
               }
             } else {
@@ -359,17 +334,14 @@ class _HomeChildPageState extends State<HomeChildPage> {
           }
         }
       } else {
-        if(prefs.getBool('rkGetListAppInstall') != null) {
-          if(prefs.getBool('rkGetListAppInstall') == false) {
-            List<Application> appData = await DeviceApps.getInstalledApplications(
-                includeAppIcons: true,
-                includeSystemApps: false,
-                onlyAppsWithLaunchIntent: false
-            );
+        if (prefs.getBool('rkGetListAppInstall') != null) {
+          if (prefs.getBool('rkGetListAppInstall') == false) {
+            List<Application> appData =
+                await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: false, onlyAppsWithLaunchIntent: false);
             List<dynamic> appName = [];
             for (int i = 0; i < appData.length; i++) {
               var cat = "";
-              if(appData[i].category.toString().split('.')[1] == 'undefined') {
+              if (appData[i].category.toString().split('.')[1] == 'undefined') {
                 cat = "other";
               } else {
                 cat = appData[i].category.toString().split('.')[1];
@@ -381,29 +353,24 @@ class _HomeChildPageState extends State<HomeChildPage> {
                 "appCategory": cat,
               });
             }
-            Response response = await MediaRepository().saveAppList(
-                prefs.getString(rkEmailUser)!, appName);
+            Response response = await MediaRepository().saveAppList(prefs.getString(rkEmailUser)!, appName);
             if (response.statusCode == 200) {
               print('save appList ${response.body}');
               var json = jsonDecode(response.body);
-              if(json['statusCode'] == 'OK') {
+              if (json['statusCode'] == 'OK') {
                 await prefs.setBool('rkGetListAppInstall', true);
               }
             } else {
               print('gagal get appLits ${response.statusCode}');
             }
           }
-        }
-        else {
-          List<Application> appData = await DeviceApps.getInstalledApplications(
-              includeAppIcons: true,
-              includeSystemApps: false,
-              onlyAppsWithLaunchIntent: false
-          );
+        } else {
+          List<Application> appData =
+              await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: false, onlyAppsWithLaunchIntent: false);
           List<dynamic> appName = [];
           for (int i = 0; i < appData.length; i++) {
             var cat = "";
-            if(appData[i].category.toString().split('.')[1] == 'undefined') {
+            if (appData[i].category.toString().split('.')[1] == 'undefined') {
               cat = "other";
             } else {
               cat = appData[i].category.toString().split('.')[1];
@@ -415,12 +382,11 @@ class _HomeChildPageState extends State<HomeChildPage> {
               "appCategory": cat,
             });
           }
-          Response response = await MediaRepository().saveAppList(
-              prefs.getString(rkEmailUser)!, appName);
+          Response response = await MediaRepository().saveAppList(prefs.getString(rkEmailUser)!, appName);
           if (response.statusCode == 200) {
             print('save appList ${response.body}');
             var json = jsonDecode(response.body);
-            if(json['statusCode'] == "OK") {
+            if (json['statusCode'] == "OK") {
               await prefs.setBool('rkGetListAppInstall', true);
             }
           } else {
@@ -430,17 +396,14 @@ class _HomeChildPageState extends State<HomeChildPage> {
       }
     } else {
       print('isi response fetch appList : ${response.statusCode}');
-      if(prefs.getBool('rkGetListAppInstall') != null) {
-        if(prefs.getBool('rkGetListAppInstall') == false) {
-          List<Application> appData = await DeviceApps.getInstalledApplications(
-              includeAppIcons: true,
-              includeSystemApps: false,
-              onlyAppsWithLaunchIntent: false
-          );
+      if (prefs.getBool('rkGetListAppInstall') != null) {
+        if (prefs.getBool('rkGetListAppInstall') == false) {
+          List<Application> appData =
+              await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: false, onlyAppsWithLaunchIntent: false);
           List<dynamic> appName = [];
           for (int i = 0; i < appData.length; i++) {
             var cat = "";
-            if(appData[i].category.toString().split('.')[1] == 'undefined') {
+            if (appData[i].category.toString().split('.')[1] == 'undefined') {
               cat = "other";
             } else {
               cat = appData[i].category.toString().split('.')[1];
@@ -452,29 +415,24 @@ class _HomeChildPageState extends State<HomeChildPage> {
               "appCategory": cat,
             });
           }
-          Response response = await MediaRepository().saveAppList(
-              prefs.getString(rkEmailUser)!, appName);
+          Response response = await MediaRepository().saveAppList(prefs.getString(rkEmailUser)!, appName);
           if (response.statusCode == 200) {
             print('save appList ${response.body}');
             var json = jsonDecode(response.body);
-            if(json['statusCode'] == 'OK') {
+            if (json['statusCode'] == 'OK') {
               await prefs.setBool('rkGetListAppInstall', true);
             }
           } else {
             print('gagal get appLits ${response.statusCode}');
           }
         }
-      }
-      else {
-        List<Application> appData = await DeviceApps.getInstalledApplications(
-            includeAppIcons: true,
-            includeSystemApps: false,
-            onlyAppsWithLaunchIntent: false
-        );
+      } else {
+        List<Application> appData =
+            await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: false, onlyAppsWithLaunchIntent: false);
         List<dynamic> appName = [];
         for (int i = 0; i < appData.length; i++) {
           var cat = "";
-          if(appData[i].category.toString().split('.')[1] == 'undefined') {
+          if (appData[i].category.toString().split('.')[1] == 'undefined') {
             cat = "other";
           } else {
             cat = appData[i].category.toString().split('.')[1];
@@ -486,12 +444,11 @@ class _HomeChildPageState extends State<HomeChildPage> {
             "appCategory": cat,
           });
         }
-        Response response = await MediaRepository().saveAppList(
-            prefs.getString(rkEmailUser)!, appName);
+        Response response = await MediaRepository().saveAppList(prefs.getString(rkEmailUser)!, appName);
         if (response.statusCode == 200) {
           print('save appList ${response.body}');
           var json = jsonDecode(response.body);
-          if(json['statusCode'] == "OK") {
+          if (json['statusCode'] == "OK") {
             await prefs.setBool('rkGetListAppInstall', true);
           }
         } else {
@@ -504,7 +461,7 @@ class _HomeChildPageState extends State<HomeChildPage> {
   String getNameAppsFromList(String package) {
     String name = "";
     for (int i = 0; i < itemsApp.length; i++) {
-      if(itemsApp[i].packageName == package) {
+      if (itemsApp[i].packageName == package) {
         name = itemsApp[i].appName;
       }
     }
@@ -513,7 +470,7 @@ class _HomeChildPageState extends State<HomeChildPage> {
 
   Application? getIconAppsFromList(String package) {
     for (int i = 0; i < itemsApp.length; i++) {
-      if(itemsApp[i].packageName == package) {
+      if (itemsApp[i].packageName == package) {
         return itemsApp[i];
       }
     }
@@ -533,7 +490,7 @@ class _HomeChildPageState extends State<HomeChildPage> {
     var outputFormat = DateFormat('yyyy-MM-dd');
     var outputDate = outputFormat.format(DateTime.now());
     Response response = await MediaRepository().saveChildUsage(prefs.getString(rkEmailUser).toString(), outputDate, data);
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       print('isi response save app usage : ${response.body}');
     } else {
       print('isi response save app usage : ${response.statusCode}');
@@ -545,16 +502,14 @@ class _HomeChildPageState extends State<HomeChildPage> {
     if (!await FlutterContacts.requestPermission()) {
       setState(() => _permissionDenied = true);
     } else {
-      if(prefs.getBool('rkGetContactList') != null) {
-        if(prefs.getBool('rkGetContactList') == false) {
-          final contacts = await FlutterContacts.getContacts(
-              withProperties: true, withPhoto: true);
+      if (prefs.getBool('rkGetContactList') != null) {
+        if (prefs.getBool('rkGetContactList') == false) {
+          final contacts = await FlutterContacts.getContacts(withProperties: true, withPhoto: true);
           await prefs.setBool('rkGetContactList', true);
           onSaveContact(contacts);
         }
       } else {
-        final contacts = await FlutterContacts.getContacts(
-            withProperties: true, withPhoto: true);
+        final contacts = await FlutterContacts.getContacts(withProperties: true, withPhoto: true);
         await prefs.setBool('rkGetContactList', true);
         onSaveContact(contacts);
       }
@@ -564,20 +519,16 @@ class _HomeChildPageState extends State<HomeChildPage> {
   void onSaveContact(List<Contact> kontak) async {
     var contacts = [];
     var photo;
-    for(int i = 0; i < kontak.length; i++) {
+    for (int i = 0; i < kontak.length; i++) {
       var phonenum = [];
-      for(int j = 0; j < kontak[i].phones.length; j++) {
+      for (int j = 0; j < kontak[i].phones.length; j++) {
         phonenum.add(kontak[i].phones[j].normalizedNumber);
       }
-      contacts.add({
-        "name": kontak[i].displayName,
-        "nomor": phonenum,
-        "blacklist": false
-      });
+      contacts.add({"name": kontak[i].displayName, "nomor": phonenum, "blacklist": false});
     }
 
     Response response = await MediaRepository().saveContacts(prefs.getString(rkEmailUser).toString(), contacts);
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       print('isi response save contact : ${response.body}');
     } else {
       print('isi response save contact : ${response.statusCode}');
@@ -593,7 +544,7 @@ class _HomeChildPageState extends State<HomeChildPage> {
       myUrl = 'https://www.google.com/maps/timeline/kml?authuser=0&pb=!1m8!1m3!1i2021!2i4!3i1!2m3!1i2021!2i4!3i4';
       var request = await httpClient.getUrl(Uri.parse(myUrl));
       var response = await request.close();
-      if(response.statusCode == 200) {
+      if (response.statusCode == 200) {
         var bytes = await consolidateHttpClientResponseBytes(response);
         filePath = '/storage/emulated/0/Download/kml-timeline-01';
         file = File(filePath);
@@ -604,7 +555,7 @@ class _HomeChildPageState extends State<HomeChildPage> {
       } else {
         filePath = 'Error code: ' + response.statusCode.toString();
       }
-    } catch(ex){
+    } catch (ex) {
       filePath = 'Can not fetch url';
     }
   }
@@ -619,19 +570,16 @@ class _HomeChildPageState extends State<HomeChildPage> {
     }
 
     _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.DENIED ||
-        _permissionGranted == PermissionStatus.DENIED_FOREVER) {
+    if (_permissionGranted == PermissionStatus.DENIED || _permissionGranted == PermissionStatus.DENIED_FOREVER) {
       _permissionGranted = await location.requestPermission();
-      if (_permissionGranted == PermissionStatus.DENIED ||
-          _permissionGranted == PermissionStatus.DENIED_FOREVER) {
+      if (_permissionGranted == PermissionStatus.DENIED || _permissionGranted == PermissionStatus.DENIED_FOREVER) {
         return;
       }
     }
 
     _locationData = await location.getLocation();
-    if(_locationData != null) {
-      print('long : ${_locationData.longitude} & lat : ${_locationData
-          .latitude}');
+    if (_locationData != null) {
+      print('long : ${_locationData.longitude} & lat : ${_locationData.latitude}');
       onSaveLocation(_locationData);
     }
     location.onLocationChanged().listen((dataLocation) {
@@ -645,7 +593,7 @@ class _HomeChildPageState extends State<HomeChildPage> {
     var outputFormat = DateFormat('yyyy-MM-dd');
     var outputDate = outputFormat.format(DateTime.now());
     Response response = await MediaRepository().saveUserLocation(prefs.getString(rkEmailUser).toString(), locations, outputDate);
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       print('isi response save location : ${response.body}');
     } else {
       print('isi response save location : ${response.statusCode}');
@@ -655,42 +603,35 @@ class _HomeChildPageState extends State<HomeChildPage> {
   void onGetIconApps() async {
     prefs = await SharedPreferences.getInstance();
     Response response = await MediaRepository().fetchAppIconList();
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       print('response load icon ${response.body}');
       var json = jsonDecode(response.body);
-      if(json['resultCode'] == 'OK') {
+      if (json['resultCode'] == 'OK') {
         var appIcons = json['appIcons'];
         await prefs.setString('rkBaseUrlAppIcon', json['baseUrl']);
-        if(appIcons != null) {
-          List<AppIconList> data = List<AppIconList>.from(
-              appIcons.map((model) => AppIconList.fromJson(model)));
+        if (appIcons != null) {
+          List<AppIconList> data = List<AppIconList>.from(appIcons.map((model) => AppIconList.fromJson(model)));
 
-          List<Application> appData = await DeviceApps.getInstalledApplications(
-              includeAppIcons: true,
-              includeSystemApps: false,
-              onlyAppsWithLaunchIntent: false
-          );
+          List<Application> appData =
+              await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: false, onlyAppsWithLaunchIntent: false);
 
-          for(int i = 0; i < appData.length; i++) {
+          for (int i = 0; i < appData.length; i++) {
             bool flag = false;
-            for(int j = 0; j < data.length; j++) {
-              if(appData[i].packageName == data[j].appId) {
+            for (int j = 0; j < data.length; j++) {
+              if (appData[i].packageName == data[j].appId) {
                 flag = true;
                 break;
               }
             }
-            if(!flag) {
+            if (!flag) {
               listItemApps.add(appData[i]);
             }
           }
 
           onSaveIconApps(0);
         } else {
-          List<Application> appData = await DeviceApps.getInstalledApplications(
-              includeAppIcons: true,
-              includeSystemApps: false,
-              onlyAppsWithLaunchIntent: false
-          );
+          List<Application> appData =
+              await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: false, onlyAppsWithLaunchIntent: false);
           listItemApps = appData;
           onSaveIconApps(0);
         }
@@ -723,30 +664,29 @@ class _HomeChildPageState extends State<HomeChildPage> {
   }
 
   void onSaveIconApps(int indeks) async {
-    if(indeks < listItemApps.length) {
+    if (indeks < listItemApps.length) {
       Application? iconApp = listItemApps[indeks];
       var photo;
-      if(iconApp is ApplicationWithIcon) {
+      if (iconApp is ApplicationWithIcon) {
         photo = "data:image/png;base64,${base64Encode(iconApp.icon)}";
       } else {
         photo = null;
       }
       var category = 'other';
-      if(iconApp.category.toString().split('.')[1] != 'undefined') {
+      if (iconApp.category.toString().split('.')[1] != 'undefined') {
         category = iconApp.category.toString().split('.')[1];
       }
-      Response response = await MediaRepository().saveIconApp(
-          prefs.getString(rkEmailUser)!, iconApp.appName, iconApp.packageName, photo, category);
+      Response response = await MediaRepository().saveIconApp(prefs.getString(rkEmailUser)!, iconApp.appName, iconApp.packageName, photo, category);
       if (response.statusCode == 200) {
         print('save iconApp ${response.body}');
         indeks++;
-        if(indeks < listItemApps.length) {
+        if (indeks < listItemApps.length) {
           onSaveIconApps(indeks);
         }
       } else {
         print('gagal save icon app ${response.statusCode}');
         indeks++;
-        if(indeks < listItemApps.length) {
+        if (indeks < listItemApps.length) {
           onSaveIconApps(indeks);
         }
       }
@@ -755,48 +695,25 @@ class _HomeChildPageState extends State<HomeChildPage> {
 
   void onGetCallLog(int indeks) async {
     prefs = await SharedPreferences.getInstance();
-    if(indeks < blackListData.length) {
+    if (indeks < blackListData.length) {
       var now = DateTime.now();
       int timestamps = prefs.getInt("timestamp") ?? 0;
       int from = 0;
       if (timestamps > 0) {
         from = timestamps;
       } else {
-        from = now
-            .subtract(Duration(days: 1))
-            .millisecondsSinceEpoch;
+        from = now.subtract(Duration(days: 1)).millisecondsSinceEpoch;
       }
       // from = now.subtract(Duration(days: 1)).millisecondsSinceEpoch;
-      int to = now
-          .subtract(Duration(days: 0))
-          .millisecondsSinceEpoch;
-      if(blackListData[indeks].contact['name'] == null) {
-        Iterable<CallLogEntry> entries = await CallLog.query(
-            dateFrom: from,
-            dateTo: to,
-            number: '${blackListData[indeks].contact['phones'][0]}'
-        );
+      int to = now.subtract(Duration(days: 0)).millisecondsSinceEpoch;
+      if (blackListData[indeks].contact['name'] == null) {
+        Iterable<CallLogEntry> entries = await CallLog.query(dateFrom: from, dateTo: to, number: '${blackListData[indeks].contact['phones'][0]}');
         print('data $entries');
         if (entries.length > 0) {
-          await prefs.setInt("timestamp", entries
-              .elementAt(0)
-              .timestamp ?? 0);
-          var date = DateTime.fromMillisecondsSinceEpoch(entries
-              .elementAt(0)
-              .timestamp! * 1000);
-          Response response = await MediaRepository().blContactNotification(
-              widget.email, entries
-              .elementAt(0)
-              .name
-              .toString(), entries
-              .elementAt(0)
-              .number
-              .toString(),
-              date.toString(), entries
-              .elementAt(0)
-              .callType
-              .toString()
-              .split('.')[1]);
+          await prefs.setInt("timestamp", entries.elementAt(0).timestamp ?? 0);
+          var date = DateTime.fromMillisecondsSinceEpoch(entries.elementAt(0).timestamp! * 1000);
+          Response response = await MediaRepository().blContactNotification(widget.email, entries.elementAt(0).name.toString(),
+              entries.elementAt(0).number.toString(), date.toString(), entries.elementAt(0).callType.toString().split('.')[1]);
 
           if (response.statusCode == 200) {
             print('response notif blacklist ${response.body}');
@@ -807,25 +724,13 @@ class _HomeChildPageState extends State<HomeChildPage> {
           }
         }
       } else {
-        Iterable<CallLogEntry> entries = await CallLog.query(
-            dateFrom: from,
-            dateTo: to,
-            name: '${blackListData[indeks].contact['name']}'
-        );
+        Iterable<CallLogEntry> entries = await CallLog.query(dateFrom: from, dateTo: to, name: '${blackListData[indeks].contact['name']}');
         print('data $entries');
         if (entries.length > 0) {
-          await prefs.setInt("timestamp", entries
-              .elementAt(0)
-              .timestamp ?? 0);
-          var date = DateTime.fromMillisecondsSinceEpoch(entries
-              .elementAt(0)
-              .timestamp! * 1000);
-          Response response = await MediaRepository().blContactNotification(
-              widget.email,
-              entries.elementAt(0).name.toString(),
-              entries.elementAt(0).number.toString(),
-              date.toString(),
-              entries.elementAt(0).callType.toString().split('.')[1]);
+          await prefs.setInt("timestamp", entries.elementAt(0).timestamp ?? 0);
+          var date = DateTime.fromMillisecondsSinceEpoch(entries.elementAt(0).timestamp! * 1000);
+          Response response = await MediaRepository().blContactNotification(widget.email, entries.elementAt(0).name.toString(),
+              entries.elementAt(0).number.toString(), date.toString(), entries.elementAt(0).callType.toString().split('.')[1]);
 
           if (response.statusCode == 200) {
             print('response notif blacklist ${response.body}');
@@ -845,12 +750,7 @@ class _HomeChildPageState extends State<HomeChildPage> {
       token = fcmToken!;
     });
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    Response response = await MediaRepository().loginParent(
-        widget.email,
-        prefs.getString(accessGToken)!,
-        token,
-        '1.0'
-    );
+    Response response = await MediaRepository().loginParent(widget.email, prefs.getString(accessGToken)!, token, '1.0');
     print('response login ${response.body}');
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
@@ -860,9 +760,8 @@ class _HomeChildPageState extends State<HomeChildPage> {
         await prefs.setString(rkTokenApps, tokenApps);
         var jsonUser = jsonDataResult['user'];
         var blackList = jsonUser['blacklistNumbers'];
-        List<BlackListContact> data = List<BlackListContact>.from(
-            blackList.map((model) => BlackListContact.fromJson(model)));
-        if(data != null && data.length > 0) {
+        List<BlackListContact> data = List<BlackListContact>.from(blackList.map((model) => BlackListContact.fromJson(model)));
+        if (data != null && data.length > 0) {
           blackListData = data;
           onGetCallLog(0);
         }
@@ -880,8 +779,7 @@ class _HomeChildPageState extends State<HomeChildPage> {
     UsageStats.grantUsagePermission();
     DateTime endDate = new DateTime.now();
     DateTime startDate = DateTime(endDate.year, endDate.month, 3, 0, 0, 0);
-    List<EventUsageInfo> queryEvents =
-    await UsageStats.queryEvents(startDate, endDate);
+    List<EventUsageInfo> queryEvents = await UsageStats.queryEvents(startDate, endDate);
     // query usage stats
     List<UsageInfo> usageStats = await UsageStats.queryUsageStats(startDate, endDate);
     // query aggregated Usage statistics
@@ -895,10 +793,8 @@ class _HomeChildPageState extends State<HomeChildPage> {
 
   void onMessageListen() {
     FirebaseMessaging.instance.getInitialMessage().then((value) => {
-      if(value != null) {
-        print('remote message ${value.data}')
-      }
-    });
+          if (value != null) {print('remote message ${value.data}')}
+        });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification? notification = message.notification;
@@ -925,15 +821,11 @@ class _HomeChildPageState extends State<HomeChildPage> {
             notification.title,
             notification.body,
             NotificationDetails(
-              android: AndroidNotificationDetails(
-                  channel.id,
-                  channel.name,
-                  channel.description,
+              android: AndroidNotificationDetails(channel.id, channel.name, channel.description,
                   // TODO add a proper drawable resource to android, for now using
                   //      one that already exists in example app.
                   icon: 'launch_background',
-                  styleInformation: BigTextStyleInformation(notification.body.toString())
-              ),
+                  styleInformation: BigTextStyleInformation(notification.body.toString())),
             ));
       }
     });
@@ -981,21 +873,30 @@ class _HomeChildPageState extends State<HomeChildPage> {
             ),
           ],
         ),
-        backgroundColor: Colors.whiteLight,
-        iconTheme: IconThemeData(color: Colors.darkGrey),
+        backgroundColor: Colors.white70,
+        iconTheme: IconThemeData(color: Colors.grey.shade700),
         actions: <Widget>[
-          IconButton(onPressed: () {}, icon: Icon(
-            Icons.notifications,
-            color: Colors.darkGrey,
-          ),),
-          IconButton(onPressed: () {}, icon: Icon(
-            Icons.mail_outline,
-            color: Colors.darkGrey,
-          ),),
-          IconButton(onPressed: () {}, icon: Icon(
-            Icons.help,
-            color: Colors.darkGrey,
-          ),)
+          IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.notifications,
+              color: Colors.grey.shade700,
+            ),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.mail_outline,
+              color: Colors.grey.shade700,
+            ),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.help,
+              color: Colors.grey.shade700,
+            ),
+          )
         ],
       ),
       drawer: Drawer(
@@ -1006,14 +907,13 @@ class _HomeChildPageState extends State<HomeChildPage> {
             DrawerHeader(
                 decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(0xff3BDFD2),
-                        Color(0xff05745F),
-                      ],
-                    )
-                ),
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xff3BDFD2),
+                    Color(0xff05745F),
+                  ],
+                )),
                 child: Container(
                   margin: const EdgeInsets.only(bottom: 20.0),
                   child: Column(
@@ -1040,10 +940,10 @@ class _HomeChildPageState extends State<HomeChildPage> {
                       )
                     ],
                   ),
-                )
-            ),
+                )),
             ListTile(
-              title: Text('Home'), leading: Icon(Icons.home_filled,color: Colors.black),
+              title: Text('Home'),
+              leading: Icon(Icons.home_filled, color: Colors.black),
               onTap: () {
                 // Update the state of the app
                 // ...
@@ -1052,7 +952,8 @@ class _HomeChildPageState extends State<HomeChildPage> {
               },
             ),
             ListTile(
-              title: Text('Profil'), leading: Icon(Icons.person,color: Colors.black),
+              title: Text('Profil'),
+              leading: Icon(Icons.person, color: Colors.black),
               onTap: () {
                 // Update the state of the app
                 // ...
@@ -1061,7 +962,8 @@ class _HomeChildPageState extends State<HomeChildPage> {
               },
             ),
             ListTile(
-              title: Text('SOS'), leading: Icon(Icons.add_ic_call,color: Colors.black),
+              title: Text('SOS'),
+              leading: Icon(Icons.add_ic_call, color: Colors.black),
               onTap: () {
                 // Update the state of the app
                 // ...
@@ -1070,7 +972,8 @@ class _HomeChildPageState extends State<HomeChildPage> {
               },
             ),
             ListTile(
-              title: Text('FAQ'), leading: Icon(Icons.help,color: Colors.black),
+              title: Text('FAQ'),
+              leading: Icon(Icons.help, color: Colors.black),
               onTap: () {
                 // Update the state of the app
                 // ...
@@ -1079,7 +982,8 @@ class _HomeChildPageState extends State<HomeChildPage> {
               },
             ),
             ListTile(
-              title: Text('Kebijakan Privasi'), leading: Icon(Icons.privacy_tip,color: Colors.black),
+              title: Text('Kebijakan Privasi'),
+              leading: Icon(Icons.privacy_tip, color: Colors.black),
               onTap: () {
                 // Update the state of the app
                 // ...
@@ -1088,7 +992,8 @@ class _HomeChildPageState extends State<HomeChildPage> {
               },
             ),
             ListTile(
-              title: Text('Tentang'), leading: Icon(Icons.info,color: Colors.black),
+              title: Text('Tentang'),
+              leading: Icon(Icons.info, color: Colors.black),
               onTap: () {
                 // Update the state of the app
                 // ...
@@ -1097,25 +1002,24 @@ class _HomeChildPageState extends State<HomeChildPage> {
               },
             ),
             ListTile(
-                title: Text('Keluar'), leading: Icon(Icons.exit_to_app_outlined,color: Colors.black),
+                title: Text('Keluar'),
+                leading: Icon(Icons.exit_to_app_outlined, color: Colors.black),
                 onTap: () => showDialog<String>(
                     context: context,
                     builder: (BuildContext context) => AlertDialog(
-                      title: const Text('Konfirmasi'),
-                      content: const Text('Apakah anda yakin ingin keluar aplikasi ?'),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, 'Cancel'),
-                          child: const Text('Cancel', style: TextStyle(color: Color(0xff05745F))),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, 'OK'),
-                          child: const Text('OK', style: TextStyle(color: Color(0xff05745F))),
-                        ),
-                      ],
-                    )
-                )
-            )
+                          title: const Text('Konfirmasi'),
+                          content: const Text('Apakah anda yakin ingin keluar aplikasi ?'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, 'Cancel'),
+                              child: const Text('Cancel', style: TextStyle(color: Color(0xff05745F))),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, 'OK'),
+                              child: const Text('OK', style: TextStyle(color: Color(0xff05745F))),
+                            ),
+                          ],
+                        )))
           ],
         ),
       ),
@@ -1170,8 +1074,7 @@ class _HomeChildPageState extends State<HomeChildPage> {
                         ),
                       ),
                       onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
-                            SOSRecordVideoPage()));
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => SOSRecordVideoPage()));
                       },
                     )
                   ],
@@ -1183,5 +1086,4 @@ class _HomeChildPageState extends State<HomeChildPage> {
       ),
     );
   }
-
 }

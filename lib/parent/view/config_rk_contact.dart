@@ -12,7 +12,6 @@ class ConfigRKContact extends StatelessWidget {
     // TODO: implement build
     throw UnimplementedError();
   }
-
 }
 
 class ConfigRKContactPage extends StatefulWidget {
@@ -31,17 +30,17 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
   List<bool> listSwitchValue = [];
   Future<List<Contact>> fetchContact() async {
     Response response = await MediaRepository().fetchContact(widget.email);
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       print('isi response fetch contact : ${response.body}');
       var json = jsonDecode(response.body);
-      if(json['resultCode'] == 'OK') {
-        if(json['contacts'].length > 0) {
+      if (json['resultCode'] == 'OK') {
+        if (json['contacts'].length > 0) {
           var contacts = json['contacts'][0];
-          List<Contact> data = List<Contact>.from(
-              contacts['contacts'].map((model) => Contact.fromJson(model)));
+          List<Contact> data = List<Contact>.from(contacts['contacts'].map((model) => Contact.fromJson(model)));
           List<Contact> fixDt = [];
-          for(int i = 0; i < data.length; i++) {
-            if(data[i].name == '' || data[i].phone == null || data[i].phone!.length <= 0) {} else {
+          for (int i = 0; i < data.length; i++) {
+            if (data[i].name == '' || data[i].phone == null || data[i].phone!.length <= 0) {
+            } else {
               fixDt.add(data[i]);
             }
           }
@@ -60,7 +59,7 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
 
   void onBlacklistContact(String name, String phone) async {
     Response response = await MediaRepository().blackListContactAdd(widget.email, name, phone, "");
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       print('response blacklist contact ${response.body}');
     } else {
       print('error response ${response.statusCode}');
@@ -71,9 +70,9 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title, style: TextStyle(color: Colors.darkGrey)),
-        backgroundColor: Colors.whiteLight,
-        iconTheme: IconThemeData(color: Colors.darkGrey),
+        title: Text(widget.title, style: TextStyle(color: Colors.grey.shade700)),
+        backgroundColor: Colors.white70,
+        iconTheme: IconThemeData(color: Colors.grey.shade700),
       ),
       backgroundColor: Colors.white,
       body: Container(
@@ -118,7 +117,7 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                     return const Center(child: CircularProgressIndicator());
                   } else {
                     List<Contact> apps = data.data!;
-                    apps.sort((a,b) {
+                    apps.sort((a, b) {
                       var aName = a.name;
                       var bName = b.name;
                       return aName!.compareTo(bName!);
@@ -128,7 +127,7 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                       listSwitchValue.add(dt.blacklist!);
                     }
 
-                    if(apps.length == 0) {
+                    if (apps.length == 0) {
                       return Align(
                         child: Text(
                           'Tidak ada data.',
@@ -141,11 +140,11 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                             itemBuilder: (BuildContext context, int position) {
                               Contact app = apps[position];
                               var phones = "";
-                              if(app.phone != null && app.phone!.length > 0) {
+                              if (app.phone != null && app.phone!.length > 0) {
                                 phones = app.phone![0];
                               }
 
-                              if(phones == "") {
+                              if (phones == "") {
                                 return Column(
                                   children: <Widget>[
                                     ListTile(
@@ -157,9 +156,7 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text('${app.name}', style: TextStyle(
-                                              fontSize: 14, fontWeight: FontWeight.bold
-                                          )),
+                                          Text('${app.name}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                                         ],
                                       ),
                                       // title: Text('${app.name}'),
@@ -178,8 +175,7 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                                     )
                                   ],
                                 );
-                              }
-                              else {
+                              } else {
                                 return Column(
                                   children: <Widget>[
                                     ListTile(
@@ -191,15 +187,11 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text('${app.name}', style: TextStyle(
-                                              fontSize: 14, fontWeight: FontWeight.bold
-                                          )),
+                                          Text('${app.name}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                                           SizedBox(
                                             height: 5,
                                           ),
-                                          Text('$phones', style: TextStyle(
-                                              fontSize: 12
-                                          ))
+                                          Text('$phones', style: TextStyle(fontSize: 12))
                                         ],
                                       ),
                                       // title: Text('${app.name}'),
@@ -232,5 +224,4 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
       ),
     );
   }
-
 }
