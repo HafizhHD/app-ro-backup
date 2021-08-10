@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:geocoder/geocoder.dart';
+import 'package:flutter_geocoder/geocoder.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:location/location.dart';
@@ -29,7 +29,7 @@ class MediaRepository {
   }
 
   Future<List<User>> loginUser(String email, String gToken, String fcmToken, String version) async {
-    dynamic response = await _rkService.getResponseLogin(email,gToken,fcmToken,version);
+    dynamic response = await _rkService.getResponseLogin(email, gToken, fcmToken, version);
     final jsonData = response['results'] as List;
     List<User> userList = jsonData.map((tagJson) => User.fromJson(tagJson)).toList();
     return userList;
@@ -39,39 +39,51 @@ class MediaRepository {
     var url = _rkService.baseUrl + '/user/userLogin';
     Map<String, String> json = {"emailUser": "$email", "googleToken": "$gToken", "fcmToken": "$fcmToken", "version": "$version"};
     print('param login parent : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
   Future<dynamic> uploadImage(filepath, url) async {
     var request = http.MultipartRequest('POST', Uri.parse(url));
-    request.files.add(http.MultipartFile('image',
-        File(filepath).readAsBytes().asStream(), File(filepath).lengthSync(),
-        filename: filepath.split("/").last));
+    request.files
+        .add(http.MultipartFile('image', File(filepath).readAsBytes().asStream(), File(filepath).lengthSync(), filename: filepath.split("/").last));
     var res = await request.send();
     return res;
   }
 
-  Future<Response> registerParent(String email, String name, String token, String photo,
-      nohp, String alamat, String status, String accessToken) async {
+  Future<Response> registerParent(
+      String email, String name, String token, String photo, nohp, String alamat, String status, String accessToken) async {
     var url = _rkService.baseUrl + '/user/register';
-    Map<String, dynamic> json = {"emailUser": "$email", "name": "$name", "devices": {"device": "Android",
-      "fcmToken": "$token", "versi": "1.0"},
-      "photo": "$photo", "phoneNumber": "$nohp", "address": "$alamat", "parentStatus": "$status",
-      "accessCode": "$accessToken"};
+    Map<String, dynamic> json = {
+      "emailUser": "$email",
+      "name": "$name",
+      "devices": {"device": "Android", "fcmToken": "$token", "versi": "1.0"},
+      "photo": "$photo",
+      "phoneNumber": "$nohp",
+      "address": "$alamat",
+      "parentStatus": "$status",
+      "accessCode": "$accessToken"
+    };
     print('param register parent : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
-  Future<Response> inviteChild(String email, String childEmail, String nohp, String childName,
-      int childAge, String childStudyLevel, int childOfNumber, int childNumber) async {
+  Future<Response> inviteChild(String email, String childEmail, String nohp, String childName, int childAge, String childStudyLevel,
+      int childOfNumber, int childNumber) async {
     var url = _rkService.baseUrl + '/user/invite';
-    Map<String, dynamic> json = {"emailUser": "$email", "childEmail": "$childEmail", "phoneNumber": "$nohp",
-      "childName": "$childName", "childAge": childAge, "childStudyLevel": "$childStudyLevel", "childOfNumber": childOfNumber,
-      "childNumber": childNumber};
+    Map<String, dynamic> json = {
+      "emailUser": "$email",
+      "childEmail": "$childEmail",
+      "phoneNumber": "$nohp",
+      "childName": "$childName",
+      "childAge": childAge,
+      "childStudyLevel": "$childStudyLevel",
+      "childOfNumber": childOfNumber,
+      "childNumber": childNumber
+    };
     print('param register parent : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
@@ -79,32 +91,30 @@ class MediaRepository {
     var url = _rkService.baseUrl + '/user/appUsage';
     Map<String, dynamic> json = {"emailUser": "$email", "appUsageDate": "$usageDate", "appUsages": data};
     print('param child usage : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
   Future<Response> fetchAppUsageFilter(String email, String usageDate) async {
     var url = _rkService.baseUrl + '/user/appUsageFilter';
-    Map<String, dynamic> json = {"whereKeyValues": {
-      "emailUser": "$email",
-      "appUsageDate": "$usageDate"
-    }};
+    Map<String, dynamic> json = {
+      "whereKeyValues": {"emailUser": "$email", "appUsageDate": "$usageDate"}
+    };
     print('param app usage filter : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
   Future<Response> fetchAppUsageFilterRange(String email, String startDate, String endDate) async {
     var url = _rkService.baseUrl + '/user/appUsageFilter';
-    Map<String, dynamic> json = {"whereKeyValues": {
-      "emailUser": "$email",
-      "appUsageDate": {
-        "\$gte": "$startDate",
-        "\$lte": "$endDate"
+    Map<String, dynamic> json = {
+      "whereKeyValues": {
+        "emailUser": "$email",
+        "appUsageDate": {"\$gte": "$startDate", "\$lte": "$endDate"}
       }
-    }};
+    };
     print('param app usage filter : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
@@ -112,17 +122,17 @@ class MediaRepository {
     var url = _rkService.baseUrl + '/user/contactAdd';
     Map<String, dynamic> json = {"emailUser": "$email", "contacts": contact};
     print('param child contact : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
   Future<Response> fetchContact(String email) async {
     var url = _rkService.baseUrl + '/user/contactFilter';
-    Map<String, dynamic> json = {"whereKeyValues": {
-      "emailUser": "$email"
-    }};
+    Map<String, dynamic> json = {
+      "whereKeyValues": {"emailUser": "$email"}
+    };
     print('param fetch contact : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
@@ -130,7 +140,7 @@ class MediaRepository {
     var url = _rkService.baseUrl + '/user/appDeviceAdd';
     Map<String, dynamic> json = {"emailUser": "$email", "appName": appName};
     print('param save appList : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
@@ -141,7 +151,7 @@ class MediaRepository {
       "limit": 1000
     };
     print('param fetch appList : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
@@ -150,38 +160,32 @@ class MediaRepository {
     var addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
     var url = _rkService.baseUrl + '/user/timeLineAdd';
     var place = "";
-    if(addresses[0].thoroughfare != null) {
-      place = addresses[0].thoroughfare;
+    if (addresses[0].thoroughfare != null) {
+      place = addresses[0].thoroughfare!;
     } else {
-      place = addresses[0].addressLine;
+      place = addresses[0].addressLine!;
     }
     Map<String, dynamic> json = {
       "emailUser": "$email",
       "location": {
         "place": "$place",
         "type": "Point",
-        "coordinates": [
-          "${location.latitude}",
-          "${location.longitude}"
-        ]
+        "coordinates": ["${location.latitude}", "${location.longitude}"]
       },
       "dateTimeHistory": "$dates"
     };
     print('param save user location : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
   Future<Response> fetchUserLocation(String email, String dates) async {
     var url = _rkService.baseUrl + '/user/timeLineFilter';
     Map<String, dynamic> json = {
-      "whereKeyValues": {
-        "emailUser": "$email",
-        "dateTimeHistory": "$dates"
-      }
+      "whereKeyValues": {"emailUser": "$email", "dateTimeHistory": "$dates"}
     };
     print('param fetch user location list : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
@@ -190,34 +194,27 @@ class MediaRepository {
     Map<String, dynamic> json = {
       "whereKeyValues": {
         "emailUser": "$email",
-        "dateTimeHistory": {
-          "\$gte": "$startDate",
-          "\$lte": "$endDate"
-        }
+        "dateTimeHistory": {"\$gte": "$startDate", "\$lte": "$endDate"}
       }
     };
     print('param fetch filter user location list : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
   Future<Response> fetchCurrentUserLocation(String email, String childEmail) async {
     var url = _rkService.baseUrl + '/user/childCurrentLocationRequest';
-    Map<String, dynamic> json = {
-      "parentEmailUser": "$email",
-      "childEmailUser": "$childEmail"
-    };
+    Map<String, dynamic> json = {"parentEmailUser": "$email", "childEmailUser": "$childEmail"};
     print('param fetch current user location : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
   Future<Response> saveIconApp(String email, String appName, String appId, String appIcon, String category) async {
     var url = _rkService.baseUrl + '/user/appIconAdd';
-    Map<String, dynamic> json = {"emailUser": "$email", "appName": appName, "appId": appId, "appIcon": appIcon,
-    "appCategory": category};
+    Map<String, dynamic> json = {"emailUser": "$email", "appName": appName, "appId": appId, "appIcon": appIcon, "appCategory": category};
     print('param save icon app : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
@@ -232,12 +229,11 @@ class MediaRepository {
       "label": "Test Black List"
     };
     print('param blacklist contact : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
-  Future<Response> blContactNotification(String email, String name, String phoneNumber,
-      String contactTime, String contactType) async {
+  Future<Response> blContactNotification(String email, String name, String phoneNumber, String contactTime, String contactType) async {
     var url = _rkService.baseUrl + '/user/contactBlackListNotification';
     Map<String, dynamic> json = {
       "emailUser": "$email",
@@ -249,7 +245,7 @@ class MediaRepository {
       "contactType": "$contactType"
     };
     print('param blacklist contact notif : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
@@ -257,49 +253,56 @@ class MediaRepository {
     var url = _rkService.baseUrl + '/user/appIconFilter';
     Map<String, dynamic> json = {"limit": 1000};
     print('param app icon list : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
-  Future<Response> saveSchedule(String email, String scheduleName, String deviceUsageStartTime,
-      String deviceUsageEndTime, String status) async {
+  Future<Response> saveSchedule(String email, String scheduleName, String deviceUsageStartTime, String deviceUsageEndTime, String status) async {
     var url = _rkService.baseUrl + '/user/deviceUsageScheduleAdd';
     List<String> listData = [];
-    if(scheduleName == 'everyday') {
+    if (scheduleName == 'everyday') {
       listData = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
-    } else if(scheduleName == 'weekday') {
+    } else if (scheduleName == 'weekday') {
       listData = ["mon", "tue", "wed", "thu", "fri"];
     } else {
       listData = ["sat", "sun"];
     }
     Map<String, dynamic> json = {
-      "emailUser": "$email", "scheduleName": "$scheduleName", "deviceUsageStartTime": "$deviceUsageStartTime",
-      "deviceUsageEndTime": "$deviceUsageEndTime", "deviceUsageDays": listData, "status": "$status"
+      "emailUser": "$email",
+      "scheduleName": "$scheduleName",
+      "deviceUsageStartTime": "$deviceUsageStartTime",
+      "deviceUsageEndTime": "$deviceUsageEndTime",
+      "deviceUsageDays": listData,
+      "status": "$status"
     };
     print('param save schedule : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
-  Future<Response> shceduleUpdate(String email, String scheduleName, String deviceUsageStartTime,
-      String deviceUsageEndTime, String status) async {
+  Future<Response> shceduleUpdate(String email, String scheduleName, String deviceUsageStartTime, String deviceUsageEndTime, String status) async {
     var url = _rkService.baseUrl + '/user/deviceUsageScheduleUpdate';
     List<String> listData = [];
-    if(scheduleName == 'everyday') {
+    if (scheduleName == 'everyday') {
       listData = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
-    } else if(scheduleName == 'weekday') {
+    } else if (scheduleName == 'weekday') {
       listData = ["mon", "tue", "wed", "thu", "fri"];
     } else {
       listData = ["sat", "sun"];
     }
-    Map<String, dynamic> json = {"whereKeyValues": {
-      "emailUser": "$email"
-    }, "newKeyValues": {
-      "emailUser": "$email", "scheduleName": "$scheduleName", "deviceUsageStartTime": "$deviceUsageStartTime",
-      "deviceUsageEndTime": "$deviceUsageEndTime", "deviceUsageDays": listData, "status": "$status"
-    }};
+    Map<String, dynamic> json = {
+      "whereKeyValues": {"emailUser": "$email"},
+      "newKeyValues": {
+        "emailUser": "$email",
+        "scheduleName": "$scheduleName",
+        "deviceUsageStartTime": "$deviceUsageStartTime",
+        "deviceUsageEndTime": "$deviceUsageEndTime",
+        "deviceUsageDays": listData,
+        "status": "$status"
+      }
+    };
     print('param schedule update : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
@@ -307,27 +310,27 @@ class MediaRepository {
     var url = _rkService.baseUrl + '/user/appUsageLimitAdd';
     Map<String, dynamic> json = {"emailUser": "$email", "appCategory": appCategory, "limit": limit, "status": status};
     print('param add limit usage : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
   Future<Response> fetchLimitUsageFilter(String email) async {
     var url = _rkService.baseUrl + '/user/appUsageLimitFilter';
-    Map<String, dynamic> json = {"whereKeyValues": {
-      "emailUser": "$email"
-    }};
+    Map<String, dynamic> json = {
+      "whereKeyValues": {"emailUser": "$email"}
+    };
     print('param limit usage filter : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
   Future<Response> removeAppLimit(String email, String category) async {
     var url = _rkService.baseUrl + '/user/appUsageLimitRemove';
-    Map<String, dynamic> json = {"whereKeyValues": {
-      "emailUser": "$email", "appCategory": '$category'
-    }};
+    Map<String, dynamic> json = {
+      "whereKeyValues": {"emailUser": "$email", "appCategory": '$category'}
+    };
     print('param limit usage filter : $json');
-    Response response = await post(url, headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 }

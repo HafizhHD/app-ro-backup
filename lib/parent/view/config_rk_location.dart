@@ -8,18 +8,14 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-// ignore: import_of_legacy_library_into_null_safe
+
 import 'package:http/http.dart';
 import 'package:ruangkeluarga/model/rk_child_location_model.dart';
 import 'package:ruangkeluarga/utils/constant.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
-// ignore: import_of_legacy_library_into_null_safe
+
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:some_calendar/some_calendar.dart';
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:jiffy/jiffy.dart';
 
 class RKConfigLocationView extends StatelessWidget {
   @override
@@ -42,6 +38,7 @@ class RKConfigLocationPage extends StatefulWidget {
 class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
   bool _switchValue = true;
   DateTime selectedDate = DateTime.now();
+  DateTimeRange? selectedRange = DateTimeRange(start: DateTime.now(), end: DateTime.now());
   List<DateTime> selectedDates = [];
   String tanggal = '';
   late SharedPreferences prefs;
@@ -366,30 +363,20 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                                           size: 20.0,
                                           color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).accentColor : Color(0xFF787878),
                                         ),
-                                        onTap: () {
-                                          showDialog(
-                                              context: context,
-                                              builder: (_) => SomeCalendar(
-                                                    mode: SomeMode.Range,
-                                                    labels: new Labels(
-                                                      dialogDone: 'Selesai',
-                                                      dialogCancel: 'Batal',
-                                                      dialogRangeFirstDate: 'Tanggal Pertama',
-                                                      dialogRangeLastDate: 'Tanggal Terakhir',
-                                                    ),
-                                                    primaryColor: Color(0xff5833A5),
-                                                    startDate: Jiffy().subtract(years: 3),
-                                                    lastDate: Jiffy().add(months: 9),
-                                                    selectedDates: selectedDates,
-                                                    isWithoutDialog: false,
-                                                    done: (date) {
-                                                      selectedDates = [];
-                                                      selectedDates = date;
-                                                      print('select date : $selectedDates');
-                                                      fetchFilterMarker(selectedDates);
-                                                      setState(() {});
-                                                    },
-                                                  ));
+                                        onTap: () async {
+                                          final pickedRange = await showDateRangePicker(
+                                            context: context,
+                                            firstDate: DateTime.now().subtract(const Duration(days: 365 * 3)),
+                                            lastDate: DateTime.now().add(const Duration(days: 365)),
+                                            initialDateRange: selectedRange,
+                                          );
+                                          if (pickedRange != null) {
+                                            selectedRange = pickedRange;
+                                            selectedDates = [pickedRange.start, pickedRange.end];
+                                            print('select date : $selectedDates');
+                                            fetchFilterMarker(selectedDates);
+                                            setState(() {});
+                                          }
                                         },
                                       )
                                     ],

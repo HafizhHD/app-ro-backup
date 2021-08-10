@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:ruangkeluarga/parent/view/config_rk_access_internet.dart';
 import 'package:ruangkeluarga/parent/view/config_rk_batas_penggunaan.dart';
