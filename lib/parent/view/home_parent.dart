@@ -8,8 +8,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+
 import 'package:http/http.dart';
 import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/model/rk_child_app_icon_list.dart';
@@ -310,7 +309,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
   Widget build(BuildContext context) {
     // ApiResponse apiResponse = Provider.of<MediaViewModel>(context).response;
     // log('response data : $apiResponse');
-    FlutterStatusbarcolor.setStatusBarColor(Color(0xff05745F));
+
     return Scaffold(
         appBar: AppBar(
           title: Column(

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:ruangkeluarga/model/content_rk_model.dart';
-// ignore: import_of_legacy_library_into_null_safe
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:meta/meta.dart';
@@ -34,9 +34,7 @@ class ApiService extends BaseService {
         throw UnauthorisedException(response.body.toString());
       case 500:
       default:
-        throw FetchDataException(
-            'Error occured while communication with server' +
-                ' with status code : ${response.statusCode}');
+        throw FetchDataException('Error occured while communication with server' + ' with status code : ${response.statusCode}');
     }
   }
 }

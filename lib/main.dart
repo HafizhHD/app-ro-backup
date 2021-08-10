@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_app_lock/flutter_app_lock.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+
 import 'package:provider/provider.dart';
 import 'package:ruangkeluarga/child/home_child.dart';
 import 'package:ruangkeluarga/confirm_privacy_policy.dart';
@@ -30,6 +30,8 @@ late AndroidNotificationChannel channel;
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
 Future<void> main() async {
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Color(0xff05745F)));
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
@@ -50,14 +52,12 @@ Future<void> main() async {
   /// We use this channel in the `AndroidManifest.xml` file to override the
   /// default FCM channel to enable heads up notifications.
   await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-      AndroidFlutterLocalNotificationsPlugin>()
+      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
 
   /// Update the iOS foreground notification presentation options to allow
   /// heads up notifications.
-  await FirebaseMessaging.instance
-      .setForegroundNotificationPresentationOptions(
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
     alert: true,
     badge: true,
     sound: true,
@@ -117,36 +117,29 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_){
-
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       // Add Your Code here.
-      Future.delayed(Duration(seconds: 5), ()
-      async {
+      Future.delayed(Duration(seconds: 5), () async {
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        if(prefs.getBool(isPrefLogin) != null) {
-          if(prefs.getBool(isPrefLogin)!) {
-            if(prefs.getString(rkUserType) != null) {
-              if(prefs.getString(rkUserType) == "child") {
+        if (prefs.getBool(isPrefLogin) != null) {
+          if (prefs.getBool(isPrefLogin)!) {
+            if (prefs.getString(rkUserType) != null) {
+              if (prefs.getString(rkUserType) == "child") {
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
                     builder: (context) =>
-                        HomeChildPage(title: 'ruang keluarga', email: prefs.getString(rkEmailUser)!,
-                        name: prefs.getString(rkUserName)!)));
+                        HomeChildPage(title: 'ruang keluarga', email: prefs.getString(rkEmailUser)!, name: prefs.getString(rkUserName)!)));
               } else {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) =>
-                        HomeParentPage(title: 'ruang keluarga')));
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeParentPage(title: 'ruang keluarga')));
               }
             } else {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => ConfirmPrivacyPolicyPage(title: 'Confirm Privacy Policy')));
+              Navigator.of(context)
+                  .pushReplacement(MaterialPageRoute(builder: (context) => ConfirmPrivacyPolicyPage(title: 'Confirm Privacy Policy')));
             }
           } else {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (context) => ConfirmPrivacyPolicyPage(title: 'Confirm Privacy Policy')));
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ConfirmPrivacyPolicyPage(title: 'Confirm Privacy Policy')));
           }
         } else {
-          Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => ConfirmPrivacyPolicyPage(title: 'Confirm Privacy Policy')));
+          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ConfirmPrivacyPolicyPage(title: 'Confirm Privacy Policy')));
         }
       });
     });
@@ -160,7 +153,6 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    FlutterStatusbarcolor.setStatusBarColor(Color(0xff05745F));
     return Material(
       child: Container(
         child: Center(

@@ -3,22 +3,19 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:io';
 import 'dart:math';
-import 'package:admin/admin.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
-// ignore: import_of_legacy_library_into_null_safe
+
 import 'package:http/http.dart';
-// ignore: import_of_legacy_library_into_null_safe
+
 import 'package:intl/intl.dart';
 
 import 'package:app_usage/app_usage.dart';
 import 'package:flutter/material.dart';
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
-// ignore: import_of_legacy_library_into_null_safe
+
 import 'package:location/location.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:ruangkeluarga/child/sos_record_video.dart';
@@ -31,7 +28,6 @@ import 'package:ruangkeluarga/utils/constant.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
-import 'package:usage_stats/usage_stats.dart';
 
 import '../plugin_device_app.dart';
 
@@ -570,9 +566,9 @@ class _HomeChildPageState extends State<HomeChildPage> {
     }
 
     _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.DENIED || _permissionGranted == PermissionStatus.DENIED_FOREVER) {
+    if (_permissionGranted == PermissionStatus.denied || _permissionGranted == PermissionStatus.deniedForever) {
       _permissionGranted = await location.requestPermission();
-      if (_permissionGranted == PermissionStatus.DENIED || _permissionGranted == PermissionStatus.DENIED_FOREVER) {
+      if (_permissionGranted == PermissionStatus.denied || _permissionGranted == PermissionStatus.deniedForever) {
         return;
       }
     }
@@ -582,7 +578,7 @@ class _HomeChildPageState extends State<HomeChildPage> {
       print('long : ${_locationData.longitude} & lat : ${_locationData.latitude}');
       onSaveLocation(_locationData);
     }
-    location.onLocationChanged().listen((dataLocation) {
+    location.onLocationChanged.listen((dataLocation) {
       if (dataLocation != null) {
         print('long : ${dataLocation.longitude} & lat : ${dataLocation.latitude}');
       }
@@ -775,22 +771,6 @@ class _HomeChildPageState extends State<HomeChildPage> {
     SmsQuery query = new SmsQuery();
   }
 
-  void onUsageNew() async {
-    UsageStats.grantUsagePermission();
-    DateTime endDate = new DateTime.now();
-    DateTime startDate = DateTime(endDate.year, endDate.month, 3, 0, 0, 0);
-    List<EventUsageInfo> queryEvents = await UsageStats.queryEvents(startDate, endDate);
-    // query usage stats
-    List<UsageInfo> usageStats = await UsageStats.queryUsageStats(startDate, endDate);
-    // query aggregated Usage statistics
-    Map<String, UsageInfo> queryAndAggregateUsageStats = await UsageStats.queryAndAggregateUsageStats(startDate, endDate);
-    // query configurations
-    List<ConfigurationInfo> configurations = await UsageStats.queryConfiguration(startDate, endDate);
-    // query eventStats API Level 28
-    List<EventInfo> eventStats = await UsageStats.queryEventStats(startDate, endDate);
-    var events = queryEvents.reversed.toList();
-  }
-
   void onMessageListen() {
     FirebaseMessaging.instance.getInitialMessage().then((value) => {
           if (value != null) {print('remote message ${value.data}')}
@@ -831,10 +811,6 @@ class _HomeChildPageState extends State<HomeChildPage> {
     });
   }
 
-  void onTestAdmin() {
-    Admin.enable();
-  }
-
   @override
   void initState() {
     // TODO: implement initState
@@ -851,7 +827,6 @@ class _HomeChildPageState extends State<HomeChildPage> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterStatusbarcolor.setStatusBarColor(Color(0xff05745F));
     return Scaffold(
       appBar: AppBar(
         title: Column(

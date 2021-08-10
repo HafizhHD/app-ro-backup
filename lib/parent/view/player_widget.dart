@@ -14,9 +14,7 @@ class PlayerWidget extends StatefulWidget {
   final PlayerMode mode;
   final Function function;
 
-  PlayerWidget(
-      {Key? key, required this.function, this.mode = PlayerMode.MEDIA_PLAYER})
-      : super(key: key);
+  PlayerWidget({Key? key, required this.function, this.mode = PlayerMode.MEDIA_PLAYER}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -85,44 +83,40 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                 //Icons.skip_previous,
                 Icons.fast_rewind,
                 size: 25.0,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Theme.of(context).accentColor
-                    : Color(0xFF787878),
+                color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).accentColor : Color(0xFF787878),
               ),
             ),
             ClipOval(
                 child: Container(
-                  color: Theme.of(context).accentColor.withAlpha(30),
-                  width: 50.0,
-                  height: 50.0,
-                  child: IconButton(
-                    onPressed: () {
-                      if (_isPlaying) {
-                        widget.function();
-                        _pause();
-                      } else {
-                        if (media != null) {
-                          widget.function();
-                          _play(media);
-                        }
-                      }
-                    },
-                    icon: Icon(
-                      _isPlaying ? Icons.pause : Icons.play_arrow,
-                      size: 30.0,
-                      color: Theme.of(context).accentColor,
-                    ),
-                  ),
-                )),
+              color: Theme.of(context).accentColor.withAlpha(30),
+              width: 50.0,
+              height: 50.0,
+              child: IconButton(
+                onPressed: () {
+                  if (_isPlaying) {
+                    widget.function();
+                    _pause();
+                  } else {
+                    if (media != null) {
+                      widget.function();
+                      _play(media);
+                    }
+                  }
+                },
+                icon: Icon(
+                  _isPlaying ? Icons.pause : Icons.play_arrow,
+                  size: 30.0,
+                  color: Theme.of(context).accentColor,
+                ),
+              ),
+            )),
             IconButton(
               onPressed: () => null,
               icon: Icon(
                 //Icons.skip_next,
                 Icons.fast_forward,
                 size: 25.0,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Theme.of(context).accentColor
-                    : Color(0xFF787878),
+                color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).accentColor : Color(0xFF787878),
               ),
             ),
           ],
@@ -137,13 +131,12 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                   Slider(
                     onChanged: (v) {
                       final position = v * _duration!.inMilliseconds;
-                      _audioPlayer
-                          .seek(Duration(milliseconds: position.round()));
+                      _audioPlayer.seek(Duration(milliseconds: position.round()));
                     },
                     value: (_position != null &&
-                        _duration != null &&
-                        _position!.inMilliseconds > 0 &&
-                        _position!.inMilliseconds < _duration!.inMilliseconds)
+                            _duration != null &&
+                            _position!.inMilliseconds > 0 &&
+                            _position!.inMilliseconds < _duration!.inMilliseconds)
                         ? _position!.inMilliseconds / _duration!.inMilliseconds
                         : 0.0,
                   ),
@@ -164,10 +157,10 @@ class _PlayerWidgetState extends State<PlayerWidget> {
 
       if (Theme.of(context).platform == TargetPlatform.iOS) {
         // (Optional) listen for notification updates in the background
-        _audioPlayer.startHeadlessService();
+        _audioPlayer.notificationService.startHeadlessService();
 
         // set at least title to see the notification bar on ios.
-        _audioPlayer.setNotification(
+        _audioPlayer.notificationService.setNotification(
             title: 'App Name',
             artist: 'Artist or blank',
             albumTitle: 'Name or blank',
@@ -181,18 +174,16 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       }
     });
 
-    _positionSubscription =
-        _audioPlayer.onAudioPositionChanged.listen((p) => setState(() {
+    _positionSubscription = _audioPlayer.onAudioPositionChanged.listen((p) => setState(() {
           _position = p;
         }));
 
-    _playerCompleteSubscription =
-        _audioPlayer.onPlayerCompletion.listen((event) {
-          _onComplete();
-          setState(() {
-            _position = _duration;
-          });
-        });
+    _playerCompleteSubscription = _audioPlayer.onPlayerCompletion.listen((event) {
+      _onComplete();
+      setState(() {
+        _position = _duration;
+      });
+    });
 
     _playerErrorSubscription = _audioPlayer.onPlayerError.listen((msg) {
       print('audioPlayer error : $msg');
@@ -205,14 +196,11 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   }
 
   Future<int> _play(Media media) async {
-    final playPosition = (_position != null &&
-        _duration != null &&
-        _position!.inMilliseconds > 0 &&
-        _position!.inMilliseconds < _duration!.inMilliseconds)
-        ? _position
-        : null;
-    final result =
-    await _audioPlayer.play(media.previewUrl!, position: playPosition);
+    final playPosition =
+        (_position != null && _duration != null && _position!.inMilliseconds > 0 && _position!.inMilliseconds < _duration!.inMilliseconds)
+            ? _position
+            : null;
+    final result = await _audioPlayer.play(media.previewUrl!, position: playPosition);
     if (result == 1) setState(() => _playerState = PlayerState.playing);
 
     // default playback rate is 1.0

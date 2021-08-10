@@ -1,4 +1,3 @@
-// ignore: import_of_legacy_library_into_null_safe
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -34,9 +33,7 @@ class RKApiService extends RKBaseService {
         throw UnauthorisedException(response.body.toString());
       case 500:
       default:
-        throw FetchDataException(
-            'Error occured while communication with server' +
-                ' with status code : ${response.statusCode}');
+        throw FetchDataException('Error occured while communication with server' + ' with status code : ${response.statusCode}');
     }
   }
 }
