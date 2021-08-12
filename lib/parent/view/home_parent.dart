@@ -19,7 +19,7 @@ import 'package:ruangkeluarga/parent/view/detail_content_rk_view.dart';
 import 'package:ruangkeluarga/parent/view/invite_more_child.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
 import 'package:ruangkeluarga/utils/app_usage.dart';
-import 'package:ruangkeluarga/utils/constant.dart';
+import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
