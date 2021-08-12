@@ -24,7 +24,7 @@ import 'package:ruangkeluarga/model/rk_callLog_model.dart';
 import 'package:ruangkeluarga/model/rk_child_app_icon_list.dart';
 import 'package:ruangkeluarga/model/rk_child_apps.dart';
 import 'package:ruangkeluarga/model/rk_child_blacklist_contact.dart';
-import 'package:ruangkeluarga/utils/constant.dart';
+import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';

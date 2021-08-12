@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:location/location.dart' as Locs;
 import 'package:permission_handler/permission_handler.dart' as PermsH;
 import 'package:ruangkeluarga/child/home_child.dart';
-import 'package:ruangkeluarga/utils/constant.dart';
+import 'package:ruangkeluarga/global/global.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SetupPermissionChild extends StatelessWidget {
@@ -236,7 +236,6 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         body: Container(
             margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 50.0),

@@ -5,17 +5,7 @@ description: A new Flutter project.
 # pub.dev using `pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-# The following defines the version and build number for your application.
-# A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
-# In Android, build-name is used as versionName while build-number used as versionCode.
-# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
-# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
-# Read more about iOS versioning at
-# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 0.0.10+220000101
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -58,6 +48,7 @@ dependencies:
       url: https://github.com/JCKodel/flutter_geocoder.git
       ref: "7059f6f"
 
+  get:
   google_maps_flutter: ^2.0.6
   google_sign_in: ^5.0.4
 
@@ -84,23 +75,23 @@ dev_dependencies:
     sdk: flutter
   dependency_validator:
 #flutter pub run dependency_validator
-#  flutter_launcher_icons: ^0.8.1
-#  flutter_native_splash: ^0.3.0
-#
-#flutter_icons:
-#  android: 'launcher_icon'
-#  ios: true
-#  image_path: 'assets/images/nupos-icon.png'
+  flutter_launcher_icons:
+  flutter_native_splash:
+
+flutter_icons:
+  android: 'launcher_icon'
+  ios: true
+  image_path: 'assets/images/ruangortu-icon.png'
 #  adaptive_icon_background: 'assets/images/nupos-bg.png'
 #  adaptive_icon_foreground: 'assets/images/nupos-fg.png'
-## flutter pub run flutter_launcher_icons:main
-#
-#flutter_native_splash:
-#  color: '#feeb4e'
-#  image: 'assets/images/nupos-icon.png'
-#  android: true
-#  ios: true
-## flutter pub run flutter_native_splash:create
+# flutter pub run flutter_launcher_icons:main
+
+flutter_native_splash:
+  color: '#333333'
+  image: 'assets/images/ruangortu-icon.png'
+  android: true
+  ios: true
+# flutter pub run flutter_native_splash:create
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

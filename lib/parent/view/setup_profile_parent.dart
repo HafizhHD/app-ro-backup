@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:http/http.dart';
 import 'package:ruangkeluarga/parent/view/setup_invite_child.dart';
-import 'package:ruangkeluarga/utils/constant.dart';
+import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

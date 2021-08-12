@@ -11,11 +11,11 @@ import 'package:location/location.dart';
 import 'package:ruangkeluarga/child/home_child.dart';
 import 'package:ruangkeluarga/child/setup_permission_child.dart';
 import 'package:ruangkeluarga/parent/view/home_parent.dart';
-import 'package:ruangkeluarga/utils/constant.dart';
+import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'parent/view/setup_profile_parent.dart';
+import '../parent/view/setup_profile_parent.dart';
 
 final GoogleSignIn _googleSignIn = GoogleSignIn();
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
