@@ -14,9 +14,12 @@ import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/model/rk_child_app_icon_list.dart';
 import 'package:ruangkeluarga/model/rk_child_model.dart';
 import 'package:ruangkeluarga/model/rk_user_model.dart';
+import 'package:ruangkeluarga/parent/view/addon/addon_page.dart';
 import 'package:ruangkeluarga/parent/view/detail_child_view.dart';
 import 'package:ruangkeluarga/parent/view/detail_content_rk_view.dart';
 import 'package:ruangkeluarga/parent/view/invite_more_child.dart';
+import 'package:ruangkeluarga/parent/view/parent_drawer.dart';
+import 'package:ruangkeluarga/parent/view/setup_invite_child.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
 import 'package:ruangkeluarga/utils/app_usage.dart';
 import 'package:ruangkeluarga/global/global.dart';
@@ -27,22 +30,7 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
-class HomeParent extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ruang keluarga',
-      theme: ThemeData(primaryColor: Colors.white70),
-      home: HomeParentPage(title: 'ruang keluarga'),
-    );
-  }
-}
-
 class HomeParentPage extends StatefulWidget {
-  HomeParentPage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
   @override
   _HomeParentPageState createState() => _HomeParentPageState();
 }
@@ -67,9 +55,12 @@ class _HomeParentPageState extends State<HomeParentPage> {
   bool _isPlayerReady = false;
 
   final List<String> _ids = [
-    'b0BpTqKBG_8',
-    'n7jmC4RRD2A',
+    'unsplash-digital-habit.jpg',
+    'unsplash-reward.jpg',
+    'unsplash-parenting.jpg',
   ];
+
+  int bottomNavIndex = 0;
 
   void _changed(double opacity) {
     setState(() {
@@ -309,512 +300,212 @@ class _HomeParentPageState extends State<HomeParentPage> {
   Widget build(BuildContext context) {
     // ApiResponse apiResponse = Provider.of<MediaViewModel>(context).response;
     // log('response data : $apiResponse');
+    final screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
-        appBar: AppBar(
-          title: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
+      backgroundColor: cPrimaryBg,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: cPrimaryBg,
+        iconTheme: IconThemeData(color: cOrtuWhite),
+        actions: <Widget>[
+          IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.notifications,
+              color: Colors.grey.shade700,
+            ),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.mail_outline,
+              color: Colors.grey.shade700,
+            ),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.help,
+              color: Colors.grey.shade700,
+            ),
+          )
+        ],
+      ),
+      drawer: ParentDrawer(userMail: emailUser, userName: userName),
+      body: mainContent(screenSize),
+      bottomNavigationBar: _bottomAppBar(),
+      floatingActionButton: SizedBox(
+        height: 80,
+        width: 80,
+        child: FloatingActionButton(
+          elevation: 0,
+          backgroundColor: Colors.black38,
+          child: Container(
+            padding: EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/ruangortu-icon.png'),
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+          onPressed: () {},
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    );
+  }
+
+  Widget mainContent(Size screenSize) {
+    return Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: <Widget>[
+      Container(
+        height: 170.0,
+        margin: const EdgeInsets.all(10.0), //Same as `blurRadius` i guess
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey,
+              blurRadius: 3.0,
+            ),
+          ],
+        ),
+        child: ListView.builder(
+          padding: EdgeInsets.all(5.0),
+          shrinkWrap: false,
+          scrollDirection: Axis.horizontal,
+          itemCount: 2,
+          itemBuilder: (BuildContext context, int index) => Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: GestureDetector(
+              child: Row(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0)),
+                    // child: Center(child: Text('Dummy Card Text', style: TextStyle(color: Colors.black)))
+                    child: Image.asset('assets/images/digital_parenting_one.png'),
+                  ),
+                ],
+              ),
+              onTap: () => {Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddonPage()))},
+            ),
+          ),
+        ),
+      ),
+      Flexible(
+        child: Container(
+          margin: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0), //Same as `blurRadius` i guess
+          padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.0),
+            color: cOrtuGrey,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey,
+                blurRadius: 3.0,
+              ),
+            ],
+          ),
+          child: _childDataLayout(),
+        ),
+      ),
+      Flexible(
+        child: ListView.builder(
+          physics: BouncingScrollPhysics(),
+          scrollDirection: Axis.horizontal,
+          itemCount: _ids.length,
+          itemBuilder: (BuildContext context, int position) {
+            return Container(
+              width: screenSize.width / 2,
+              height: screenSize.height / 4,
+              color: Colors.transparent,
+              margin: const EdgeInsets.all(10),
+              child: _coBrandContent(
+                _ids[position],
+                'Title Here',
+                'Content: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                () {},
+                screenSize.height / 4 / 2,
+              ),
+            );
+          },
+        ),
+      ),
+    ]);
+  }
+
+  Widget _bottomAppBar() {
+    return BottomAppBar(
+      elevation: 0,
+      color: Colors.black12,
+      shape: CircularNotchedRectangle(),
+      notchMargin: 6.0,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          IconWithLabel(
+              defaultIcon: Icons.home_outlined, activeIcon: Icons.home_filled, label: 'Home', isSelected: bottomNavIndex == 0, onPressed: () {}),
+          IconWithLabel(
+              defaultIcon: Icons.cloud_download_outlined,
+              activeIcon: Icons.cloud_download,
+              label: 'Addon',
+              isSelected: bottomNavIndex == 1,
+              onPressed: () {}),
+          SizedBox(width: 40), // The dummy child
+          IconWithLabel(
+              defaultIcon: Icons.calendar_today_outlined,
+              activeIcon: Icons.calendar_today,
+              label: 'Jadwal',
+              isSelected: bottomNavIndex == 3,
+              onPressed: () {}),
+          IconWithLabel(
+              defaultIcon: Icons.person_outlined, activeIcon: Icons.person, label: 'Akun', isSelected: bottomNavIndex == 4, onPressed: () {}),
+        ],
+      ),
+    );
+  }
+
+  Widget _coBrandContent(String imagePath, String title, String content, Function onTap, double screenHeight) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20.0),
+        image: DecorationImage(
+          image: AssetImage('assets/images/$imagePath'),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SizedBox(height: screenHeight + 50),
+          Flexible(
+            child: Container(
+              padding: EdgeInsets.all(10).copyWith(bottom: 0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20.0),
+                color: Colors.black38,
+              ),
+              child: Column(
+                // mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    "ruang",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey, fontSize: 18),
+                    '$title',
+                    style: TextStyle(fontWeight: FontWeight.bold, color: cOrtuWhite),
                   ),
                   Text(
-                    " keluarga",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xffFF018786), fontSize: 18),
+                    '$content',
+                    softWrap: true,
+                    style: TextStyle(color: cOrtuWhite),
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
                   )
                 ],
               ),
-            ],
-          ),
-          backgroundColor: Colors.white70,
-          iconTheme: IconThemeData(color: Colors.grey.shade700),
-          actions: <Widget>[
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.notifications,
-                color: Colors.grey.shade700,
-              ),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.mail_outline,
-                color: Colors.grey.shade700,
-              ),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.help,
-                color: Colors.grey.shade700,
-              ),
-            )
-          ],
-        ),
-        drawer: Drawer(
-          child: ListView(
-// Important: Remove any padding from the ListView.
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              DrawerHeader(
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xff3BDFD2),
-                      Color(0xff05745F),
-                    ],
-                  )),
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 20.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 10.0),
-                          child: Align(
-                            alignment: Alignment.bottomLeft,
-                            child: Text(
-                              '$userName',
-                              style: TextStyle(color: Colors.white, fontSize: 18),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          child: Align(
-                            alignment: Alignment.bottomLeft,
-                            child: Text(
-                              '$emailUser',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  )),
-              ListTile(
-                title: Text('Home'),
-                leading: Icon(Icons.home_filled, color: Colors.black),
-                onTap: () {
-                  // Update the state of the app
-                  // ...
-                  // Then close the drawer
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: Text('Profil'),
-                leading: Icon(Icons.person, color: Colors.black),
-                onTap: () {
-                  // Update the state of the app
-                  // ...
-                  // Then close the drawer
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: Text('Statistik Penggunaan'),
-                leading: Icon(Icons.supervised_user_circle, color: Colors.black),
-                onTap: () {
-                  // Then close the drawer
-                  Navigator.pop(context);
-                  // Update the state of the app
-                },
-              ),
-              ListTile(
-                title: Text('Addon'),
-                leading: Icon(Icons.supervised_user_circle, color: Colors.black),
-                onTap: () {
-                  // Then close the drawer
-                  Navigator.pop(context);
-                  // Update the state of the app
-                },
-              ),
-              ListTile(
-                title: Text('Child'),
-                leading: Icon(Icons.supervised_user_circle, color: Colors.black),
-                onTap: () {
-                  // Then close the drawer
-                  Navigator.pop(context);
-                  // Update the state of the app
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => InviteMoreChildPage(title: 'ruang keluarga')));
-                },
-              ),
-              ListTile(
-                title: Text('FAQ'),
-                leading: Icon(Icons.help, color: Colors.black),
-                onTap: () {
-                  // Update the state of the app
-                  // ...
-                  // Then close the drawer
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: Text('Kebijakan Privasi'),
-                leading: Icon(Icons.privacy_tip, color: Colors.black),
-                onTap: () {
-                  // Update the state of the app
-                  // ...
-                  // Then close the drawer
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: Text('Tentang'),
-                leading: Icon(Icons.info, color: Colors.black),
-                onTap: () {
-                  // Update the state of the app
-                  // ...
-                  // Then close the drawer
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                  title: Text('Keluar'),
-                  leading: Icon(Icons.exit_to_app_outlined, color: Colors.black),
-                  onTap: () => showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                            title: const Text('Konfirmasi'),
-                            content: const Text('Apakah anda yakin ingin keluar aplikasi ?'),
-                            actions: <Widget>[
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, 'Cancel'),
-                                child: const Text('Cancel', style: TextStyle(color: Color(0xff05745F))),
-                              ),
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, 'OK'),
-                                child: const Text('OK', style: TextStyle(color: Color(0xff05745F))),
-                              ),
-                            ],
-                          )))
-            ],
-          ),
-        ),
-        body: Stack(
-          children: [
-            SingleChildScrollView(
-                child: Column(children: <Widget>[
-              Container(
-                height: 170.0,
-                margin: const EdgeInsets.all(10.0), //Same as `blurRadius` i guess
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey,
-                      blurRadius: 3.0,
-                    ),
-                  ],
-                ),
-                child: ListView.builder(
-                  padding: EdgeInsets.all(5.0),
-                  shrinkWrap: false,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 2,
-                  itemBuilder: (BuildContext context, int index) => Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: GestureDetector(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.85,
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
-                            // child: Center(child: Text('Dummy Card Text', style: TextStyle(color: Colors.black)))
-                            child: Image.asset('assets/images/ic_digital_parenting_one.png'),
-                          ),
-                        ],
-                      ),
-                      onTap: () => {Navigator.of(context).push(MaterialPageRoute(builder: (context) => DetailContentRKPage(title: 'Detil Konten')))},
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                height: 250.0,
-                margin: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0), //Same as `blurRadius` i guess
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey,
-                      blurRadius: 3.0,
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.all(10.0),
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.white),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                              child: Row(
-                            children: [
-                              Container(
-                                child: Icon(
-                                  Icons.supervised_user_circle,
-                                  size: 24.0,
-                                  semanticLabel: 'Text to announce in accessibility modes',
-                                ),
-                              ),
-                              Container(
-                                margin: const EdgeInsets.only(left: 10.0),
-                                child: Row(
-                                  children: [
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        'Aktifitas',
-                                        style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        ' Anak',
-                                        style: TextStyle(color: Color(0xffFF018786), fontWeight: FontWeight.bold),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              )
-                            ],
-                          )),
-                          GestureDetector(
-                            child: Container(
-                                child: Container(
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  'Tambah Anak',
-                                  style: TextStyle(color: Color(0xffFF018786), fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            )),
-                            onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(builder: (context) => InviteMoreChildPage(title: 'ruang keluarga')));
-                            },
-                          )
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
-                      height: 195,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.white),
-                      child: _childDataLayout(),
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                height: 400,
-                margin: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0), //Same as `blurRadius` i guess
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey,
-                      blurRadius: 3.0,
-                    ),
-                  ],
-                ),
-                child: ListView.builder(
-                  itemBuilder: (BuildContext context, int position) {
-                    return Container(
-                      height: 200,
-                      margin: const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
-                      child: YoutubePlayerBuilder(
-                        player: YoutubePlayer(
-                          controller: setupYTPlayer(position),
-                          showVideoProgressIndicator: true,
-                          progressIndicatorColor: Colors.blueAccent,
-                          topActions: <Widget>[
-                            const SizedBox(width: 8.0),
-                            Expanded(
-                              child: Text(
-                                _controller.metadata.title,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18.0,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.settings,
-                                color: Colors.white,
-                                size: 25.0,
-                              ),
-                              onPressed: () {
-                                log('Settings Tapped!');
-                              },
-                            ),
-                          ],
-                          onReady: () {
-                            _isPlayerReady = true;
-                          },
-                          onEnded: (data) {
-                            _controller.load(_ids[(_ids.indexOf(data.videoId) + 1) % _ids.length]);
-                            // _showSnackBar('Next Video Started!');
-                          },
-                        ),
-                        builder: (context, player) => Scaffold(
-                          body: ListView(
-                            children: [
-                              player,
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                  itemCount: _ids.length,
-                ),
-              ),
-              /*Container(
-                  margin: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0), //Same as `blurRadius` i guess
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.0),
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey,
-                        blurRadius: 3.0,
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 200,
-                        margin: const EdgeInsets.all(10.0), //Same as `blurRadius` i guess
-                        child: YoutubePlayerBuilder(
-                          player: YoutubePlayer(
-                            controller: _controller,
-                            showVideoProgressIndicator: true,
-                            progressIndicatorColor: Colors.blueAccent,
-                            topActions: <Widget>[
-                              const SizedBox(width: 8.0),
-                              Expanded(
-                                child: Text(
-                                  _controller.metadata.title,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18.0,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.settings,
-                                  color: Colors.white,
-                                  size: 25.0,
-                                ),
-                                onPressed: () {
-                                  log('Settings Tapped!');
-                                },
-                              ),
-                            ],
-                            onReady: () {
-                              _isPlayerReady = true;
-                            },
-                            onEnded: (data) {
-                              _controller
-                                  .load(_ids[(_ids.indexOf(data.videoId) + 1) % _ids.length]);
-                              // _showSnackBar('Next Video Started!');
-                            },
-                          ),
-                          builder: (context, player) => Scaffold(
-                            body: ListView(
-                              children: [
-                                player,
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),*/
-            ])),
-            // SlidingUpPanel(
-            //   renderPanelSheet: false,
-            //   backdropEnabled: true,
-            //   minHeight: 130,
-            //   parallaxEnabled: true,
-            //   parallaxOffset: .5,
-            //   maxHeight: MediaQuery.of(context).size.height,
-            //   borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
-            //   // panel: _floatingPanel(),
-            //   panelBuilder: (ScrollController sc) => _scrollingList(sc),
-            //   collapsed: _floatingCollapsed(),
-            //   onPanelSlide: (position) => {
-            //     _changed(position)
-            //   },
-            // ),
-          ],
-        ));
-  }
-
-  Widget get _space => const SizedBox(height: 10);
-
-  Color _getStateColor(PlayerState state) {
-    switch (state) {
-      case PlayerState.unknown:
-        return Colors.grey[700]!;
-      case PlayerState.unStarted:
-        return Colors.pink;
-      case PlayerState.ended:
-        return Colors.red;
-      case PlayerState.playing:
-        return Colors.blueAccent;
-      case PlayerState.paused:
-        return Colors.orange;
-      case PlayerState.buffering:
-        return Colors.yellow;
-      case PlayerState.cued:
-        return Colors.blue[900]!;
-      default:
-        return Colors.blue;
-    }
-  }
-
-  Widget _text(String title, String value) {
-    return RichText(
-      text: TextSpan(
-        text: '$title : ',
-        style: const TextStyle(
-          color: Colors.blueAccent,
-          fontWeight: FontWeight.bold,
-        ),
-        children: [
-          TextSpan(
-            text: value,
-            style: const TextStyle(
-              color: Colors.blueAccent,
-              fontWeight: FontWeight.w300,
             ),
           ),
         ],
@@ -827,7 +518,64 @@ class _HomeParentPageState extends State<HomeParentPage> {
         future: onLogin(),
         builder: (BuildContext context, AsyncSnapshot<List<Child>> data) {
           if (data.data == null) {
-            return const Center(child: CircularProgressIndicator());
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Buat Akun untuk Anak Anda',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                  textAlign: TextAlign.center,
+                ),
+                Container(
+                  padding: EdgeInsets.all(5),
+                  child: Text(
+                    'dekatkan ponsel anak Anda. \nBersama anak Anda,siapkan pengawasan di perangkat mereka',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.only(top: 10, left: 20, right: 20),
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.all((RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))),
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.disabled)) return cDisabled;
+                          return cOrtuBlue;
+                        },
+                      ),
+                      elevation: MaterialStateProperty.resolveWith((states) {
+                        if (states.contains(MaterialState.disabled) || states.contains(MaterialState.pressed)) return 0;
+                        if (states.contains(MaterialState.hovered)) return 6;
+                        return 4;
+                      }),
+                    ),
+                    child: Text('DAFTAR',
+                        style: TextStyle(
+                          color: cPrimaryBg,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25,
+                        )),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<Object>(builder: (BuildContext context) => SetupInviteChildPage()),
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(height: 10),
+                Container(
+                  padding: EdgeInsets.all(10),
+                  child: Text(
+                    'waktu yang di perlukan sekitar 10 menit',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                //
+              ],
+            );
           } else {
             childsList = data.data!;
             if (childsList.length > 0) {
@@ -1291,34 +1039,46 @@ class _HomeParentPageState extends State<HomeParentPage> {
               ))),
     );
   }
+}
 
-  /*Widget getMediaWidget(BuildContext context, ApiResponse apiResponse) {
-    List<Media>? mediaList = apiResponse.data as List<Media>?;
-    switch (apiResponse.status) {
-      case Status.LOADING:
-        return Center(child: CircularProgressIndicator());
-      case Status.COMPLETED:
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Expanded(
-              flex: 8,
-              child: PlayerListWidget(mediaList!, (Media media) {
-                Provider.of<MediaViewModel>(context, listen: false)
-                    .setSelectedMedia(media);
-              }),
-            )
-          ],
-        );
-      case Status.ERROR:
-        return Center(
-          child: Text('Please try again latter!!!'),
-        );
-      case Status.INITIAL:
-      default:
-        return Center(
-          // child: Text('Search the song by Artist'),
-        );
-    }
-  }*/
+class IconWithLabel extends StatelessWidget {
+  final IconData activeIcon;
+  final IconData defaultIcon;
+  final Color activeColor;
+  final Color defaultColor;
+  final String label;
+  final bool isSelected;
+  final Function()? onPressed;
+
+  IconWithLabel({
+    required this.activeIcon,
+    required this.defaultIcon,
+    required this.label,
+    required this.onPressed,
+    this.defaultColor: cOrtuWhite,
+    this.activeColor: cOrtuBlue,
+    this.isSelected: false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: InkWell(
+        onTap: onPressed,
+        child: Container(
+          padding: EdgeInsets.all(4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Flexible(child: Icon(isSelected ? activeIcon : defaultIcon, color: isSelected ? activeColor : defaultColor)),
+              SizedBox(height: 4),
+              Text(label, style: TextStyle(color: isSelected ? activeColor : defaultColor))
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

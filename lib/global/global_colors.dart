@@ -2,8 +2,11 @@
 
 import 'package:flutter/material.dart';
 
-final primaryBg = Color(0xFF333333);
-final ortuBlue = Color(0xFF64c7ed);
-final ortuOrange = Color(0xFFffb703);
-final ortuGrey = Color(0xFFdddddd);
-final ortuWhite = Color(0xFFffffff);
+const cOrtuBlue = Color(0xFF64c7ed);
+const cOrtuOrange = Color(0xFFffb703);
+const cOrtuGrey = Color(0xFFdddddd);
+const cOrtuWhite = Color(0xFFffffff);
+
+final cPrimaryBg = Color(0xFF333333);
+final cAccentButton = cOrtuOrange;
+final cDisabled = Colors.grey.shade600;

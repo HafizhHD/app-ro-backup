@@ -20,20 +20,7 @@ import '../parent/view/setup_profile_parent.dart';
 final GoogleSignIn _googleSignIn = GoogleSignIn();
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
-class Login extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "Login",
-      home: LoginPage(title: "Login"),
-    );
-  }
-}
-
 class LoginPage extends StatefulWidget {
-  LoginPage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
   @override
   _LoginState createState() => _LoginState();
 }
@@ -41,6 +28,7 @@ class LoginPage extends StatefulWidget {
 class _LoginState extends State<LoginPage> {
   GoogleSignInAccount? _currentUser;
   String _contactText = '';
+  bool _okPolicy = false;
   late bool _serviceEnabled;
   late LocationData _locationData;
   late Location location;
@@ -50,14 +38,14 @@ class _LoginState extends State<LoginPage> {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.isSignedIn() ? await _googleSignIn.signInSilently() : await _googleSignIn.signIn();
       if (googleUser != null) {
-        onLogin(googleUser);
+        await onLogin(googleUser);
       } else {}
     } catch (error) {
       print(error);
     }
   }
 
-  void onLogin(GoogleSignInAccount googleUser) async {
+  Future onLogin(GoogleSignInAccount googleUser) async {
     String token = '';
     await _firebaseMessaging.getToken().then((fcmToken) {
       token = fcmToken!;
@@ -70,13 +58,13 @@ class _LoginState extends State<LoginPage> {
       await prefs.setString(rkPhotoUrl, googleUser.photoUrl.toString());
       await prefs.setString(accessGToken, googleKey.accessToken.toString());
       Response response = await MediaRepository().loginParent(googleUser.email.toString(), googleKey.accessToken.toString(), token, '1.0');
-      onHandleLogin(response);
+      await onHandleLogin(response);
     }).catchError((err) {
       print('inner error : $err');
     });
   }
 
-  void onHandleLogin(Response response) async {
+  Future onHandleLogin(Response response) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     print('response login ${response.body}');
     if (response.statusCode == 200) {
@@ -107,17 +95,17 @@ class _LoginState extends State<LoginPage> {
                 _permissionGranted = await location.hasPermission();
                 if (_permissionGranted == PermissionStatus.denied) {
                   Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => SetupPermissionChildPage(title: 'ruang keluarga', name: jsonUser['nameUser'])));
+                      MaterialPageRoute(builder: (context) => SetupPermissionChildPage(title: 'ruang ortu', name: jsonUser['nameUser'])));
                 } else {
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
                       builder: (context) => HomeChildPage(
-                            title: 'ruang keluarga',
+                            title: 'ruang ortu',
                             email: childsData[0]['email'],
                             name: childsData[0]['name'],
                           )));
                 }
               } else {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeParentPage(title: 'ruang keluarga')));
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeParentPage()));
               }
             } else {
               await prefs.setBool(isPrefLogin, true);
@@ -132,13 +120,13 @@ class _LoginState extends State<LoginPage> {
                 _permissionGranted = await location.hasPermission();
                 if (_permissionGranted == PermissionStatus.denied) {
                   Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => SetupPermissionChildPage(title: 'ruang keluarga', name: jsonUser['nameUser'])));
+                      MaterialPageRoute(builder: (context) => SetupPermissionChildPage(title: 'ruang ortu', name: jsonUser['nameUser'])));
                 } else {
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => HomeChildPage(title: 'ruang keluarga', email: jsonUser['emailUser'], name: jsonUser['nameUser'])));
+                      builder: (context) => HomeChildPage(title: 'ruang ortu', email: jsonUser['emailUser'], name: jsonUser['nameUser'])));
                 }
               } else {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeParentPage(title: 'ruang keluarga')));
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeParentPage()));
               }
             }
           } else {
@@ -154,26 +142,26 @@ class _LoginState extends State<LoginPage> {
               _permissionGranted = await location.hasPermission();
               if (_permissionGranted == PermissionStatus.denied) {
                 Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => SetupPermissionChildPage(title: 'ruang keluarga', name: jsonUser['nameUser'])));
+                    MaterialPageRoute(builder: (context) => SetupPermissionChildPage(title: 'ruang ortu', name: jsonUser['nameUser'])));
               } else {
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => HomeChildPage(title: 'ruang keluarga', email: jsonUser['emailUser'], name: jsonUser['nameUser'])));
+                    builder: (context) => HomeChildPage(title: 'ruang ortu', email: jsonUser['emailUser'], name: jsonUser['nameUser'])));
               }
             } else {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeParentPage(title: 'ruang keluarga')));
+              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeParentPage()));
             }
           }
         } else {}
       } else {
         await prefs.setBool(isPrefLogin, false);
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'ruang keluarga')));
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'ruang ortu')));
       }
     } else if (response.statusCode == 404) {
       await prefs.setBool(isPrefLogin, false);
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'ruang keluarga')));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'ruang ortu')));
     } else {
       await prefs.setBool(isPrefLogin, false);
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'ruang keluarga')));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'ruang ortu')));
     }
   }
 
@@ -227,118 +215,95 @@ class _LoginState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 50.0),
-        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Container(
-            height: 80,
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                //mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  Text(
-                    "ruang",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey, fontSize: 30),
-                  ),
-                  Text(
-                    " keluarga",
-                    textDirection: TextDirection.ltr,
-                    textAlign: TextAlign.left,
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xffFF018786), fontSize: 30),
-                  )
-                ],
+    final borderRadiusSize = Radius.circular(10);
+    final screenSize = MediaQuery.of(context).size;
+
+    return SafeArea(
+      child: Scaffold(
+        body: Container(
+          color: cPrimaryBg,
+          child: Column(
+            // mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Flexible(
+                child: Container(
+                  margin: EdgeInsets.only(left: 20, right: 20, bottom: 50),
+                  height: screenSize.height / 2,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      color: cOrtuWhite,
+                      borderRadius: BorderRadius.only(bottomRight: borderRadiusSize, bottomLeft: borderRadiusSize),
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/ruangortu-icon_x4.png'),
+                        fit: BoxFit.contain,
+                      )),
+                ),
               ),
-            ),
-          ),
-          Container(
-              child: Container(
-            height: 120,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xff3BDFD2),
-                    Color(0xff05745F),
-                  ],
-                )),
-            child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [
               Text(
-                'Masuk dengan',
-                style: TextStyle(color: Colors.white),
+                'Sign in / Login \ndengan menggunakan akun Google anda',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,
+                  color: cOrtuWhite,
+                ),
               ),
               Container(
-                  margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0),
-                  width: MediaQuery.of(context).size.width,
-                  /*child: FlatButton(
-                          shape: new RoundedRectangleBorder(
-                            borderRadius: new BorderRadius.circular(10.0),
-                          ),
-                          onPressed: () {},
-                          color: Colors.white,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,// Replace with a Row for horizontal icon + text
-                            children: <Widget>[
-                              Icon(
-                                Icons.add,
-                              ),
-                              Text(
-                                "Google",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontFamily: 'Raleway',
-                                  fontSize: 14.0,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),*/
-                  /*child: Container(
-                          height: 50,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Colors.white
-                          ),
-                          child: Container(
-                            child: Center(
-                              child: Text(
-                                "Google",
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                        ),*/
-                  child: FlatButton(
-                      height: 50,
-                      onPressed: () => {
-                            // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'ruang keluarga')))
-                            _handleSignIn()
-                            // fetchUserLocation()
-                          },
-                      child: Stack(
-                        children: <Widget>[
-                          Align(alignment: Alignment.centerLeft, child: Image.asset('assets/images/icon_google.png', width: 24.0, height: 24.0)),
-                          Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                "Google",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.grey, fontSize: 18),
-                              ))
-                        ],
+                padding: EdgeInsets.only(top: 50, bottom: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Checkbox(
+                        side: BorderSide(color: cOrtuWhite),
+                        activeColor: cOrtuWhite,
+                        checkColor: cPrimaryBg,
+                        value: _okPolicy,
+                        onChanged: (value) {
+                          setState(() {
+                            _okPolicy = !_okPolicy;
+                          });
+                        }),
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      child: Text(
+                        'Saya setuju dengan syarat dan ketentuan dari ruang-ortu',
+                        style: TextStyle(color: cOrtuWhite),
                       ),
-                      color: Colors.white,
-                      shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)))),
-            ]),
-          ))
-        ]),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                  margin: const EdgeInsets.all(10).copyWith(bottom: 50),
+                  width: screenSize.width / 2,
+                  decoration: BoxDecoration(
+                    color: _okPolicy ? cOrtuWhite : cDisabled,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ListTile(
+                    tileColor: _okPolicy ? cOrtuWhite : cDisabled,
+                    leading: Container(
+                        padding: EdgeInsets.all(10),
+                        child: Image.asset(
+                          'assets/images/google_logo.png',
+                        )),
+                    title: Text('Sign in with Google'),
+                    onTap: _okPolicy
+                        ? () async {
+                            showLoadingOverlay();
+                            await _handleSignIn();
+                            closeOverlay();
+                          }
+                        : null,
+                  )),
+            ],
+          ),
+        ),
       ),
     );
   }
+}
+
+Future logoutParent() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.clear();
 }

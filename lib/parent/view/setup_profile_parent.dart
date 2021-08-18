@@ -2,22 +2,16 @@ import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-
 import 'package:http/http.dart';
-import 'package:ruangkeluarga/parent/view/setup_invite_child.dart';
+
+import 'package:ruangkeluarga/global/global_formatter.dart';
+import 'package:ruangkeluarga/parent/view/home_parent.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum GenderCharacter { Ayah, Bunda }
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-
-class SetupParentProfile extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp();
-  }
-}
 
 class SetupParentProfilePage extends StatefulWidget {
   SetupParentProfilePage({Key? key, required this.title}) : super(key: key);
@@ -40,6 +34,8 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
   String phoneNumber = '';
   String photo = '';
   String accessToken = '';
+  String birthDateString = '';
+  DateTime birthDate = DateTime.now().subtract(Duration(days: 365 * 5));
   GenderCharacter? _character = GenderCharacter.Ayah;
 
   void onRegister() async {
@@ -57,7 +53,8 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
         await MediaRepository().registerParent(cEmail.text, cName.text, token, photo, cPhoneNumber.text, cAlamat.text, status, accessToken);
     if (response.statusCode == 200) {
       print('isi response register : ${response.body}');
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupInviteChildPage(title: 'ruang keluarga')));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeParentPage()));
+      // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupInviteChildPage(title: 'ruang keluarga')));
     } else {
       print('isi response register : ${response.statusCode}');
     }
@@ -83,58 +80,48 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final borderRadiusSize = Radius.circular(10);
+
     return Scaffold(
+        backgroundColor: cPrimaryBg,
         body: Container(
-      margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 50.0),
-      child: SingleChildScrollView(
-        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Container(
-            margin: EdgeInsets.only(top: 10.0, left: 20.0, right: 10.0),
-            height: 80,
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Hi, $namaUser',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  Text(
-                    'Silahkan lengkapi profile kamu sebagai orang tua di layanan ruang keluarga',
-                    style: TextStyle(fontSize: 16),
-                  )
-                ],
-              ),
-            ),
-          ),
-          Align(
-            alignment: Alignment.topLeft,
-            child: Text(
-              'Lengkapi Profil',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 10.0),
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xff3BDFD2),
-                      Color(0xff05745F),
-                    ],
-                  )),
-              child: Column(
-                children: [
-                  Column(
+          margin: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Container(
-                        margin: const EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
+                        height: screenSize.height / 3,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: cOrtuBlue,
+                          borderRadius: BorderRadius.only(bottomLeft: borderRadiusSize, bottomRight: borderRadiusSize),
+                        ),
+                        child: Stack(
+                          alignment: AlignmentDirectional.center,
+                          children: [
+                            Positioned(
+                              top: 20,
+                              child: Container(
+                                padding: EdgeInsets.all(20),
+                                child: Text(
+                                  'Buat Profile',
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                ),
+                              ),
+                            ),
+                            Icon(Icons.camera_alt, size: 50),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(top: 30.0, bottom: 10),
                         width: MediaQuery.of(context).size.width,
                         child: Theme(
                           data: Theme.of(context).copyWith(splashColor: Colors.transparent),
@@ -147,15 +134,15 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                             controller: cName,
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: Colors.white,
-                              hintText: 'Nama',
+                              fillColor: cOrtuWhite,
+                              hintText: 'Nama Lengkap',
                               contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
+                                borderSide: BorderSide(color: cOrtuWhite),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
+                                borderSide: BorderSide(color: cOrtuWhite),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
@@ -163,7 +150,7 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                         ),
                       ),
                       Container(
-                        margin: const EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
+                        margin: const EdgeInsets.only(top: 10.0, bottom: 10),
                         width: MediaQuery.of(context).size.width,
                         child: Theme(
                           data: Theme.of(context).copyWith(splashColor: Colors.transparent),
@@ -176,15 +163,15 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                             controller: cEmail,
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: Colors.white,
+                              fillColor: cOrtuWhite,
                               hintText: 'Email',
                               contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
+                                borderSide: BorderSide(color: cOrtuWhite),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
+                                borderSide: BorderSide(color: cOrtuWhite),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
@@ -192,7 +179,7 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                         ),
                       ),
                       Container(
-                        margin: const EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
+                        margin: const EdgeInsets.only(top: 10.0, bottom: 10),
                         width: MediaQuery.of(context).size.width,
                         child: Theme(
                           data: Theme.of(context).copyWith(splashColor: Colors.transparent),
@@ -204,15 +191,15 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                             controller: cPhoneNumber,
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: Colors.white,
-                              hintText: 'No. Handphone',
+                              fillColor: cOrtuWhite,
+                              hintText: 'No. Telp',
                               contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
+                                borderSide: BorderSide(color: cOrtuWhite),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
+                                borderSide: BorderSide(color: cOrtuWhite),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
@@ -220,7 +207,72 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                         ),
                       ),
                       Container(
-                        margin: const EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
+                        margin: const EdgeInsets.only(top: 10.0),
+                        child: Text(
+                          'Tanggal Lahir',
+                          style: TextStyle(color: cOrtuGrey),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(top: 10.0, bottom: 10),
+                        decoration: BoxDecoration(
+                          color: cOrtuWhite,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: InkWell(
+                          onTap: () async {
+                            final DateTime? picked = await showDatePicker(
+                                initialDatePickerMode: DatePickerMode.year,
+                                builder: (context, child) {
+                                  return Theme(
+                                    data: Theme.of(context),
+                                    child: child!,
+                                  );
+                                },
+                                context: context,
+                                initialDate: birthDate,
+                                firstDate: DateTime(1940, 1),
+                                lastDate: DateTime.now());
+                            print('Picked: $picked');
+                            if (picked != null && picked != birthDate) {
+                              setState(() {
+                                birthDate = picked;
+                                birthDateString = dateTimeTo_ddMMMMyyyy(birthDate);
+                              });
+                            }
+                          },
+                          child: IgnorePointer(
+                            ignoring: true,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Expanded(
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                                      border: InputBorder.none,
+                                      hintText: birthDateString == '' ? "- Pilih Tanggal -" : birthDateString,
+                                      hintStyle: birthDateString == '' ? TextStyle(fontSize: 16) : TextStyle(fontSize: 16, color: Colors.black),
+                                    ),
+                                    readOnly: true,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Container(
+                                  padding: EdgeInsets.only(right: 10),
+                                  child: Icon(
+                                    Icons.calendar_today,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(top: 10.0, bottom: 10),
                         width: MediaQuery.of(context).size.width,
                         child: Theme(
                           data: Theme.of(context).copyWith(splashColor: Colors.transparent),
@@ -232,98 +284,49 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                             controller: cAlamat,
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: Colors.white,
+                              fillColor: cOrtuWhite,
                               hintText: 'Alamat',
                               contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
+                                borderSide: BorderSide(color: cOrtuWhite),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
+                                borderSide: BorderSide(color: cOrtuWhite),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
                           ),
                         ),
                       ),
-                      Container(
-                        margin: EdgeInsets.only(top: 15.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Container(
-                              margin: EdgeInsets.only(right: 20.0),
-                              child: Row(
-                                children: [
-                                  Radio(
-                                    value: GenderCharacter.Ayah,
-                                    groupValue: _character,
-                                    activeColor: Colors.white,
-                                    onChanged: (GenderCharacter? value) {
-                                      setState(() {
-                                        _character = value;
-                                      });
-                                    },
-                                  ),
-                                  Text('Ayah', style: TextStyle(color: Colors.white, fontSize: 16)),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              margin: EdgeInsets.only(right: 20.0),
-                              child: Row(
-                                children: [
-                                  Radio(
-                                    value: GenderCharacter.Bunda,
-                                    groupValue: _character,
-                                    activeColor: Colors.white,
-                                    onChanged: (GenderCharacter? value) {
-                                      setState(() {
-                                        _character = value;
-                                      });
-                                    },
-                                  ),
-                                  Text('Bunda', style: TextStyle(color: Colors.white, fontSize: 16)),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
-                        child: FlatButton(
-                          height: 50,
-                          minWidth: 300,
-                          shape: new RoundedRectangleBorder(
-                            borderRadius: new BorderRadius.circular(15.0),
-                          ),
-                          onPressed: () {
-                            // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) =>
-                            //     SetupInviteChildPage(title: 'ruang keluarga')));
-                            onRegister();
-                          },
-                          color: Colors.white,
-                          child: Text(
-                            "Simpan",
-                            style: TextStyle(
-                              color: Color(0xff05745F),
-                              fontFamily: 'Raleway',
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14.0,
-                            ),
-                          ),
-                        ),
-                      )
                     ],
-                  )
-                ],
+                  ),
+                ),
               ),
-            ),
-          )
-        ]),
-      ),
-    ));
+              Container(
+                margin: EdgeInsets.only(top: 20.0),
+                child: FlatButton(
+                  height: 50,
+                  minWidth: 300,
+                  shape: new RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(15.0),
+                  ),
+                  onPressed: () {
+                    onRegister();
+                  },
+                  color: cOrtuBlue,
+                  child: Text(
+                    "LANJUTKAN",
+                    style: TextStyle(
+                      fontFamily: 'Raleway',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ));
   }
 }

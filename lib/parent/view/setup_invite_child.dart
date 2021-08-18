@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:ruangkeluarga/global/global_formatter.dart';
 import 'package:ruangkeluarga/parent/view/home_parent.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
@@ -10,17 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 enum GenderCharacter { Pria, Perempuan }
 enum StatusStudyLevel { SD, SMP, SMA }
 
-class SetupInviteChild extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp();
-  }
-}
-
 class SetupInviteChildPage extends StatefulWidget {
-  SetupInviteChildPage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
   @override
   _SetupInviteChildPageState createState() => _SetupInviteChildPageState();
 }
@@ -38,6 +30,8 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
   String emailUser = '';
   String nameUser = '';
   late FToast fToast;
+  String birthDateString = '';
+  DateTime birthDate = DateTime.now().subtract(Duration(days: 365 * 5));
 
   void setBindingData() async {
     prefs = await SharedPreferences.getInstance();
@@ -48,21 +42,23 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
 
   void onInviteChild() async {
     String status = "SD";
-    if (_statusLevel.toString() == "StatusStudyLevel.SD") {
-      status = 'SD';
-    } else if (_statusLevel.toString() == "StatusStudyLevel.SMP") {
-      status = 'SMP';
-    } else {
-      status = 'SMA';
-    }
+    // if (_statusLevel.toString() == "StatusStudyLevel.SD") {
+    //   status = 'SD';
+    // } else if (_statusLevel.toString() == "StatusStudyLevel.SMP") {
+    //   status = 'SMP';
+    // } else {
+    //   status = 'SMA';
+    // }
     await prefs.setString("rkChildName", cChildName.text);
-    Response response = await MediaRepository().inviteChild(emailUser, cChildEmail.text, cPhoneNumber.text, cChildName.text,
-        int.parse(cChildAge.text), status, int.parse(cChildOfNumber.text), int.parse(cChildNumber.text));
+    // Response response = await MediaRepository().inviteChild(emailUser, cChildEmail.text, cPhoneNumber.text, cChildName.text,
+    //     int.parse(cChildAge.text), status, int.parse(cChildOfNumber.text), int.parse(cChildNumber.text));
+    Response response = await MediaRepository().inviteChild(emailUser, cChildEmail.text, cPhoneNumber.text, cChildName.text, 10, status, 1, 1);
     if (response.statusCode == 200) {
       print('isi response invite : ${response.body}');
       _showToastSuccess();
       await prefs.setBool(isPrefLogin, true);
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeParentPage(title: 'ruang keluarga')));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx) => InviteChildQR()));
+      // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeParentPage()));
     } else {
       await prefs.setBool(isPrefLogin, false);
       _showToastFailed();
@@ -133,307 +129,257 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final borderRadiusSize = Radius.circular(10);
+
     return Scaffold(
+        backgroundColor: cPrimaryBg,
         body: Container(
-      margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 50.0),
-      child: SingleChildScrollView(
-        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Container(
-            margin: EdgeInsets.only(top: 10.0, left: 20.0, right: 10.0),
-            height: 80,
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '$nameUser',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  Text(
-                    'Daftarkan akun google anak anda untuk aktivasi di layanan ruang keluarga',
-                    style: TextStyle(fontSize: 16),
-                  )
-                ],
-              ),
-            ),
-          ),
-          Align(
-            alignment: Alignment.topLeft,
-            child: Text(
-              'Daftarkan Akun Anak',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 10.0),
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xff3BDFD2),
-                      Color(0xff05745F),
-                    ],
-                  )),
-              child: Column(
-                children: [
-                  Column(
+          margin: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Container(
-                        margin: const EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
-                        width: MediaQuery.of(context).size.width,
-                        child: Theme(
-                          data: Theme.of(context).copyWith(splashColor: Colors.transparent),
-                          child: TextField(
-                            style: TextStyle(fontSize: 16.0, color: Colors.black),
-                            controller: cChildName,
-                            keyboardType: TextInputType.text,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              hintText: 'Nama',
-                              contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          ),
+                        height: screenSize.height / 3,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: cOrtuBlue,
+                          borderRadius: BorderRadius.only(bottomLeft: borderRadiusSize, bottomRight: borderRadiusSize),
                         ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
-                        width: MediaQuery.of(context).size.width,
-                        child: Theme(
-                          data: Theme.of(context).copyWith(splashColor: Colors.transparent),
-                          child: TextField(
-                            style: TextStyle(fontSize: 16.0, color: Colors.black),
-                            controller: cChildEmail,
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              hintText: 'Email',
-                              contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
-                        width: MediaQuery.of(context).size.width,
-                        child: Theme(
-                          data: Theme.of(context).copyWith(splashColor: Colors.transparent),
-                          child: TextField(
-                            style: TextStyle(fontSize: 16.0, color: Colors.black),
-                            controller: cPhoneNumber,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              hintText: 'No. Handphone',
-                              contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
-                        width: MediaQuery.of(context).size.width,
-                        child: Theme(
-                          data: Theme.of(context).copyWith(splashColor: Colors.transparent),
-                          child: TextField(
-                            style: TextStyle(fontSize: 16.0, color: Colors.black),
-                            controller: cChildAge,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              hintText: 'Umur Anak',
-                              contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
-                        width: MediaQuery.of(context).size.width,
-                        child: Theme(
-                          data: Theme.of(context).copyWith(splashColor: Colors.transparent),
-                          child: TextField(
-                            style: TextStyle(fontSize: 16.0, color: Colors.black),
-                            controller: cChildOfNumber,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              hintText: 'Jumlah Anak',
-                              contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
-                        width: MediaQuery.of(context).size.width,
-                        child: Theme(
-                          data: Theme.of(context).copyWith(splashColor: Colors.transparent),
-                          child: TextField(
-                            style: TextStyle(fontSize: 16.0, color: Colors.black),
-                            controller: cChildNumber,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              hintText: 'Anak Ke',
-                              contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(top: 15.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                        child: Stack(
+                          alignment: AlignmentDirectional.center,
                           children: [
-                            Container(
-                              margin: EdgeInsets.only(right: 20.0),
-                              child: Row(
-                                children: [
-                                  Radio(
-                                    value: StatusStudyLevel.SD,
-                                    groupValue: _statusLevel,
-                                    activeColor: Colors.white,
-                                    onChanged: (StatusStudyLevel? value) {
-                                      setState(() {
-                                        _statusLevel = value;
-                                      });
-                                    },
-                                  ),
-                                  Text('SD', style: TextStyle(color: Colors.white, fontSize: 16)),
-                                ],
+                            Positioned(
+                              top: 20,
+                              child: Container(
+                                padding: EdgeInsets.all(20),
+                                child: Text(
+                                  'Buat Profile Anak',
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                ),
                               ),
                             ),
-                            Container(
-                              margin: EdgeInsets.only(right: 20.0),
-                              child: Row(
-                                children: [
-                                  Radio(
-                                    value: StatusStudyLevel.SMP,
-                                    groupValue: _statusLevel,
-                                    activeColor: Colors.white,
-                                    onChanged: (StatusStudyLevel? value) {
-                                      setState(() {
-                                        _statusLevel = value;
-                                      });
-                                    },
-                                  ),
-                                  Text('SMP', style: TextStyle(color: Colors.white, fontSize: 16)),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              margin: EdgeInsets.only(right: 20.0),
-                              child: Row(
-                                children: [
-                                  Radio(
-                                    value: StatusStudyLevel.SMA,
-                                    groupValue: _statusLevel,
-                                    activeColor: Colors.white,
-                                    onChanged: (StatusStudyLevel? value) {
-                                      setState(() {
-                                        _statusLevel = value;
-                                      });
-                                    },
-                                  ),
-                                  Text('SMA', style: TextStyle(color: Colors.white, fontSize: 16)),
-                                ],
-                              ),
-                            ),
+                            Icon(Icons.camera_alt, size: 50),
                           ],
                         ),
                       ),
                       Container(
-                        margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
-                        child: FlatButton(
-                          height: 50,
-                          minWidth: 300,
-                          shape: new RoundedRectangleBorder(
-                            borderRadius: new BorderRadius.circular(15.0),
-                          ),
-                          onPressed: () {
-                            // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) =>
-                            //     HomeParentPage(title: 'ruang keluarga')));
-                            onInviteChild();
-                          },
-                          color: Colors.white,
-                          child: Text(
-                            "Simpan",
-                            style: TextStyle(
-                              color: Color(0xff05745F),
-                              fontFamily: 'Raleway',
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14.0,
+                        margin: const EdgeInsets.only(top: 30.0, bottom: 10),
+                        child: Theme(
+                          data: Theme.of(context).copyWith(splashColor: Colors.transparent),
+                          child: TextField(
+                            style: TextStyle(fontSize: 16.0, color: Colors.black),
+                            keyboardType: TextInputType.text,
+                            minLines: 1,
+                            maxLines: 1,
+                            controller: cChildName,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              hintText: 'Nama Lengkap Anak',
+                              contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                             ),
                           ),
                         ),
-                      )
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(top: 10.0, bottom: 10),
+                        child: Theme(
+                          data: Theme.of(context).copyWith(splashColor: Colors.transparent),
+                          child: TextField(
+                            style: TextStyle(fontSize: 16.0, color: Colors.black),
+                            keyboardType: TextInputType.emailAddress,
+                            minLines: 1,
+                            maxLines: 1,
+                            controller: cChildEmail,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              hintText: 'Email Anak',
+                              contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(top: 10.0),
+                        child: Text(
+                          'Tanggal Lahir',
+                          style: TextStyle(color: cOrtuGrey),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(top: 10.0, bottom: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: InkWell(
+                          onTap: () async {
+                            final DateTime? picked = await showDatePicker(
+                                initialDatePickerMode: DatePickerMode.year,
+                                builder: (context, child) {
+                                  return Theme(
+                                    data: Theme.of(context),
+                                    child: child!,
+                                  );
+                                },
+                                context: context,
+                                initialDate: birthDate,
+                                firstDate: DateTime(1940, 1),
+                                lastDate: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day));
+                            if (picked != null && picked != birthDate) {
+                              setState(() {
+                                birthDate = picked;
+                                birthDateString = dateTimeTo_ddMMMMyyyy(birthDate);
+                              });
+                            }
+                          },
+                          child: IgnorePointer(
+                            ignoring: true,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Expanded(
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                                      border: InputBorder.none,
+                                      hintText: birthDateString == '' ? "- Pilih Tanggal -" : birthDateString,
+                                      hintStyle: birthDateString == '' ? TextStyle(fontSize: 16) : TextStyle(fontSize: 16, color: Colors.black),
+                                    ),
+                                    readOnly: true,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Container(
+                                  padding: EdgeInsets.only(right: 10),
+                                  child: Icon(
+                                    Icons.calendar_today,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
-                  )
-                ],
+                  ),
+                ),
               ),
-            ),
-          )
-        ]),
+              Container(
+                margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
+                child: FlatButton(
+                  height: 50,
+                  minWidth: 300,
+                  shape: new RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(15.0),
+                  ),
+                  onPressed: () {
+                    onInviteChild();
+                  },
+                  color: cOrtuBlue,
+                  child: Text(
+                    "LANJUTKAN",
+                    style: TextStyle(
+                      fontFamily: 'Raleway',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ));
+  }
+}
+
+class InviteChildQR extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: cPrimaryBg,
+      child: SafeArea(
+        child: Container(
+          padding: EdgeInsets.all(5),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: 20),
+              Text(
+                'Di Ponsel Anak Anda',
+                style: TextStyle(fontSize: 40, color: cOrtuWhite),
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                'Gunakan Camera Atau Aplikasi QR' + '\nScan QR Code Di Bawah ini' + '\nDan Klik Link Yang Anda Terima',
+                style: TextStyle(fontSize: 25, color: cOrtuWhite, height: 2),
+                textAlign: TextAlign.center,
+              ),
+              Flexible(
+                child: Container(
+                  color: Colors.white,
+                  margin: EdgeInsets.all(30),
+                  padding: EdgeInsets.all(10),
+                  child: QrImage(data: 'https://defghi.id/#products'),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.all(20),
+                child: FlatButton(
+                  height: 50,
+                  minWidth: 300,
+                  shape: new RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(15.0),
+                  ),
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (builder) => HomeParentPage()),
+                      (route) => false,
+                    );
+                  },
+                  color: cOrtuBlue,
+                  child: Text(
+                    "LANJUT KE HOME",
+                    style: TextStyle(
+                      fontFamily: 'Raleway',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-    ));
+    );
   }
 }

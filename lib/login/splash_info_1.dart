@@ -5,32 +5,37 @@ import 'package:ruangkeluarga/login/splash_info_2.dart';
 
 class SplashInfo1 extends StatelessWidget {
   final borderRadiusSize = Radius.circular(10);
+  final assetImg = AssetImage('assets/images/unsplash-digital-habit.jpg');
 
   @override
   Widget build(BuildContext context) {
+    precacheImage(assetImg, context);
     return Material(
       child: Container(
-        color: primaryBg,
+        color: cPrimaryBg,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SizedBox(height: 100),
+            SizedBox(height: 50),
             Flexible(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Flexible(
-                    child: Container(
-                      margin: EdgeInsets.only(left: 20),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          color: ortuWhite,
-                          borderRadius: BorderRadius.only(topLeft: borderRadiusSize, bottomLeft: borderRadiusSize),
-                          image: DecorationImage(
-                            image: AssetImage('assets/images/digital_parenting_one.png'),
-                            fit: BoxFit.cover,
-                          )),
+                    child: Hero(
+                      tag: 'carousel',
+                      child: Container(
+                        margin: EdgeInsets.only(left: 20),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            color: cOrtuWhite,
+                            borderRadius: BorderRadius.only(topLeft: borderRadiusSize, bottomLeft: borderRadiusSize),
+                            image: DecorationImage(
+                              image: assetImg,
+                              fit: BoxFit.cover,
+                            )),
+                      ),
                     ),
                   ),
                   SizedBox(height: 20),
@@ -39,24 +44,13 @@ class SplashInfo1 extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 20,
-                      color: ortuBlue,
+                      color: cOrtuWhite,
                     ),
                   ),
                 ],
               ),
             ),
-            Container(
-              padding: EdgeInsets.all(20),
-              width: Get.width / 2,
-              child: Hero(
-                tag: 'info_progress',
-                child: LinearProgressIndicator(
-                  value: 0,
-                  backgroundColor: ortuWhite,
-                  color: ortuBlue,
-                ),
-              ),
-            ),
+            linearProgressBar(0.25),
             Hero(
               tag: 'next_info',
               child: Material(
@@ -66,8 +60,8 @@ class SplashInfo1 extends StatelessWidget {
                   child: IconButton(
                     iconSize: 50,
                     icon: Container(
-                      decoration: BoxDecoration(color: ortuBlue, shape: BoxShape.circle),
-                      child: Icon(Icons.arrow_forward_rounded, color: primaryBg),
+                      decoration: BoxDecoration(color: cOrtuOrange, shape: BoxShape.circle),
+                      child: Icon(Icons.arrow_forward_rounded, color: cPrimaryBg),
                     ),
                     onPressed: () => Navigator.of(context).push(leftTransitionRoute(SplashInfo2())),
                   ),
@@ -79,4 +73,19 @@ class SplashInfo1 extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget linearProgressBar(double value) {
+  return Container(
+    padding: EdgeInsets.all(30),
+    width: Get.width / 2,
+    child: Hero(
+      tag: 'info_progress',
+      child: LinearProgressIndicator(
+        value: value,
+        backgroundColor: cOrtuWhite,
+        color: cOrtuBlue,
+      ),
+    ),
+  );
 }
