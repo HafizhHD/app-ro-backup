@@ -1,62 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/login/splash_info_1.dart';
 import 'package:ruangkeluarga/login/splash_info_3.dart';
 
 class SplashInfo2 extends StatelessWidget {
   final borderRadiusSize = Radius.circular(10);
+  final assetImg = AssetImage('assets/images/unsplash-parenting.jpg');
 
   @override
   Widget build(BuildContext context) {
+    precacheImage(assetImg, context);
+
     return Material(
       child: Container(
-        color: primaryBg,
+        color: cPrimaryBg,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SizedBox(height: 100),
+            SizedBox(height: 50),
             Flexible(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Flexible(
-                    child: Container(
-                      margin: EdgeInsets.only(right: 20),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          color: ortuWhite,
-                          borderRadius: BorderRadius.only(bottomRight: borderRadiusSize, topRight: borderRadiusSize),
-                          image: DecorationImage(
-                            image: AssetImage('assets/images/digital_parenting_one.png'),
-                            fit: BoxFit.cover,
-                          )),
+                    child: Hero(
+                      tag: 'carousel',
+                      child: Container(
+                        margin: EdgeInsets.only(right: 20),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            color: cOrtuWhite,
+                            borderRadius: BorderRadius.only(bottomRight: borderRadiusSize, topRight: borderRadiusSize),
+                            image: DecorationImage(
+                              image: assetImg,
+                              fit: BoxFit.cover,
+                            )),
+                      ),
                     ),
                   ),
                   SizedBox(height: 20),
                   Text(
-                    'Bimbing merekake konten yang bagus dan berikan asupan keingintahuan mereka',
+                    'Bimbing mereka ke konten yang bagus \ndan berikan asupan keingintahuan mereka',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 20,
-                      color: ortuBlue,
+                      color: cOrtuWhite,
                     ),
                   ),
                 ],
               ),
             ),
-            Container(
-              padding: EdgeInsets.all(20),
-              width: Get.width / 2,
-              child: Hero(
-                tag: 'info_progress',
-                child: LinearProgressIndicator(
-                  value: 0.25,
-                  backgroundColor: ortuWhite,
-                  color: ortuBlue,
-                ),
-              ),
-            ),
+            linearProgressBar(0.50),
             Hero(
               tag: 'next_info',
               child: Material(
@@ -66,8 +62,8 @@ class SplashInfo2 extends StatelessWidget {
                   child: IconButton(
                     iconSize: 50,
                     icon: Container(
-                      decoration: BoxDecoration(color: ortuBlue, shape: BoxShape.circle),
-                      child: Icon(Icons.arrow_forward_rounded, color: primaryBg),
+                      decoration: BoxDecoration(color: cAccentButton, shape: BoxShape.circle),
+                      child: Icon(Icons.arrow_forward_rounded, color: cPrimaryBg),
                     ),
                     onPressed: () => Navigator.of(context).push(leftTransitionRoute(SplashInfo3())),
                   ),

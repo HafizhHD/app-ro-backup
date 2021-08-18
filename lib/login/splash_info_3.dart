@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/login/splash_info_1.dart';
 import 'package:ruangkeluarga/login/splash_info_4.dart';
 
 class SplashInfo3 extends StatelessWidget {
   final borderRadiusSize = Radius.circular(10);
+  final assetImg = AssetImage('assets/images/unsplash-reward.jpg');
 
   @override
   Widget build(BuildContext context) {
+    precacheImage(assetImg, context);
+
     return Material(
       child: Container(
-        color: primaryBg,
+        color: cPrimaryBg,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SizedBox(height: 100),
+            SizedBox(height: 50),
             Flexible(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -25,10 +29,10 @@ class SplashInfo3 extends StatelessWidget {
                       margin: EdgeInsets.all(20),
                       width: double.infinity,
                       decoration: BoxDecoration(
-                          color: ortuWhite,
+                          color: cOrtuWhite,
                           borderRadius: BorderRadius.all(borderRadiusSize),
                           image: DecorationImage(
-                            image: AssetImage('assets/images/ic_digital_parenting_one.png'),
+                            image: assetImg,
                             fit: BoxFit.cover,
                           )),
                     ),
@@ -39,24 +43,13 @@ class SplashInfo3 extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 20,
-                      color: ortuBlue,
+                      color: cOrtuWhite,
                     ),
                   ),
                 ],
               ),
             ),
-            Container(
-              padding: EdgeInsets.all(20),
-              width: Get.width / 2,
-              child: Hero(
-                tag: 'info_progress',
-                child: LinearProgressIndicator(
-                  value: 0.5,
-                  backgroundColor: ortuWhite,
-                  color: ortuBlue,
-                ),
-              ),
-            ),
+            linearProgressBar(0.75),
             Hero(
               tag: 'next_info',
               child: Material(
@@ -66,8 +59,8 @@ class SplashInfo3 extends StatelessWidget {
                   child: IconButton(
                     iconSize: 50,
                     icon: Container(
-                      decoration: BoxDecoration(color: ortuBlue, shape: BoxShape.circle),
-                      child: Icon(Icons.arrow_forward_rounded, color: primaryBg),
+                      decoration: BoxDecoration(color: cAccentButton, shape: BoxShape.circle),
+                      child: Icon(Icons.arrow_forward_rounded, color: cPrimaryBg),
                     ),
                     onPressed: () => Navigator.of(context).push(leftTransitionRoute(SplashInfo4())),
                   ),

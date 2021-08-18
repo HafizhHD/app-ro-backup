@@ -5,6 +5,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'package:ruangkeluarga/child/home_child.dart';
 import 'package:ruangkeluarga/login/splash_info.dart';
@@ -60,7 +62,7 @@ Future<void> main() async {
     sound: true,
   );
 
-  runApp(MyApp());
+  initializeDateFormatting('en_ID', null).then((_) => runApp(MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -71,22 +73,18 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider.value(value: MediaViewModel()),
       ],
-      child: MaterialApp(
+      child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
         theme: ThemeData(
-          primaryColor: ortuBlue,
+          primaryColor: cOrtuBlue,
         ),
-        home: MyHomePage(title: 'Flutter Demo Home Page'),
+        home: MyHomePage(),
       ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
-  final String title;
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -98,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       // Add Your Code here.
-      Future.delayed(Duration(seconds: 3), () async {
+      Future.delayed(Duration(seconds: 2), () async {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         final prevLogin = prefs.getBool(isPrefLogin);
         final roUserType = prefs.getString(rkUserType);
@@ -108,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 builder: (context) =>
                     HomeChildPage(title: 'ruang keluarga', email: prefs.getString(rkEmailUser)!, name: prefs.getString(rkUserName)!)));
           } else {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeParentPage(title: 'ruang keluarga')));
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeParentPage()));
           }
         } else {
           Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SplashInfo()));
@@ -121,9 +119,15 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Material(
       child: Container(
-        color: primaryBg,
+        color: cPrimaryBg,
         child: Center(
-          child: Hero(tag: 'ruangortuIcon', child: Image.asset('assets/images/ruangortu-icon.png')),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Flexible(child: Hero(tag: 'ruangortuIcon', child: Image.asset('assets/images/ruangortu-icon_x4.png'))),
+              wProgressIndicator(),
+            ],
+          ),
         ),
       ),
     );
