@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/login/login.dart';
 import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/parent/view/invite_more_child.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -149,6 +150,7 @@ class ParentDrawer extends StatelessWidget {
                               showLoadingOverlay();
                               SharedPreferences prefs = await SharedPreferences.getInstance();
                               await prefs.clear();
+                              await signOutGoogle();
                               closeOverlay();
                               Navigator.pushAndRemoveUntil(
                                 context,

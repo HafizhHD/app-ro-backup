@@ -29,7 +29,7 @@ late AndroidNotificationChannel channel;
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
 Future<void> main() async {
-  // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Color(0xff05745F)));
+  // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Color(0xff05745F), statusBarIconBrightness: Brightness.dark));
 
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
