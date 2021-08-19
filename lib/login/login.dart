@@ -19,6 +19,10 @@ import '../parent/view/setup_profile_parent.dart';
 
 final GoogleSignIn _googleSignIn = GoogleSignIn();
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+Future signOutGoogle() async {
+  await _googleSignIn.signOut();
+  print("User Successfully Signed Out from Google Account");
+}
 
 class LoginPage extends StatefulWidget {
   @override
