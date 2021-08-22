@@ -12,7 +12,7 @@ class AddonPage extends StatelessWidget {
           children: [
             Container(
               padding: EdgeInsets.all(10),
-              child: SearchBarWidget(
+              child: WSearchBar(
                 hintText: 'Search Addon',
                 fOnChanged: (text) {},
               ),
@@ -58,7 +58,7 @@ class AddonCard extends StatelessWidget {
     return Container(
       key: Key(title),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20.0),
+        borderRadius: BorderRadius.circular(15.0),
         image: DecorationImage(
           image: AssetImage('assets/images/$imagePath'),
           fit: BoxFit.cover,
@@ -72,7 +72,7 @@ class AddonCard extends StatelessWidget {
           Container(
             padding: EdgeInsets.only(top: 5, left: 20, right: 20),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.0),
+              borderRadius: BorderRadius.circular(15.0),
               color: Colors.black54,
             ),
             child: Row(
@@ -119,11 +119,11 @@ class AddonCard extends StatelessWidget {
   }
 }
 
-class SearchBarWidget extends StatelessWidget {
+class WSearchBar extends StatelessWidget {
   final Function(String)? fOnChanged;
   final TextEditingController? tecController;
   final String hintText;
-  SearchBarWidget({this.fOnChanged, this.tecController, this.hintText = "Cari"});
+  WSearchBar({this.fOnChanged, this.tecController, this.hintText = "Cari"});
 
   @override
   Widget build(BuildContext context) {
