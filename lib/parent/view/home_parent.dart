@@ -3,27 +3,25 @@ import 'dart:developer';
 import 'dart:ui';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart' hide Response;
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart';
 import 'package:ruangkeluarga/main.dart';
-import 'package:ruangkeluarga/model/rk_child_app_icon_list.dart';
 import 'package:ruangkeluarga/model/rk_child_model.dart';
 import 'package:ruangkeluarga/model/rk_user_model.dart';
 import 'package:ruangkeluarga/parent/view/addon/addon_page.dart';
 import 'package:ruangkeluarga/parent/view/detail_child_view.dart';
-import 'package:ruangkeluarga/parent/view/detail_content_rk_view.dart';
-import 'package:ruangkeluarga/parent/view/invite_more_child.dart';
-import 'package:ruangkeluarga/parent/view/parent_drawer.dart';
+import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
+import 'package:ruangkeluarga/parent/view/main/parent_drawer.dart';
 import 'package:ruangkeluarga/parent/view/setup_invite_child.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
 import 'package:ruangkeluarga/utils/app_usage.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
@@ -58,8 +56,6 @@ class _HomeParentPageState extends State<HomeParentPage> {
     'unsplash-reward.jpg',
     'unsplash-parenting.jpg',
   ];
-
-  int bottomNavIndex = 0;
 
   void _changed(double opacity) {
     setState(() {
@@ -302,157 +298,64 @@ class _HomeParentPageState extends State<HomeParentPage> {
     // log('response data : $apiResponse');
     final screenSize = MediaQuery.of(context).size;
 
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: cPrimaryBg,
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: cPrimaryBg,
-          iconTheme: IconThemeData(color: cOrtuWhite),
-          actions: <Widget>[
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.notifications,
-                color: cOrtuWhite,
-              ),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.mail_outline,
-                color: cOrtuWhite,
-              ),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.help,
-                color: cOrtuWhite,
-              ),
-            )
-          ],
-        ),
-        drawer: ParentDrawer(userMail: emailUser, userName: userName),
-        body: mainContent(screenSize),
-        bottomNavigationBar: _bottomAppBar(),
-        floatingActionButton: SizedBox(
-          height: 80,
-          width: 80,
-          child: FloatingActionButton(
-            elevation: 0,
-            backgroundColor: Colors.black38,
-            child: Container(
-              padding: EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/ruangortu-icon.png'),
-                  fit: BoxFit.contain,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Flexible(
+          flex: 1,
+          child: Container(
+            margin: const EdgeInsets.all(10.0), //Same as `blurRadius` i guess
+            child: ListView.builder(
+              padding: EdgeInsets.all(5.0),
+              shrinkWrap: false,
+              scrollDirection: Axis.horizontal,
+              itemCount: 2,
+              itemBuilder: (BuildContext context, int index) => Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: GestureDetector(
+                  child: Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0)),
+                        // child: Center(child: Text('Dummy Card Text', style: TextStyle(color: Colors.black)))
+                        child: Image.asset('assets/images/hkbpgo.png'),
+                      ),
+                    ],
+                  ),
+                  onTap: () => Get.find<ParentController>().setBottomNavIndex(1),
                 ),
               ),
             ),
-            onPressed: () {},
           ),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      ),
-    );
-  }
-
-  Widget mainContent(Size screenSize) {
-    return Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: <Widget>[
-      Container(
-        height: 170.0,
-        margin: const EdgeInsets.all(10.0), //Same as `blurRadius` i guess
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey,
-              blurRadius: 3.0,
-            ),
-          ],
-        ),
-        child: ListView.builder(
-          padding: EdgeInsets.all(5.0),
-          shrinkWrap: false,
-          scrollDirection: Axis.horizontal,
-          itemCount: 2,
-          itemBuilder: (BuildContext context, int index) => Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: GestureDetector(
-              child: Row(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0)),
-                    // child: Center(child: Text('Dummy Card Text', style: TextStyle(color: Colors.black)))
-                    child: Image.asset('assets/images/hkbpgo.png'),
-                  ),
-                ],
-              ),
-              onTap: () => {Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddonPage()))},
-            ),
+        // Flexible(child: _childDataLayout()),
+        Flexible(flex: 2, child: _childDataLayout()),
+        Flexible(
+          flex: 2,
+          child: ListView.builder(
+            physics: BouncingScrollPhysics(),
+            scrollDirection: Axis.horizontal,
+            itemCount: _ids.length,
+            itemBuilder: (BuildContext context, int position) {
+              return Container(
+                width: screenSize.width / 2,
+                height: screenSize.height / 4,
+                color: Colors.transparent,
+                margin: const EdgeInsets.all(10),
+                child: _coBrandContent(
+                  _ids[position],
+                  'Title Here',
+                  'Content: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                  () {},
+                  screenSize.height / 4 / 2,
+                ),
+              );
+            },
           ),
         ),
-      ),
-      // Flexible(child: _childDataLayout()),
-      Flexible(child: _childDataLayout()),
-      Flexible(
-        child: ListView.builder(
-          physics: BouncingScrollPhysics(),
-          scrollDirection: Axis.horizontal,
-          itemCount: _ids.length,
-          itemBuilder: (BuildContext context, int position) {
-            return Container(
-              width: screenSize.width / 2,
-              height: screenSize.height / 4,
-              color: Colors.transparent,
-              margin: const EdgeInsets.all(10),
-              child: _coBrandContent(
-                _ids[position],
-                'Title Here',
-                'Content: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                () {},
-                screenSize.height / 4 / 2,
-              ),
-            );
-          },
-        ),
-      ),
-    ]);
-  }
-
-  Widget _bottomAppBar() {
-    return BottomAppBar(
-      elevation: 0,
-      color: Colors.black12,
-      shape: CircularNotchedRectangle(),
-      notchMargin: 6.0,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          IconWithLabel(
-              defaultIcon: Icons.home_outlined, activeIcon: Icons.home_filled, label: 'Home', isSelected: bottomNavIndex == 0, onPressed: () {}),
-          IconWithLabel(
-              defaultIcon: Icons.cloud_download_outlined,
-              activeIcon: Icons.cloud_download,
-              label: 'Addon',
-              isSelected: bottomNavIndex == 1,
-              onPressed: () {}),
-          SizedBox(width: 40), // The dummy child
-          IconWithLabel(
-              defaultIcon: Icons.calendar_today_outlined,
-              activeIcon: Icons.calendar_today,
-              label: 'Jadwal',
-              isSelected: bottomNavIndex == 3,
-              onPressed: () {}),
-          IconWithLabel(
-              defaultIcon: Icons.person_outlined, activeIcon: Icons.person, label: 'Akun', isSelected: bottomNavIndex == 4, onPressed: () {}),
-        ],
-      ),
+      ],
     );
   }
 
@@ -474,7 +377,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
               padding: EdgeInsets.all(10).copyWith(bottom: 0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20.0),
-                color: Colors.black87,
+                color: Colors.black54,
               ),
               child: Column(
                 // mainAxisAlignment: MainAxisAlignment.end,
@@ -612,23 +515,22 @@ class ChildCardWithBottomSheet extends StatelessWidget {
           Align(
             alignment: Alignment.topRight,
             child: Container(
-              padding: EdgeInsets.only(right: 10, top: 10),
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: cPrimaryBg,
-                ),
-                child: IconButton(
-                  iconSize: 40,
-                  padding: EdgeInsets.all(0),
-                  icon: Icon(Icons.add_circle_outline_rounded, color: cOrtuOrange),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute<Object>(builder: (BuildContext context) => SetupInviteChildPage()),
-                    );
-                  },
-                ),
+              margin: EdgeInsets.only(right: 4, top: 4),
+              // decoration: BoxDecoration(
+              //   shape: BoxShape.circle,
+              //   color: cPrimaryBg,
+              // ),
+              child: IconButton(
+                color: Colors.black,
+                iconSize: 40,
+                padding: EdgeInsets.all(0),
+                icon: Icon(Icons.add_circle_outline_rounded),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<Object>(builder: (BuildContext context) => SetupInviteChildPage()),
+                  );
+                },
               ),
             ),
           ),
@@ -643,7 +545,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                 return Container(
                   padding: EdgeInsets.all(5),
                   decoration: BoxDecoration(
-                    color: Colors.black87,
+                    color: Colors.black54,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   width: screenSize.width,
@@ -674,27 +576,59 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                             ),
                           ),
                           Container(
-                            margin: EdgeInsets.all(10.0),
+                            margin: EdgeInsets.only(left: 10, top: 5, bottom: 5, right: 10),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  'Screen Time : ${prefs.getString("averageTime${childData.email}") ?? '-'}',
-                                  style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-                                ),
-                                IconButton(
-                                    onPressed: () {
-                                      Navigator.of(context).push(MaterialPageRoute(
-                                          builder: (context) => DetailChildPage(
-                                              title: 'Kontrol dan Konfigurasi', name: '${childData.name}', email: '${childData.email}')));
-                                    },
-                                    icon: Icon(
-                                      Icons.settings,
-                                      color: cOrtuWhite,
-                                    )),
+                                contentTime('Screen Time', '${prefs.getString("averageTime${childData.email}") ?? '00:00'}'),
+                                contentTime('Gaming', '00:00'),
+                                contentTime('Social Media', '00:00'),
                               ],
                             ),
                           ),
+                          Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IconButton(
+                                  iconSize: 35,
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.crop_square_outlined,
+                                    color: cOrtuBlue,
+                                  ),
+                                ),
+                                IconButton(
+                                  iconSize: 35,
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.location_on_outlined,
+                                    color: cOrtuBlue,
+                                  ),
+                                ),
+                                IconButton(
+                                  iconSize: 35,
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.notifications,
+                                    color: cOrtuBlue,
+                                  ),
+                                ),
+                                IconButton(
+                                  iconSize: 35,
+                                  onPressed: () {
+                                    Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (context) => DetailChildPage(
+                                            title: 'Kontrol dan Konfigurasi', name: '${childData.name}', email: '${childData.email}')));
+                                  },
+                                  icon: Icon(
+                                    Icons.settings,
+                                    color: cOrtuBlue,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -707,45 +641,25 @@ class ChildCardWithBottomSheet extends StatelessWidget {
       ),
     );
   }
-}
 
-class IconWithLabel extends StatelessWidget {
-  final IconData activeIcon;
-  final IconData defaultIcon;
-  final Color activeColor;
-  final Color defaultColor;
-  final String label;
-  final bool isSelected;
-  final Function()? onPressed;
-
-  IconWithLabel({
-    required this.activeIcon,
-    required this.defaultIcon,
-    required this.label,
-    required this.onPressed,
-    this.defaultColor: cOrtuWhite,
-    this.activeColor: cOrtuBlue,
-    this.isSelected: false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      type: MaterialType.transparency,
-      child: InkWell(
-        onTap: onPressed,
-        child: Container(
-          padding: EdgeInsets.all(4),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Flexible(child: Icon(isSelected ? activeIcon : defaultIcon, color: isSelected ? activeColor : defaultColor)),
-              SizedBox(height: 4),
-              Text(label, style: TextStyle(color: isSelected ? activeColor : defaultColor))
-            ],
+  Widget contentTime(
+    String title,
+    String timeValue,
+  ) {
+    return Container(
+      padding: EdgeInsets.all(2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '$title',
+            style: TextStyle(color: Colors.white, fontSize: 12),
           ),
-        ),
+          Text(
+            '$timeValue',
+            style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),
+          ),
+        ],
       ),
     );
   }

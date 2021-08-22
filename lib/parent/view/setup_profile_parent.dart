@@ -7,6 +7,7 @@ import 'package:http/http.dart';
 import 'package:ruangkeluarga/global/global_formatter.dart';
 import 'package:ruangkeluarga/parent/view/home_parent.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -53,7 +54,7 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
         await MediaRepository().registerParent(cEmail.text, cName.text, token, photo, cPhoneNumber.text, cAlamat.text, status, accessToken);
     if (response.statusCode == 200) {
       print('isi response register : ${response.body}');
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeParentPage()));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ParentMain()));
       // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupInviteChildPage(title: 'ruang keluarga')));
     } else {
       print('isi response register : ${response.statusCode}');

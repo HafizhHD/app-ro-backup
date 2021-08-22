@@ -359,11 +359,7 @@ class InviteChildQR extends StatelessWidget {
                     borderRadius: new BorderRadius.circular(15.0),
                   ),
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (builder) => HomeParentPage()),
-                      (route) => false,
-                    );
+                    Navigator.pop(context);
                   },
                   color: cOrtuBlue,
                   child: Text(

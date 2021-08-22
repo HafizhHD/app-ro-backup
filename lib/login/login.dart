@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
@@ -10,8 +9,9 @@ import 'package:http/http.dart';
 import 'package:location/location.dart';
 import 'package:ruangkeluarga/child/home_child.dart';
 import 'package:ruangkeluarga/child/setup_permission_child.dart';
-import 'package:ruangkeluarga/parent/view/home_parent.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
+import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -109,7 +109,7 @@ class _LoginState extends State<LoginPage> {
                           )));
                 }
               } else {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeParentPage()));
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ParentMain()));
               }
             } else {
               await prefs.setBool(isPrefLogin, true);
@@ -130,7 +130,7 @@ class _LoginState extends State<LoginPage> {
                       builder: (context) => HomeChildPage(title: 'ruang ortu', email: jsonUser['emailUser'], name: jsonUser['nameUser'])));
                 }
               } else {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeParentPage()));
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ParentMain()));
               }
             }
           } else {
@@ -152,7 +152,7 @@ class _LoginState extends State<LoginPage> {
                     builder: (context) => HomeChildPage(title: 'ruang ortu', email: jsonUser['emailUser'], name: jsonUser['nameUser'])));
               }
             } else {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeParentPage()));
+              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ParentMain()));
             }
           }
         } else {}

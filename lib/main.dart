@@ -12,6 +12,8 @@ import 'package:ruangkeluarga/child/home_child.dart';
 import 'package:ruangkeluarga/login/splash_info.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/home_parent.dart';
+import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
+import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 import 'package:ruangkeluarga/parent/view_model/vm_content_rk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -94,6 +96,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    Get.put(ParentController());
+
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       // Add Your Code here.
       Future.delayed(Duration(seconds: 2), () async {
@@ -106,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 builder: (context) =>
                     HomeChildPage(title: 'ruang keluarga', email: prefs.getString(rkEmailUser)!, name: prefs.getString(rkUserName)!)));
           } else {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeParentPage()));
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ParentMain()));
           }
         } else {
           Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SplashInfo()));
