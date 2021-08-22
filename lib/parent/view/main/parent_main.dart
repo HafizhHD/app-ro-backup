@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/addon/addon_page.dart';
+import 'package:ruangkeluarga/parent/view/akun/akun_page.dart';
+import 'package:ruangkeluarga/parent/view/feed/feed_page.dart';
 import 'package:ruangkeluarga/parent/view/home_parent.dart';
 import 'package:ruangkeluarga/parent/view/jadwal/jadwal_page.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
@@ -53,9 +55,9 @@ class ParentMain extends StatelessWidget {
           width: 80,
           child: FloatingActionButton(
             elevation: 0,
-            backgroundColor: Colors.black38,
+            backgroundColor: Colors.black54,
             child: Container(
-              padding: EdgeInsets.all(2),
+              margin: EdgeInsets.all(8),
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage('assets/images/ruangortu-icon.png'),
@@ -63,7 +65,7 @@ class ParentMain extends StatelessWidget {
                 ),
               ),
             ),
-            onPressed: () {},
+            onPressed: () => controller.setBottomNavIndex(2),
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -75,7 +77,7 @@ class ParentMain extends StatelessWidget {
     return Obx(
       () => BottomAppBar(
         elevation: 0,
-        color: Colors.black12,
+        color: Colors.black54,
         shape: CircularNotchedRectangle(),
         notchMargin: 6.0,
         child: Row(
@@ -124,10 +126,12 @@ class ChosenPage extends StatelessWidget {
         return new HomeParentPage();
       case 1:
         return new AddonPage();
-      // case 2:
+      case 2:
+        return new FeedPage();
       case 3:
         return new JadwalPage();
       case 4:
+        return new AkunPage();
       default:
         return new HomeParentPage();
     }
@@ -160,6 +164,7 @@ class IconWithLabel extends StatelessWidget {
       child: InkWell(
         onTap: onPressed,
         child: Container(
+          margin: EdgeInsets.all(2),
           padding: EdgeInsets.all(4),
           child: Column(
             mainAxisSize: MainAxisSize.min,

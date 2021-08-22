@@ -362,7 +362,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
   Widget _coBrandContent(String imagePath, String title, String content, Function onTap, double screenHeight) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20.0),
+        borderRadius: BorderRadius.circular(15.0),
         image: DecorationImage(
           image: AssetImage('assets/images/$imagePath'),
           fit: BoxFit.cover,
@@ -376,7 +376,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
             child: Container(
               padding: EdgeInsets.all(10).copyWith(bottom: 0),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20.0),
+                borderRadius: BorderRadius.circular(15.0),
                 color: Colors.black54,
               ),
               child: Column(
@@ -507,7 +507,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
       margin: EdgeInsets.all(paddingValue),
       width: screenSize.width - paddingValue * 2,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20.0),
+        borderRadius: BorderRadius.circular(15.0),
         image: DecorationImage(image: AssetImage('assets/images/foto_anak.png'), fit: BoxFit.cover),
       ),
       child: Stack(
@@ -546,7 +546,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                   padding: EdgeInsets.all(5),
                   decoration: BoxDecoration(
                     color: Colors.black54,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(15),
                   ),
                   width: screenSize.width,
                   child: NotificationListener(
