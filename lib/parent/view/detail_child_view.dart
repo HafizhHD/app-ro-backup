@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/config_rk_access_internet.dart';
 import 'package:ruangkeluarga/parent/view/config_rk_batas_penggunaan.dart';
 import 'package:ruangkeluarga/parent/view/config_rk_block_apps.dart';
@@ -17,6 +17,7 @@ import 'package:ruangkeluarga/parent/view/config_rk_location.dart';
 import 'package:ruangkeluarga/parent/view/detail_child_activity.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class DetailChildView extends StatelessWidget {
   @override
@@ -45,38 +46,12 @@ class _DetailChildPageState extends State<DetailChildPage> {
   int dataTotalSecond = 0;
   late SharedPreferences prefs;
   String avgData = '0s';
-  var dtx = [0, 0, 0, 0, 0, 0, 0];
+  var dtx = [1, 2, 3, 4, 5, 6, 0];
   var dty = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
   String dateToday = '00.01';
   int countUsage = 1;
 
-  List<charts.Series<Sales, String>> _createRandomData() {
-    final random = Random();
-
-    final desktopSalesData = [
-      Sales('${dty[0]}', dtx[0]),
-      Sales('${dty[1]}', dtx[1]),
-      Sales('${dty[2]}', dtx[2]),
-      Sales('${dty[3]}', dtx[3]),
-      Sales('${dty[4]}', dtx[4]),
-      Sales('${dty[5]}', dtx[5]),
-      Sales('${dty[6]}', dtx[6]),
-    ];
-
-    return [
-      charts.Series<Sales, String>(
-        id: 'Sales',
-        domainFn: (Sales sales, _) => sales.year,
-        measureFn: (Sales sales, _) => sales.sales,
-        data: desktopSalesData,
-        // fillColorFn: (Sales sales, _) {
-        //   return charts.MaterialPalette.blue.shadeDefault;
-        // },
-      )
-    ];
-  }
-
-  List<charts.Series> seriesList = [];
+  // List<charts.Series> seriesList = [];
   bool _switchLockScreen = false;
   bool _switchModeAsuh = false;
   bool _switchLevel1 = false;
@@ -118,7 +93,6 @@ class _DetailChildPageState extends State<DetailChildPage> {
     }
     await prefs.setString("averageTime${widget.email}", avgData);
     onGetUsageDataWeekly();
-    onLoadBar();
     setState(() {});
   }
 
@@ -154,7 +128,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
 
     print('last $usageLast');
 
-    dtx = [usageFirst, usageSecond, usageThird, usageFour, usageFive, usageSix, usageLast];
+    // dtx = [usageFirst, usageSecond, usageThird, usageFour, usageFive, usageSix, usageLast];
     setState(() {});
   }
 
@@ -257,27 +231,24 @@ class _DetailChildPageState extends State<DetailChildPage> {
     setBindingData();
   }
 
-  barChart() {
-    return charts.BarChart(
-      _createRandomData(),
-      animate: true,
-      vertical: true,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title, style: TextStyle(color: Colors.grey.shade700)),
-        backgroundColor: Colors.white70,
-        iconTheme: IconThemeData(color: Colors.grey.shade700),
-      ),
-      backgroundColor: Colors.grey[300],
-      body: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          color: Colors.grey[300],
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: cPrimaryBg,
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(widget.name, style: TextStyle(color: cOrtuWhite)),
+          backgroundColor: cPrimaryBg,
+          iconTheme: IconThemeData(color: Colors.grey.shade700),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          elevation: 0,
+        ),
+        body: Container(
+          padding: EdgeInsets.only(left: 10, right: 10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -290,590 +261,442 @@ class _DetailChildPageState extends State<DetailChildPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        margin: EdgeInsets.all(20.0),
-                        child: Text('${widget.name}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      wDailyAverageChart(),
+                      Divider(
+                        thickness: 1,
+                        color: cOrtuWhite,
                       ),
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey,
-                              blurRadius: 3.0,
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              margin: EdgeInsets.all(10.0),
-                              child: Text(
-                                'Daily Average',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(left: 10.0),
-                                  child: Text(
-                                    '$avgData',
-                                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                /*Container(
-                                  margin: EdgeInsets.only(right: 10.0),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        margin: EdgeInsets.only(right: 10.0),
-                                        child: Icon(
-                                          Icons.arrow_circle_down,
-                                          color: Colors.grey.shade700,
-                                        ),
-                                      ),
-                                      Text(
-                                        '30% from last week',
-                                        style: TextStyle(fontSize: 16),
-                                      )
-                                    ],
-                                  ),
-                                )*/
-                              ],
-                            ),
-                            onLoadBar(),
-                            Container(
-                              margin: EdgeInsets.only(left: 10.0, right: 10.0),
-                              width: MediaQuery.of(context).size.width,
-                              decoration: BoxDecoration(border: Border.all(width: 0.2, color: Colors.grey)),
-                            ),
-                            ListTile(
-                              title: Text('Lihat Semua Aktifitas'),
-                              trailing: Icon(
-                                Icons.keyboard_arrow_right,
-                                color: Colors.grey.shade700,
-                              ),
-                              onTap: () => {
-                                Navigator.of(context)
-                                    .push(MaterialPageRoute(builder: (context) => DetailChildActivityPage(name: widget.name, email: widget.email)))
-                              },
-                            )
-                          ],
-                        ),
+                      wKontrolInstant(),
+                      Divider(
+                        thickness: 1,
+                        color: cOrtuWhite,
                       ),
-                      Container(
-                        margin: EdgeInsets.only(top: 5.0, left: 20.0, right: 20.0, bottom: 5.0),
-                        child: Text('Update today $dateToday', style: TextStyle(fontSize: 14)),
-                      ),
-                      Container(
-                        margin: EdgeInsets.all(20.0),
-                        child: Text('Kontrol Instant', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey,
-                              blurRadius: 3.0,
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
-                              margin: EdgeInsets.all(10.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    child: Text(
-                                      'Mode Kunci Layar',
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                  ),
-                                  Container(
-                                    child: CupertinoSwitch(
-                                      value: _switchLockScreen,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _switchLockScreen = value;
-                                        });
-                                      },
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            onShowSettingAsuh(_switchModeAsuh),
-                            onShowModeAsuh(_switchModeAsuh)
-                          ],
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.all(20.0),
-                        child: Text('Kontrol dan Konfigurasi', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      ),
-                      Container(
-                          margin: EdgeInsets.only(bottom: 10.0),
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey,
-                                blurRadius: 3.0,
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 20.0, bottom: 10.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Lokasi',
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                    ),
-                                    GestureDetector(
-                                      child: Icon(
-                                        Icons.settings,
-                                        color: Colors.blue,
-                                      ),
-                                      onTap: () => {
-                                        Navigator.of(context).push(MaterialPageRoute(
-                                            builder: (context) => RKConfigLocationPage(
-                                                  title: 'Penelurusan Lokasi',
-                                                  email: widget.email,
-                                                  name: widget.name,
-                                                )))
-                                      },
-                                    )
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
-                                child: Text('Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka'
-                                    'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi'
-                                    'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana'
-                                    'mereka dulu dan dimana mereka saat ini kapan saja.'),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 20.0, bottom: 10.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Kontak',
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                    ),
-                                    GestureDetector(
-                                      child: Icon(
-                                        Icons.settings,
-                                        color: Colors.blue,
-                                      ),
-                                      onTap: () => {
-                                        /*showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return Dialog(
-                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                                  elevation: 16,
-                                                  child: Container(
-                                                    height: 400.0,
-                                                    child: ListView(
-                                                      children: <Widget>[
-                                                        SizedBox(height: 20),
-                                                        Center(
-                                                          child: Text(
-                                                            "Perpanjang Aktivasi Langganan",
-                                                            style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
-                                                          ),
-                                                        ),
-                                                        SizedBox(height: 20),
-                                                        Center(
-                                                          child: Text(
-                                                            "Masukan nomor voucher anda",
-                                                            style: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
-                                                          ),
-                                                        ),
-                                                        Container(
-                                                          margin: EdgeInsets.only(left: 20.0, right: 20.0),
-                                                          child: TextField(
-                                                              decoration: InputDecoration(
-                                                                fillColor: Colors.grey,
-                                                                border: OutlineInputBorder(),
-                                                                labelText: 'Kode Voucher...',
-                                                              )
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  )
-                                              );
-                                            }
-                                        )*/
-                                        Navigator.of(context).push(MaterialPageRoute(
-                                            builder: (context) =>
-                                                ConfigRKContactPage(title: 'Daftar Kontak', name: widget.name, email: widget.email)))
-                                      },
-                                    )
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
-                                child: Text('Anda dapat melihat daftar kontak anak-anak Anda, catatan panggilan'
-                                    'dan pesan SMS untuk mengetahui siapa yang telah mereka hubungi.'
-                                    'Anda juga dapat mengatur kontak dalam daftar hitam untuk mendapatkan'
-                                    'pemberitahuan bila ada kontak yang dibuat dengan orang yang tidak diinginkan.'),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 20.0, bottom: 10.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Akses Internet',
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                    ),
-                                    GestureDetector(
-                                      child: Icon(
-                                        Icons.settings,
-                                        color: Colors.blue,
-                                      ),
-                                      onTap: () => {
-                                        Navigator.of(context)
-                                            .push(MaterialPageRoute(builder: (context) => RKConfigAccessInternetPage(title: 'Akses Internet')))
-                                      },
-                                    )
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
-                                child: Text('Dengan SafeSearch, Anda dapat memperbaiki penelusuran negatif'
-                                    'apa pun di Google, Bing atau Youtube. Pemfilteran internet memungkinkan'
-                                    'Anda memblokir situs web, gambar dan video dari kategori tertentu yang'
-                                    'Anda pilih. Anda juga dapat melihat riwayat internet dan bookmark mereka.'),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 20.0, bottom: 10.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Set Jadwal Penggunaan',
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                    ),
-                                    GestureDetector(
-                                      child: Icon(
-                                        Icons.settings,
-                                        color: Colors.blue,
-                                      ),
-                                      onTap: () => {
-                                        Navigator.of(context).push(MaterialPageRoute(
-                                            builder: (context) =>
-                                                RKConfigLimitDevicetPage(title: 'Jadwal Penggunaan', name: widget.name, email: widget.email)))
-                                      },
-                                    )
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
-                                child: Text('Tetapkan jadwal agar anak Anda dapat menggunakan ponsel mereka hanya pada'
-                                    'waktu tertentu dan memblokir akses selama waktu makan malam atau saat'
-                                    'waktunya tidur. Anda juga dapat langsung memblokir akses ke ponsel'
-                                    'mereka dengan fitur kunci layar.'),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 20.0, bottom: 10.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Blok Aplikasi / Games',
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                    ),
-                                    GestureDetector(
-                                      child: Icon(
-                                        Icons.settings,
-                                        color: Colors.blue,
-                                      ),
-                                      onTap: () => {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute<Object>(builder: (BuildContext context) => RKConfigBlockAppsPage(email: widget.email)),
-                                        )
-                                      },
-                                    )
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
-                                child: Text('Tetapkan jadwal untuk aplikasi atau game tertentu agar anak anda'
-                                    'dapat menggunakanya hanya pada waktu yang dijadwalkan.'
-                                    'Anda juga dapat memblokir sepenuhnya aplikasi atau game apa pun'
-                                    'yang anda anggap berbahaya dan tidak ingin diberikan akses kepada mereka.'),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 20.0, bottom: 10.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Batas Penggunaan Gadget',
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                    ),
-                                    GestureDetector(
-                                      child: Icon(
-                                        Icons.settings,
-                                        color: Colors.blue,
-                                      ),
-                                      onTap: () => {
-                                        /*showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return Dialog(
-                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                                  elevation: 16,
-                                                  child: Container(
-                                                    height: 400.0,
-                                                    child: ListView(
-                                                      children: <Widget>[
-                                                        SizedBox(height: 20),
-                                                        Center(
-                                                          child: Text(
-                                                            "Perpanjang Aktivasi Langganan",
-                                                            style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
-                                                          ),
-                                                        ),
-                                                        SizedBox(height: 20),
-                                                        Center(
-                                                          child: Text(
-                                                            "Masukan nomor voucher anda",
-                                                            style: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
-                                                          ),
-                                                        ),
-                                                        Container(
-                                                          margin: EdgeInsets.only(left: 20.0, right: 20.0),
-                                                          child: TextField(
-                                                              decoration: InputDecoration(
-                                                                fillColor: Colors.grey,
-                                                                border: OutlineInputBorder(),
-                                                                labelText: 'Kode Voucher...',
-                                                              )
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  )
-                                              );
-                                            }
-                                        )*/
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute<Object>(
-                                              builder: (BuildContext context) =>
-                                                  RKConfigBatasPenggunaanPage(title: 'Batas Penggunaan', name: widget.name, email: widget.email)),
-                                        )
-                                      },
-                                    )
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
-                                child: Text('Dengan menggunakan aplikasi Ruang Keluarga untuk orang tua dari perangkat'
-                                    'anda. Anda dapat memantau dan mengontrol perangkat anak-anak anda'
-                                    'dari mana saja di dunia. Dapatkan aplikasi, internet, dan statistik'
-                                    'penggunaan telepon langsung dari dasbor anda.'),
-                              ),
-                            ],
-                          ))
+                      wKontroldanKonfigurasi(),
                     ],
                   )),
                 ),
               ),
             ],
-          )),
+          ),
+        ),
+      ),
     );
   }
 
-  Widget onShowSettingAsuh(bool flag) {
+  Widget wKontrolKonfigurasiContent({
+    required String title,
+    required String content,
+    required Function() onTap,
+  }) {
+    return Column(
+      children: [
+        Container(
+          margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 20.0, bottom: 10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '$title',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: cOrtuWhite),
+              ),
+              GestureDetector(
+                child: Icon(
+                  Icons.settings,
+                  color: Colors.blue,
+                ),
+                onTap: onTap,
+              )
+            ],
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
+          child: Text(
+            '$content',
+            style: TextStyle(color: cOrtuWhite),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget wKontroldanKonfigurasi() {
     return Container(
-      margin: EdgeInsets.all(10.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            child: Text(
-              'Mode Asuh',
-              style: TextStyle(fontSize: 16),
+            margin: EdgeInsets.all(20.0),
+            child: Text('Kontrol dan Konfigurasi', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: cOrtuWhite)),
+          ),
+          wKontrolKonfigurasiContent(
+            title: 'Lokasi',
+            content: 'Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka'
+                'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi'
+                'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana'
+                'mereka dulu dan dimana mereka saat ini kapan saja.',
+            onTap: () => {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => RKConfigLocationPage(title: 'Penelurusan Lokasi', email: widget.email, name: widget.name)))
+            },
+          ),
+          wKontrolKonfigurasiContent(
+            title: 'Kontak',
+            content: 'Anda dapat melihat daftar kontak anak-anak Anda, catatan panggilan'
+                'dan pesan SMS untuk mengetahui siapa yang telah mereka hubungi.'
+                'Anda juga dapat mengatur kontak dalam daftar hitam untuk mendapatkan'
+                'pemberitahuan bila ada kontak yang dibuat dengan orang yang tidak diinginkan.',
+            onTap: () => {
+              /*showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return Dialog(
+                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                  elevation: 16,
+                                                  child: Container(
+                                                    height: 400.0,
+                                                    child: ListView(
+                                                      children: <Widget>[
+                                                        SizedBox(height: 20),
+                                                        Center(
+                                                          child: Text(
+                                                            "Perpanjang Aktivasi Langganan",
+                                                            style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+                                                          ),
+                                                        ),
+                                                        SizedBox(height: 20),
+                                                        Center(
+                                                          child: Text(
+                                                            "Masukan nomor voucher anda",
+                                                            style: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          margin: EdgeInsets.only(left: 20.0, right: 20.0),
+                                                          child: TextField(
+                                                              decoration: InputDecoration(
+                                                                fillColor: Colors.grey,
+                                                                border: OutlineInputBorder(),
+                                                                labelText: 'Kode Voucher...',
+                                                              )
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  )
+                                              );
+                                            }
+                                        )*/
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => ConfigRKContactPage(title: 'Daftar Kontak', name: widget.name, email: widget.email)))
+            },
+          ),
+          wKontrolKonfigurasiContent(
+            title: 'Akses Internet',
+            content: 'Dengan SafeSearch, Anda dapat memperbaiki penelusuran negatif'
+                'apa pun di Google, Bing atau Youtube. Pemfilteran internet memungkinkan'
+                'Anda memblokir situs web, gambar dan video dari kategori tertentu yang'
+                'Anda pilih. Anda juga dapat melihat riwayat internet dan bookmark mereka.',
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => RKConfigAccessInternetPage(title: 'Akses Internet'))),
+          ),
+          wKontrolKonfigurasiContent(
+            title: 'Set Jadwal Penggunaan',
+            content: 'Tetapkan jadwal agar anak Anda dapat menggunakan ponsel mereka hanya pada'
+                'waktu tertentu dan memblokir akses selama waktu makan malam atau saat'
+                'waktunya tidur. Anda juga dapat langsung memblokir akses ke ponsel'
+                'mereka dengan fitur kunci layar.',
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => RKConfigLimitDevicetPage(title: 'Jadwal Penggunaan', name: widget.name, email: widget.email))),
+          ),
+          wKontrolKonfigurasiContent(
+            title: 'Blok Aplikasi / Games',
+            content: 'Tetapkan jadwal untuk aplikasi atau game tertentu agar anak anda'
+                'dapat menggunakanya hanya pada waktu yang dijadwalkan.'
+                'Anda juga dapat memblokir sepenuhnya aplikasi atau game apa pun'
+                'yang anda anggap berbahaya dan tidak ingin diberikan akses kepada mereka.',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute<Object>(builder: (BuildContext context) => RKConfigBlockAppsPage(email: widget.email)),
             ),
           ),
-          Container(
-            child: CupertinoSwitch(
-              value: _switchModeAsuh,
-              onChanged: (value) {
-                setState(() {
-                  _switchModeAsuh = value;
-                  _switchLevel1 = true;
-                  _switchLevel2 = false;
-                  _switchLevel3 = false;
-                });
-              },
+          wKontrolKonfigurasiContent(
+            title: 'Batas Penggunaan Gadget',
+            content: 'Dengan menggunakan aplikasi Ruang Keluarga untuk orang tua dari perangkat'
+                'anda. Anda dapat memantau dan mengontrol perangkat anak-anak anda'
+                'dari mana saja di dunia. Dapatkan aplikasi, internet, dan statistik'
+                'penggunaan telepon langsung dari dasbor anda.',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute<Object>(
+                  builder: (BuildContext context) => RKConfigBatasPenggunaanPage(title: 'Batas Penggunaan', name: widget.name, email: widget.email)),
             ),
-          )
+          ),
         ],
       ),
     );
   }
 
-  Widget onLoadBar() {
+  Widget wKontrolInstant() {
     return Container(
-      margin: EdgeInsets.all(10.0),
-      height: 200,
-      child: barChart(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            margin: EdgeInsets.all(20.0),
+            child: Text('Kontrol Instant', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: cOrtuWhite)),
+          ),
+          Container(
+            margin: EdgeInsets.all(10.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  child: Text(
+                    'Mode Kunci Layar',
+                    style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                  ),
+                ),
+                Container(
+                  child: CupertinoSwitch(
+                    activeColor: cOrtuBlue,
+                    value: _switchLockScreen,
+                    onChanged: (value) {
+                      setState(() {
+                        _switchLockScreen = value;
+                      });
+                    },
+                  ),
+                )
+              ],
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.all(10.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  child: Text(
+                    'Mode Asuh',
+                    style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                  ),
+                ),
+                Container(
+                  child: CupertinoSwitch(
+                    activeColor: cOrtuBlue,
+                    value: _switchModeAsuh,
+                    onChanged: (value) {
+                      setState(() {
+                        _switchModeAsuh = value;
+                        _switchLevel1 = true;
+                        _switchLevel2 = false;
+                        _switchLevel3 = false;
+                      });
+                    },
+                  ),
+                )
+              ],
+            ),
+          ),
+          if (_switchModeAsuh)
+            Container(
+              child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Container(
+                  margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0, bottom: 10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Diperketat Level 1',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _switchLevel1 ? cOrtuBlue : cOrtuWhite),
+                      ),
+                      CupertinoSwitch(
+                        activeColor: cOrtuBlue,
+                        value: _switchLevel1,
+                        onChanged: (value) {
+                          setState(() {
+                            _switchLevel1 = value;
+                            _switchLevel2 = false;
+                            _switchLevel3 = false;
+                            _switchModeAsuh = value;
+                          });
+                        },
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
+                  child: Text(
+                    'Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka'
+                    'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi'
+                    'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana'
+                    'mereka dulu dan dimana mereka saat ini kapan saja.',
+                    style: TextStyle(color: _switchLevel1 ? cOrtuBlue : cOrtuWhite),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0, bottom: 10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Diperketat Level 2',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _switchLevel2 ? cOrtuBlue : cOrtuWhite),
+                      ),
+                      CupertinoSwitch(
+                        activeColor: cOrtuBlue,
+                        value: _switchLevel2,
+                        onChanged: (value) {
+                          setState(() {
+                            _switchLevel2 = value;
+                            _switchLevel1 = false;
+                            _switchLevel3 = false;
+
+                            _switchModeAsuh = value;
+                          });
+                        },
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
+                  child: Text(
+                    'Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka'
+                    'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi'
+                    'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana'
+                    'mereka dulu dan dimana mereka saat ini kapan saja.',
+                    style: TextStyle(color: _switchLevel2 ? cOrtuBlue : cOrtuWhite),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0, bottom: 10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Diperketat Level 3',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _switchLevel3 ? cOrtuBlue : cOrtuWhite),
+                      ),
+                      CupertinoSwitch(
+                        activeColor: cOrtuBlue,
+                        value: _switchLevel3,
+                        onChanged: (value) {
+                          setState(() {
+                            _switchLevel3 = value;
+                            _switchLevel2 = false;
+                            _switchLevel1 = false;
+
+                            _switchModeAsuh = value;
+                          });
+                        },
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
+                  child: Text(
+                    'Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka'
+                    'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi'
+                    'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana'
+                    'mereka dulu dan dimana mereka saat ini kapan saja.',
+                    style: TextStyle(color: _switchLevel3 ? cOrtuBlue : cOrtuWhite),
+                  ),
+                ),
+              ]),
+            ),
+        ],
+      ),
     );
   }
 
-  Widget onShowModeAsuh(bool flag) {
-    if (flag) {
-      return Container(
-        child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+  Widget wDailyAverageChart() {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
           Container(
-            margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0, bottom: 10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Diperketat Level 1',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                CupertinoSwitch(
-                  value: _switchLevel1,
-                  onChanged: (value) {
-                    setState(() {
-                      _switchLevel1 = value;
-                      _switchLevel2 = false;
-                      _switchLevel3 = false;
-                      if (value) {
-                        onShowModeAsuh(_switchLevel1);
-                      } else {
-                        _switchModeAsuh = value;
-                        onShowSettingAsuh(_switchModeAsuh);
-                      }
-                    });
-                  },
-                )
-              ],
+            margin: EdgeInsets.all(10.0),
+            child: Text(
+              'Daily Average',
+              style: TextStyle(fontSize: 16, color: cOrtuWhite),
             ),
           ),
           Container(
-            margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
-            child: Text('Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka'
-                'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi'
-                'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana'
-                'mereka dulu dan dimana mereka saat ini kapan saja.'),
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0, bottom: 10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Diperketat Level 2',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                CupertinoSwitch(
-                  value: _switchLevel2,
-                  onChanged: (value) {
-                    setState(() {
-                      _switchLevel2 = value;
-                      _switchLevel1 = false;
-                      _switchLevel3 = false;
-                      if (value) {
-                        onShowModeAsuh(_switchLevel2);
-                      } else {
-                        _switchModeAsuh = value;
-                        onShowSettingAsuh(_switchModeAsuh);
-                      }
-                    });
-                  },
-                )
-              ],
+            margin: EdgeInsets.only(left: 10.0),
+            child: Text(
+              '$avgData',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: cOrtuWhite,
+              ),
             ),
           ),
           Container(
-            margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
-            child: Text('Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka'
-                'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi'
-                'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana'
-                'mereka dulu dan dimana mereka saat ini kapan saja.'),
+            margin: EdgeInsets.all(10.0),
+            height: MediaQuery.of(context).size.height / 4,
+            child: _chartDailyAverage(),
           ),
-          Container(
-            margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0, bottom: 10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Diperketat Level 3',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                CupertinoSwitch(
-                  value: _switchLevel3,
-                  onChanged: (value) {
-                    setState(() {
-                      _switchLevel3 = value;
-                      _switchLevel2 = false;
-                      _switchLevel1 = false;
-                      if (value) {
-                        onShowModeAsuh(_switchLevel3);
-                      } else {
-                        _switchModeAsuh = value;
-                        onShowSettingAsuh(_switchModeAsuh);
-                      }
-                    });
-                  },
-                )
-              ],
+          TextButton(
+            child: Text(
+              'Detail Penggunaan',
+              style: TextStyle(color: cOrtuBlue),
             ),
+            onPressed: () =>
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => DetailChildActivityPage(name: widget.name, email: widget.email))),
           ),
           Container(
-            margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
-            child: Text('Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka'
-                'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi'
-                'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana'
-                'mereka dulu dan dimana mereka saat ini kapan saja.'),
+            margin: EdgeInsets.only(bottom: 10, left: 15),
+            child: Align(alignment: Alignment.centerLeft, child: Text('Update today $dateToday', style: TextStyle(fontSize: 14, color: cOrtuWhite))),
           ),
-        ]),
-      );
-    } else {
-      return Container();
-    }
+        ],
+      ),
+    );
+  }
+
+  Widget _chartDailyAverage() {
+    final desktopSalesData = [
+      DailyAverage('${dty[0]}', dtx[0]),
+      DailyAverage('${dty[1]}', dtx[1]),
+      DailyAverage('${dty[2]}', dtx[2]),
+      DailyAverage('${dty[3]}', dtx[3]),
+      DailyAverage('${dty[4]}', dtx[4]),
+      DailyAverage('${dty[5]}', dtx[5]),
+      DailyAverage('${dty[6]}', dtx[6]),
+    ];
+
+    List<ColumnSeries<DailyAverage, String>> _columnData = [
+      ColumnSeries<DailyAverage, String>(
+        color: cOrtuBlue,
+        borderColor: Colors.red,
+        trackColor: Colors.teal,
+        dataSource: desktopSalesData,
+        // borderRadius: BorderRadius.only(bottomRight: Radius.circular(10), topRight: Radius.circular(10)),
+        xValueMapper: (data, _) => data.day,
+        yValueMapper: (data, _) => data.average,
+      ),
+    ];
+
+    return SfCartesianChart(
+      plotAreaBorderWidth: 0,
+      primaryXAxis: CategoryAxis(
+        majorGridLines: MajorGridLines(width: 0),
+      ),
+      series: _columnData,
+      tooltipBehavior: TooltipBehavior(enable: true, canShowMarker: false, format: 'point.x : point.y', header: ''),
+    );
   }
 }
 
 /// Sample sales data type.
-class Sales {
-  final String year;
-  final int sales;
+class DailyAverage {
+  final String day;
+  final int average;
 
-  Sales(this.year, this.sales);
+  DailyAverage(this.day, this.average);
 }
