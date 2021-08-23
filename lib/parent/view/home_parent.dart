@@ -502,6 +502,8 @@ class ChildCardWithBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final double paddingValue = 8;
+    final parentController = Get.find<ParentController>();
+    parentController.setModeAsuh(childData.childNumber ?? 0, 1);
 
     return Container(
       margin: EdgeInsets.all(paddingValue),
@@ -540,7 +542,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
               expand: false,
               initialChildSize: 0.18,
               minChildSize: 0.18,
-              maxChildSize: 0.5,
+              maxChildSize: 0.55,
               builder: (BuildContext context, ScrollController scrollController) {
                 return Container(
                   padding: EdgeInsets.all(5),
@@ -554,83 +556,117 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                       overscroll.disallowGlow();
                       return true;
                     },
-                    child: SingleChildScrollView(
-                      controller: scrollController,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Center(
-                            child: Container(
-                              margin: EdgeInsets.only(top: 5),
-                              width: screenSize.width / 6,
-                              height: 5,
-                              decoration: BoxDecoration(color: cOrtuGrey, borderRadius: BorderRadius.all(Radius.circular(15))),
-                            ),
+                    child: Column(
+                      children: [
+                        Center(
+                          child: Container(
+                            margin: EdgeInsets.only(top: 5),
+                            width: screenSize.width / 6,
+                            height: 5,
+                            decoration: BoxDecoration(color: cOrtuGrey, borderRadius: BorderRadius.all(Radius.circular(15))),
                           ),
-                          Container(
-                            margin: EdgeInsets.only(left: 10.0, right: 10),
-                            child: Text(
-                              '${childData.name}',
-                              style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(left: 10, top: 5, bottom: 5, right: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        ),
+                        Flexible(
+                          child: SingleChildScrollView(
+                            controller: scrollController,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                contentTime('Screen Time', '${prefs.getString("averageTime${childData.email}") ?? '00:00'}'),
-                                contentTime('Gaming', '00:00'),
-                                contentTime('Social Media', '00:00'),
+                                Container(
+                                  margin: EdgeInsets.only(left: 10.0, right: 10),
+                                  child: Text(
+                                    '${childData.name}',
+                                    style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.only(left: 10, top: 5, bottom: 5, right: 10),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      contentTime('Screen Time', '${prefs.getString("averageTime${childData.email}") ?? '00:00'}'),
+                                      contentTime('Gaming', '00:00'),
+                                      contentTime('Social Media', '00:00'),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Obx(
+                                        () => Row(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () => parentController.setModeAsuh(childData.childNumber ?? 0, 1),
+                                              child: Icon(
+                                                parentController.getmodeAsuh(childData.childNumber ?? 0) >= 1
+                                                    ? Icons.looks_one
+                                                    : Icons.looks_one_outlined,
+                                                color: cOrtuBlue,
+                                                size: 35,
+                                              ),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () => parentController.setModeAsuh(childData.childNumber ?? 0, 2),
+                                              child: Icon(
+                                                parentController.getmodeAsuh(childData.childNumber ?? 0) >= 2
+                                                    ? Icons.looks_two
+                                                    : Icons.looks_two_outlined,
+                                                color: cOrtuBlue,
+                                                size: 35,
+                                              ),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () => parentController.setModeAsuh(childData.childNumber ?? 0, 3),
+                                              child: Icon(
+                                                parentController.getmodeAsuh(childData.childNumber ?? 0) == 3
+                                                    ? Icons.looks_3
+                                                    : Icons.looks_3_outlined,
+                                                color: cOrtuBlue,
+                                                size: 35,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      IconButton(
+                                        iconSize: 35,
+                                        onPressed: () {},
+                                        icon: Icon(
+                                          Icons.location_on_outlined,
+                                          color: cOrtuBlue,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        iconSize: 35,
+                                        onPressed: () {},
+                                        icon: Icon(
+                                          Icons.notifications,
+                                          color: cOrtuBlue,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        iconSize: 35,
+                                        onPressed: () {
+                                          Navigator.of(context).push(MaterialPageRoute(
+                                              builder: (context) => DetailChildPage(
+                                                  title: 'Kontrol dan Konfigurasi', name: '${childData.name}', email: '${childData.email}')));
+                                        },
+                                        icon: Icon(
+                                          Icons.settings,
+                                          color: cOrtuBlue,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
                               ],
                             ),
                           ),
-                          Container(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                IconButton(
-                                  iconSize: 35,
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.crop_square_outlined,
-                                    color: cOrtuBlue,
-                                  ),
-                                ),
-                                IconButton(
-                                  iconSize: 35,
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.location_on_outlined,
-                                    color: cOrtuBlue,
-                                  ),
-                                ),
-                                IconButton(
-                                  iconSize: 35,
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.notifications,
-                                    color: cOrtuBlue,
-                                  ),
-                                ),
-                                IconButton(
-                                  iconSize: 35,
-                                  onPressed: () {
-                                    Navigator.of(context).push(MaterialPageRoute(
-                                        builder: (context) => DetailChildPage(
-                                            title: 'Kontrol dan Konfigurasi', name: '${childData.name}', email: '${childData.email}')));
-                                  },
-                                  icon: Icon(
-                                    Icons.settings,
-                                    color: cOrtuBlue,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 );

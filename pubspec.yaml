@@ -63,8 +63,9 @@ dependencies:
 
   shared_preferences: ^2.0.6
   sliding_up_panel: ^2.0.0+1
+  syncfusion_flutter_charts: ^19.2.56
 
-#  usage_stats: ^0.1.0
+  #  usage_stats: ^0.1.0
 
   video_player: ^2.1.9
 

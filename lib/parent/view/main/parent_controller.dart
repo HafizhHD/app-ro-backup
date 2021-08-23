@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ParentController extends GetxController {
   String userName = '';
   String emailUser = '';
+  RxMap _modeAsuh = <int, int>{}.obs;
   var _bottomNavIndex = 0.obs;
 
   int get bottomNavIndex => _bottomNavIndex.value;
@@ -13,6 +14,12 @@ class ParentController extends GetxController {
     _bottomNavIndex.value = index;
     // update();
   }
+
+  void setModeAsuh(int childIndex, int value) {
+    _modeAsuh[childIndex] = value;
+  }
+
+  int getmodeAsuh(int childIndex) => _modeAsuh[childIndex];
 
   @override
   void onInit() {
