@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart';
+import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/global/global_snackbar.dart';
 import 'package:ruangkeluarga/model/rk_app_list_with_icon.dart';
 import 'package:ruangkeluarga/model/rk_child_app_icon_list.dart';
 import 'package:ruangkeluarga/model/rk_child_apps.dart';
@@ -28,6 +30,10 @@ class RKConfigBlockAppsPage extends StatefulWidget {
 class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
   List<bool> listSwitchValue = [];
   late SharedPreferences prefs;
+
+  late Future<List<AppListWithIcons>> fAppList;
+  List<AppListWithIcons> appList = [];
+  List<AppListWithIcons> appListSearch = [];
 
   Future<List<AppListWithIcons>> fetchAppList() async {
     prefs = await SharedPreferences.getInstance();
@@ -64,6 +70,7 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
                     "appName": "${dataIconApps[i].appName}",
                     "packageId": "${dataIconApps[i].packageId}",
                     "blacklist": dataIconApps[i].blacklist,
+                    "appCategory": dataIconApps[i].appCategory,
                     "appIcons": "${imageUrl + dataListIconApps[indeksX].appIcon.toString()}"
                   });
                 } else {
@@ -71,6 +78,7 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
                     "appName": "${dataIconApps[i].appName}",
                     "packageId": "${dataIconApps[i].packageId}",
                     "blacklist": dataIconApps[i].blacklist,
+                    "appCategory": dataIconApps[i].appCategory,
                     "appIcons": ""
                   });
                 }
@@ -84,6 +92,12 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
           }
           if (flag) {
             List<AppListWithIcons> data = List<AppListWithIcons>.from(dataList.map((model) => AppListWithIcons.fromJson(model)));
+            data.sort((a, b) => a.appName!.compareTo(b.appName!));
+            print('SetData');
+            appList = data;
+            appListSearch = data;
+            setState(() {});
+
             return data;
           } else {
             for (int i = 0; i < dataIconApps.length; i++) {
@@ -91,10 +105,17 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
                 "appName": "${dataIconApps[i].appName}",
                 "packageId": "${dataIconApps[i].packageId}",
                 "blacklist": dataIconApps[i].blacklist,
+                "appCategory": dataIconApps[i].appCategory,
                 "appIcons": ""
               });
             }
             List<AppListWithIcons> data = List<AppListWithIcons>.from(dataList.map((model) => AppListWithIcons.fromJson(model)));
+            data.sort((a, b) => a.appName!.compareTo(b.appName!));
+            print('SetData');
+            appList = data;
+            appListSearch = data;
+            setState(() {});
+
             return data;
           }
         } else {
@@ -109,6 +130,11 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
     }
   }
 
+  Future<Response> blockApp(String appID, String appCategory) async {
+    Response response = await MediaRepository().addLimitUsageBlockApp(widget.email, appID, appCategory, 5, 'blacklist');
+    return response;
+  }
+
   void setBinding() async {
     prefs = await SharedPreferences.getInstance();
   }
@@ -118,138 +144,114 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
     // TODO: implement initState
     setBinding();
     super.initState();
+
+    fAppList = fetchAppList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: cPrimaryBg,
       appBar: AppBar(
-        title: Text('Blok Aplikasi/Games', style: TextStyle(color: Colors.grey.shade700)),
-        backgroundColor: Colors.white70,
-        iconTheme: IconThemeData(color: Colors.grey.shade700),
+        centerTitle: true,
+        title: Text('Blok Aplikasi / Games', style: TextStyle(color: cOrtuWhite)),
+        backgroundColor: cPrimaryBg,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        elevation: 0,
       ),
-      backgroundColor: Colors.white,
       body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
+        padding: EdgeInsets.only(left: 15, right: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              height: 40,
-              margin: EdgeInsets.only(left: 20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    child: Align(
-                      child: Text(
-                        'Aplikasi/Game',
-                        style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(right: 20.0),
-                    child: Align(
-                      child: Text(
-                        'Blacklist',
-                        style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  )
-                ],
-              ),
+            WSearchBar(
+              fOnChanged: (v) {
+                appListSearch = appList.where((e) => e.appName!.toLowerCase().contains(v.toLowerCase()) == true).toList();
+                setState(() {});
+              },
             ),
-            Container(
-              height: MediaQuery.of(context).size.height - 130,
+            //dropDown
+            SizedBox(height: 5),
+            Flexible(
               child: FutureBuilder<List<AppListWithIcons>>(
-                future: fetchAppList(),
-                builder: (BuildContext context, AsyncSnapshot<List<AppListWithIcons>> data) {
-                  if (data.data == null) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else {
-                    List<AppListWithIcons> apps = data.data!;
-                    apps.sort((a, b) {
-                      var aName = a.appName;
-                      var bName = b.appName;
-                      return aName!.compareTo(bName!);
-                    });
-                    for (int i = 0; i < apps.length; i++) {
-                      AppListWithIcons dt = apps[i];
-                      listSwitchValue.add(dt.blacklist!);
-                    }
+                  future: fAppList,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) return wProgressIndicator();
 
-                    if (apps.length == 0) {
-                      return Align(
-                        child: Text(
-                          'Tidak ada data.',
-                          style: TextStyle(color: Colors.black, fontSize: 18),
-                        ),
-                      );
-                    } else {
-                      return Scrollbar(
-                        child: ListView.builder(
-                            itemBuilder: (BuildContext context, int position) {
-                              AppListWithIcons app = apps[position];
-                              if (app.appIcons == '') {
-                                return Column(
-                                  children: <Widget>[
-                                    ListTile(
-                                      leading: Icon(
-                                        Icons.android,
-                                        color: Colors.green,
-                                      ),
-                                      // leading: Image.network('${app.appIcons}'),
-                                      title: Text('${app.appName}'),
-                                      trailing: CupertinoSwitch(
-                                        value: listSwitchValue[position],
-                                        onChanged: (bool value) {
-                                          setState(() {
-                                            listSwitchValue[position] = value;
-                                          });
-                                        },
-                                      ),
+                    final listApps = snapshot.data ?? [];
+                    if (listApps.length <= 0) return Center(child: Text('List aplikasi kosong', style: TextStyle(color: cOrtuWhite)));
+
+                    return ListView.builder(
+                        itemCount: appListSearch.length,
+                        itemBuilder: (ctx, index) {
+                          final app = appListSearch[index];
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  app.appIcons != null && app.appIcons != ''
+                                      ? Container(
+                                          margin: EdgeInsets.all(5).copyWith(right: 10),
+                                          child: Image.network(
+                                            app.appIcons ?? '',
+                                            height: 50,
+                                            fit: BoxFit.contain,
+                                          ))
+                                      : Container(
+                                          margin: EdgeInsets.all(5).copyWith(right: 10),
+                                          color: cOrtuBlue,
+                                          height: 50,
+                                          child: Center(
+                                            child: Icon(Icons.photo),
+                                          ),
+                                        ),
+                                  Flexible(
+                                    child: Text(
+                                      app.appName ?? '',
+                                      style: TextStyle(color: cOrtuWhite),
                                     ),
-                                    const Divider(
-                                      height: 1.0,
-                                    )
-                                  ],
-                                );
-                              } else {
-                                return Column(
-                                  children: <Widget>[
-                                    ListTile(
-                                      // leading: Icon(
-                                      //   Icons.android,
-                                      //   color: Colors.green,
-                                      // ),
-                                      leading: Image.network('${app.appIcons}'),
-                                      title: Text('${app.appName}'),
-                                      trailing: CupertinoSwitch(
-                                        value: listSwitchValue[position],
-                                        onChanged: (bool value) {
-                                          setState(() {
-                                            listSwitchValue[position] = value;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    const Divider(
-                                      height: 1.0,
-                                    )
-                                  ],
-                                );
-                              }
-                            },
-                            itemCount: apps.length),
-                      );
-                    }
-                  }
-                },
-              ),
-            )
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    app.blacklist ?? false ? 'ON' : 'OFF',
+                                    style: TextStyle(color: app.blacklist ?? false ? cOrtuBlue : cOrtuWhite),
+                                  ),
+                                  IconButton(
+                                      onPressed: () async {
+                                        showLoadingOverlay();
+                                        final response = await blockApp(app.packageId!, app.appCategory);
+                                        if (response.statusCode == 200) {
+                                          fAppList = fetchAppList();
+                                          setState(() {});
+
+                                          showSnackbar("Berhasil memblokir aplikasi ${app.appName}");
+                                        } else {
+                                          closeOverlay();
+                                          showSnackbar("Gagal memblokir aplikasi ${app.appName}. Terjadi kesalahan server");
+                                        }
+                                      },
+                                      icon: Icon(
+                                        Icons.app_blocking,
+                                        color: app.blacklist ?? false ? cOrtuBlue : cOrtuWhite,
+                                      ))
+                                ],
+                              ),
+                            ],
+                          );
+                        });
+                  }),
+            ),
           ],
         ),
       ),

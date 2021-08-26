@@ -1,20 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-class RKConfigAccessInternet extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp();
-  }
-}
+import 'package:ruangkeluarga/global/global.dart';
 
 class RKConfigAccessInternetPage extends StatefulWidget {
-  // List<charts.Series> seriesList;
   @override
   _RKConfigAccessInternetPageState createState() => _RKConfigAccessInternetPageState();
   final String title;
+  final String name;
 
-  RKConfigAccessInternetPage({Key? key, required this.title}) : super(key: key);
+  RKConfigAccessInternetPage({Key? key, required this.title, required this.name}) : super(key: key);
 }
 
 class _RKConfigAccessInternetPageState extends State<RKConfigAccessInternetPage> {
@@ -27,321 +21,131 @@ class _RKConfigAccessInternetPageState extends State<RKConfigAccessInternetPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: cPrimaryBg,
         appBar: AppBar(
-          title: Text(widget.title, style: TextStyle(color: Colors.grey.shade700)),
-          backgroundColor: Colors.white70,
-          iconTheme: IconThemeData(color: Colors.grey.shade700),
+          centerTitle: true,
+          title: Text(widget.name, style: TextStyle(color: cOrtuWhite)),
+          backgroundColor: cPrimaryBg,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          elevation: 0,
         ),
-        backgroundColor: Colors.grey[300],
         body: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          color: Colors.grey[300],
+          padding: EdgeInsets.only(left: 10, right: 10),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Flexible(
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: SingleChildScrollView(
-                    child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        margin: EdgeInsets.only(top: 10.0),
-                        height: 50,
-                        color: Colors.white,
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            'Boao Simanjuntak',
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                        ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(5),
+                      child: Text(
+                        'Akses Internet',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: cOrtuWhite, fontSize: 20, fontWeight: FontWeight.bold),
                       ),
-                      Container(
-                        margin: EdgeInsets.all(20.0),
-                        child: Text('Kontrol Instant', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    ),
+                    WSearchBar(
+                      fOnChanged: (v) {},
+                    ),
+                    //dropDown
+
+                    Padding(
+                      padding: EdgeInsets.all(5),
+                      child: Divider(
+                        thickness: 1,
+                        color: cOrtuWhite,
                       ),
-                      Container(
-                        height: 80,
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey,
-                              blurRadius: 3.0,
-                            ),
-                          ],
-                        ),
-                        child: Align(
-                          child: Container(
-                            margin: EdgeInsets.all(10.0),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Mengontrol Kata Kunci Yang Tepat Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqu',
+                        style: TextStyle(color: cOrtuWhite),
+                      ),
+                    ),
+                    Flexible(
+                        child: Container(
+                      padding: EdgeInsets.all(5),
+                      child: Wrap(
+                        children: List.generate(20, (index) {
+                          return Container(
+                            margin: EdgeInsets.all(2),
+                            padding: EdgeInsets.all(5),
+                            color: cOrtuGrey,
                             child: Row(
+                              mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Container(
-                                  child: Text(
-                                    'Siagakan Internet Filters',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
-                                Container(
-                                  child: CupertinoSwitch(
-                                    value: _switchValueFilter,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _switchValueFilter = value;
-                                      });
-                                    },
-                                  ),
-                                )
+                                Text('Narkoba$index'),
+                                IconButton(onPressed: () {}, icon: Icon(Icons.close)),
                               ],
                             ),
-                          ),
+                          );
+                        }),
+                      ),
+                    )),
+                    SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Text(
+                        'Daftarkan Kata Kunci',
+                        style: TextStyle(color: cOrtuWhite),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    TextField(
+                      // controller: cPhoneNumber,
+                      minLines: 3,
+                      maxLines: 5,
+                      keyboardType: TextInputType.multiline,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        hintText: 'Tulis kata kunci dan pisahkan dengan tanda koma',
+                        contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      Container(
-                        height: 150,
-                        margin: EdgeInsets.only(top: 20.0),
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey,
-                              blurRadius: 3.0,
-                            ),
-                          ],
-                        ),
-                        child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Container(
-                            margin: EdgeInsets.all(10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  child: Text(
-                                    'Safe Search',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
-                                Container(
-                                  child: CupertinoSwitch(
-                                    value: _switchValueSafeSearch,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _switchValueSafeSearch = value;
-                                      });
-                                    },
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                            height: 50,
-                            margin: EdgeInsets.only(left: 10.0, right: 10.0),
-                            child: Text('SafeSearch merupakan fitur untuk menyembunyikan hasil pencarian'
-                                'eksplit, ini berupaya untuk menyehatkan hasil pencarian pada internet.'),
-                          )
-                        ]),
-                      ),
-                      Container(
-                        height: 150,
-                        margin: EdgeInsets.only(top: 10.0),
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey,
-                              blurRadius: 3.0,
-                            ),
-                          ],
-                        ),
-                        child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Container(
-                            margin: EdgeInsets.all(10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  child: Text(
-                                    'Pornografi',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
-                                Container(
-                                  child: CupertinoSwitch(
-                                    value: _switchValuePorno,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _switchValuePorno = value;
-                                      });
-                                    },
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                            height: 50,
-                            margin: EdgeInsets.only(left: 10.0, right: 10.0),
-                            child: Text('Pemblokiran akses internet untuk semua konten dewasa'
-                                ' (17+ tahun atau lebih), yang mana menghadirkan atau '
-                                'memperlihatkan konten sexual atau porno.'),
-                          )
-                        ]),
-                      ),
-                      Container(
-                        height: 150,
-                        margin: EdgeInsets.only(top: 10.0),
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey,
-                              blurRadius: 3.0,
-                            ),
-                          ],
-                        ),
-                        child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Container(
-                            margin: EdgeInsets.all(10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  child: Text(
-                                    'Obat-obatan/Aborsi',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
-                                Container(
-                                  child: CupertinoSwitch(
-                                    value: _switchValueAborsi,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _switchValueAborsi = value;
-                                      });
-                                    },
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                            height: 50,
-                            margin: EdgeInsets.only(left: 10.0, right: 10.0),
-                            child: Text('Pemblokiran akses internet ke situs yang mana secara legal'
-                                ' mempromosikan obat-obatan, rokok, senjata, produk alkohol dan asesorisnya.'
-                                ' Termasuk informasi tentang aborsi.'),
-                          )
-                        ]),
-                      ),
-                      Container(
-                        height: 150,
-                        margin: EdgeInsets.only(top: 10.0, bottom: 5.0),
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey,
-                              blurRadius: 3.0,
-                            ),
-                          ],
-                        ),
-                        child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Container(
-                            margin: EdgeInsets.all(10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  child: Text(
-                                    'Kencan/Perjudian',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
-                                Container(
-                                  child: CupertinoSwitch(
-                                    value: _switchValueKencan,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _switchValueKencan = value;
-                                      });
-                                    },
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                            height: 50,
-                            margin: EdgeInsets.only(left: 10.0, right: 10.0),
-                            child: Text('Pemblokiran akses internet ke situs yang memfasilitasi untuk '
-                                'melakukan kontak dengan orang lain dengan tujuan membangun '
-                                'hubungan personal, romantik atau hubungan sexual. Termasuk '
-                                'memblokir akses ke situs perjudian seperti perjudian, lotere, kasino.'),
-                          )
-                        ]),
-                      ),
-                      Container(
-                        height: 150,
-                        margin: EdgeInsets.only(top: 10.0, bottom: 5.0),
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey,
-                              blurRadius: 3.0,
-                            ),
-                          ],
-                        ),
-                        child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Container(
-                            margin: EdgeInsets.all(10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  child: Text(
-                                    'Radikalisme',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
-                                Container(
-                                  child: CupertinoSwitch(
-                                    value: _switchValueKencan,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _switchValueKencan = value;
-                                      });
-                                    },
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                            height: 50,
-                            margin: EdgeInsets.only(left: 10.0, right: 10.0),
-                            child: Text('Pemblokiran akses internet ke situs yang memfasilitasi untuk '
-                                'melakukan kontak dengan orang lain dengan tujuan membangun '
-                                'hubungan personal, romantik atau hubungan sexual. Termasuk '
-                                'memblokir akses ke situs perjudian seperti perjudian, lotere, kasino.'),
-                          )
-                        ]),
-                      ),
-                    ]),
+                    ),
+                    SizedBox(height: 10),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: FlatButton(
+                  height: 50,
+                  minWidth: 300,
+                  shape: new RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(15.0),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  color: cOrtuBlue,
+                  child: Text(
+                    "DAFTAR",
+                    style: TextStyle(
+                      fontFamily: 'Raleway',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
+                    ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ));

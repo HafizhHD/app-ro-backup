@@ -5,19 +5,13 @@ import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 
-import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/model/rk_child_app_icon_list.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
 import 'package:ruangkeluarga/utils/app_usage.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-class DetailChildActivity extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp();
-  }
-}
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class DetailChildActivityPage extends StatefulWidget {
   final String name;
@@ -61,63 +55,8 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
   var dtx = [0, 0, 0, 0, 0, 0, 0];
   var dty = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
   var dtxDaily = [0, 0, 0, 0, 0, 0, 0];
-  var dtyDaily = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+  var dtyDaily = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
   int countUsage = 1;
-  String lineWeekStatus = 'Minggu Lalu';
-
-  List<charts.Series<Sales, String>> _createRandomData() {
-    final random = Random();
-
-    final desktopSalesData = [
-      Sales('${dty[0]}', dtx[0]),
-      Sales('${dty[1]}', dtx[1]),
-      Sales('${dty[2]}', dtx[2]),
-      Sales('${dty[3]}', dtx[3]),
-      Sales('${dty[4]}', dtx[4]),
-      Sales('${dty[5]}', dtx[5]),
-      Sales('${dty[6]}', dtx[6]),
-    ];
-
-    return [
-      charts.Series<Sales, String>(
-        id: 'Sales',
-        domainFn: (Sales sales, _) => sales.year,
-        measureFn: (Sales sales, _) => sales.sales,
-        data: desktopSalesData,
-        // fillColorFn: (Sales sales, _) {
-        //   return charts.MaterialPalette.blue.shadeDefault;
-        // },
-      )
-    ];
-  }
-
-  List<charts.Series<Sales, String>> _createRandomDataDaily() {
-    final random = Random();
-
-    final desktopSalesData = [
-      Sales('${dtyDaily[0]}', dtxDaily[0]),
-      Sales('${dtyDaily[1]}', dtxDaily[1]),
-      Sales('${dtyDaily[2]}', dtxDaily[2]),
-      Sales('${dtyDaily[3]}', dtxDaily[3]),
-      Sales('${dtyDaily[4]}', dtxDaily[4]),
-      Sales('${dtyDaily[5]}', dtxDaily[5]),
-      Sales('${dtyDaily[6]}', dtxDaily[6]),
-    ];
-
-    return [
-      charts.Series<Sales, String>(
-        id: 'Sales',
-        domainFn: (Sales sales, _) => sales.year,
-        measureFn: (Sales sales, _) => sales.sales,
-        data: desktopSalesData,
-        // fillColorFn: (Sales sales, _) {
-        //   return charts.MaterialPalette.blue.shadeDefault;
-        // },
-      )
-    ];
-  }
-
-  List<charts.Series> seriesList = [];
 
   void showMoredata(String type) {
     if (type == "week") {
@@ -205,64 +144,6 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
     // totalScreenTime = "${jam}h ${menit % 60}m";
     // avgTime = "${avgResultHour}h ${avgResultMeniute}m";
     // setState(() {});
-  }
-
-  Future<List<AppUsageInfo>> getUsageStats() async {
-    try {
-      /* appsListData = await getListApps();
-      DateTime endDate = findLastDateOfTheWeek(DateTime.now());
-      // DateTime startDate = endDate.subtract(Duration(hours: 1));
-      DateTime startDate = findFirstDateOfTheWeek(DateTime.now());
-      List<AppUsageInfo> infoList = await AppUsage.getAppUsage(startDate, endDate);
-
-      infoList.sort((a,b) {
-        var aUsage = a.usage; //before -> var adate = a.expiry;
-        var bUsage = b.usage; //before -> var bdate = b.expiry;
-        return bUsage.compareTo(aUsage); //to get the order other way just switch `adate & bdate`
-      });
-      tempInfos = infoList;
-      calculateTotalScreenTime(tempInfos);*/
-      // return infoList;
-      return [];
-    } on AppUsageException catch (exception) {
-      print(exception);
-      return [];
-    }
-  }
-
-  Future<List<AppUsageInfo>> getUsageStatsDailyTemp() async {
-    try {
-      // prefs = await SharedPreferences.getInstance();
-      // var outputFormat = DateFormat('yyyy-MM-dd');
-      // var outputDate = outputFormat.format(DateTime.now());
-      // List<dynamic> tmpReturn = [];
-      // Response response = await MediaRepository().fetchAppUsageFilter(widget.email, outputDate);
-      // if(response.statusCode == 200) {
-      //   print('isi response filter app usage : ${response.body}');
-      //   var json = jsonDecode(response.body);
-      //   if (json['resultCode'] == "OK") {
-      //     var jsonDataResult = json['appUsages'] as List;
-      //     if(jsonDataResult.length == 0) {
-      //       return [];
-      //     } else {
-      //       tmpReturn = jsonDataResult[jsonDataResult.length - 1]['appUsages'] as List;
-      //       tmpReturn.sort((a, b) {
-      //         var aUsage = a['duration']; //before -> var adate = a.expiry;
-      //         var bUsage = b['duration']; //before -> var bdate = b.expiry;
-      //         return bUsage.compareTo(
-      //             aUsage); //to get the order other way just switch `adate & bdate`
-      //       });
-      //     }
-      //   }
-      // } else {
-      //   print('isi response filter app usage : ${response.statusCode}');
-      // }
-      // return tmpReturn;
-      return [];
-    } on AppUsageException catch (exception) {
-      print(exception);
-      return [];
-    }
   }
 
   Future<List<dynamic>> getUsageStatsDaily() async {
@@ -767,229 +648,65 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
       totalScreenTime = '${totalHour}h ${totalMenit}m';
     }
     onGetUsageDataWeekly();
-    onLoadBar();
     // setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    seriesList = _createRandomData();
+    // seriesList = _createRandomData();
     setBindingData();
-  }
-
-  barChart() {
-    return charts.BarChart(
-      _createRandomData(),
-      animate: true,
-      vertical: true,
-    );
-  }
-
-  barChartDaily() {
-    // calculateDayliScreen();
-    var outputFormat = DateFormat('EEEE');
-    String dayName = setDayName(outputFormat.format(DateTime.now()));
-    if (dayName == "Senin") {
-      dtxDaily = [dtx[0], 0, 0, 0, 0, 0, 0];
-    } else if (dayName == "Selasa") {
-      dtxDaily = [0, dtx[1], 0, 0, 0, 0, 0];
-    } else if (dayName == "Rabu") {
-      dtxDaily = [0, 0, dtx[2], 0, 0, 0, 0];
-    } else if (dayName == "Kamis") {
-      dtxDaily = [0, 0, 0, dtx[3], 0, 0, 0];
-    } else if (dayName == "Jumat") {
-      dtxDaily = [0, 0, 0, 0, dtx[4], 0, 0];
-    } else if (dayName == "Sabtu") {
-      dtxDaily = [0, 0, 0, 0, 0, dtx[5], 0];
-    } else {
-      dtxDaily = [0, 0, 0, 0, 0, 0, dtx[6]];
-    }
-    return charts.BarChart(
-      _createRandomDataDaily(),
-      animate: true,
-      vertical: true,
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: cPrimaryBg,
         appBar: AppBar(
-          title: Text('Detil Waktu Layar', style: TextStyle(color: Colors.grey.shade700)),
-          backgroundColor: Colors.white70,
+          centerTitle: true,
+          title: Text(widget.name, style: TextStyle(color: cOrtuWhite)),
+          backgroundColor: cPrimaryBg,
           iconTheme: IconThemeData(color: Colors.grey.shade700),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          elevation: 0,
         ),
-        backgroundColor: Colors.white,
         body: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            color: Colors.grey[300],
-            child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Flexible(
-                child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0, bottom: 10.0),
-                            height: 42,
-                            decoration: BoxDecoration(color: Colors.grey[700], borderRadius: BorderRadius.circular(10.0)),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                GestureDetector(
-                                  child: AnimatedContainer(
-                                    margin: EdgeInsets.only(left: 2.0),
-                                    height: 40,
-                                    width: MediaQuery.of(context).size.width * 0.443,
-                                    decoration: BoxDecoration(color: activeColor, borderRadius: BorderRadius.circular(10.0)),
-                                    duration: const Duration(seconds: 0),
-                                    curve: Curves.easeInOutCirc,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        'Mingguan',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                  ),
-                                  onTap: () => {
-                                    setState(() {
-                                      activeColor = Colors.grey[400];
-                                      inactiveColor = Colors.grey[700];
-                                      types = 'week';
-                                    })
-                                  },
-                                ),
-                                GestureDetector(
-                                  child: AnimatedContainer(
-                                    margin: EdgeInsets.only(right: 2.0),
-                                    height: 40,
-                                    width: MediaQuery.of(context).size.width * 0.443,
-                                    decoration: BoxDecoration(color: inactiveColor, borderRadius: BorderRadius.circular(10.0)),
-                                    duration: const Duration(seconds: 0),
-                                    curve: Curves.easeInOutCirc,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        'Harian',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                  ),
-                                  onTap: () => {
-                                    setState(() {
-                                      inactiveColor = Colors.grey[400];
-                                      activeColor = Colors.grey[700];
-                                      types = 'day';
-                                    })
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                          onShowLastData(types),
-                          onBodyPage(types),
-                          Container(
-                            margin: EdgeInsets.only(top: 5.0, left: 20.0, right: 20.0, bottom: 5.0),
-                            child: Text('Update today $dateToday', style: TextStyle(fontSize: 14)),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0, bottom: 5.0),
-                                child: Text('MOST USED', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                              ),
-                              /*Container(
-                            margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0, bottom: 5.0),
-                            child: Text('LIHAT KATEGORI',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blueAccent)
-                              ),
-                          )*/
-                            ],
-                          ),
-                          onLoadMostUsage(types)
-                        ],
-                      ),
-                    )),
-              )
-            ])));
-  }
-
-  Widget onShowLastData(String type) {
-    if (type == 'week') {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0, bottom: 5.0),
-            child: Text(widget.name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              choiceTabBar(),
+              chartDetail(types),
+              onLoadMostUsage(types),
+            ],
           ),
-          Container(
-            margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0, bottom: 5.0),
-            child: Text('$lineWeekStatus', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xffFF018786))),
-          )
-        ],
-      );
-    } else {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0, bottom: 5.0),
-            child: Text(widget.name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0, bottom: 5.0),
-            child: Text('$lineWeekStatus', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xffFF018786))),
-          )
-        ],
-      );
-    }
+        )));
   }
 
   Widget onLoadMostUsage(String type) {
-    if (type == 'week') {
-      return Container(
-        height: 400,
-        margin: EdgeInsets.only(bottom: 10.0),
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey,
-              blurRadius: 3.0,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0, bottom: 10.0),
+              child: Text('MOST USED', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: cOrtuWhite)),
             ),
           ],
         ),
-        child: onMostWeekData(),
-      );
-    } else {
-      return Container(
-        height: 400,
-        margin: EdgeInsets.only(bottom: 10.0),
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey,
-              blurRadius: 3.0,
-            ),
-          ],
+        Container(
+          height: 400,
+          margin: EdgeInsets.all(10.0),
+          child: type == 'week' ? onMostWeekData() : onMostDay(),
         ),
-        child: onMostDay(),
-      );
-    }
+      ],
+    );
   }
 
   Widget createListView(BuildContext context, List<AppUsageInfo> snapshot) {
@@ -1276,139 +993,70 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
             }
 
             if (app['icon'] == '' || app['icon'] == null) {
-              if (app['duration'] > 480) {
-                return (index >= values.length)
-                    ? Container(
-                        color: Colors.greenAccent,
-                        child: FlatButton(
-                          child: Text("Load More"),
-                          onPressed: () {},
-                        ),
-                      )
-                    : Column(
-                        children: <Widget>[
-                          ListTile(
-                            leading: Icon(
-                              Icons.android_outlined,
-                              color: Colors.green,
-                            ),
-                            title: Text('${app['appName']}'),
-                            subtitle: Row(
-                              children: <Widget>[
-                                Container(
-                                  width: (app['duration'] / values[0]['duration']) * 200,
-                                  height: 5,
-                                  margin: EdgeInsets.only(right: 10.0),
-                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
-                                ),
-                                Text(usageData)
-                              ],
-                            ),
+              return (index >= values.length)
+                  ? Container(
+                      color: Colors.greenAccent,
+                      child: FlatButton(
+                        child: Text("Load More"),
+                        onPressed: () {},
+                      ),
+                    )
+                  : Column(
+                      children: <Widget>[
+                        ListTile(
+                          leading: Icon(
+                            Icons.android_outlined,
+                            color: Colors.green,
                           ),
-                          const Divider(
-                            height: 1.0,
-                          )
-                        ],
-                      );
-              } else {
-                return (index >= values.length)
-                    ? Container(
-                        color: Colors.greenAccent,
-                        child: FlatButton(
-                          child: Text("Load More"),
-                          onPressed: () {},
-                        ),
-                      )
-                    : Column(
-                        children: <Widget>[
-                          ListTile(
-                            leading: Icon(
-                              Icons.android_outlined,
-                              color: Colors.green,
-                            ),
-                            title: Text('${app['appName']}'),
-                            subtitle: Row(
-                              children: <Widget>[
-                                Container(
-                                  width: 10,
-                                  height: 5,
-                                  margin: EdgeInsets.only(right: 10.0),
-                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
-                                ),
-                                Text(usageData)
-                              ],
-                            ),
+                          title: Text('${app['appName']}', style: TextStyle(color: cOrtuWhite)),
+                          subtitle: Row(
+                            children: <Widget>[
+                              Container(
+                                width: (app['duration'] / values[0]['duration']) * 200,
+                                height: 5,
+                                margin: EdgeInsets.only(right: 10.0),
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                              ),
+                              Text(usageData, style: TextStyle(color: cOrtuWhite))
+                            ],
                           ),
-                          const Divider(
-                            height: 1.0,
-                          )
-                        ],
-                      );
-              }
+                        ),
+                        const Divider(
+                          height: 1.0,
+                        )
+                      ],
+                    );
             } else {
-              if (app['duration'] > 480) {
-                return (index >= values.length)
-                    ? Container(
-                        color: Colors.greenAccent,
-                        child: FlatButton(
-                          child: Text("Load More"),
-                          onPressed: () {},
-                        ),
-                      )
-                    : Column(
-                        children: <Widget>[
-                          ListTile(
-                            leading: Image.network('${app['icon']}'),
-                            title: Text('${app['appName']}'),
-                            subtitle: Row(
-                              children: <Widget>[
-                                Container(
-                                  width: (app['duration'] / values[0]['duration']) * 200,
-                                  height: 5,
-                                  margin: EdgeInsets.only(right: 10.0),
-                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
-                                ),
-                                Text(usageData)
-                              ],
-                            ),
+              return (index >= values.length)
+                  ? Container(
+                      color: Colors.greenAccent,
+                      child: FlatButton(
+                        child: Text("Load More"),
+                        onPressed: () {},
+                      ),
+                    )
+                  : Column(
+                      children: <Widget>[
+                        ListTile(
+                          leading: Image.network('${app['icon']}'),
+                          title: Text('${app['appName']}'),
+                          subtitle: Row(
+                            children: <Widget>[
+                              Container(
+                                width: (app['duration'] / values[0]['duration']) * 200,
+                                height: 5,
+                                margin: EdgeInsets.only(right: 10.0),
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                              ),
+                              Text(usageData)
+                            ],
                           ),
-                          const Divider(
-                            height: 1.0,
-                          )
-                        ],
-                      );
-              } else {
-                return (index >= values.length)
-                    ? Container(
-                        color: Colors.greenAccent,
-                        child: FlatButton(
-                          child: Text("Load More"),
-                          onPressed: () {},
                         ),
-                      )
-                    : Column(
-                        children: <Widget>[
-                          ListTile(
-                            leading: Image.network('${app['icon']}'),
-                            title: Text('${app['appName']}'),
-                            subtitle: Row(
-                              children: <Widget>[
-                                Container(
-                                  width: 10,
-                                  height: 5,
-                                  margin: EdgeInsets.only(right: 10.0),
-                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
-                                ),
-                                Text(usageData)
-                              ],
-                            ),
-                          ),
-                          const Divider(
-                            height: 1.0,
-                          )
-                        ],
-                      );
-              }
+                        const Divider(
+                          height: 1.0,
+                        )
+                      ],
+                    );
             }
           },
         );
@@ -1928,342 +1576,163 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
     }
   }
 
-  Widget onBodyPage(String type) {
-    if (type == 'week') {
-      return Container(
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey,
-              blurRadius: 3.0,
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              margin: EdgeInsets.all(10.0),
-              child: Text(
-                'Daily Average',
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  margin: EdgeInsets.only(left: 10.0),
-                  child: Text(
-                    avgTime,
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                // Container(
-                //   margin: EdgeInsets.only(right: 10.0),
-                //   child: Row(
-                //     children: [
-                //       Container(
-                //         margin: EdgeInsets.only(right: 10.0),
-                //         child: Icon(
-                //           Icons.arrow_circle_down,
-                //           color: Colors.grey.shade700,
-                //         ),
-                //       ),
-                //       Text(
-                //         '30% from last week',
-                //         style: TextStyle(fontSize: 16),
-                //       )
-                //     ],
-                //   ),
-                // )
-              ],
-            ),
-            onLoadBar(),
-            /*Container(
-              margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 5.0),
-              height: 48,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(right: 5.0),
-                    width: MediaQuery.of(context).size.width * 0.3,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(top: 6.0),
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              'Entertainment',
-                              style: TextStyle(color: Colors.blueAccent),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 2.0),
-                          child: Align(
-                            alignment: Alignment.bottomLeft,
-                            child: Text(
-                              '1h 21m'
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(right: 5.0),
-                    width: MediaQuery.of(context).size.width * 0.3,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(top: 6.0),
-                          child: Align(
-                            alignment: Alignment.topCenter,
-                            child: Text(
-                              'Travel',
-                              style: TextStyle(color: Colors.lightBlueAccent),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 2.0),
-                          child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Text(
-                                '40m'
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(right: 5.0),
-                    width: MediaQuery.of(context).size.width * 0.3,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(top: 6.0),
-                          child: Align(
-                            alignment: Alignment.topRight,
-                            child: Text(
-                              'Social',
-                              style: TextStyle(color: Colors.orangeAccent),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 2.0),
-                          child: Align(
-                            alignment: Alignment.bottomRight,
-                            child: Text(
-                                '40m'
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),*/
-            Container(
-              margin: EdgeInsets.only(left: 10.0, right: 10.0),
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(border: Border.all(width: 0.2, color: Colors.grey)),
-            ),
-            GestureDetector(
-              child: Container(
-                  margin: EdgeInsets.all(10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Total Waktu Layar',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(right: 10.0),
-                        child: Text(
-                          totalScreenTime,
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ],
-                  )),
-              onTap: () => {
-                // Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
-                //     DetailChildActivityPage()))
-              },
-            )
-          ],
-        ),
-      );
-    } else {
-      return Container(
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey,
-              blurRadius: 3.0,
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.all(10.0),
-              child: Text(
-                'Hari ini',
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  margin: EdgeInsets.only(left: 10.0),
-                  child: Text(
-                    '$avgTimeDaily',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-            ),
-            Container(
-              margin: EdgeInsets.all(10.0),
-              height: 200,
-              child: barChartDaily(),
-            ),
-            Container(
-              margin: EdgeInsets.only(left: 10.0, right: 10.0),
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(border: Border.all(width: 0.2, color: Colors.grey)),
-            ),
-            // GestureDetector(
-            //   child: Container(
-            //       margin: EdgeInsets.all(10.0),
-            //       child: Row(
-            //         mainAxisAlignment:
-            //         MainAxisAlignment.spaceBetween,
-            //         children: [
-            //           Text(
-            //             'Lihat Semua Aktifitas',
-            //             style: TextStyle(fontSize: 16),
-            //           ),
-            //           Icon(
-            //             Icons.keyboard_arrow_right,
-            //             color: Colors.grey.shade700,
-            //           )
-            //         ],
-            //       )),
-            //   onTap: () => {
-            //     // Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
-            //     //     DetailChildActivityPage()))
-            //   },
-            // )
-          ],
-        ),
-      );
-    }
-  }
-
-  Widget onLoadBar() {
+  Widget choiceTabBar() {
     return Container(
-      margin: EdgeInsets.all(10.0),
-      height: 200,
-      child: barChart(),
+      margin: EdgeInsets.all(10),
+      height: 42,
+      decoration: BoxDecoration(color: cOrtuGrey, borderRadius: BorderRadius.circular(10.0)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          GestureDetector(
+            child: AnimatedContainer(
+              height: 40,
+              width: (MediaQuery.of(context).size.width / 2) - 20,
+              decoration: BoxDecoration(color: types == 'week' ? cPrimaryBg : cOrtuGrey, borderRadius: BorderRadius.circular(10.0)),
+              duration: const Duration(seconds: 0),
+              curve: Curves.easeInOutCirc,
+              child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                  'Mingguan',
+                  style: TextStyle(color: cOrtuWhite),
+                ),
+              ),
+            ),
+            onTap: () => {
+              setState(() {
+                types = 'week';
+              })
+            },
+          ),
+          GestureDetector(
+            child: AnimatedContainer(
+              height: 40,
+              width: (MediaQuery.of(context).size.width / 2) - 20,
+              decoration: BoxDecoration(color: types == 'day' ? cPrimaryBg : cOrtuGrey, borderRadius: BorderRadius.circular(10.0)),
+              duration: const Duration(seconds: 0),
+              curve: Curves.easeInOutCirc,
+              child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                  'Harian',
+                  style: TextStyle(color: cOrtuWhite),
+                ),
+              ),
+            ),
+            onTap: () => {
+              setState(() {
+                types = 'day';
+              })
+            },
+          ),
+        ],
+      ),
     );
   }
 
-  Widget onMostWeekDataTemp() {
-    return FutureBuilder<List<AppUsageInfo>>(
-      future: getUsageStats(),
-      builder: (BuildContext context, AsyncSnapshot<List<AppUsageInfo>> data) {
-        if (data.data == null) {
-          return const Center(child: CircularProgressIndicator());
-        } else {
-          _infos = data.data!;
-          if (items.length >= (present + perPage)) {
-            return createListView(context, items);
-          } else {
-            // int tmp = _infos.length - (present + perPage);
-            int tmp = _infos.length - items.length;
-            int limit = 0;
-            if (items.length == 0 && _infos.length > perPage) {
-              limit = present + perPage;
-            } else if (items.length == 0) {
-              limit = items.length + _infos.length;
-            } else if (tmp < perPage) {
-              limit = items.length + tmp;
-            } else {
-              limit = items.length + perPage;
-            }
-            for (int i = items.length; i < limit; i++) {
-              items.add(_infos[i]);
-            }
-            return createListView(context, items);
-          }
-          // for (int i = present; i < (present + perPage); i++) {
-          //   items.add(apps[i]);
-          // }
-          // present = present + perPage;
+  Widget chartDetail(String type) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            margin: EdgeInsets.all(10.0),
+            child: Text(
+              type == 'week' ? 'Rata-rata Mingguan' : 'Rata-rata Harian',
+              style: TextStyle(fontSize: 16, color: cOrtuWhite),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.only(left: 10.0),
+            child: Text(
+              type == 'week' ? avgTime : avgTimeDaily,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: cOrtuWhite,
+              ),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.all(10.0),
+            height: MediaQuery.of(context).size.height / 4,
+            child: type == 'week' ? _chartWeeklyAverage() : _chartDailyAverage(),
+          ),
+          Container(
+            margin: EdgeInsets.only(bottom: 10, left: 15),
+            child: Align(alignment: Alignment.centerLeft, child: Text('Update today $dateToday', style: TextStyle(fontSize: 14, color: cOrtuWhite))),
+          ),
+        ],
+      ),
+    );
+  }
 
-          /*return ListView.builder(
-                                  // itemCount: (present <= apps.length) ? items.length + 1 : items.length,
-                                  itemCount: apps.length,
-                                  itemBuilder: (BuildContext context, int position) {
-                                    Application app = apps[position];
+  Widget _chartWeeklyAverage() {
+    final desktopSalesData = [
+      DailyAverage('${dty[0]}', dtx[0]),
+      DailyAverage('${dty[1]}', dtx[1]),
+      DailyAverage('${dty[2]}', dtx[2]),
+      DailyAverage('${dty[3]}', dtx[3]),
+      DailyAverage('${dty[4]}', dtx[4]),
+      DailyAverage('${dty[5]}', dtx[5]),
+      DailyAverage('${dty[6]}', dtx[6]),
+    ];
 
-                                    return Column(
-                                      children: <Widget>[
-                                        ListTile(
-                                          leading: app is ApplicationWithIcon
-                                              ? CircleAvatar(
-                                            backgroundImage: MemoryImage(app.icon),
-                                            backgroundColor: Colors.white,
-                                          )
-                                              : null,
-                                          // onTap: () => onAppClicked(context, app),
-                                          // title: Text('${app.appName} (${app.packageName})'),
-                                          title: Text('${app.appName}'),
-                                        ),
-                                        const Divider(
-                                          height: 1.0,
-                                        )
-                                      ],
-                                    );
-                                    */
-          /*return (position == items.length ) ?
-                                    Container(
-                                      color: Colors.greenAccent,
-                                      child: FlatButton(
-                                        child: Text("Load More"),
-                                        onPressed: () {},
-                                      ),
-                                    )
-                                        :
-                                    ListTile(
-                                      title: Text('${items[position]}'),
-                                    );*/
-          /*
-                                  },
-                              );*/
-        }
-      },
+    List<ColumnSeries<DailyAverage, String>> _columnData = [
+      ColumnSeries<DailyAverage, String>(
+        color: cOrtuBlue,
+        borderColor: Colors.red,
+        trackColor: Colors.teal,
+        dataSource: desktopSalesData,
+        // borderRadius: BorderRadius.only(bottomRight: Radius.circular(10), topRight: Radius.circular(10)),
+        xValueMapper: (data, _) => data.day,
+        yValueMapper: (data, _) => data.average,
+      ),
+    ];
+
+    return SfCartesianChart(
+      plotAreaBorderWidth: 0,
+      primaryXAxis: CategoryAxis(
+        majorGridLines: MajorGridLines(width: 0),
+      ),
+      series: _columnData,
+      tooltipBehavior: TooltipBehavior(enable: true, canShowMarker: false, format: 'point.x : point.y', header: ''),
+    );
+  }
+
+  Widget _chartDailyAverage() {
+    final desktopSalesData = [
+      DailyAverage('${dty[0]}', dtx[0]),
+      DailyAverage('${dty[1]}', dtx[1]),
+      DailyAverage('${dty[2]}', dtx[2]),
+      DailyAverage('${dty[3]}', dtx[3]),
+      DailyAverage('${dty[4]}', dtx[4]),
+      DailyAverage('${dty[5]}', dtx[5]),
+      DailyAverage('${dty[6]}', dtx[6]),
+    ];
+
+    List<ColumnSeries<DailyAverage, String>> _columnData = [
+      ColumnSeries<DailyAverage, String>(
+        color: cOrtuBlue,
+        borderColor: Colors.red,
+        trackColor: Colors.teal,
+        dataSource: desktopSalesData,
+        // borderRadius: BorderRadius.only(bottomRight: Radius.circular(10), topRight: Radius.circular(10)),
+        xValueMapper: (data, _) => data.day,
+        yValueMapper: (data, _) => data.average,
+      ),
+    ];
+
+    return SfCartesianChart(
+      plotAreaBorderWidth: 0,
+      primaryXAxis: CategoryAxis(
+        majorGridLines: MajorGridLines(width: 0),
+      ),
+      series: _columnData,
+      tooltipBehavior: TooltipBehavior(enable: true, canShowMarker: false, format: 'point.x : point.y', header: ''),
     );
   }
 
@@ -2303,38 +1772,6 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               }
               return createListViewTemp(context, itemsTmp);
             }
-          }
-        }
-      },
-    );
-  }
-
-  Widget onMostDayTemp() {
-    return FutureBuilder<List<AppUsageInfo>>(
-      future: getUsageStatsDailyTemp(),
-      builder: (BuildContext context, AsyncSnapshot<List<AppUsageInfo>> data) {
-        if (data.data == null) {
-          return const Center(child: CircularProgressIndicator());
-        } else {
-          _infosDays = data.data!;
-          if (itemsDays.length >= (present + perPage)) {
-            return createListView(context, itemsDays);
-          } else {
-            int tmp = _infosDays.length - itemsDays.length;
-            int limit = 0;
-            if (itemsDays.length == 0 && _infosDays.length > perPage) {
-              limit = present + perPage;
-            } else if (itemsDays.length == 0) {
-              limit = itemsDays.length + _infosDays.length;
-            } else if (tmp < perPage) {
-              limit = itemsDays.length + tmp;
-            } else {
-              limit = itemsDays.length + perPage;
-            }
-            for (int i = itemsDays.length; i < limit; i++) {
-              itemsDays.add(_infosDays[i]);
-            }
-            return createListView(context, itemsDays);
           }
         }
       },
@@ -2389,4 +1826,11 @@ class Sales {
   final int sales;
 
   Sales(this.year, this.sales);
+}
+
+class DailyAverage {
+  final String day;
+  final int average;
+
+  DailyAverage(this.day, this.average);
 }

@@ -17,13 +17,6 @@ import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class RKConfigLocationView extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp();
-  }
-}
-
 class RKConfigLocationPage extends StatefulWidget {
   // List<charts.Series> seriesList;
   @override
@@ -202,7 +195,6 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     var outputFormat = DateFormat('dd-MM-yyyy');
     var outputFormatDay = DateFormat('EEEE');
@@ -214,204 +206,142 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: cPrimaryBg,
       appBar: AppBar(
-        title: Text(widget.title, style: TextStyle(color: Colors.grey.shade700)),
-        backgroundColor: Colors.white70,
-        iconTheme: IconThemeData(color: Colors.grey.shade700),
+        centerTitle: true,
+        title: Text(widget.name, style: TextStyle(color: cOrtuWhite)),
+        backgroundColor: cPrimaryBg,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        elevation: 0,
       ),
-      backgroundColor: Colors.grey[300],
       body: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          color: Colors.grey[300],
-          child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Flexible(
+          padding: EdgeInsets.only(left: 10, right: 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: Text('Update Lokasi: 1 menit lalu', style: TextStyle(color: cOrtuWhite)),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width / 3,
+                  ),
+                  IconButton(
+                    color: cOrtuWhite,
+                    icon: Icon(Icons.directions),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    color: cOrtuWhite,
+                    icon: Icon(Icons.my_location),
+                    onPressed: () {
+                      fetchCurrentLoc();
+                    },
+                  ),
+                ],
+              ),
+              Flexible(
                 child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width,
-                            margin: EdgeInsets.only(top: 10.0),
-                            height: 50,
-                            color: Colors.white,
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                '${widget.name}',
-                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.all(20.0),
-                            child: Text('Kontrol Instant', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                          ),
-                          Container(
-                            height: 150,
-                            width: MediaQuery.of(context).size.width,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey,
-                                  blurRadius: 3.0,
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.all(10.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Container(
-                                        child: Text(
-                                          'Mode Penulusuran Lokasi',
-                                          style: TextStyle(fontSize: 16),
-                                        ),
-                                      ),
-                                      Container(
-                                        child: CupertinoSwitch(
-                                          value: _switchValue,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              _switchValue = value;
-                                            });
-                                          },
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  height: 50,
-                                  margin: EdgeInsets.only(left: 10.0, right: 10.0),
-                                  child: DefaultTabController(
-                                    length: 2,
-                                    initialIndex: 0,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                                      children: <Widget>[
-                                        Container(
-                                          child: TabBar(
-                                            labelColor: Colors.green,
-                                            unselectedLabelColor: Colors.black,
-                                            indicatorColor: Colors.green,
-                                            tabs: [
-                                              Tab(text: 'Timeline'),
-                                              Tab(text: 'Waktu Tempuh'),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.all(20.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('Penulusuran Lokasi', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                                GestureDetector(
-                                  child: Text('Current', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xff05745F))),
-                                  onTap: () {
-                                    fetchCurrentLoc();
-                                  },
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey,
-                                  blurRadius: 3.0,
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Container(
-                                  margin: EdgeInsets.all(20.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        '$tanggal',
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                      GestureDetector(
-                                        child: Icon(
-                                          //Icons.skip_previous,
-                                          Icons.compare_arrows,
-                                          size: 20.0,
-                                          color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).accentColor : Color(0xFF787878),
-                                        ),
-                                        onTap: () async {
-                                          final pickedRange = await showDateRangePicker(
-                                            context: context,
-                                            firstDate: DateTime.now().subtract(const Duration(days: 365 * 3)),
-                                            lastDate: DateTime.now().add(const Duration(days: 365)),
-                                            initialDateRange: selectedRange,
-                                          );
-                                          if (pickedRange != null) {
-                                            selectedRange = pickedRange;
-                                            selectedDates = [pickedRange.start, pickedRange.end];
-                                            print('select date : $selectedDates');
-                                            fetchFilterMarker(selectedDates);
-                                            setState(() {});
-                                          }
-                                        },
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  height: 340,
-                                  child: GoogleMap(
-                                      initialCameraPosition: _myLocation,
-                                      mapType: MapType.normal,
-                                      markers: Set.of(markers.values),
-                                      myLocationEnabled: true,
-                                      myLocationButtonEnabled: true,
-                                      zoomControlsEnabled: true,
-                                      zoomGesturesEnabled: true,
-                                      scrollGesturesEnabled: true,
-                                      onMapCreated: (GoogleMapController controller) {
-                                        _controller.complete(controller);
-                                        fetchMarkers();
-                                        // addKml(controller);
-                                      },
-                                      tiltGesturesEnabled: true,
-                                      gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
-                                        new Factory<OneSequenceGestureRecognizer>(
-                                          () => new EagerGestureRecognizer(),
-                                        ),
-                                      ].toSet()),
-                                )
-                              ],
-                            ),
-                          ),
-                        ],
+                  height: MediaQuery.of(context).size.height / 3,
+                  child: GoogleMap(
+                      initialCameraPosition: _myLocation,
+                      mapType: MapType.normal,
+                      markers: Set.of(markers.values),
+                      myLocationEnabled: true,
+                      myLocationButtonEnabled: true,
+                      zoomControlsEnabled: true,
+                      zoomGesturesEnabled: true,
+                      scrollGesturesEnabled: true,
+                      onMapCreated: (GoogleMapController controller) {
+                        _controller.complete(controller);
+                        fetchMarkers();
+                        // addKml(controller);
+                      },
+                      tiltGesturesEnabled: true,
+                      gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
+                        new Factory<OneSequenceGestureRecognizer>(
+                          () => new EagerGestureRecognizer(),
+                        ),
+                      ].toSet()),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.only(top: 10, bottom: 15),
+                child: Text(
+                  'Nama lokasi Nama lokasi Nama lokasi Nama lokasi Nama lokasi Nama lokasi Nama lokasi Nama lokasi Nama lokasi',
+                  style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                ),
+              ),
+              Divider(
+                thickness: 1,
+                color: cOrtuWhite,
+              ),
+              Container(
+                margin: EdgeInsets.all(10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Timeline',
+                      style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                    ),
+                    GestureDetector(
+                      child: Text(
+                        '$tanggal',
+                        style: TextStyle(fontSize: 16, color: cOrtuBlue),
                       ),
-                    )))
-          ])),
+                      onTap: () async {
+                        final pickedRange = await showDateRangePicker(
+                          context: context,
+                          firstDate: DateTime.now().subtract(const Duration(days: 365 * 3)),
+                          lastDate: DateTime.now().add(const Duration(days: 365)),
+                          initialDateRange: selectedRange,
+                        );
+                        if (pickedRange != null) {
+                          selectedRange = pickedRange;
+                          selectedDates = [pickedRange.start, pickedRange.end];
+                          print('select date : $selectedDates');
+                          fetchFilterMarker(selectedDates);
+                          setState(() {});
+                        }
+                      },
+                    )
+                  ],
+                ),
+              ),
+              Divider(
+                thickness: 1,
+                color: cOrtuWhite,
+              ),
+              Flexible(
+                child: ListView.builder(
+                  itemCount: 10,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(
+                        'Location Name',
+                        style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                      ),
+                      // isThreeLine: true,
+                      subtitle: Text(
+                        'on Jln $index where in indonesia',
+                        style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                      ),
+                      trailing: Text(
+                        '12:${3 * index}',
+                        style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          )),
     );
   }
 }

@@ -46,7 +46,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
   int dataTotalSecond = 0;
   late SharedPreferences prefs;
   String avgData = '0s';
-  var dtx = [1, 2, 3, 4, 5, 6, 0];
+  var dtx = [0, 0, 0, 0, 0, 0, 0];
   var dty = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
   String dateToday = '00.01';
   int countUsage = 1;
@@ -128,7 +128,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
 
     print('last $usageLast');
 
-    // dtx = [usageFirst, usageSecond, usageThird, usageFour, usageFive, usageSix, usageLast];
+    dtx = [usageFirst, usageSecond, usageThird, usageFour, usageFive, usageSix, usageLast];
     setState(() {});
   }
 
@@ -288,35 +288,39 @@ class _DetailChildPageState extends State<DetailChildPage> {
     required String content,
     required Function() onTap,
   }) {
-    return Column(
-      children: [
-        Container(
-          margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 20.0, bottom: 10.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '$title',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: cOrtuWhite),
-              ),
-              GestureDetector(
-                child: Icon(
-                  Icons.settings,
-                  color: Colors.blue,
+    return InkWell(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 20.0, bottom: 10.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '$title',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: cOrtuWhite),
                 ),
-                onTap: onTap,
-              )
-            ],
+                Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.rotationY(pi),
+                  child: Icon(
+                    Icons.build_outlined,
+                    color: Colors.blue,
+                  ),
+                )
+              ],
+            ),
           ),
-        ),
-        Container(
-          margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
-          child: Text(
-            '$content',
-            style: TextStyle(color: cOrtuWhite),
+          Container(
+            margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
+            child: Text(
+              '$content',
+              style: TextStyle(color: cOrtuWhite),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -326,7 +330,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            margin: EdgeInsets.all(20.0),
+            margin: EdgeInsets.all(10.0),
             child: Text('Kontrol dan Konfigurasi', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: cOrtuWhite)),
           ),
           wKontrolKonfigurasiContent(
@@ -397,16 +401,20 @@ class _DetailChildPageState extends State<DetailChildPage> {
                 'apa pun di Google, Bing atau Youtube. Pemfilteran internet memungkinkan'
                 'Anda memblokir situs web, gambar dan video dari kategori tertentu yang'
                 'Anda pilih. Anda juga dapat melihat riwayat internet dan bookmark mereka.',
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => RKConfigAccessInternetPage(title: 'Akses Internet'))),
+            onTap: () => Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => RKConfigAccessInternetPage(title: 'Akses Internet', name: widget.name))),
           ),
           wKontrolKonfigurasiContent(
-            title: 'Set Jadwal Penggunaan',
-            content: 'Tetapkan jadwal agar anak Anda dapat menggunakan ponsel mereka hanya pada'
-                'waktu tertentu dan memblokir akses selama waktu makan malam atau saat'
-                'waktunya tidur. Anda juga dapat langsung memblokir akses ke ponsel'
-                'mereka dengan fitur kunci layar.',
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => RKConfigLimitDevicetPage(title: 'Jadwal Penggunaan', name: widget.name, email: widget.email))),
+            title: 'Batas Penggunaan',
+            content: 'Dengan menggunakan aplikasi Ruang Keluarga untuk orang tua dari perangkat'
+                'anda. Anda dapat memantau dan mengontrol perangkat anak-anak anda'
+                'dari mana saja di dunia. Dapatkan aplikasi, internet, dan statistik'
+                'penggunaan telepon langsung dari dasbor anda.',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute<Object>(
+                  builder: (BuildContext context) => RKConfigBatasPenggunaanPage(title: 'Batas Penggunaan', name: widget.name, email: widget.email)),
+            ),
           ),
           wKontrolKonfigurasiContent(
             title: 'Blok Aplikasi / Games',
@@ -420,16 +428,13 @@ class _DetailChildPageState extends State<DetailChildPage> {
             ),
           ),
           wKontrolKonfigurasiContent(
-            title: 'Batas Penggunaan Gadget',
-            content: 'Dengan menggunakan aplikasi Ruang Keluarga untuk orang tua dari perangkat'
-                'anda. Anda dapat memantau dan mengontrol perangkat anak-anak anda'
-                'dari mana saja di dunia. Dapatkan aplikasi, internet, dan statistik'
-                'penggunaan telepon langsung dari dasbor anda.',
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute<Object>(
-                  builder: (BuildContext context) => RKConfigBatasPenggunaanPage(title: 'Batas Penggunaan', name: widget.name, email: widget.email)),
-            ),
+            title: 'Set Jadwal Penggunaan',
+            content: 'Tetapkan jadwal agar anak Anda dapat menggunakan ponsel mereka hanya pada'
+                'waktu tertentu dan memblokir akses selama waktu makan malam atau saat'
+                'waktunya tidur. Anda juga dapat langsung memblokir akses ke ponsel'
+                'mereka dengan fitur kunci layar.',
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => RKConfigLimitDevicetPage(title: 'Jadwal Penggunaan', name: widget.name, email: widget.email))),
           ),
         ],
       ),
@@ -442,7 +447,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            margin: EdgeInsets.all(20.0),
+            margin: EdgeInsets.all(10.0),
             child: Text('Kontrol Instant', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: cOrtuWhite)),
           ),
           Container(

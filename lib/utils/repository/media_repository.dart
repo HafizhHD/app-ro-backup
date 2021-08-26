@@ -249,9 +249,12 @@ class MediaRepository {
     return response;
   }
 
-  Future<Response> fetchAppIconList() async {
+  Future<Response> fetchAppIconList(String email) async {
     var url = _rkService.baseUrl + '/user/appIconFilter';
-    Map<String, dynamic> json = {"limit": 1000};
+    Map<String, dynamic> json = {
+      "whereKeyValues": {"emailUser": "$email"},
+      "limit": 1000
+    };
     print('param app icon list : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
@@ -309,6 +312,14 @@ class MediaRepository {
   Future<Response> addLimitUsage(String email, dynamic appCategory, int limit, String status) async {
     var url = _rkService.baseUrl + '/user/appUsageLimitAdd';
     Map<String, dynamic> json = {"emailUser": "$email", "appCategory": appCategory, "limit": limit, "status": status};
+    print('param add limit usage : $json');
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> addLimitUsageBlockApp(String email, String appID, dynamic appCategory, int limit, String status) async {
+    var url = _rkService.baseUrl + '/user/appUsageLimitAdd';
+    Map<String, dynamic> json = {"emailUser": "$email", "appId": appID, "appCategory": appCategory, "limit": limit, "status": status};
     print('param add limit usage : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;

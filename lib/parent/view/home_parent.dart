@@ -260,32 +260,10 @@ class _HomeParentPageState extends State<HomeParentPage> {
     }
   }
 
-  void onLoadAppIcon() async {
-    prefs = await SharedPreferences.getInstance();
-    Response response = await MediaRepository().fetchAppIconList();
-    if (response.statusCode == 200) {
-      print('response load icon ${response.body}');
-      var json = jsonDecode(response.body);
-      if (json['resultCode'] == 'OK') {
-        var appIcons = json['appIcons'];
-        await prefs.setString('rkBaseUrlAppIcon', json['baseUrl']);
-        if (appIcons != null) {
-          // List<AppIconList> data = List<AppIconList>.from(
-          //     appIcons.map((model) => AppIconList.fromJson(model)));
-          // String datx = jsonEncode(appIcons);
-          await prefs.setString('rkListAppIcons', response.body);
-        }
-      }
-    } else {
-      print('response ${response.statusCode}');
-    }
-  }
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    onLoadAppIcon();
     setBindingData();
     onMessageListen();
     // getUsageStatistik();
@@ -478,11 +456,15 @@ class _HomeParentPageState extends State<HomeParentPage> {
             childsList = data.data!;
             if (childsList.length > 0) {
               return ListView.builder(
-                shrinkWrap: false,
-                scrollDirection: Axis.horizontal,
-                itemCount: childsList.length,
-                itemBuilder: (BuildContext context, int index) => ChildCardWithBottomSheet(childData: childsList[index], prefs: prefs),
-              );
+                  shrinkWrap: false,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: childsList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final parentController = Get.find<ParentController>();
+                    parentController.setModeAsuh(childsList[index].childOfNumber ?? 0, 1);
+
+                    return ChildCardWithBottomSheet(childData: childsList[index], prefs: prefs);
+                  });
             } else {
               return Center(
                 child: Text('No data.'),
@@ -502,8 +484,6 @@ class ChildCardWithBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final double paddingValue = 8;
-    final parentController = Get.find<ParentController>();
-    parentController.setModeAsuh(childData.childNumber ?? 0, 1);
 
     return Container(
       margin: EdgeInsets.all(paddingValue),
@@ -518,10 +498,6 @@ class ChildCardWithBottomSheet extends StatelessWidget {
             alignment: Alignment.topRight,
             child: Container(
               margin: EdgeInsets.only(right: 4, top: 4),
-              // decoration: BoxDecoration(
-              //   shape: BoxShape.circle,
-              //   color: cPrimaryBg,
-              // ),
               child: IconButton(
                 color: Colors.black,
                 iconSize: 40,
@@ -595,42 +571,36 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Obx(
-                                        () => Row(
+                                      GetBuilder<ParentController>(builder: (ctrl) {
+                                        return Row(
                                           children: [
                                             GestureDetector(
-                                              onTap: () => parentController.setModeAsuh(childData.childNumber ?? 0, 1),
+                                              onTap: () => ctrl.setModeAsuh(childData.childOfNumber ?? 0, 1),
                                               child: Icon(
-                                                parentController.getmodeAsuh(childData.childNumber ?? 0) >= 1
-                                                    ? Icons.looks_one
-                                                    : Icons.looks_one_outlined,
+                                                ctrl.getmodeAsuh(childData.childOfNumber ?? 0) >= 1 ? Icons.looks_one : Icons.looks_one_outlined,
                                                 color: cOrtuBlue,
                                                 size: 35,
                                               ),
                                             ),
                                             GestureDetector(
-                                              onTap: () => parentController.setModeAsuh(childData.childNumber ?? 0, 2),
+                                              onTap: () => ctrl.setModeAsuh(childData.childOfNumber ?? 0, 2),
                                               child: Icon(
-                                                parentController.getmodeAsuh(childData.childNumber ?? 0) >= 2
-                                                    ? Icons.looks_two
-                                                    : Icons.looks_two_outlined,
+                                                ctrl.getmodeAsuh(childData.childOfNumber ?? 0) >= 2 ? Icons.looks_two : Icons.looks_two_outlined,
                                                 color: cOrtuBlue,
                                                 size: 35,
                                               ),
                                             ),
                                             GestureDetector(
-                                              onTap: () => parentController.setModeAsuh(childData.childNumber ?? 0, 3),
+                                              onTap: () => ctrl.setModeAsuh(childData.childOfNumber ?? 0, 3),
                                               child: Icon(
-                                                parentController.getmodeAsuh(childData.childNumber ?? 0) == 3
-                                                    ? Icons.looks_3
-                                                    : Icons.looks_3_outlined,
+                                                ctrl.getmodeAsuh(childData.childOfNumber ?? 0) == 3 ? Icons.looks_3 : Icons.looks_3_outlined,
                                                 color: cOrtuBlue,
                                                 size: 35,
                                               ),
                                             ),
                                           ],
-                                        ),
-                                      ),
+                                        );
+                                      }),
                                       IconButton(
                                         iconSize: 35,
                                         onPressed: () {},

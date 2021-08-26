@@ -3,10 +3,13 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/model/rk_app_list_with_icon.dart';
+import 'package:ruangkeluarga/model/rk_child_app_icon_list.dart';
 import 'package:ruangkeluarga/model/rk_child_apps.dart';
 import 'package:ruangkeluarga/parent/view/rk_tambah_batasan.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RKConfigBatasPenggunaan extends StatelessWidget {
   @override
@@ -33,10 +36,16 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
   bool checkProductivity = false;
   bool checkOther = false;
 
+  late SharedPreferences prefs;
+  late Future fDataLimit;
+  late Future<List<AppListWithIcons>> fListApps;
+  List<AppListWithIcons> appList = [];
+  List<AppListWithIcons> appListSearch = [];
+
   Future<List<dynamic>> getData() async {
     Response response = await MediaRepository().fetchLimitUsageFilter(widget.email);
+    print('isi response filter app usage : ${response.body}');
     if (response.statusCode == 200) {
-      print('isi response filter app usage : ${response.body}');
       var json = jsonDecode(response.body);
       if (json['resultCode'] == "OK") {
         setState(() {
@@ -63,7 +72,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
   }
 
   Future<List<AppListWithIcons>> fetchAppList() async {
-    // prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     Response response = await MediaRepository().fetchAppList(widget.email);
     if (response.statusCode == 200) {
       print('isi response fetch appList : ${response.body}');
@@ -75,30 +84,29 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
           List<dynamic> dataList = [];
           bool flag = false;
           List<ApplicationInstalled> dataIconApps = List<ApplicationInstalled>.from(tmpData.map((model) => ApplicationInstalled.fromJson(model)));
-          /*for(int i = 0; i < dataIconApps.length; i++) {
-            if(prefs.getString('rkListAppIcons') != null) {
+          for (int i = 0; i < dataIconApps.length; i++) {
+            if (prefs.getString('rkListAppIcons') != null) {
               flag = true;
               var respList = jsonDecode(prefs.getString('rkListAppIcons')!);
               var listIcons = respList['appIcons'];
-              List<AppIconList> dataListIconApps = List<AppIconList>.from(
-                  listIcons.map((model) => AppIconList.fromJson(model)));
+              List<AppIconList> dataListIconApps = List<AppIconList>.from(listIcons.map((model) => AppIconList.fromJson(model)));
               var imageUrl = "${prefs.getString('rkBaseUrlAppIcon')}";
               bool flagX = false;
               int indeksX = 0;
-              if(dataListIconApps.length > 0) {
-                for(int x = 0; x < dataListIconApps.length; x++) {
-                  if(dataIconApps[i].packageId == dataListIconApps[x].appId) {
+              if (dataListIconApps.length > 0) {
+                for (int x = 0; x < dataListIconApps.length; x++) {
+                  if (dataIconApps[i].packageId == dataListIconApps[x].appId) {
                     indeksX = x;
                     flagX = true;
                     break;
                   }
                 }
-                if(flagX) {
+                if (flagX) {
                   dataList.add({
                     "appName": "${dataIconApps[i].appName}",
                     "packageId": "${dataIconApps[i].packageId}",
                     "blacklist": dataIconApps[i].blacklist,
-                    "appIcons": "${imageUrl+dataListIconApps[indeksX].appIcon.toString()}"
+                    "appIcons": "${imageUrl + dataListIconApps[indeksX].appIcon.toString()}"
                   });
                 } else {
                   dataList.add({
@@ -108,18 +116,22 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                     "appIcons": ""
                   });
                 }
-              }
-              else {
+              } else {
                 flag = false;
                 break;
               }
-            }
-            else {
+            } else {
               break;
             }
-          }*/
+          }
           if (flag) {
             List<AppListWithIcons> data = List<AppListWithIcons>.from(dataList.map((model) => AppListWithIcons.fromJson(model)));
+            data.sort((a, b) => a.appName!.compareTo(b.appName!));
+            print('SetData');
+            appList = data;
+            appListSearch = data;
+            setState(() {});
+
             return data;
           } else {
             for (int i = 0; i < dataIconApps.length; i++) {
@@ -131,6 +143,12 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
               });
             }
             List<AppListWithIcons> data = List<AppListWithIcons>.from(dataList.map((model) => AppListWithIcons.fromJson(model)));
+            data.sort((a, b) => a.appName!.compareTo(b.appName!));
+            print('SetData');
+            appList = data;
+            appListSearch = data;
+            setState(() {});
+
             return data;
           }
         } else {
@@ -160,61 +178,214 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
   }
 
   @override
+  void initState() {
+    super.initState();
+    fDataLimit = getData();
+    fListApps = fetchAppList();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: cPrimaryBg,
       appBar: AppBar(
-        title: Text(widget.title, style: TextStyle(color: Colors.grey.shade700)),
-        backgroundColor: Colors.white70,
-        iconTheme: IconThemeData(color: Colors.grey.shade700),
-        actions: <Widget>[
-          GestureDetector(
-            child: Container(
-              margin: EdgeInsets.only(right: 10.0),
-              child: Align(
-                child: Text(
-                  'Tambah Batas',
-                  style: TextStyle(color: Color(0xffFF018786), fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            onTap: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => RKTambahBatasanPage(title: widget.title, name: widget.name, email: widget.email)));
-            },
-          ),
-          /*IconButton(onPressed: () {}, icon: Icon(
-            Icons.add,
-            color: Colors.grey.shade700,
-          ),),*/
-        ],
+        centerTitle: true,
+        title: Text(widget.name, style: TextStyle(color: cOrtuWhite)),
+        backgroundColor: cPrimaryBg,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        elevation: 0,
       ),
-      backgroundColor: Colors.grey[300],
       body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        color: Colors.grey[300],
+        padding: EdgeInsets.only(left: 15, right: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            WSearchBar(
+              fOnChanged: (v) {
+                appListSearch = appList.where((e) => e.appName!.toLowerCase().contains(v.toLowerCase()) == true).toList();
+                setState(() {});
+              },
+            ),
+            //dropDown
             Flexible(
-                child: Container(
-              width: MediaQuery.of(context).size.width,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    /*onShowActive(_isLimitActive),*/
-                    Container(
-                      margin: EdgeInsets.all(20.0),
-                      child: Text('Atur batas penggunaan gadget anak anda berdasarkan kategori yang dipilih.'),
-                    ),
-                    onLoadDataActive(true),
-                  ],
-                ),
-              ),
-            ))
+              child: FutureBuilder<List<AppListWithIcons>>(
+                  future: fListApps,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) return wProgressIndicator();
+
+                    final listApps = snapshot.data ?? [];
+                    if (listApps.length <= 0)
+                      return Center(
+                        child: Text('List aplikasi kosong', style: TextStyle(color: cOrtuWhite)),
+                      );
+                    listApps.sort((a, b) => a.appName!.compareTo(b.appName!));
+
+                    return ListView.builder(
+                        itemCount: appListSearch.length,
+                        itemBuilder: (ctx, index) {
+                          final app = appListSearch[index];
+                          return Container(
+                            padding: EdgeInsets.all(5),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    app.appIcons != null && app.appIcons != ''
+                                        ? Container(
+                                            margin: EdgeInsets.all(5).copyWith(right: 10),
+                                            child: Image.network(
+                                              app.appIcons ?? '',
+                                              height: 50,
+                                              fit: BoxFit.contain,
+                                            ))
+                                        : Container(
+                                            margin: EdgeInsets.all(5).copyWith(right: 10),
+                                            color: cOrtuBlue,
+                                            height: 50,
+                                            child: Center(
+                                              child: Icon(Icons.photo),
+                                            ),
+                                          ),
+                                    Flexible(
+                                      child: Text(
+                                        app.appName ?? '',
+                                        style: TextStyle(color: cOrtuWhite),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                index < 1
+                                    ? Text(
+                                        '3h 30m',
+                                        style: TextStyle(color: cOrtuWhite),
+                                      )
+                                    : IconButton(
+                                        onPressed: () {},
+                                        icon: Icon(
+                                          Icons.access_time,
+                                          color: cOrtuWhite,
+                                        )),
+                              ],
+                            ),
+                          );
+                        });
+                  }),
+              // child: FutureBuilder<List<Contact>>(
+              //   future: fetchContact(),
+              //   builder: (BuildContext context, AsyncSnapshot<List<Contact>> data) {
+              //     if (data.data == null) {
+              //       return const Center(child: CircularProgressIndicator());
+              //     } else {
+              //       List<Contact> apps = data.data!;
+              //       apps.sort((a, b) {
+              //         var aName = a.name;
+              //         var bName = b.name;
+              //         return aName!.compareTo(bName!);
+              //       });
+              //       for (int i = 0; i < apps.length; i++) {
+              //         Contact dt = apps[i];
+              //         listSwitchValue.add(dt.blacklist!);
+              //       }
+              //
+              //       if (apps.length == 0) {
+              //         return Align(
+              //           child: Text(
+              //             'Tidak ada data.',
+              //             style: TextStyle(color: Colors.black, fontSize: 18),
+              //           ),
+              //         );
+              //       } else {
+              //         return Scrollbar(
+              //           child: ListView.builder(
+              //               itemBuilder: (BuildContext context, int position) {
+              //                 Contact app = apps[position];
+              //                 var phones = "";
+              //                 if (app.phone != null && app.phone!.length > 0) {
+              //                   phones = app.phone![0];
+              //                 }
+              //
+              //                 if (phones == "") {
+              //                   return Column(
+              //                     children: <Widget>[
+              //                       ListTile(
+              //                         leading: Icon(
+              //                           Icons.android_outlined,
+              //                           color: Colors.green,
+              //                         ),
+              //                         title: Column(
+              //                           mainAxisAlignment: MainAxisAlignment.start,
+              //                           crossAxisAlignment: CrossAxisAlignment.start,
+              //                           children: [
+              //                             Text('${app.name}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+              //                           ],
+              //                         ),
+              //                         // title: Text('${app.name}'),
+              //                         trailing: CupertinoSwitch(
+              //                           value: listSwitchValue[position],
+              //                           onChanged: (bool value) {
+              //                             onBlacklistContact(app.name.toString(), app.phone![0].toString());
+              //                             setState(() {
+              //                               listSwitchValue[position] = value;
+              //                             });
+              //                           },
+              //                         ),
+              //                       ),
+              //                       const Divider(
+              //                         height: 1.0,
+              //                       )
+              //                     ],
+              //                   );
+              //                 } else {
+              //                   return Column(
+              //                     children: <Widget>[
+              //                       ListTile(
+              //                         leading: Icon(
+              //                           Icons.android_outlined,
+              //                           color: Colors.green,
+              //                         ),
+              //                         title: Column(
+              //                           mainAxisAlignment: MainAxisAlignment.start,
+              //                           crossAxisAlignment: CrossAxisAlignment.start,
+              //                           children: [
+              //                             Text('${app.name}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+              //                             SizedBox(
+              //                               height: 5,
+              //                             ),
+              //                             Text('$phones', style: TextStyle(fontSize: 12))
+              //                           ],
+              //                         ),
+              //                         // title: Text('${app.name}'),
+              //                         trailing: CupertinoSwitch(
+              //                           value: listSwitchValue[position],
+              //                           onChanged: (bool value) {
+              //                             onBlacklistContact(app.name.toString(), app.phone![0].toString());
+              //                             setState(() {
+              //                               listSwitchValue[position] = value;
+              //                             });
+              //                           },
+              //                         ),
+              //                       ),
+              //                       const Divider(
+              //                         height: 1.0,
+              //                       )
+              //                     ],
+              //                   );
+              //                 }
+              //               },
+              //               itemCount: apps.length),
+              //         );
+              //       }
+              //     }
+              //   },
+              // ),
+            ),
           ],
         ),
       ),
