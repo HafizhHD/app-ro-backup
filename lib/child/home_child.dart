@@ -598,7 +598,7 @@ class _HomeChildPageState extends State<HomeChildPage> {
 
   void onGetIconApps() async {
     prefs = await SharedPreferences.getInstance();
-    Response response = await MediaRepository().fetchAppIconList();
+    Response response = await MediaRepository().fetchAppIconList(widget.email);
     if (response.statusCode == 200) {
       print('response load icon ${response.body}');
       var json = jsonDecode(response.body);

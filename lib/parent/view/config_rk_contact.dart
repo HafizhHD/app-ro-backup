@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/model/rk_child_contact.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 
@@ -26,8 +27,9 @@ class ConfigRKContactPage extends StatefulWidget {
 }
 
 class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
-  late List<Contact> contactList;
+  late Future<List<Contact>> fContactList;
   List<bool> listSwitchValue = [];
+
   Future<List<Contact>> fetchContact() async {
     Response response = await MediaRepository().fetchContact(widget.email);
     if (response.statusCode == 200) {
@@ -57,6 +59,12 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
     }
   }
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    fContactList = fetchContact();
+  }
+
   void onBlacklistContact(String name, String phone) async {
     Response response = await MediaRepository().blackListContactAdd(widget.email, name, phone, "");
     if (response.statusCode == 200) {
@@ -69,156 +77,75 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: cPrimaryBg,
       appBar: AppBar(
-        title: Text(widget.title, style: TextStyle(color: Colors.grey.shade700)),
-        backgroundColor: Colors.white70,
-        iconTheme: IconThemeData(color: Colors.grey.shade700),
+        centerTitle: true,
+        title: Text(widget.name, style: TextStyle(color: cOrtuWhite)),
+        backgroundColor: cPrimaryBg,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        elevation: 0,
       ),
-      backgroundColor: Colors.white,
       body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
+        padding: EdgeInsets.only(left: 15, right: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              height: 40,
-              margin: EdgeInsets.only(left: 20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    child: Align(
-                      child: Text(
-                        'Nama Kontak',
-                        style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(right: 20.0),
-                    child: Align(
-                      child: Text(
-                        'Blacklist',
-                        style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  )
-                ],
-              ),
+            WSearchBar(
+              fOnChanged: (v) {},
             ),
-            Container(
-              height: MediaQuery.of(context).size.height - 130,
-              child: FutureBuilder<List<Contact>>(
-                future: fetchContact(),
-                builder: (BuildContext context, AsyncSnapshot<List<Contact>> data) {
-                  if (data.data == null) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else {
-                    List<Contact> apps = data.data!;
-                    apps.sort((a, b) {
+            //dropDown
+            Flexible(
+              child: FutureBuilder(
+                  future: fContactList,
+                  builder: (context, AsyncSnapshot<List<Contact>> snapshot) {
+                    if (!snapshot.hasData) return wProgressIndicator();
+
+                    final contacts = snapshot.data ?? [];
+                    if (contacts.length <= 0) return Center(child: Text('Data kontak kosong', style: TextStyle(color: cOrtuWhite)));
+                    contacts.sort((a, b) {
                       var aName = a.name;
                       var bName = b.name;
                       return aName!.compareTo(bName!);
                     });
-                    for (int i = 0; i < apps.length; i++) {
-                      Contact dt = apps[i];
-                      listSwitchValue.add(dt.blacklist!);
-                    }
-
-                    if (apps.length == 0) {
-                      return Align(
-                        child: Text(
-                          'Tidak ada data.',
-                          style: TextStyle(color: Colors.black, fontSize: 18),
-                        ),
-                      );
-                    } else {
-                      return Scrollbar(
-                        child: ListView.builder(
-                            itemBuilder: (BuildContext context, int position) {
-                              Contact app = apps[position];
-                              var phones = "";
-                              if (app.phone != null && app.phone!.length > 0) {
-                                phones = app.phone![0];
-                              }
-
-                              if (phones == "") {
-                                return Column(
-                                  children: <Widget>[
-                                    ListTile(
-                                      leading: Icon(
-                                        Icons.android_outlined,
-                                        color: Colors.green,
-                                      ),
-                                      title: Column(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text('${app.name}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                                        ],
-                                      ),
-                                      // title: Text('${app.name}'),
-                                      trailing: CupertinoSwitch(
-                                        value: listSwitchValue[position],
-                                        onChanged: (bool value) {
-                                          onBlacklistContact(app.name.toString(), app.phone![0].toString());
-                                          setState(() {
-                                            listSwitchValue[position] = value;
-                                          });
-                                        },
-                                      ),
+                    return ListView.builder(
+                        itemCount: contacts.length,
+                        itemBuilder: (ctx, index) {
+                          final dataContact = contacts[index];
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                child: Text(dataContact.name ?? '', style: TextStyle(color: cOrtuWhite)),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  IconButton(
+                                    color: cOrtuWhite,
+                                    icon: Icon(Icons.notifications_active_outlined),
+                                    onPressed: () {
+                                      setState(() {});
+                                    },
+                                  ),
+                                  IconButton(
+                                    color: cOrtuWhite,
+                                    icon: Icon(
+                                      Icons.block_rounded,
+                                      color: dataContact.blacklist ?? false ? cOrtuBlue : cOrtuWhite,
                                     ),
-                                    const Divider(
-                                      height: 1.0,
-                                    )
-                                  ],
-                                );
-                              } else {
-                                return Column(
-                                  children: <Widget>[
-                                    ListTile(
-                                      leading: Icon(
-                                        Icons.android_outlined,
-                                        color: Colors.green,
-                                      ),
-                                      title: Column(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text('${app.name}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          Text('$phones', style: TextStyle(fontSize: 12))
-                                        ],
-                                      ),
-                                      // title: Text('${app.name}'),
-                                      trailing: CupertinoSwitch(
-                                        value: listSwitchValue[position],
-                                        onChanged: (bool value) {
-                                          onBlacklistContact(app.name.toString(), app.phone![0].toString());
-                                          setState(() {
-                                            listSwitchValue[position] = value;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    const Divider(
-                                      height: 1.0,
-                                    )
-                                  ],
-                                );
-                              }
-                            },
-                            itemCount: apps.length),
-                      );
-                    }
-                  }
-                },
-              ),
-            )
+                                    onPressed: () {},
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        });
+                  }),
+            ),
           ],
         ),
       ),

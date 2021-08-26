@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 import 'package:intl/intl.dart';
+import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:http/http.dart';
 
@@ -100,109 +101,217 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: cPrimaryBg,
       appBar: AppBar(
-        title: Text(widget.title, style: TextStyle(color: Colors.grey.shade700)),
-        backgroundColor: Colors.white70,
-        iconTheme: IconThemeData(color: Colors.grey.shade700),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.add,
-              color: Colors.grey.shade700,
-            ),
-          ),
-        ],
+        centerTitle: true,
+        title: Text(widget.name, style: TextStyle(color: cOrtuWhite)),
+        backgroundColor: cPrimaryBg,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        elevation: 0,
       ),
-      backgroundColor: Colors.grey[300],
       body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        color: Colors.grey[300],
+        padding: EdgeInsets.only(left: 15, right: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            WSearchBar(
+              fOnChanged: (v) {},
+            ),
+            //dropDown
+            Container(
+              padding: const EdgeInsets.all(5.0),
+              width: MediaQuery.of(context).size.width / 2,
+              child: Divider(
+                thickness: 1,
+                color: cOrtuWhite,
+              ),
+            ),
             Flexible(
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                child: SingleChildScrollView(
-                  child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      margin: EdgeInsets.only(top: 10.0),
-                      height: 50,
-                      color: Colors.white,
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          '${widget.name}',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.all(20.0),
-                      child: Text('Kontrol Instant', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    ),
-                    Container(
-                      height: 60,
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey,
-                            blurRadius: 3.0,
-                          ),
-                        ],
-                      ),
-                      child: Align(
-                        child: Container(
-                          margin: EdgeInsets.all(10.0),
+              child: ListView.builder(
+                  itemCount: 20,
+                  itemBuilder: (ctx, index) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.all(5),
+                          padding: EdgeInsets.all(5).copyWith(left: 10),
+                          decoration: BoxDecoration(color: Colors.grey.shade700, borderRadius: BorderRadius.circular(10)),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Container(
-                                child: Text(
-                                  'Mode Penjadwalan',
-                                  style: TextStyle(fontSize: 16),
-                                ),
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.all(5),
+                                    child: Text(
+                                      'Tidur Siang ke $index',
+                                      style: TextStyle(color: cOrtuWhite),
+                                    ),
+                                  ),
+                                  Text(
+                                    '$index Jam - ${index}x kali  Dalam seminggu',
+                                    style: TextStyle(color: cOrtuWhite),
+                                  ),
+                                ],
                               ),
-                              Container(
-                                child: CupertinoSwitch(
-                                  value: _switchValueFilter,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _switchValueFilter = value;
-                                      if (_switchValueFilter) {
-                                        onSaveSchedule('Aktif');
-                                      } else {
-                                        onUpdateSchedule('Tidak Aktif');
-                                      }
-                                    });
-                                  },
-                                ),
-                              )
+                              Row(
+                                children: [
+                                  IconButton(
+                                      onPressed: () {},
+                                      icon: Icon(
+                                        Icons.close,
+                                        color: cOrtuWhite,
+                                      )),
+                                  IconButton(
+                                      onPressed: () {},
+                                      icon: Icon(
+                                        Icons.edit,
+                                        color: cOrtuWhite,
+                                      )),
+                                  IconButton(
+                                      onPressed: () {},
+                                      icon: Icon(
+                                        Icons.radio_button_checked,
+                                        color: cOrtuWhite,
+                                      )),
+                                ],
+                              ),
                             ],
                           ),
                         ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(left: 10.0, right: 10.0, top: 5.0, bottom: 10.0),
-                      child: Text('Atur jadwal penggunaan hp anak anda'),
-                    ),
-                    onLoadEveryDay(_switchValueFilter, _switchValueEveryday),
-                    onLoadEveryWeekDay(_switchValueFilter, _switchValueEveryWeekDay),
-                    onLoadEveryWeekEnd(_switchValueFilter, _switchValueEveryWeekEnd),
-                    onLoadDate(_switchValueFilter, type),
-                  ]),
-                ),
-              ),
-            )
+                        if (index == 19)
+                          Container(
+                            margin: EdgeInsets.all(5),
+                            padding: EdgeInsets.all(5).copyWith(left: 10),
+                            child: ListTile(),
+                          )
+                      ],
+                    );
+                  }),
+              // child: FutureBuilder<List<Contact>>(
+              //   future: fetchContact(),
+              //   builder: (BuildContext context, AsyncSnapshot<List<Contact>> data) {
+              //     if (data.data == null) {
+              //       return const Center(child: CircularProgressIndicator());
+              //     } else {
+              //       List<Contact> apps = data.data!;
+              //       apps.sort((a, b) {
+              //         var aName = a.name;
+              //         var bName = b.name;
+              //         return aName!.compareTo(bName!);
+              //       });
+              //       for (int i = 0; i < apps.length; i++) {
+              //         Contact dt = apps[i];
+              //         listSwitchValue.add(dt.blacklist!);
+              //       }
+              //
+              //       if (apps.length == 0) {
+              //         return Align(
+              //           child: Text(
+              //             'Tidak ada data.',
+              //             style: TextStyle(color: Colors.black, fontSize: 18),
+              //           ),
+              //         );
+              //       } else {
+              //         return Scrollbar(
+              //           child: ListView.builder(
+              //               itemBuilder: (BuildContext context, int position) {
+              //                 Contact app = apps[position];
+              //                 var phones = "";
+              //                 if (app.phone != null && app.phone!.length > 0) {
+              //                   phones = app.phone![0];
+              //                 }
+              //
+              //                 if (phones == "") {
+              //                   return Column(
+              //                     children: <Widget>[
+              //                       ListTile(
+              //                         leading: Icon(
+              //                           Icons.android_outlined,
+              //                           color: Colors.green,
+              //                         ),
+              //                         title: Column(
+              //                           mainAxisAlignment: MainAxisAlignment.start,
+              //                           crossAxisAlignment: CrossAxisAlignment.start,
+              //                           children: [
+              //                             Text('${app.name}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+              //                           ],
+              //                         ),
+              //                         // title: Text('${app.name}'),
+              //                         trailing: CupertinoSwitch(
+              //                           value: listSwitchValue[position],
+              //                           onChanged: (bool value) {
+              //                             onBlacklistContact(app.name.toString(), app.phone![0].toString());
+              //                             setState(() {
+              //                               listSwitchValue[position] = value;
+              //                             });
+              //                           },
+              //                         ),
+              //                       ),
+              //                       const Divider(
+              //                         height: 1.0,
+              //                       )
+              //                     ],
+              //                   );
+              //                 } else {
+              //                   return Column(
+              //                     children: <Widget>[
+              //                       ListTile(
+              //                         leading: Icon(
+              //                           Icons.android_outlined,
+              //                           color: Colors.green,
+              //                         ),
+              //                         title: Column(
+              //                           mainAxisAlignment: MainAxisAlignment.start,
+              //                           crossAxisAlignment: CrossAxisAlignment.start,
+              //                           children: [
+              //                             Text('${app.name}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+              //                             SizedBox(
+              //                               height: 5,
+              //                             ),
+              //                             Text('$phones', style: TextStyle(fontSize: 12))
+              //                           ],
+              //                         ),
+              //                         // title: Text('${app.name}'),
+              //                         trailing: CupertinoSwitch(
+              //                           value: listSwitchValue[position],
+              //                           onChanged: (bool value) {
+              //                             onBlacklistContact(app.name.toString(), app.phone![0].toString());
+              //                             setState(() {
+              //                               listSwitchValue[position] = value;
+              //                             });
+              //                           },
+              //                         ),
+              //                       ),
+              //                       const Divider(
+              //                         height: 1.0,
+              //                       )
+              //                     ],
+              //                   );
+              //                 }
+              //               },
+              //               itemCount: apps.length),
+              //         );
+              //       }
+              //     }
+              //   },
+              // ),
+            ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: cOrtuBlue,
+        child: Icon(Icons.add, color: cPrimaryBg),
+        onPressed: () {},
       ),
     );
   }

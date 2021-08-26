@@ -17,6 +17,7 @@ class ParentController extends GetxController {
 
   void setModeAsuh(int childIndex, int value) {
     _modeAsuh[childIndex] = value;
+    update();
   }
 
   int getmodeAsuh(int childIndex) => _modeAsuh[childIndex];
