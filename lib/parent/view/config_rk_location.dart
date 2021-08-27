@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:http/http.dart';
+import 'package:ruangkeluarga/global/global_snackbar.dart';
 import 'package:ruangkeluarga/model/rk_child_location_model.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
@@ -36,23 +37,13 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
   String tanggal = '';
   late SharedPreferences prefs;
 
-  // LatLng _initialcameraposition = LatLng(20.5937, 78.9629);
-  // GoogleMapController _controller;
-  // Location _location = Location();
-  //
-  // void _onMapCreated(GoogleMapController _cntlr) {
-  //   _controller = _cntlr;
-  //   _location.onLocationChanged.listen((l) {
-  //     _controller.animateCamera(
-  //       CameraUpdate.newCameraPosition(
-  //         CameraPosition(target: LatLng(l.latitude, l.longitude),zoom: 15),
-  //       ),
-  //     );
-  //   });
-  // }
-  Completer<GoogleMapController> _controller = Completer();
   Map<MarkerId, Marker> markers = {};
-  static final CameraPosition _myLocation = CameraPosition(target: LatLng(-6.1800525, 106.7106455), zoom: 15.0);
+  late Future<Map<MarkerId, Marker>> loadMarker;
+  List<LocationChild> listLocationChild = [];
+
+  Completer<GoogleMapController> _controller = Completer();
+  CameraPosition _myLocationLatLng = CameraPosition(target: LatLng(-6.1800525, 106.7106455), zoom: 15.0);
+  String _myLocationPlace = '';
   var url = 'https://www.google.com/maps/timeline/kml?authuser=0&pb=!1m8!1m3!1i2021!2i4!3i1!2m3!1i2021!2i4!3i4';
 
   Future<void> addKml(GoogleMapController mapController) async {
@@ -68,27 +59,38 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
     }
   }
 
-  void fetchMarkers() async {
+  Future<Map<MarkerId, Marker>> fetchMarkers() async {
     markers.clear();
-    var outputFormat = DateFormat('yyyy-MM-dd');
-    var outputDate = outputFormat.format(DateTime.now());
-    Response response = await MediaRepository().fetchUserLocation(widget.email, outputDate);
+    // var outputFormat = DateFo  rmat('yyyy-MM-dd');
+    // var outputDate = outputFormat.format(DateTime.now());
+    Response response = await MediaRepository().fetchUserLocation(widget.email);
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
       if (json['resultCode'] == 'OK') {
         print('response fetch markers : ${response.body}');
-        var locationChilds = json['timeLine'];
-        List<LocationChild> data = List<LocationChild>.from(locationChilds.map((model) => LocationChild.fromJson(model)));
-        for (int i = 0; i < data.length; i++) {
+        List locationChilds = json['timeLine'];
+        listLocationChild = locationChilds.map((model) => LocationChild.fromJson(model)).toSet().toList();
+        listLocationChild.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+        for (int i = 0; i < listLocationChild.length; i++) {
+          final childLocation = listLocationChild[i];
           MarkerId markerId = MarkerId("$i");
-          var locate = data[i].location;
-          var coordinates = locate['coordinates'];
+          final coordinates = childLocation.location.coordinates;
           Marker marker = Marker(
               markerId: markerId,
               position: LatLng(double.parse(coordinates[0]), double.parse(coordinates[1])),
-              infoWindow: InfoWindow(title: 'Location', snippet: locate['place']));
+              infoWindow: InfoWindow(title: 'Location', snippet: childLocation.location.place));
           markers[markerId] = marker;
         }
+
+        _myLocationLatLng = CameraPosition(
+          target: LatLng(
+            double.parse(listLocationChild.first.location.coordinates[0]),
+            double.parse(listLocationChild.first.location.coordinates[1]),
+          ),
+          zoom: 15.0,
+        );
+        _myLocationPlace = listLocationChild.first.location.place;
         setState(() {});
       } else {
         print('response fetch markers : ${response.body}');
@@ -98,6 +100,7 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
       print('response fetch markers : ${response.statusCode}');
       setState(() {});
     }
+    return markers;
   }
 
   void fetchFilterMarker(List<DateTime> rangeDate) async {
@@ -112,16 +115,16 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
         print('response fetch markers : ${response.body}');
         var locationChilds = json['timeLine'];
         List<LocationChild> data = List<LocationChild>.from(locationChilds.map((model) => LocationChild.fromJson(model)));
-        for (int i = 0; i < data.length; i++) {
-          MarkerId markerId = MarkerId("$i");
-          var locate = data[i].location;
-          var coordinates = locate['coordinates'];
-          Marker marker = Marker(
-              markerId: markerId,
-              position: LatLng(double.parse(coordinates[0]), double.parse(coordinates[1])),
-              infoWindow: InfoWindow(title: 'Location', snippet: locate['place']));
-          markers[markerId] = marker;
-        }
+        // for (int i = 0; i < data.length; i++) {
+        //   MarkerId markerId = MarkerId("$i");
+        //   var locate = data[i].location;
+        //   var coordinates = locate['coordinates'];
+        //   Marker marker = Marker(
+        //       markerId: markerId,
+        //       position: LatLng(double.parse(coordinates[0]), double.parse(coordinates[1])),
+        //       infoWindow: InfoWindow(title: 'Location', snippet: locate['place']));
+        //   markers[markerId] = marker;
+        // }
         setState(() {});
       } else {
         print('response fetch markers : ${response.body}');
@@ -201,6 +204,7 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
     var dayName = outputFormatDay.format(DateTime.now());
     var outputDate = outputFormat.format(DateTime.now());
     tanggal = "${setDayName(dayName)}, ${setMonthName(outputDate)}";
+    loadMarker = fetchMarkers();
   }
 
   @override
@@ -217,131 +221,157 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
         ),
         elevation: 0,
       ),
-      body: Container(
-          padding: EdgeInsets.only(left: 10, right: 10),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    child: Text('Update Lokasi: 1 menit lalu', style: TextStyle(color: cOrtuWhite)),
-                  ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width / 3,
-                  ),
-                  IconButton(
-                    color: cOrtuWhite,
-                    icon: Icon(Icons.directions),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    color: cOrtuWhite,
-                    icon: Icon(Icons.my_location),
-                    onPressed: () {
-                      fetchCurrentLoc();
-                    },
-                  ),
-                ],
-              ),
-              Flexible(
-                child: Container(
-                  height: MediaQuery.of(context).size.height / 3,
-                  child: GoogleMap(
-                      initialCameraPosition: _myLocation,
-                      mapType: MapType.normal,
-                      markers: Set.of(markers.values),
-                      myLocationEnabled: true,
-                      myLocationButtonEnabled: true,
-                      zoomControlsEnabled: true,
-                      zoomGesturesEnabled: true,
-                      scrollGesturesEnabled: true,
-                      onMapCreated: (GoogleMapController controller) {
-                        _controller.complete(controller);
-                        fetchMarkers();
-                        // addKml(controller);
-                      },
-                      tiltGesturesEnabled: true,
-                      gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
-                        new Factory<OneSequenceGestureRecognizer>(
-                          () => new EagerGestureRecognizer(),
-                        ),
-                      ].toSet()),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.only(top: 10, bottom: 15),
-                child: Text(
-                  'Nama lokasi Nama lokasi Nama lokasi Nama lokasi Nama lokasi Nama lokasi Nama lokasi Nama lokasi Nama lokasi',
-                  style: TextStyle(fontSize: 16, color: cOrtuWhite),
-                ),
-              ),
-              Divider(
-                thickness: 1,
-                color: cOrtuWhite,
-              ),
-              Container(
-                margin: EdgeInsets.all(10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: FutureBuilder(
+          future: loadMarker,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) return wProgressIndicator();
+            return Container(
+                padding: EdgeInsets.only(left: 10, right: 10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Timeline',
-                      style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          child: Text('Update Lokasi: 1 menit lalu', style: TextStyle(color: cOrtuWhite)),
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 3,
+                        ),
+                        IconButton(
+                          color: cOrtuWhite,
+                          icon: Icon(Icons.directions),
+                          onPressed: () {
+                            showSnackbar('Belum di implementasi.', pShowDuration: Duration(seconds: 2));
+                          },
+                        ),
+                        IconButton(
+                          color: cOrtuWhite,
+                          icon: Icon(Icons.my_location),
+                          onPressed: () async {
+                            showLoadingOverlay();
+                            await fetchMarkers();
+                            (await _controller.future).animateCamera(CameraUpdate.newCameraPosition(_myLocationLatLng));
+                            closeOverlay();
+                          },
+                        ),
+                      ],
                     ),
-                    GestureDetector(
+                    Flexible(
+                      child: Container(
+                        height: MediaQuery.of(context).size.height / 3,
+                        child: GoogleMap(
+                            initialCameraPosition: _myLocationLatLng,
+                            mapType: MapType.normal,
+                            markers: Set.of(markers.values),
+                            myLocationEnabled: true,
+                            myLocationButtonEnabled: true,
+                            zoomControlsEnabled: true,
+                            zoomGesturesEnabled: true,
+                            scrollGesturesEnabled: true,
+                            onMapCreated: (GoogleMapController controller) {
+                              _controller.complete(controller);
+                              // fetchMarkers();
+                              // addKml(controller);
+                            },
+                            tiltGesturesEnabled: true,
+                            gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
+                              new Factory<OneSequenceGestureRecognizer>(
+                                () => new EagerGestureRecognizer(),
+                              ),
+                            ].toSet()),
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(top: 10, bottom: 15),
                       child: Text(
-                        '$tanggal',
-                        style: TextStyle(fontSize: 16, color: cOrtuBlue),
+                        'Nama lokasi: $_myLocationPlace',
+                        style: TextStyle(fontSize: 16, color: cOrtuWhite),
                       ),
-                      onTap: () async {
-                        final pickedRange = await showDateRangePicker(
-                          context: context,
-                          firstDate: DateTime.now().subtract(const Duration(days: 365 * 3)),
-                          lastDate: DateTime.now().add(const Duration(days: 365)),
-                          initialDateRange: selectedRange,
-                        );
-                        if (pickedRange != null) {
-                          selectedRange = pickedRange;
-                          selectedDates = [pickedRange.start, pickedRange.end];
-                          print('select date : $selectedDates');
-                          fetchFilterMarker(selectedDates);
-                          setState(() {});
-                        }
-                      },
-                    )
+                    ),
+                    Divider(
+                      thickness: 1,
+                      color: cOrtuWhite,
+                    ),
+                    Container(
+                      margin: EdgeInsets.all(10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Timeline',
+                            style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                          ),
+                          // GestureDetector(
+                          //   child: Text(
+                          //     '$tanggal',
+                          //     style: TextStyle(fontSize: 16, color: cOrtuBlue),
+                          //   ),
+                          //   onTap: () async {
+                          //     final pickedRange = await showDateRangePicker(
+                          //       context: context,
+                          //       firstDate: DateTime.now().subtract(const Duration(days: 365 * 3)),
+                          //       lastDate: DateTime.now().add(const Duration(days: 365)),
+                          //       initialDateRange: selectedRange,
+                          //     );
+                          //     if (pickedRange != null) {
+                          //       selectedRange = pickedRange;
+                          //       selectedDates = [pickedRange.start, pickedRange.end];
+                          //       print('select date : $selectedDates');
+                          //       fetchFilterMarker(selectedDates);
+                          //       setState(() {});
+                          //     }
+                          //   },
+                          // )
+                        ],
+                      ),
+                    ),
+                    Divider(
+                      thickness: 1,
+                      color: cOrtuWhite,
+                    ),
+                    Flexible(
+                      child: ListView.builder(
+                        itemCount: listLocationChild.length,
+                        itemBuilder: (context, index) {
+                          final data = listLocationChild[index];
+                          return ListTile(
+                            title: Text(
+                              data.location.place,
+                              style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                            ),
+                            // isThreeLine: true,
+                            // subtitle: Text(
+                            //   'on Jln $index where in indonesia',
+                            //   style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                            // ),
+                            trailing: Text(
+                              data.dateCreate,
+                              style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                            ),
+                            onTap: () async {
+                              _myLocationPlace = data.location.place;
+                              _myLocationLatLng = CameraPosition(
+                                target: LatLng(
+                                  double.parse(data.location.coordinates[0]),
+                                  double.parse(data.location.coordinates[1]),
+                                ),
+                                zoom: 15.0,
+                              );
+                              final GoogleMapController controller = await _controller.future;
+                              controller.animateCamera(CameraUpdate.newCameraPosition(_myLocationLatLng));
+
+                              setState(() {});
+                            },
+                          );
+                        },
+                      ),
+                    ),
                   ],
-                ),
-              ),
-              Divider(
-                thickness: 1,
-                color: cOrtuWhite,
-              ),
-              Flexible(
-                child: ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(
-                        'Location Name',
-                        style: TextStyle(fontSize: 16, color: cOrtuWhite),
-                      ),
-                      // isThreeLine: true,
-                      subtitle: Text(
-                        'on Jln $index where in indonesia',
-                        style: TextStyle(fontSize: 16, color: cOrtuWhite),
-                      ),
-                      trailing: Text(
-                        '12:${3 * index}',
-                        style: TextStyle(fontSize: 16, color: cOrtuWhite),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          )),
+                ));
+          }),
     );
   }
 }

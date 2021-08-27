@@ -179,10 +179,10 @@ class MediaRepository {
     return response;
   }
 
-  Future<Response> fetchUserLocation(String email, String dates) async {
+  Future<Response> fetchUserLocation(String email) async {
     var url = _rkService.baseUrl + '/user/timeLineFilter';
     Map<String, dynamic> json = {
-      "whereKeyValues": {"emailUser": "$email", "dateTimeHistory": "$dates"}
+      "whereKeyValues": {"emailUser": "$email"}
     };
     print('param fetch user location list : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));

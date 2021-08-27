@@ -41,6 +41,8 @@ class DetailChildPage extends StatefulWidget {
   DetailChildPage({Key? key, required this.title, required this.name, required this.email}) : super(key: key);
 }
 
+enum ModeAsuh { level1, level2, level3 }
+
 class _DetailChildPageState extends State<DetailChildPage> {
   int dataTotal = 0;
   int dataTotalSecond = 0;
@@ -54,9 +56,10 @@ class _DetailChildPageState extends State<DetailChildPage> {
   // List<charts.Series> seriesList = [];
   bool _switchLockScreen = false;
   bool _switchModeAsuh = false;
-  bool _switchLevel1 = false;
-  bool _switchLevel2 = false;
-  bool _switchLevel3 = false;
+  ModeAsuh _switchLevel = ModeAsuh.level1;
+  // bool _switchLevel1 = false;
+  // bool _switchLevel2 = false;
+  // bool _switchLevel3 = false;
 
   void setBindingData() async {
     prefs = await SharedPreferences.getInstance();
@@ -351,46 +354,6 @@ class _DetailChildPageState extends State<DetailChildPage> {
                 'Anda juga dapat mengatur kontak dalam daftar hitam untuk mendapatkan'
                 'pemberitahuan bila ada kontak yang dibuat dengan orang yang tidak diinginkan.',
             onTap: () => {
-              /*showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return Dialog(
-                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                                  elevation: 16,
-                                                  child: Container(
-                                                    height: 400.0,
-                                                    child: ListView(
-                                                      children: <Widget>[
-                                                        SizedBox(height: 20),
-                                                        Center(
-                                                          child: Text(
-                                                            "Perpanjang Aktivasi Langganan",
-                                                            style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
-                                                          ),
-                                                        ),
-                                                        SizedBox(height: 20),
-                                                        Center(
-                                                          child: Text(
-                                                            "Masukan nomor voucher anda",
-                                                            style: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
-                                                          ),
-                                                        ),
-                                                        Container(
-                                                          margin: EdgeInsets.only(left: 20.0, right: 20.0),
-                                                          child: TextField(
-                                                              decoration: InputDecoration(
-                                                                fillColor: Colors.grey,
-                                                                border: OutlineInputBorder(),
-                                                                labelText: 'Kode Voucher...',
-                                                              )
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  )
-                                              );
-                                            }
-                                        )*/
               Navigator.of(context)
                   .push(MaterialPageRoute(builder: (context) => ConfigRKContactPage(title: 'Daftar Kontak', name: widget.name, email: widget.email)))
             },
@@ -493,9 +456,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                     onChanged: (value) {
                       setState(() {
                         _switchModeAsuh = value;
-                        _switchLevel1 = true;
-                        _switchLevel2 = false;
-                        _switchLevel3 = false;
+                        if (value) _switchLevel = ModeAsuh.level1;
                       });
                     },
                   ),
@@ -506,108 +467,76 @@ class _DetailChildPageState extends State<DetailChildPage> {
           if (_switchModeAsuh)
             Container(
               child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Container(
-                  margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0, bottom: 10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Diperketat Level 1',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _switchLevel1 ? cOrtuBlue : cOrtuWhite),
-                      ),
-                      CupertinoSwitch(
-                        activeColor: cOrtuBlue,
-                        value: _switchLevel1,
-                        onChanged: (value) {
-                          setState(() {
-                            _switchLevel1 = value;
-                            _switchLevel2 = false;
-                            _switchLevel3 = false;
-                            _switchModeAsuh = value;
-                          });
-                        },
-                      )
-                    ],
+                modeAsuhLevelTile(
+                  leading: Radio<ModeAsuh>(
+                    value: ModeAsuh.level1,
+                    groupValue: _switchLevel,
+                    activeColor: cOrtuBlue,
+                    onChanged: (ModeAsuh? value) {
+                      setState(() {
+                        _switchLevel = ModeAsuh.level1;
+                      });
+                    },
                   ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
-                  child: Text(
-                    'Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka'
-                    'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi'
-                    'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana'
+                  title: Text(
+                    'Level 1',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _switchLevel == ModeAsuh.level1 ? cOrtuBlue : cOrtuWhite),
+                  ),
+                  subtitle: Text(
+                    'Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka '
+                    'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi '
+                    'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana '
                     'mereka dulu dan dimana mereka saat ini kapan saja.',
-                    style: TextStyle(color: _switchLevel1 ? cOrtuBlue : cOrtuWhite),
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(color: _switchLevel == ModeAsuh.level1 ? cOrtuBlue : cOrtuWhite),
                   ),
                 ),
-                Container(
-                  margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0, bottom: 10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Diperketat Level 2',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _switchLevel2 ? cOrtuBlue : cOrtuWhite),
-                      ),
-                      CupertinoSwitch(
-                        activeColor: cOrtuBlue,
-                        value: _switchLevel2,
-                        onChanged: (value) {
-                          setState(() {
-                            _switchLevel2 = value;
-                            _switchLevel1 = false;
-                            _switchLevel3 = false;
-
-                            _switchModeAsuh = value;
-                          });
-                        },
-                      )
-                    ],
+                modeAsuhLevelTile(
+                  leading: Radio<ModeAsuh>(
+                    value: ModeAsuh.level2,
+                    activeColor: cOrtuBlue,
+                    groupValue: _switchLevel,
+                    onChanged: (ModeAsuh? value) {
+                      setState(() {
+                        _switchLevel = ModeAsuh.level2;
+                      });
+                    },
                   ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
-                  child: Text(
-                    'Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka'
-                    'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi'
-                    'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana'
+                  title: Text(
+                    'Level 2',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _switchLevel == ModeAsuh.level2 ? cOrtuBlue : cOrtuWhite),
+                  ),
+                  subtitle: Text(
+                    'Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka '
+                    'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi '
+                    'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana '
                     'mereka dulu dan dimana mereka saat ini kapan saja.',
-                    style: TextStyle(color: _switchLevel2 ? cOrtuBlue : cOrtuWhite),
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(color: _switchLevel == ModeAsuh.level2 ? cOrtuBlue : cOrtuWhite),
                   ),
                 ),
-                Container(
-                  margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0, bottom: 10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Diperketat Level 3',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _switchLevel3 ? cOrtuBlue : cOrtuWhite),
-                      ),
-                      CupertinoSwitch(
-                        activeColor: cOrtuBlue,
-                        value: _switchLevel3,
-                        onChanged: (value) {
-                          setState(() {
-                            _switchLevel3 = value;
-                            _switchLevel2 = false;
-                            _switchLevel1 = false;
-
-                            _switchModeAsuh = value;
-                          });
-                        },
-                      )
-                    ],
+                modeAsuhLevelTile(
+                  leading: Radio<ModeAsuh>(
+                    value: ModeAsuh.level3,
+                    activeColor: cOrtuBlue,
+                    groupValue: _switchLevel,
+                    onChanged: (ModeAsuh? value) {
+                      setState(() {
+                        _switchLevel = ModeAsuh.level3;
+                      });
+                    },
                   ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
-                  child: Text(
-                    'Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka'
-                    'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi'
-                    'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana'
+                  title: Text(
+                    'Level 3',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _switchLevel == ModeAsuh.level3 ? cOrtuBlue : cOrtuWhite),
+                  ),
+                  subtitle: Text(
+                    'Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka '
+                    'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi '
+                    'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana '
                     'mereka dulu dan dimana mereka saat ini kapan saja.',
-                    style: TextStyle(color: _switchLevel3 ? cOrtuBlue : cOrtuWhite),
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(color: _switchLevel == ModeAsuh.level3 ? cOrtuBlue : cOrtuWhite),
                   ),
                 ),
               ]),
@@ -694,6 +623,31 @@ class _DetailChildPageState extends State<DetailChildPage> {
       ),
       series: _columnData,
       tooltipBehavior: TooltipBehavior(enable: true, canShowMarker: false, format: 'point.x : point.y', header: ''),
+    );
+  }
+
+  Widget modeAsuhLevelTile({
+    required Widget leading,
+    required Widget title,
+    required Widget subtitle,
+  }) {
+    return Container(
+      margin: EdgeInsets.all(10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          leading,
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(padding: EdgeInsets.only(top: 15, bottom: 5), child: title),
+                subtitle,
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
