@@ -66,9 +66,10 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
     Response response = await MediaRepository().fetchUserLocation(widget.email);
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
-      if (json['resultCode'] == 'OK') {
+      List locationChilds = json['timeLine'];
+
+      if (json['resultCode'] == 'OK' && locationChilds.length > 0) {
         print('response fetch markers : ${response.body}');
-        List locationChilds = json['timeLine'];
         listLocationChild = locationChilds.map((model) => LocationChild.fromJson(model)).toSet().toList();
         listLocationChild.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 

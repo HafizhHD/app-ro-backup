@@ -317,7 +317,7 @@ class MediaRepository {
     return response;
   }
 
-  Future<Response> addLimitUsageBlockApp(String email, String appID, dynamic appCategory, int limit, String status) async {
+  Future<Response> addLimitUsageAndBlockApp(String email, String appID, dynamic appCategory, int limit, String status) async {
     var url = _rkService.baseUrl + '/user/appUsageLimitAdd';
     Map<String, dynamic> json = {"emailUser": "$email", "appId": appID, "appCategory": appCategory, "limit": limit, "status": status};
     print('param add limit usage : $json');
@@ -339,6 +339,7 @@ class MediaRepository {
     var url = _rkService.baseUrl + '/user/appUsageLimitRemove';
     Map<String, dynamic> json = {
       "whereKeyValues": {"emailUser": "$email", "appCategory": '$category'}
+      // "whereKeyValues": {"emailUser": "$email", "appCategory": '$category'}
     };
     print('param limit usage filter : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));

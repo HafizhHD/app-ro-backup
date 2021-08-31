@@ -131,7 +131,7 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
   }
 
   Future<Response> blockApp(String appID, String appCategory) async {
-    Response response = await MediaRepository().addLimitUsageBlockApp(widget.email, appID, appCategory, 5, 'blacklist');
+    Response response = await MediaRepository().addLimitUsageAndBlockApp(widget.email, appID, appCategory, 0, 'blacklist');
     return response;
   }
 

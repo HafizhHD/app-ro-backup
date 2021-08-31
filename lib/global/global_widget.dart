@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ruangkeluarga/global/global_colors.dart';
+import 'package:ruangkeluarga/global/global.dart';
 
 Future showLoadingOverlay() {
   return Get.dialog(
@@ -63,4 +63,29 @@ class WSearchBar extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget roElevatedButton({Color cColor = cOrtuBlue, required Widget text, required Function()? onPress}) {
+  return ElevatedButton(
+    style: ButtonStyle(
+      shape: MaterialStateProperty.all((RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))),
+      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+        (Set<MaterialState> states) {
+          if (states.contains(MaterialState.disabled)) return Colors.grey.shade700;
+          return cColor;
+        },
+      ),
+      elevation: globalBtnElevation(),
+    ),
+    child: text,
+    onPressed: onPress,
+  );
+}
+
+MaterialStateProperty<double> globalBtnElevation() {
+  return MaterialStateProperty.resolveWith((states) {
+    if (states.contains(MaterialState.disabled) || states.contains(MaterialState.pressed)) return 0;
+    if (states.contains(MaterialState.hovered)) return 6;
+    return 4;
+  });
 }

@@ -1,3 +1,5 @@
+import 'package:ruangkeluarga/global/global_formatter.dart';
+
 class AppListWithIcons {
   final String? appName;
   final String? packageId;
@@ -14,6 +16,26 @@ class AppListWithIcons {
       appCategory: json['appCategory'],
       blacklist: json['blacklist'] as bool?,
       appIcons: json['appIcons'] as String?,
+    );
+  }
+}
+
+class AppUsageData {
+  final String appId;
+  final bool blacklist;
+  final String appCategory;
+  final int limit;
+  final DateTime createDate;
+
+  AppUsageData({required this.appId, required this.appCategory, required this.blacklist, required this.limit, required this.createDate});
+
+  factory AppUsageData.fromJson(Map<String, dynamic> json) {
+    return AppUsageData(
+      appId: json['appId'] ?? '',
+      appCategory: json['appCategory'] ?? '',
+      blacklist: json['blacklist'] == 'true' ? true : false,
+      limit: json['limit'] ?? 0,
+      createDate: DateTime.parse(json['dateCreate']),
     );
   }
 }
