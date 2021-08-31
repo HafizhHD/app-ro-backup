@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/global/global_snackbar.dart';
 import 'package:ruangkeluarga/model/rk_child_contact.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 
@@ -65,13 +66,9 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
     fContactList = fetchContact();
   }
 
-  void onBlacklistContact(String name, String phone) async {
+  Future onBlacklistContact(String name, String phone) async {
     Response response = await MediaRepository().blackListContactAdd(widget.email, name, phone, "");
-    if (response.statusCode == 200) {
-      print('response blacklist contact ${response.body}');
-    } else {
-      print('error response ${response.statusCode}');
-    }
+    return response;
   }
 
   @override
@@ -124,20 +121,30 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  IconButton(
-                                    color: cOrtuWhite,
-                                    icon: Icon(Icons.notifications_active_outlined),
-                                    onPressed: () {
-                                      setState(() {});
-                                    },
-                                  ),
+                                  // IconButton(
+                                  //   color: cOrtuWhite,
+                                  //   icon: Icon(Icons.notifications_active_outlined),
+                                  //   onPressed: () {
+                                  //     setState(() {});
+                                  //   },
+                                  // ),
+                                  Text(dataContact.blacklist ?? false ? 'Terblokir' : ''),
                                   IconButton(
                                     color: cOrtuWhite,
                                     icon: Icon(
                                       Icons.block_rounded,
                                       color: dataContact.blacklist ?? false ? cOrtuBlue : cOrtuWhite,
                                     ),
-                                    onPressed: () {},
+                                    onPressed: () async {
+                                      showLoadingOverlay();
+                                      final response = await onBlacklistContact(dataContact.name!, dataContact.phone?.first);
+                                      if (response.statusCode == 200) {
+                                        showSnackbar('Berhasil memblokir kontak ${dataContact.name}');
+                                      } else {
+                                        showSnackbar('Gagal memblokir kontak ${dataContact.name}. Silahkan coba lagi.');
+                                      }
+                                      closeOverlay();
+                                    },
                                   ),
                                 ],
                               ),

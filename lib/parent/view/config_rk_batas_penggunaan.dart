@@ -4,10 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/global/global_snackbar.dart';
 import 'package:ruangkeluarga/model/rk_app_list_with_icon.dart';
 import 'package:ruangkeluarga/model/rk_child_app_icon_list.dart';
 import 'package:ruangkeluarga/model/rk_child_apps.dart';
-import 'package:ruangkeluarga/parent/view/rk_tambah_batasan.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -30,43 +30,38 @@ class RKConfigBatasPenggunaanPage extends StatefulWidget {
 }
 
 class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPage> {
-  bool _isLimitActive = false;
   bool checkSocial = false;
   bool checkGames = false;
   bool checkProductivity = false;
   bool checkOther = false;
 
   late SharedPreferences prefs;
-  late Future fDataLimit;
+  late Future<List<AppUsageData>> flistUsage;
   late Future<List<AppListWithIcons>> fListApps;
+  Map<String, int> mapUsageDataApp = {};
+  Map<String, int> mapUsageDataCategory = {};
   List<AppListWithIcons> appList = [];
   List<AppListWithIcons> appListSearch = [];
 
-  Future<List<dynamic>> getData() async {
+  Future<List<AppUsageData>> getData() async {
     Response response = await MediaRepository().fetchLimitUsageFilter(widget.email);
     print('isi response filter app usage : ${response.body}');
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
       if (json['resultCode'] == "OK") {
-        setState(() {
-          _isLimitActive = true;
-          // onShowActive(_isLimitActive);
+        List usageData = json['appUsageLimit'] as List;
+        final appUsageLimit = usageData.map((e) => AppUsageData.fromJson(e)).toList();
+        appUsageLimit.forEach((e) {
+          if (e.appId != null && e.appId != '')
+            mapUsageDataApp[e.appId] = e.limit;
+          else if (e.appCategory != null && e.appCategory != '') mapUsageDataCategory[e.appCategory] = e.limit;
         });
-        return json['appUsageLimit'] as List;
+        setState(() {});
+        return appUsageLimit;
       } else {
-        print('isi response filter limit usage : ${response.body}');
-        setState(() {
-          _isLimitActive = false;
-          // onShowActive(_isLimitActive);
-        });
         return [];
       }
     } else {
-      print('isi response filter limit usage : ${response.statusCode}');
-      setState(() {
-        _isLimitActive = false;
-        // onShowActive(_isLimitActive);
-      });
       return [];
     }
   }
@@ -106,6 +101,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                     "appName": "${dataIconApps[i].appName}",
                     "packageId": "${dataIconApps[i].packageId}",
                     "blacklist": dataIconApps[i].blacklist,
+                    "appCategory": dataIconApps[i].appCategory,
                     "appIcons": "${imageUrl + dataListIconApps[indeksX].appIcon.toString()}"
                   });
                 } else {
@@ -113,6 +109,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                     "appName": "${dataIconApps[i].appName}",
                     "packageId": "${dataIconApps[i].packageId}",
                     "blacklist": dataIconApps[i].blacklist,
+                    "appCategory": dataIconApps[i].appCategory,
                     "appIcons": ""
                   });
                 }
@@ -127,7 +124,6 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
           if (flag) {
             List<AppListWithIcons> data = List<AppListWithIcons>.from(dataList.map((model) => AppListWithIcons.fromJson(model)));
             data.sort((a, b) => a.appName!.compareTo(b.appName!));
-            print('SetData');
             appList = data;
             appListSearch = data;
             setState(() {});
@@ -139,6 +135,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                 "appName": "${dataIconApps[i].appName}",
                 "packageId": "${dataIconApps[i].packageId}",
                 "blacklist": dataIconApps[i].blacklist,
+                "appCategory": dataIconApps[i].appCategory,
                 "appIcons": ""
               });
             }
@@ -163,24 +160,20 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
     }
   }
 
-  void onRemoveData(String category) async {
+  Future<Response> onRemoveData(String category, String appId) async {
     Response response = await MediaRepository().removeAppLimit(widget.email, category);
-    if (response.statusCode == 200) {
-      print('isi response remove app usage : ${response.body}');
-      var json = jsonDecode(response.body);
-      if (json['resultCode'] == "OK") {
-      } else {
-        print('isi response filter limit usage : ${response.body}');
-      }
-    } else {
-      print('isi response filter limit usage : ${response.statusCode}');
-    }
+    // Response response = await MediaRepository().removeAppLimit(widget.email, appId);
+    return response;
+  }
+
+  Future<Response> addAppUsageLimit(String category, String appId, int limit) async {
+    return await MediaRepository().addLimitUsageAndBlockApp(widget.email, appId, category, limit, 'Aktif');
   }
 
   @override
   void initState() {
     super.initState();
-    fDataLimit = getData();
+    flistUsage = getData();
     fListApps = fetchAppList();
   }
 
@@ -217,6 +210,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) return wProgressIndicator();
 
+                    print('mapUsageData $mapUsageDataApp');
                     final listApps = snapshot.data ?? [];
                     if (listApps.length <= 0)
                       return Center(
@@ -228,6 +222,23 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                         itemCount: appListSearch.length,
                         itemBuilder: (ctx, index) {
                           final app = appListSearch[index];
+                          final int timeLimit = mapUsageDataApp[app.packageId] ?? 0;
+                          var limitTime = "0hrs";
+                          int limitHour = 0;
+                          if (timeLimit > 60) {
+                            limitHour = timeLimit ~/ 60;
+                          }
+                          int limitMinute = timeLimit % 60;
+                          if (limitHour > 0) {
+                            if (limitMinute > 0) {
+                              limitTime = "${limitHour}hrs${limitMinute}min, Setiap Hari";
+                            } else {
+                              limitTime = "${limitHour}hrs, Setiap Hari";
+                            }
+                          } else {
+                            limitTime = "${limitMinute}min, Setiap Hari";
+                          }
+
                           return Container(
                             padding: EdgeInsets.all(5),
                             child: Row(
@@ -261,130 +272,29 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                                     ),
                                   ],
                                 ),
-                                index < 1
-                                    ? Text(
-                                        '3h 30m',
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    if (timeLimit > 0)
+                                      Text(
+                                        limitTime,
                                         style: TextStyle(color: cOrtuWhite),
-                                      )
-                                    : IconButton(
-                                        onPressed: () {},
+                                      ),
+                                    IconButton(
+                                        onPressed: () {
+                                          addUsageLimitBottomSheet(app, timeLimit);
+                                        },
                                         icon: Icon(
                                           Icons.access_time,
-                                          color: cOrtuWhite,
+                                          color: timeLimit > 0 ? cOrtuBlue : cOrtuWhite,
                                         )),
+                                  ],
+                                ),
                               ],
                             ),
                           );
                         });
                   }),
-              // child: FutureBuilder<List<Contact>>(
-              //   future: fetchContact(),
-              //   builder: (BuildContext context, AsyncSnapshot<List<Contact>> data) {
-              //     if (data.data == null) {
-              //       return const Center(child: CircularProgressIndicator());
-              //     } else {
-              //       List<Contact> apps = data.data!;
-              //       apps.sort((a, b) {
-              //         var aName = a.name;
-              //         var bName = b.name;
-              //         return aName!.compareTo(bName!);
-              //       });
-              //       for (int i = 0; i < apps.length; i++) {
-              //         Contact dt = apps[i];
-              //         listSwitchValue.add(dt.blacklist!);
-              //       }
-              //
-              //       if (apps.length == 0) {
-              //         return Align(
-              //           child: Text(
-              //             'Tidak ada data.',
-              //             style: TextStyle(color: Colors.black, fontSize: 18),
-              //           ),
-              //         );
-              //       } else {
-              //         return Scrollbar(
-              //           child: ListView.builder(
-              //               itemBuilder: (BuildContext context, int position) {
-              //                 Contact app = apps[position];
-              //                 var phones = "";
-              //                 if (app.phone != null && app.phone!.length > 0) {
-              //                   phones = app.phone![0];
-              //                 }
-              //
-              //                 if (phones == "") {
-              //                   return Column(
-              //                     children: <Widget>[
-              //                       ListTile(
-              //                         leading: Icon(
-              //                           Icons.android_outlined,
-              //                           color: Colors.green,
-              //                         ),
-              //                         title: Column(
-              //                           mainAxisAlignment: MainAxisAlignment.start,
-              //                           crossAxisAlignment: CrossAxisAlignment.start,
-              //                           children: [
-              //                             Text('${app.name}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-              //                           ],
-              //                         ),
-              //                         // title: Text('${app.name}'),
-              //                         trailing: CupertinoSwitch(
-              //                           value: listSwitchValue[position],
-              //                           onChanged: (bool value) {
-              //                             onBlacklistContact(app.name.toString(), app.phone![0].toString());
-              //                             setState(() {
-              //                               listSwitchValue[position] = value;
-              //                             });
-              //                           },
-              //                         ),
-              //                       ),
-              //                       const Divider(
-              //                         height: 1.0,
-              //                       )
-              //                     ],
-              //                   );
-              //                 } else {
-              //                   return Column(
-              //                     children: <Widget>[
-              //                       ListTile(
-              //                         leading: Icon(
-              //                           Icons.android_outlined,
-              //                           color: Colors.green,
-              //                         ),
-              //                         title: Column(
-              //                           mainAxisAlignment: MainAxisAlignment.start,
-              //                           crossAxisAlignment: CrossAxisAlignment.start,
-              //                           children: [
-              //                             Text('${app.name}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-              //                             SizedBox(
-              //                               height: 5,
-              //                             ),
-              //                             Text('$phones', style: TextStyle(fontSize: 12))
-              //                           ],
-              //                         ),
-              //                         // title: Text('${app.name}'),
-              //                         trailing: CupertinoSwitch(
-              //                           value: listSwitchValue[position],
-              //                           onChanged: (bool value) {
-              //                             onBlacklistContact(app.name.toString(), app.phone![0].toString());
-              //                             setState(() {
-              //                               listSwitchValue[position] = value;
-              //                             });
-              //                           },
-              //                         ),
-              //                       ),
-              //                       const Divider(
-              //                         height: 1.0,
-              //                       )
-              //                     ],
-              //                   );
-              //                 }
-              //               },
-              //               itemCount: apps.length),
-              //         );
-              //       }
-              //     }
-              //   },
-              // ),
             ),
           ],
         ),
@@ -392,222 +302,88 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
     );
   }
 
-  Widget onShowActive(bool flag) {
-    if (flag) {
-      return Container(
-        width: MediaQuery.of(context).size.width,
-        margin: EdgeInsets.only(top: 20.0),
-        height: 50,
-        color: Colors.white,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              margin: EdgeInsets.only(left: 20.0),
-              child: Text(
-                'Batas Penggunaan',
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.only(right: 10.0),
-              child: CupertinoSwitch(
-                value: _isLimitActive,
-                onChanged: (value) {
-                  setState(() {
-                    _isLimitActive = value;
-                    onShowActive(_isLimitActive);
-                    onLoadDataActive(_isLimitActive);
-                  });
-                },
-              ),
-            )
-          ],
-        ),
-      );
-    } else {
-      return Container();
-    }
-  }
-
-  Widget onLoadDataActive(bool flag) {
-    if (flag) {
-      return Container(
-        height: MediaQuery.of(context).size.height,
-        child: FutureBuilder<List<dynamic>>(
-            future: getData(),
-            builder: (BuildContext context, AsyncSnapshot<List<dynamic>> data) {
-              if (data.data == null) {
-                return Container();
-              } else {
-                List<dynamic> values = data.data!;
-                if (values.length > 0) {
-                  return new ListView.builder(
-                      itemCount: values.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        var app = values[index];
-                        var limitTime = "0hrs";
-                        int limitHour = 0;
-                        if (app['limit'] > 60) {
-                          limitHour = app['limit'] ~/ 60;
-                        }
-                        int limitMinute = app['limit'] % 60;
-                        if (limitHour > 0) {
-                          if (limitMinute > 0) {
-                            limitTime = "${limitHour}hrs${limitMinute}min, Setiap Hari";
-                          } else {
-                            limitTime = "${limitHour}hrs, Setiap Hari";
-                          }
-                        } else {
-                          limitTime = "${limitMinute}min, Setiap Hari";
-                        }
-                        return GestureDetector(
-                          child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            margin: EdgeInsets.only(bottom: 5.0),
-                            height: 50,
-                            color: Colors.white,
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Container(
-                                margin: EdgeInsets.only(left: 20.0),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        '${app['appCategory']}',
-                                        style: TextStyle(color: Color(0xffFF018786), fontWeight: FontWeight.bold, fontSize: 14),
-                                      ),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        '$limitTime',
-                                        style: TextStyle(fontSize: 12),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          onTap: () {
-                            showModalBottomSheet(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return Container(
-                                      height: 400,
-                                      color: Colors.grey[300],
-                                      child: Center(
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          children: <Widget>[
-                                            Container(
-                                              margin: EdgeInsets.only(top: 20.0),
-                                              width: MediaQuery.of(context).size.width,
-                                              height: 50,
-                                              color: Colors.grey,
-                                              child: Align(
-                                                  alignment: Alignment.centerLeft,
-                                                  child: Container(
-                                                    margin: EdgeInsets.only(left: 20.0),
-                                                    child: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                        Row(
-                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                          children: [
-                                                            Align(
-                                                              alignment: Alignment.centerLeft,
-                                                              child: Text(
-                                                                'Time',
-                                                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-                                                              ),
-                                                            ),
-                                                            Container(
-                                                              margin: EdgeInsets.only(right: 10),
-                                                              child: Align(
-                                                                alignment: Alignment.centerLeft,
-                                                                child: Text(
-                                                                  '$limitTime',
-                                                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-                                                                ),
-                                                              ),
-                                                            )
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  )),
-                                            ),
-                                            Container(
-                                              margin: EdgeInsets.all(10.0),
-                                              width: MediaQuery.of(context).size.width,
-                                              child:
-                                                  Text('Batas penggunaan gadget akan di aktifkan ke semua device yang terhubung kedalam email ini'),
-                                            ),
-                                            Container(
-                                              margin: EdgeInsets.all(10.0),
-                                              width: MediaQuery.of(context).size.width,
-                                              child: Text(
-                                                'Kategori, Aplikasi dan Website',
-                                                style: TextStyle(fontWeight: FontWeight.bold),
-                                              ),
-                                            ),
-                                            Container(
-                                              width: MediaQuery.of(context).size.width,
-                                              height: 50,
-                                              color: Colors.grey,
-                                              child: Align(
-                                                alignment: Alignment.centerLeft,
-                                                child: Container(
-                                                  margin: EdgeInsets.only(left: 20.0),
-                                                  child: Text(
-                                                    '${app['appCategory']}',
-                                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            GestureDetector(
-                                              child: Container(
-                                                margin: EdgeInsets.only(top: 50.0),
-                                                width: MediaQuery.of(context).size.width,
-                                                height: 50,
-                                                color: Colors.grey,
-                                                child: Align(
-                                                  alignment: Alignment.center,
-                                                  child: Container(
-                                                    margin: EdgeInsets.only(left: 20.0),
-                                                    child: Text(
-                                                      'Hapus Batasan',
-                                                      style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 14),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              onTap: () {
-                                                onRemoveData(app['appCategory']);
-                                                Navigator.pop(context);
-                                              },
-                                            )
-                                          ],
-                                        ),
-                                      ));
-                                });
+  void addUsageLimitBottomSheet(AppListWithIcons app, int timeLimit) {
+    int newLimit = timeLimit;
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+              color: cOrtuGrey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AppBar(
+                    backgroundColor: cOrtuBlue,
+                    centerTitle: true,
+                    title: Text('Ubah Batas Penggunaan', style: TextStyle(color: cPrimaryBg)),
+                    leading: SizedBox(),
+                    actions: [
+                      IconButton(
+                        icon: Icon(Icons.close, color: cPrimaryBg),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      )
+                    ],
+                  ),
+                  Theme(
+                    data: ThemeData.light(),
+                    child: CupertinoTimerPicker(
+                      initialTimerDuration: Duration(minutes: timeLimit),
+                      mode: CupertinoTimerPickerMode.hm,
+                      onTimerDurationChanged: (duration) {
+                        newLimit = duration.inMinutes;
+                      },
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width / 2 - 10,
+                        padding: EdgeInsets.all(5),
+                        child: roElevatedButton(
+                            onPress: newLimit > 0
+                                ? () async {
+                                    showLoadingOverlay();
+                                    final response = await onRemoveData(app.appCategory, app.packageId ?? '');
+                                    if (response.statusCode == 200) {
+                                      //reLoad data
+                                      closeOverlay();
+                                      closeOverlay();
+                                      showSnackbar('Berhasil Reset Batas Penggunaan!');
+                                    } else {
+                                      showSnackbar('Gagal Reset Batas Penggunaan!');
+                                    }
+                                  }
+                                : null,
+                            text: Text('Reset', style: TextStyle(color: cPrimaryBg)),
+                            cColor: cOrtuOrange),
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width / 2 - 10,
+                        padding: EdgeInsets.all(5),
+                        child: roElevatedButton(
+                          onPress: () async {
+                            showLoadingOverlay();
+                            final response = await addAppUsageLimit(app.appCategory, app.packageId ?? '', newLimit);
+                            if (response.statusCode == 200) {
+                              await getData();
+                              closeOverlay();
+                              closeOverlay();
+                              showSnackbar('Berhasil Ubah Batas Penggunaan!');
+                            } else {
+                              showSnackbar('Gagal Ubah Batas Penggunaan!');
+                            }
                           },
-                        );
-                      });
-                } else {
-                  return Container();
-                }
-              }
-            }),
-      );
-    } else {
-      return Container();
-    }
+                          text: Text('Simpan', style: TextStyle(color: cPrimaryBg)),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ));
+        });
   }
 }
