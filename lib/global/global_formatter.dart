@@ -107,6 +107,13 @@ String dateFormat(DateTime time) {
   return formatted;
 }
 
+String dateFormat_EDMYHM(DateTime time) {
+  var formatter = new DateFormat("EEEE, dd MMMM yyyy HH:mm");
+  String formatted = formatter.format(time);
+
+  return formatted;
+}
+
 String dateTimeTo_ddMMMMyyyy(DateTime date) {
   final DateFormat formatter = DateFormat('dd MMMM yyyy', locale);
   return formatter.format(date);
@@ -243,3 +250,9 @@ String currentDatetimeGolangFormat() {
 }
 
 ///END - DATE FORMAT
+
+extension ParseToString on Object {
+  String toEnumString() {
+    return this.toString().split('.').last;
+  }
+}

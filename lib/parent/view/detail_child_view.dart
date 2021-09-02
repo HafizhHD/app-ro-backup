@@ -396,8 +396,8 @@ class _DetailChildPageState extends State<DetailChildPage> {
                 'waktu tertentu dan memblokir akses selama waktu makan malam atau saat'
                 'waktunya tidur. Anda juga dapat langsung memblokir akses ke ponsel'
                 'mereka dengan fitur kunci layar.',
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => RKConfigLimitDevicetPage(title: 'Jadwal Penggunaan', name: widget.name, email: widget.email))),
+            onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => RKConfigLimitDevicePage(title: 'Jadwal Penggunaan', name: widget.name, email: widget.email))),
           ),
         ],
       ),

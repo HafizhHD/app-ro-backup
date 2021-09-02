@@ -44,19 +44,22 @@ class WSearchBar extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: EdgeInsets.only(left: 20),
-              child: TextField(
-                  onChanged: fOnChanged,
-                  controller: tecController,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: hintText,
-                    // hintStyle: TextStyle(fontSize: SizeConfig.dFontSizeFixMedium),
-                  ),
-                  style: TextStyle(
-                    fontWeight: FontWeight.normal,
-                    // fontSize: SizeConfig.dFontSizeFixMedium,
-                  )),
+              child: Theme(
+                data: ThemeData.light(),
+                child: TextField(
+                    onChanged: fOnChanged,
+                    controller: tecController,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: hintText,
+                      // hintStyle: TextStyle(fontSize: SizeConfig.dFontSizeFixMedium),
+                    ),
+                    style: TextStyle(
+                      fontWeight: FontWeight.normal,
+                      // fontSize: SizeConfig.dFontSizeFixMedium,
+                    )),
+              ),
             ),
           ),
         ],

@@ -37,16 +37,9 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
       print('isi response fetch contact : ${response.body}');
       var json = jsonDecode(response.body);
       if (json['resultCode'] == 'OK') {
-        if (json['contacts'].length > 0) {
-          var contacts = json['contacts'][0];
-          List<Contact> data = List<Contact>.from(contacts['contacts'].map((model) => Contact.fromJson(model)));
-          List<Contact> fixDt = [];
-          for (int i = 0; i < data.length; i++) {
-            if (data[i].name == '' || data[i].phone == null || data[i].phone!.length <= 0) {
-            } else {
-              fixDt.add(data[i]);
-            }
-          }
+        List tempContact = json['contacts'][0]['contacts'];
+        if (tempContact.length > 0) {
+          List<Contact> data = tempContact.map((model) => Contact.fromJson(model)).toList();
           return data;
         } else {
           return [];
@@ -55,7 +48,7 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
         return [];
       }
     } else {
-      print('isi response fetch contact : ${response.statusCode}');
+      print('isi failed fetch contact : ${response.statusCode}');
       return [];
     }
   }
@@ -63,6 +56,7 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
   @override
   void initState() {
     // TODO: implement initState
+    super.initState();
     fContactList = fetchContact();
   }
 
@@ -106,49 +100,59 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                     contacts.sort((a, b) {
                       var aName = a.name;
                       var bName = b.name;
-                      return aName!.compareTo(bName!);
+                      return aName.compareTo(bName);
                     });
                     return ListView.builder(
                         itemCount: contacts.length,
                         itemBuilder: (ctx, index) {
                           final dataContact = contacts[index];
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Flexible(
-                                child: Text(dataContact.name ?? '', style: TextStyle(color: cOrtuWhite)),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  // IconButton(
-                                  //   color: cOrtuWhite,
-                                  //   icon: Icon(Icons.notifications_active_outlined),
-                                  //   onPressed: () {
-                                  //     setState(() {});
-                                  //   },
-                                  // ),
-                                  Text(dataContact.blacklist ?? false ? 'Terblokir' : ''),
-                                  IconButton(
-                                    color: cOrtuWhite,
-                                    icon: Icon(
-                                      Icons.block_rounded,
-                                      color: dataContact.blacklist ?? false ? cOrtuBlue : cOrtuWhite,
-                                    ),
-                                    onPressed: () async {
-                                      showLoadingOverlay();
-                                      final response = await onBlacklistContact(dataContact.name!, dataContact.phone?.first);
-                                      if (response.statusCode == 200) {
-                                        showSnackbar('Berhasil memblokir kontak ${dataContact.name}');
-                                      } else {
-                                        showSnackbar('Gagal memblokir kontak ${dataContact.name}. Silahkan coba lagi.');
-                                      }
-                                      closeOverlay();
-                                    },
+                          return Container(
+                            padding: EdgeInsets.all(10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(dataContact.name, style: TextStyle(color: cOrtuWhite, fontWeight: FontWeight.bold)),
+                                      SizedBox(height: 10),
+                                      Text(dataContact.phone, style: TextStyle(color: cOrtuWhite)),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    // IconButton(
+                                    //   color: cOrtuWhite,
+                                    //   icon: Icon(Icons.notifications_active_outlined),
+                                    //   onPressed: () {
+                                    //     setState(() {});
+                                    //   },
+                                    // ),
+                                    Text(dataContact.blacklist ? 'Terblokir' : ''),
+                                    IconButton(
+                                      color: cOrtuWhite,
+                                      icon: Icon(
+                                        Icons.block_rounded,
+                                        color: dataContact.blacklist ? cOrtuBlue : cOrtuWhite,
+                                      ),
+                                      onPressed: () async {
+                                        showLoadingOverlay();
+                                        final response = await onBlacklistContact(dataContact.name, dataContact.phone);
+                                        if (response.statusCode == 200) {
+                                          showSnackbar('Berhasil memblokir kontak ${dataContact.name}');
+                                        } else {
+                                          showSnackbar('Gagal memblokir kontak ${dataContact.name}. Silahkan coba lagi.');
+                                        }
+                                        closeOverlay();
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           );
                         });
                   }),

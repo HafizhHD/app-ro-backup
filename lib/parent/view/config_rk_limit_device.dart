@@ -6,17 +6,13 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 import 'package:intl/intl.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/global/global_formatter.dart';
+import 'package:ruangkeluarga/global/global_snackbar.dart';
+import 'package:ruangkeluarga/model/rk_schedule_model.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:http/http.dart';
 
-class RKConfigLimitDevice extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp();
-  }
-}
-
-class RKConfigLimitDevicetPage extends StatefulWidget {
+class RKConfigLimitDevicePage extends StatefulWidget {
   // List<charts.Series> seriesList;
   @override
   _RKConfigLimitDevicePageState createState() => _RKConfigLimitDevicePageState();
@@ -24,78 +20,100 @@ class RKConfigLimitDevicetPage extends StatefulWidget {
   final String name;
   final String email;
 
-  RKConfigLimitDevicetPage({Key? key, required this.title, required this.name, required this.email}) : super(key: key);
+  RKConfigLimitDevicePage({Key? key, required this.title, required this.name, required this.email}) : super(key: key);
 }
 
-class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
-  bool _switchValueFilter = false;
-  bool _switchValueSafeSearch = true;
-  bool _switchValuePorno = true;
-  bool _switchValueAborsi = true;
-  bool _switchValueKencan = true;
-  bool _switchValueEveryday = true;
-  bool _switchValueEveryWeekDay = false;
-  bool _switchValueEveryWeekEnd = false;
-  String startDateEveryday = '07:00';
-  String endDateEveryday = '22:00';
-  String startDateWeekday = '07:00';
-  String endDateWeekday = '22:00';
-  String startDateWeekend = '07:00';
-  String endDateWeekend = '22:00';
-  String type = 'everyday';
+class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
+  TextEditingController cTitle = TextEditingController();
+  TextEditingController cDesc = TextEditingController();
+  String sStartDateTime = '00:00';
+  String sEndDateTime = '00:00';
 
-  void onSaveSchedule(String status) async {
-    String startTime = "07:00";
-    String endTime = "22:00";
-    if (type == 'everyday') {
-      startTime = startDateEveryday;
-      endTime = endDateEveryday;
-    } else if (type == 'weekday') {
-      startTime = startDateWeekday;
-      endTime = endDateWeekday;
-    } else {
-      startTime = startDateWeekend;
-      endTime = endDateWeekend;
-    }
-    Response response = await MediaRepository().saveSchedule(widget.email, type, startTime, endTime, status);
+  Map<String, bool> selectedDay = {
+    weekdayToDayName(0): false,
+    weekdayToDayName(1): false,
+    weekdayToDayName(2): false,
+    weekdayToDayName(3): false,
+    weekdayToDayName(4): false,
+    weekdayToDayName(5): false,
+    weekdayToDayName(6): false,
+  };
+
+  int selectedScheduleType = 0;
+
+  late Future<List<DeviceUsageSchedules>> fListSchedule;
+  List<DeviceUsageSchedules> listSchedule = [];
+  List<DeviceUsageSchedules> searchlistSchedule = [];
+
+  Future<List<DeviceUsageSchedules>> fetchListSchedule() async {
+    Response response = await MediaRepository().fetchUserSchedule(widget.email);
+    print('isi response fetch deviceUsageSchedules : ${response.body}');
     if (response.statusCode == 200) {
-      // print('isi response save schedule ${response.body}');
       var json = jsonDecode(response.body);
-      if (json['resultCode'] == 'OK') {
-        print('isi response save schedule ${response.body}');
-      } else {
-        print('isi response nok save schedule ${response.body}');
-      }
+      final List data = json['deviceUsageSchedules'];
+      final res = data.map((e) => DeviceUsageSchedules.fromJson(e)).toList();
+      setState(() {
+        listSchedule = res;
+        searchlistSchedule = res;
+      });
+      return res;
     } else {
-      print('isi error response save schedule ${response.statusCode}');
+      print('isi failed fetch deviceUsageSchedules : ${response.statusCode}');
+      return [];
     }
   }
 
-  void onUpdateSchedule(String status) async {
-    String startTime = "07:00";
-    String endTime = "22:00";
-    if (type == 'everyday') {
-      startTime = startDateEveryday;
-      endTime = endDateEveryday;
-    } else if (type == 'weekday') {
-      startTime = startDateWeekday;
-      endTime = endDateWeekday;
-    } else {
-      startTime = startDateWeekend;
-      endTime = endDateWeekend;
+  Future<Response> onSaveSchedule(String status) async {
+    final type = selectedScheduleType == 0 ? ScheduleType.harian : ScheduleType.terjadwal;
+    List<String> listSelectedDays = [];
+    if (type == ScheduleType.harian) {
+      selectedDay.forEach((key, value) {
+        if (value) listSelectedDays.add(key);
+      });
     }
-    Response response = await MediaRepository().shceduleUpdate(widget.email, type, startTime, endTime, status);
-    if (response.statusCode == 200) {
-      // print('isi response save schedule ${response.body}');
-      var json = jsonDecode(response.body);
-      if (json['resultCode'] == 'OK') {
-        print('isi response update schedule ${response.body}');
-      } else {
-        print('isi response nok update schedule ${response.body}');
-      }
-    } else {
-      print('isi error response update schedule ${response.statusCode}');
+    final data = DeviceUsageSchedules(
+      emailUser: widget.email,
+      scheduleName: cTitle.text,
+      scheduleType: type,
+      scheduleDescription: cDesc.text,
+      deviceUsageStartTime: sStartDateTime,
+      deviceUsageEndTime: sEndDateTime,
+      deviceUsageDays: listSelectedDays,
+      status: status,
+    );
+
+    Response response = await MediaRepository().saveSchedule(data);
+    return response;
+  }
+
+  Future<Response> onUpdateSchedule(String status, String id) async {
+    final type = selectedScheduleType == 0 ? ScheduleType.harian : ScheduleType.terjadwal;
+    List<String> listSelectedDays = [];
+    if (type == ScheduleType.harian) {
+      selectedDay.forEach((key, value) {
+        if (value) listSelectedDays.add(key);
+      });
     }
+    final data = DeviceUsageSchedules(
+      id: id,
+      emailUser: widget.email,
+      scheduleName: cTitle.text,
+      scheduleType: type,
+      scheduleDescription: cDesc.text,
+      deviceUsageStartTime: sStartDateTime,
+      deviceUsageEndTime: sEndDateTime,
+      deviceUsageDays: listSelectedDays,
+      status: status,
+    );
+
+    Response response = await MediaRepository().scheduleUpdate(data);
+    return response;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fListSchedule = fetchListSchedule();
   }
 
   @override
@@ -119,7 +137,9 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             WSearchBar(
-              fOnChanged: (v) {},
+              fOnChanged: (v) {
+                searchlistSchedule = listSchedule.where((e) => e.scheduleName!.toLowerCase().contains(v.toLowerCase())).toList();
+              },
             ),
             //dropDown
             Container(
@@ -131,179 +151,132 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
               ),
             ),
             Flexible(
-              child: ListView.builder(
-                  itemCount: 20,
-                  itemBuilder: (ctx, index) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.all(5),
-                          padding: EdgeInsets.all(5).copyWith(left: 10),
-                          decoration: BoxDecoration(color: Colors.grey.shade700, borderRadius: BorderRadius.circular(10)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            mainAxisSize: MainAxisSize.min,
+              child: FutureBuilder(
+                  future: fListSchedule,
+                  builder: (context, AsyncSnapshot<List<DeviceUsageSchedules>> snapshot) {
+                    if (!snapshot.hasData) return wProgressIndicator();
+
+                    final listSchedule = snapshot.data ?? [];
+                    if (listSchedule.length <= 0) return Center(child: Text('List jadwal kosong', style: TextStyle(color: cOrtuWhite)));
+
+                    return ListView.builder(
+                        itemCount: searchlistSchedule.length,
+                        itemBuilder: (ctx, index) {
+                          final schedule = searchlistSchedule[index];
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.all(5),
-                                    child: Text(
-                                      'Tidur Siang ke $index',
-                                      style: TextStyle(color: cOrtuWhite),
+                              Container(
+                                margin: EdgeInsets.all(5),
+                                padding: EdgeInsets.all(5).copyWith(left: 10),
+                                decoration: BoxDecoration(color: Colors.grey.shade700, borderRadius: BorderRadius.circular(10)),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Flexible(
+                                      child: Container(
+                                        margin: EdgeInsets.all(5),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            RichText(
+                                              text: TextSpan(
+                                                text: schedule.scheduleName,
+                                                style: TextStyle(color: cOrtuWhite),
+                                                children: <TextSpan>[
+                                                  TextSpan(
+                                                    text: '   ${schedule.scheduleType.toEnumString()}',
+                                                    style: TextStyle(
+                                                      color: Colors.white30,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(height: 5),
+                                            if (schedule.scheduleDescription != null && schedule.scheduleDescription != '')
+                                              Flexible(
+                                                child: Padding(
+                                                  padding: EdgeInsets.only(bottom: 5),
+                                                  child: Text(
+                                                    '${schedule.scheduleDescription}',
+                                                    style: TextStyle(color: cOrtuWhite),
+                                                    overflow: TextOverflow.ellipsis,
+                                                    maxLines: 2,
+                                                  ),
+                                                ),
+                                              ),
+                                            Flexible(
+                                              child: Text(
+                                                '${schedule.deviceUsageStartTime} - ${schedule.deviceUsageEndTime}',
+                                                style: TextStyle(color: cOrtuWhite),
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 2,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    '$index Jam - ${index}x kali  Dalam seminggu',
-                                    style: TextStyle(color: cOrtuWhite),
-                                  ),
-                                ],
+                                    Row(
+                                      children: [
+                                        IconButton(
+                                            onPressed: () async {
+                                              showLoadingOverlay();
+                                              final status = schedule.status?.toLowerCase() == 'aktif';
+                                              final response = await MediaRepository().scheduleUpdateStatus(status ? '' : 'Aktif', schedule.id!);
+                                              if (response.statusCode == 200) {
+                                                await fetchListSchedule();
+                                                showSnackbar('Berhasil Ubah Status Jadwal Penggunaan!');
+                                              } else {
+                                                showSnackbar('Gagal Ubah Status Jadwal Penggunaan!');
+                                              }
+                                            },
+                                            icon: Icon(
+                                              Icons.radio_button_checked,
+                                              color: schedule.status?.toLowerCase() == 'aktif' ? cOrtuBlue : cOrtuWhite,
+                                            )),
+                                        IconButton(
+                                            onPressed: () {
+                                              addEditScheduleDialog(schedule);
+                                            },
+                                            icon: Icon(
+                                              Icons.edit,
+                                              color: cOrtuWhite,
+                                            )),
+                                        IconButton(
+                                            onPressed: () async {
+                                              showLoadingOverlay();
+                                              final response = await MediaRepository().scheduleRemove(schedule.id!);
+                                              if (response.statusCode == 200) {
+                                                await fetchListSchedule();
+                                                showSnackbar('Berhasil Menghapus Jadwal Penggunaan!');
+                                              } else {
+                                                showSnackbar('Gagal Menghapus Jadwal Penggunaan!');
+                                              }
+                                            },
+                                            icon: Icon(
+                                              Icons.close,
+                                              color: cOrtuWhite,
+                                            )),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                              Row(
-                                children: [
-                                  IconButton(
-                                      onPressed: () {},
-                                      icon: Icon(
-                                        Icons.close,
-                                        color: cOrtuWhite,
-                                      )),
-                                  IconButton(
-                                      onPressed: () {},
-                                      icon: Icon(
-                                        Icons.edit,
-                                        color: cOrtuWhite,
-                                      )),
-                                  IconButton(
-                                      onPressed: () {},
-                                      icon: Icon(
-                                        Icons.radio_button_checked,
-                                        color: cOrtuWhite,
-                                      )),
-                                ],
-                              ),
+                              if (index == searchlistSchedule.length - 1)
+                                Container(
+                                  margin: EdgeInsets.all(5),
+                                  padding: EdgeInsets.all(5).copyWith(left: 10),
+                                  child: ListTile(),
+                                )
                             ],
-                          ),
-                        ),
-                        if (index == 19)
-                          Container(
-                            margin: EdgeInsets.all(5),
-                            padding: EdgeInsets.all(5).copyWith(left: 10),
-                            child: ListTile(),
-                          )
-                      ],
-                    );
+                          );
+                        });
                   }),
-              // child: FutureBuilder<List<Contact>>(
-              //   future: fetchContact(),
-              //   builder: (BuildContext context, AsyncSnapshot<List<Contact>> data) {
-              //     if (data.data == null) {
-              //       return const Center(child: CircularProgressIndicator());
-              //     } else {
-              //       List<Contact> apps = data.data!;
-              //       apps.sort((a, b) {
-              //         var aName = a.name;
-              //         var bName = b.name;
-              //         return aName!.compareTo(bName!);
-              //       });
-              //       for (int i = 0; i < apps.length; i++) {
-              //         Contact dt = apps[i];
-              //         listSwitchValue.add(dt.blacklist!);
-              //       }
-              //
-              //       if (apps.length == 0) {
-              //         return Align(
-              //           child: Text(
-              //             'Tidak ada data.',
-              //             style: TextStyle(color: Colors.black, fontSize: 18),
-              //           ),
-              //         );
-              //       } else {
-              //         return Scrollbar(
-              //           child: ListView.builder(
-              //               itemBuilder: (BuildContext context, int position) {
-              //                 Contact app = apps[position];
-              //                 var phones = "";
-              //                 if (app.phone != null && app.phone!.length > 0) {
-              //                   phones = app.phone![0];
-              //                 }
-              //
-              //                 if (phones == "") {
-              //                   return Column(
-              //                     children: <Widget>[
-              //                       ListTile(
-              //                         leading: Icon(
-              //                           Icons.android_outlined,
-              //                           color: Colors.green,
-              //                         ),
-              //                         title: Column(
-              //                           mainAxisAlignment: MainAxisAlignment.start,
-              //                           crossAxisAlignment: CrossAxisAlignment.start,
-              //                           children: [
-              //                             Text('${app.name}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-              //                           ],
-              //                         ),
-              //                         // title: Text('${app.name}'),
-              //                         trailing: CupertinoSwitch(
-              //                           value: listSwitchValue[position],
-              //                           onChanged: (bool value) {
-              //                             onBlacklistContact(app.name.toString(), app.phone![0].toString());
-              //                             setState(() {
-              //                               listSwitchValue[position] = value;
-              //                             });
-              //                           },
-              //                         ),
-              //                       ),
-              //                       const Divider(
-              //                         height: 1.0,
-              //                       )
-              //                     ],
-              //                   );
-              //                 } else {
-              //                   return Column(
-              //                     children: <Widget>[
-              //                       ListTile(
-              //                         leading: Icon(
-              //                           Icons.android_outlined,
-              //                           color: Colors.green,
-              //                         ),
-              //                         title: Column(
-              //                           mainAxisAlignment: MainAxisAlignment.start,
-              //                           crossAxisAlignment: CrossAxisAlignment.start,
-              //                           children: [
-              //                             Text('${app.name}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-              //                             SizedBox(
-              //                               height: 5,
-              //                             ),
-              //                             Text('$phones', style: TextStyle(fontSize: 12))
-              //                           ],
-              //                         ),
-              //                         // title: Text('${app.name}'),
-              //                         trailing: CupertinoSwitch(
-              //                           value: listSwitchValue[position],
-              //                           onChanged: (bool value) {
-              //                             onBlacklistContact(app.name.toString(), app.phone![0].toString());
-              //                             setState(() {
-              //                               listSwitchValue[position] = value;
-              //                             });
-              //                           },
-              //                         ),
-              //                       ),
-              //                       const Divider(
-              //                         height: 1.0,
-              //                       )
-              //                     ],
-              //                   );
-              //                 }
-              //               },
-              //               itemCount: apps.length),
-              //         );
-              //       }
-              //     }
-              //   },
-              // ),
             ),
           ],
         ),
@@ -311,793 +284,434 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicetPage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: cOrtuBlue,
         child: Icon(Icons.add, color: cPrimaryBg),
-        onPressed: () {},
+        onPressed: () {
+          addEditScheduleDialog(null);
+        },
       ),
     );
   }
 
-  Widget onLoadDate(bool flag, String type) {
-    if (flag) {
-      if (type == 'everyday') {
-        return Container(
-          margin: EdgeInsets.only(top: 30.0),
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey,
-                blurRadius: 3.0,
-              ),
-            ],
-          ),
-          child: Align(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  margin: EdgeInsets.all(10.0),
-                  child: Row(
+  void resetInputValue() {
+    cTitle.text = '';
+    cDesc.text = '';
+    sStartDateTime = '00:00';
+    sEndDateTime = '00:00';
+    selectedDay = {
+      weekdayToDayName(0): false,
+      weekdayToDayName(1): false,
+      weekdayToDayName(2): false,
+      weekdayToDayName(3): false,
+      weekdayToDayName(4): false,
+      weekdayToDayName(5): false,
+      weekdayToDayName(6): false,
+    };
+    setState(() {});
+  }
+
+  void setInputValue(DeviceUsageSchedules data) {
+    cTitle.text = data.scheduleName!;
+    cDesc.text = data.scheduleDescription!;
+    sStartDateTime = data.deviceUsageStartTime!;
+    sEndDateTime = data.deviceUsageEndTime!;
+    selectedScheduleType = data.scheduleType == ScheduleType.harian ? 0 : 1;
+    selectedDay = {
+      weekdayToDayName(0): false,
+      weekdayToDayName(1): false,
+      weekdayToDayName(2): false,
+      weekdayToDayName(3): false,
+      weekdayToDayName(4): false,
+      weekdayToDayName(5): false,
+      weekdayToDayName(6): false,
+    };
+    print(data.deviceUsageDays);
+    data.deviceUsageDays?.forEach((element) => selectedDay[element] = true);
+
+    setState(() {});
+  }
+
+  void addEditScheduleDialog(DeviceUsageSchedules? data) {
+    final bool hasData = data != null;
+    if (hasData)
+      setInputValue(data);
+    else
+      resetInputValue();
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Material(
+            child: Theme(
+              data: ThemeData.light(),
+              child: Container(
+                  color: Colors.grey.shade700,
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Container(
-                        child: Text(
-                          'Dari',
-                          style: TextStyle(fontSize: 16),
-                        ),
+                      Flexible(
+                        child: StatefulBuilder(builder: (context, sbSetState) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              AppBar(
+                                backgroundColor: Colors.transparent,
+                                title: Text('${hasData ? 'Ubah' : 'Tambah'} Jadwal Penggunaan', style: TextStyle(color: cOrtuWhite)),
+                                leading: IconButton(
+                                  icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                elevation: 0,
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(10),
+                                child: TextField(
+                                  style: TextStyle(fontSize: 16.0, color: Colors.black),
+                                  keyboardType: TextInputType.text,
+                                  minLines: 1,
+                                  maxLines: 1,
+                                  controller: cTitle,
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    hintText: 'Judul Jadwal',
+                                    contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.white),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.white),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(10),
+                                child: TextField(
+                                  style: TextStyle(fontSize: 16.0, color: Colors.black),
+                                  keyboardType: TextInputType.multiline,
+                                  minLines: 3,
+                                  maxLines: 6,
+                                  controller: cDesc,
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    hintText: 'Deskripsi Jadwal',
+                                    contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.white),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.white),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.only(left: 10, right: 10, top: 20),
+                                width: MediaQuery.of(context).size.width,
+                                child: ToggleBar(
+                                  initialValue: selectedScheduleType,
+                                  labels: ['Harian', 'Terjadwal'],
+                                  onSelectionUpdated: (index) {
+                                    selectedScheduleType = index;
+
+                                    if (index == 0) {
+                                      sStartDateTime = '00:00';
+                                      sEndDateTime = '00:00';
+                                    } else {
+                                      sStartDateTime = dateFormat_EDMYHM(DateTime.now());
+                                      sEndDateTime = dateFormat_EDMYHM(DateTime.now());
+                                    }
+                                    setState(() {});
+                                    sbSetState(() {});
+                                  },
+                                ),
+                              ),
+                              Flexible(
+                                child: selectedScheduleType == 0 ? harianPicker(sbSetState) : jadwalPicker(sbSetState),
+                              ),
+                            ],
+                          );
+                        }),
                       ),
                       Container(
-                        child: GestureDetector(
-                          onTap: () {
-                            var outputFormat = DateFormat('HH:mm');
-                            DatePicker.showTimePicker(context, showTitleActions: true, onChanged: (date) {
-                              print('change $date in time zone ' + date.timeZoneOffset.inHours.toString());
-                            }, onConfirm: (date) {
-                              print('confirm ${outputFormat.format(date)}');
-                              setState(() {
-                                startDateEveryday = outputFormat.format(date);
-                                onUpdateSchedule('Active');
-                              });
-                            }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
+                        padding: EdgeInsets.all(10),
+                        child: FlatButton(
+                          height: 50,
+                          minWidth: 300,
+                          shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15.0)),
+                          onPressed: () async {
+                            showLoadingOverlay();
+                            if (hasData) {
+                              final response = await onUpdateSchedule('aktif', data.id!);
+                              if (response.statusCode == 200) {
+                                await fetchListSchedule();
+                                closeOverlay();
+                                closeOverlay();
+                                showSnackbar('Berhasil Ubah Jadwal Penggunaan!');
+                              } else {
+                                showSnackbar('Gagal Ubah Jadwal Penggunaan!');
+                              }
+                            } else {
+                              final response = await onSaveSchedule('aktif');
+                              if (response.statusCode == 200) {
+                                await fetchListSchedule();
+                                closeOverlay();
+                                closeOverlay();
+                                showSnackbar('Berhasil Tambah Jadwal Penggunaan!');
+                              } else {
+                                showSnackbar('Gagal Tambah Jadwal Penggunaan!');
+                              }
+                            }
                           },
+                          color: cOrtuBlue,
                           child: Text(
-                            '$startDateEveryday',
-                            style: TextStyle(fontSize: 16),
+                            "SIMPAN",
+                            style: TextStyle(
+                              fontFamily: 'Raleway',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20.0,
+                            ),
                           ),
                         ),
                       )
                     ],
-                  ),
-                ),
-                Container(
-                  height: 1,
-                  margin: EdgeInsets.only(left: 10.0, top: 3.0, bottom: 3.0),
-                  color: Colors.grey,
-                ),
-                Container(
-                  margin: EdgeInsets.all(10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        child: Text(
-                          'Sampai',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                      Container(
-                        child: GestureDetector(
-                          onTap: () {
-                            var outputFormat = DateFormat('HH:mm');
-                            DatePicker.showTimePicker(context, showTitleActions: true, onChanged: (date) {
-                              print('change $date in time zone ' + date.timeZoneOffset.inHours.toString());
-                            }, onConfirm: (date) {
-                              print('confirm ${outputFormat.format(date)}');
-                              setState(() {
-                                endDateEveryday = outputFormat.format(date);
-                                onUpdateSchedule('Active');
-                              });
-                            }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
-                          },
-                          child: Text(
-                            '$endDateEveryday',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                )
-              ],
+                  )),
             ),
-          ),
-        );
-      } else if (type == 'weekday') {
-        /*return Container(
-        margin: EdgeInsets.only(top: 30.0),
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey,
-              blurRadius: 3.0,
-            ),
-          ],
-        ),
-        child: Align(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+          );
+        });
+  }
+
+  Widget harianPicker(StateSetter sbSetState) {
+    return Container(
+      padding: EdgeInsets.all(20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Container(
-                margin: EdgeInsets.all(10.0),
-                child: Row(
-                  mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      child: Text(
-                        'Senin',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                    Container(
-                      child: GestureDetector(
-                        onTap: () {
-                          var outputFormat = DateFormat('HH:mm');
-                          DatePicker.showTimePicker(context, showTitleActions: true,
-                              onChanged: (date) {
-                                print('change $date in time zone ' +
-                                    date.timeZoneOffset.inHours.toString());
-                              }, onConfirm: (date) {
-                                print('confirm ${outputFormat.format(date)}');
-                                setState(() {
-                                  startDate = outputFormat.format(date);
-                                });
-                              }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
-                        },
-                        child: Text(
-                          '$startDate',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    )
-                  ],
+              Flexible(
+                child: ListTile(
+                  title: Text(
+                    'Jam mulai',
+                    style: TextStyle(color: cOrtuWhite),
+                  ),
+                  subtitle: Text(sStartDateTime, style: TextStyle(color: cOrtuWhite, fontSize: 30, fontWeight: FontWeight.bold)),
+                  onTap: () async {
+                    final res = await timePickerModal();
+                    sStartDateTime = res;
+                    setState(() {});
+                    sbSetState(() {});
+                  },
                 ),
               ),
-              Container(
-                height: 1,
-                margin: EdgeInsets.only(left: 10.0, top: 3.0, bottom: 3.0),
-                color: Colors.grey,
-              ),
-              Container(
-                margin: EdgeInsets.all(10.0),
-                child: Row(
-                  mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      child: Text(
-                        'Selasa',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                    Container(
-                      child: GestureDetector(
-                        onTap: () {
-                          var outputFormat = DateFormat('HH:mm');
-                          DatePicker.showTimePicker(context, showTitleActions: true,
-                              onChanged: (date) {
-                                print('change $date in time zone ' +
-                                    date.timeZoneOffset.inHours.toString());
-                              }, onConfirm: (date) {
-                                print('confirm ${outputFormat.format(date)}');
-                                setState(() {
-                                  endDate = outputFormat.format(date);
-                                });
-                              }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
-                        },
-                        child: Text(
-                          '$endDate',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                height: 1,
-                margin: EdgeInsets.only(left: 10.0, top: 3.0, bottom: 3.0),
-                color: Colors.grey,
-              ),
-              Container(
-                margin: EdgeInsets.all(10.0),
-                child: Row(
-                  mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      child: Text(
-                        'Rabu',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                    Container(
-                      child: GestureDetector(
-                        onTap: () {
-                          var outputFormat = DateFormat('HH:mm');
-                          DatePicker.showTimePicker(context, showTitleActions: true,
-                              onChanged: (date) {
-                                print('change $date in time zone ' +
-                                    date.timeZoneOffset.inHours.toString());
-                              }, onConfirm: (date) {
-                                print('confirm ${outputFormat.format(date)}');
-                                setState(() {
-                                  endDate = outputFormat.format(date);
-                                });
-                              }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
-                        },
-                        child: Text(
-                          '$endDate',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                height: 1,
-                margin: EdgeInsets.only(left: 10.0, top: 3.0, bottom: 3.0),
-                color: Colors.grey,
-              ),
-              Container(
-                margin: EdgeInsets.all(10.0),
-                child: Row(
-                  mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      child: Text(
-                        'Kamis',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                    Container(
-                      child: GestureDetector(
-                        onTap: () {
-                          var outputFormat = DateFormat('HH:mm');
-                          DatePicker.showTimePicker(context, showTitleActions: true,
-                              onChanged: (date) {
-                                print('change $date in time zone ' +
-                                    date.timeZoneOffset.inHours.toString());
-                              }, onConfirm: (date) {
-                                print('confirm ${outputFormat.format(date)}');
-                                setState(() {
-                                  endDate = outputFormat.format(date);
-                                });
-                              }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
-                        },
-                        child: Text(
-                          '$endDate',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                height: 1,
-                margin: EdgeInsets.only(left: 10.0, top: 3.0, bottom: 3.0),
-                color: Colors.grey,
-              ),
-              Container(
-                margin: EdgeInsets.all(10.0),
-                child: Row(
-                  mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      child: Text(
-                        'Jumat',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                    Container(
-                      child: GestureDetector(
-                        onTap: () {
-                          var outputFormat = DateFormat('HH:mm');
-                          DatePicker.showTimePicker(context, showTitleActions: true,
-                              onChanged: (date) {
-                                print('change $date in time zone ' +
-                                    date.timeZoneOffset.inHours.toString());
-                              }, onConfirm: (date) {
-                                print('confirm ${outputFormat.format(date)}');
-                                setState(() {
-                                  endDate = outputFormat.format(date);
-                                });
-                              }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
-                        },
-                        child: Text(
-                          '$endDate',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                height: 1,
-                margin: EdgeInsets.only(left: 10.0, top: 3.0, bottom: 3.0),
-                color: Colors.grey,
-              ),
-              Container(
-                margin: EdgeInsets.all(10.0),
-                child: Row(
-                  mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      child: Text(
-                        'Sabtu',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                    Container(
-                      child: GestureDetector(
-                        onTap: () {
-                          var outputFormat = DateFormat('HH:mm');
-                          DatePicker.showTimePicker(context, showTitleActions: true,
-                              onChanged: (date) {
-                                print('change $date in time zone ' +
-                                    date.timeZoneOffset.inHours.toString());
-                              }, onConfirm: (date) {
-                                print('confirm ${outputFormat.format(date)}');
-                                setState(() {
-                                  endDate = outputFormat.format(date);
-                                });
-                              }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
-                        },
-                        child: Text(
-                          '$endDate',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                height: 1,
-                margin: EdgeInsets.only(left: 10.0, top: 3.0, bottom: 3.0),
-                color: Colors.grey,
-              ),
-              Container(
-                margin: EdgeInsets.all(10.0),
-                child: Row(
-                  mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      child: Text(
-                        'Minggu',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                    Container(
-                      child: GestureDetector(
-                        onTap: () {
-                          var outputFormat = DateFormat('HH:mm');
-                          DatePicker.showTimePicker(context, showTitleActions: true,
-                              onChanged: (date) {
-                                print('change $date in time zone ' +
-                                    date.timeZoneOffset.inHours.toString());
-                              }, onConfirm: (date) {
-                                print('confirm ${outputFormat.format(date)}');
-                                setState(() {
-                                  endDate = outputFormat.format(date);
-                                });
-                              }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
-                        },
-                        child: Text(
-                          '$endDate',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    )
-                  ],
+              Flexible(
+                child: ListTile(
+                  title: Text(
+                    'Jam selesai',
+                    style: TextStyle(color: cOrtuWhite),
+                  ),
+                  subtitle: Text(sEndDateTime, style: TextStyle(color: cOrtuWhite, fontSize: 30, fontWeight: FontWeight.bold)),
+                  onTap: () async {
+                    final res = await timePickerModal();
+                    sEndDateTime = res;
+                    setState(() {});
+                    sbSetState(() {});
+                  },
                 ),
               ),
             ],
           ),
-        ),
-      );*/
-        return Container(
-          margin: EdgeInsets.only(top: 30.0),
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey,
-                blurRadius: 3.0,
+          Flexible(
+            child: Container(
+              padding: EdgeInsets.only(top: 20, bottom: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  dayButton(
+                      dayText: 'S',
+                      selected: selectedDay[weekdayToDayName(0)]!,
+                      onTap: () {
+                        setState(() {
+                          selectedDay[weekdayToDayName(0)] = !(selectedDay[weekdayToDayName(0)] ?? false);
+                        });
+                        sbSetState(() {});
+                      }),
+                  dayButton(
+                      dayText: 'M',
+                      selected: selectedDay[weekdayToDayName(1)]!,
+                      onTap: () {
+                        setState(() {
+                          selectedDay[weekdayToDayName(1)] = !(selectedDay[weekdayToDayName(1)] ?? false);
+                        });
+                        sbSetState(() {});
+                      }),
+                  dayButton(
+                      dayText: 'T',
+                      selected: selectedDay[weekdayToDayName(2)]!,
+                      onTap: () {
+                        setState(() {
+                          selectedDay[weekdayToDayName(2)] = !(selectedDay[weekdayToDayName(2)] ?? false);
+                        });
+                        sbSetState(() {});
+                      }),
+                  dayButton(
+                      dayText: 'W',
+                      selected: selectedDay[weekdayToDayName(3)]!,
+                      onTap: () {
+                        setState(() {
+                          selectedDay[weekdayToDayName(3)] = !(selectedDay[weekdayToDayName(3)] ?? false);
+                        });
+                        sbSetState(() {});
+                      }),
+                  dayButton(
+                      dayText: 'T',
+                      selected: selectedDay[weekdayToDayName(4)]!,
+                      onTap: () {
+                        setState(() {
+                          selectedDay[weekdayToDayName(4)] = !(selectedDay[weekdayToDayName(4)] ?? false);
+                        });
+                        sbSetState(() {});
+                      }),
+                  dayButton(
+                      dayText: 'F',
+                      selected: selectedDay[weekdayToDayName(5)]!,
+                      onTap: () {
+                        setState(() {
+                          selectedDay[weekdayToDayName(5)] = !(selectedDay[weekdayToDayName(5)] ?? false);
+                        });
+                        sbSetState(() {});
+                      }),
+                  dayButton(
+                      dayText: 'S',
+                      selected: selectedDay[weekdayToDayName(6)]!,
+                      onTap: () {
+                        setState(() {
+                          selectedDay[weekdayToDayName(6)] = !(selectedDay[weekdayToDayName(6)] ?? false);
+                        });
+                        sbSetState(() {});
+                      }),
+                ],
               ),
-            ],
-          ),
-          child: Align(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  margin: EdgeInsets.all(10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        child: Text(
-                          'Dari',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                      Container(
-                        child: GestureDetector(
-                          onTap: () {
-                            var outputFormat = DateFormat('HH:mm');
-                            DatePicker.showTimePicker(context, showTitleActions: true, onChanged: (date) {
-                              print('change $date in time zone ' + date.timeZoneOffset.inHours.toString());
-                            }, onConfirm: (date) {
-                              print('confirm ${outputFormat.format(date)}');
-                              setState(() {
-                                startDateWeekday = outputFormat.format(date);
-                                onUpdateSchedule('Active');
-                              });
-                            }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
-                          },
-                          child: Text(
-                            '$startDateWeekday',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  height: 1,
-                  margin: EdgeInsets.only(left: 10.0, top: 3.0, bottom: 3.0),
-                  color: Colors.grey,
-                ),
-                Container(
-                  margin: EdgeInsets.all(10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        child: Text(
-                          'Sampai',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                      Container(
-                        child: GestureDetector(
-                          onTap: () {
-                            var outputFormat = DateFormat('HH:mm');
-                            DatePicker.showTimePicker(context, showTitleActions: true, onChanged: (date) {
-                              print('change $date in time zone ' + date.timeZoneOffset.inHours.toString());
-                            }, onConfirm: (date) {
-                              print('confirm ${outputFormat.format(date)}');
-                              setState(() {
-                                endDateWeekday = outputFormat.format(date);
-                                onUpdateSchedule('Active');
-                              });
-                            }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
-                          },
-                          child: Text(
-                            '$endDateWeekday',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                )
-              ],
             ),
-          ),
-        );
-      } else {
-        return Container(
-          margin: EdgeInsets.only(top: 30.0),
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey,
-                blurRadius: 3.0,
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget dayButton({required bool selected, required String dayText, required Function() onTap}) {
+    return InkWell(
+      child: CircleAvatar(
+        backgroundColor: selected ? cOrtuBlue : cOrtuWhite,
+        child: Text('$dayText', style: TextStyle(color: cPrimaryBg)),
+      ),
+      onTap: onTap,
+    );
+  }
+
+  Widget jadwalPicker(StateSetter sbSetState) {
+    return Container(
+      padding: EdgeInsets.all(20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: ListTile(
+              title: Container(
+                padding: EdgeInsets.only(bottom: 5),
+                child: Text(
+                  'Tanggal mulai',
+                  style: TextStyle(color: cOrtuGrey),
+                ),
               ),
-            ],
-          ),
-          child: Align(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  margin: EdgeInsets.all(10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        child: Text(
-                          'Dari',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                      Container(
-                        child: GestureDetector(
-                          onTap: () {
-                            var outputFormat = DateFormat('HH:mm');
-                            DatePicker.showTimePicker(context, showTitleActions: true, onChanged: (date) {
-                              print('change $date in time zone ' + date.timeZoneOffset.inHours.toString());
-                            }, onConfirm: (date) {
-                              print('confirm ${outputFormat.format(date)}');
-                              setState(() {
-                                startDateWeekend = outputFormat.format(date);
-                                onUpdateSchedule('Active');
-                              });
-                            }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
-                          },
-                          child: Text(
-                            '$startDateWeekend',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  height: 1,
-                  margin: EdgeInsets.only(left: 10.0, top: 3.0, bottom: 3.0),
-                  color: Colors.grey,
-                ),
-                Container(
-                  margin: EdgeInsets.all(10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        child: Text(
-                          'Sampai',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                      Container(
-                        child: GestureDetector(
-                          onTap: () {
-                            var outputFormat = DateFormat('HH:mm');
-                            DatePicker.showTimePicker(context, showTitleActions: true, onChanged: (date) {
-                              print('change $date in time zone ' + date.timeZoneOffset.inHours.toString());
-                            }, onConfirm: (date) {
-                              print('confirm ${outputFormat.format(date)}');
-                              setState(() {
-                                endDateWeekend = outputFormat.format(date);
-                                onUpdateSchedule('Active');
-                              });
-                            }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
-                          },
-                          child: Text(
-                            '$endDateWeekend',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                )
-              ],
+              subtitle: Text(sStartDateTime, style: TextStyle(color: cOrtuWhite, fontSize: 25, fontWeight: FontWeight.bold)),
+              onTap: () async {
+                final res = await timePickerModal(mode: CupertinoDatePickerMode.dateAndTime);
+                sStartDateTime = res;
+                setState(() {});
+                sbSetState(() {});
+              },
             ),
           ),
-        );
-      }
-    } else {
-      return Container();
-    }
-  }
-
-  Widget onLoadEveryDay(bool flag, bool flagIsActive) {
-    if (flag) {
-      return Container(
-        margin: EdgeInsets.only(top: 10.0),
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey,
-              blurRadius: 3.0,
-            ),
-          ],
-        ),
-        child: GestureDetector(
-          onTap: () {
-            setState(() {
-              _switchValueEveryday = true;
-              _switchValueEveryWeekDay = false;
-              _switchValueEveryWeekEnd = false;
-              onActiveWeekDay(_switchValueEveryWeekDay);
-              onActiveWeekEnd(_switchValueEveryWeekEnd);
-              type = 'everyday';
-              onLoadDate(_switchValueFilter, type);
-              onUpdateSchedule('Active');
-            });
-          },
-          child: Container(
-            margin: EdgeInsets.all(10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  margin: EdgeInsets.only(left: 10.0),
-                  child: Text(
-                    'Setiap Hari',
-                    style: TextStyle(fontSize: 16),
-                  ),
+          SizedBox(height: 10),
+          Flexible(
+            child: ListTile(
+              title: Container(
+                padding: EdgeInsets.only(bottom: 5),
+                child: Text(
+                  'Tanggal selesai',
+                  style: TextStyle(color: cOrtuGrey),
                 ),
-                onActiveEveryDay(_switchValueEveryday)
-              ],
-            ),
-          ),
-        ),
-      );
-    } else {
-      return Container();
-    }
-  }
-
-  Widget onLoadEveryWeekDay(bool flag, bool flagIsActive) {
-    if (flag) {
-      return Container(
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey,
-              blurRadius: 3.0,
-            ),
-          ],
-        ),
-        child: GestureDetector(
-          onTap: () {
-            setState(() {
-              _switchValueEveryday = false;
-              _switchValueEveryWeekDay = true;
-              _switchValueEveryWeekEnd = false;
-              onActiveWeekDay(_switchValueEveryWeekDay);
-              type = 'weekday';
-              onLoadDate(_switchValueFilter, type);
-              onUpdateSchedule('Active');
-            });
-          },
-          child: Container(
-            margin: EdgeInsets.all(10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  margin: EdgeInsets.only(left: 10.0),
-                  child: Text(
-                    'Setiap Hari Kerja',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-                onActiveWeekDay(_switchValueEveryWeekDay)
-              ],
-            ),
-          ),
-        ),
-      );
-    } else {
-      return Container();
-    }
-  }
-
-  Widget onActiveEveryDay(bool flag) {
-    if (flag) {
-      return Icon(
-        Icons.alarm_on_outlined,
-        color: Color(0xff05745F),
-      );
-    } else {
-      return Icon(
-        Icons.alarm_on_outlined,
-        color: Colors.white,
-      );
-    }
-  }
-
-  Widget onActiveWeekDay(bool flag) {
-    if (flag) {
-      return Icon(
-        Icons.alarm_on_outlined,
-        color: Color(0xff05745F),
-      );
-    } else {
-      return Icon(
-        Icons.alarm_on_outlined,
-        color: Colors.white,
-      );
-    }
-  }
-
-  Widget onActiveWeekEnd(bool flag) {
-    if (flag) {
-      return Icon(
-        Icons.alarm_on_outlined,
-        color: Color(0xff05745F),
-      );
-    } else {
-      return Icon(
-        Icons.alarm_on_outlined,
-        color: Colors.white,
-      );
-    }
-  }
-
-  Widget onLoadEveryWeekEnd(bool flag, bool flagIsActive) {
-    if (flag) {
-      return GestureDetector(
-        onTap: () {
-          setState(() {
-            _switchValueEveryWeekEnd = true;
-            _switchValueEveryWeekDay = false;
-            _switchValueEveryday = false;
-            onActiveWeekEnd(_switchValueEveryWeekEnd);
-            type = 'weekend';
-            onLoadDate(_switchValueFilter, type);
-            onUpdateSchedule('Active');
-          });
-        },
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey,
-                blurRadius: 3.0,
               ),
-            ],
+              subtitle: Text(sEndDateTime, style: TextStyle(color: cOrtuWhite, fontSize: 25, fontWeight: FontWeight.bold)),
+              onTap: () async {
+                final res = await timePickerModal(mode: CupertinoDatePickerMode.dateAndTime);
+                sEndDateTime = res;
+                setState(() {});
+                sbSetState(() {});
+              },
+            ),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                margin: EdgeInsets.all(10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(left: 10.0),
-                      child: Text(
-                        'Setiap Akhir Pekan',
-                        style: TextStyle(fontSize: 16),
+        ],
+      ),
+    );
+  }
+
+  Future<String> timePickerModal({CupertinoDatePickerMode mode = CupertinoDatePickerMode.time}) async {
+    String newTime = '00:00';
+    final res = await showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+              height: MediaQuery.of(context).size.height / 3,
+              color: cOrtuGrey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: Theme(
+                      data: ThemeData.light(),
+                      child: CupertinoDatePicker(
+                        mode: mode,
+                        initialDateTime: DateTime.now(),
+                        use24hFormat: true,
+                        onDateTimeChanged: (dt) {
+                          if (mode == CupertinoDatePickerMode.time) {
+                            final h = dt.hour.toString().padLeft(2, '0');
+                            final m = dt.minute.toString().padLeft(2, '0');
+                            newTime = '$h:$m';
+                          } else {
+                            newTime = dateFormat_EDMYHM(dt);
+                          }
+                        },
                       ),
                     ),
-                    onActiveWeekEnd(_switchValueEveryWeekEnd)
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-      );
-    } else {
-      return Container();
-    }
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width / 2 - 10,
+                    padding: EdgeInsets.all(5),
+                    child: roElevatedButton(
+                      onPress: () async {
+                        Navigator.of(context).pop(newTime);
+                      },
+                      text: Text('Pilih', style: TextStyle(color: cPrimaryBg)),
+                    ),
+                  )
+                ],
+              ));
+        });
+
+    return newTime;
   }
 }

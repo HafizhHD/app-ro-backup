@@ -44,6 +44,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
   List<AppListWithIcons> appListSearch = [];
 
   Future<List<AppUsageData>> getData() async {
+    mapUsageDataApp.clear();
     Response response = await MediaRepository().fetchLimitUsageFilter(widget.email);
     print('isi response filter app usage : ${response.body}');
     if (response.statusCode == 200) {
@@ -167,7 +168,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
   }
 
   Future<Response> addAppUsageLimit(String category, String appId, int limit) async {
-    return await MediaRepository().addLimitUsageAndBlockApp(widget.email, appId, category, limit, 'Aktif');
+    return await MediaRepository().addLimitUsageAndBlockApp(widget.email, appId, category, limit, limit > 0 ? 'Aktif' : '');
   }
 
   @override
@@ -231,7 +232,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                           int limitMinute = timeLimit % 60;
                           if (limitHour > 0) {
                             if (limitMinute > 0) {
-                              limitTime = "${limitHour}hrs${limitMinute}min, Setiap Hari";
+                              limitTime = "${limitHour}hrs ${limitMinute}min, Setiap Hari";
                             } else {
                               limitTime = "${limitHour}hrs, Setiap Hari";
                             }
@@ -278,7 +279,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                                     if (timeLimit > 0)
                                       Text(
                                         limitTime,
-                                        style: TextStyle(color: cOrtuWhite),
+                                        style: TextStyle(color: cOrtuBlue),
                                       ),
                                     IconButton(
                                         onPressed: () {
@@ -347,9 +348,9 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                             onPress: newLimit > 0
                                 ? () async {
                                     showLoadingOverlay();
-                                    final response = await onRemoveData(app.appCategory, app.packageId ?? '');
+                                    final response = await addAppUsageLimit(app.appCategory, app.packageId ?? '', 0);
                                     if (response.statusCode == 200) {
-                                      //reLoad data
+                                      await getData();
                                       closeOverlay();
                                       closeOverlay();
                                       showSnackbar('Berhasil Reset Batas Penggunaan!');
