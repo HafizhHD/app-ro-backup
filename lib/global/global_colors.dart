@@ -7,6 +7,6 @@ const cOrtuOrange = Color(0xFFffb703);
 const cOrtuGrey = Color(0xFFdddddd);
 const cOrtuWhite = Color(0xFFffffff);
 
-final cPrimaryBg = Color(0xFF333333);
+const cPrimaryBg = Color(0xFF333333);
 final cAccentButton = cOrtuOrange;
 final cDisabled = Colors.grey.shade600;

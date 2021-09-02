@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/login/login.dart';
 import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/parent/view/invite_more_child.dart';
+import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ParentDrawer extends StatelessWidget {
   final userName;
   final userMail;
+  final controller = Get.find<ParentController>();
 
   ParentDrawer({this.userMail, this.userName});
 
@@ -71,6 +74,7 @@ class ParentDrawer extends StatelessWidget {
               // Update the state of the app
               // ...
               // Then close the drawer
+              controller.setBottomNavIndex(4);
               Navigator.pop(context);
             },
           ),
@@ -88,6 +92,7 @@ class ParentDrawer extends StatelessWidget {
             leading: Icon(Icons.cloud_download_outlined, color: Colors.black),
             onTap: () {
               // Then close the drawer
+              controller.setBottomNavIndex(1);
               Navigator.pop(context);
               // Update the state of the app
             },

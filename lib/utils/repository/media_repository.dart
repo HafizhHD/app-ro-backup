@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:location/location.dart';
 import 'package:ruangkeluarga/model/content_rk_model.dart';
+import 'package:ruangkeluarga/model/rk_schedule_model.dart';
 import 'package:ruangkeluarga/model/rk_user_model.dart';
 import 'package:ruangkeluarga/utils/api_service.dart';
 import 'package:ruangkeluarga/utils/base_service/base_service.dart';
@@ -260,52 +261,54 @@ class MediaRepository {
     return response;
   }
 
-  Future<Response> saveSchedule(String email, String scheduleName, String deviceUsageStartTime, String deviceUsageEndTime, String status) async {
-    var url = _rkService.baseUrl + '/user/deviceUsageScheduleAdd';
-    List<String> listData = [];
-    if (scheduleName == 'everyday') {
-      listData = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
-    } else if (scheduleName == 'weekday') {
-      listData = ["mon", "tue", "wed", "thu", "fri"];
-    } else {
-      listData = ["sat", "sun"];
-    }
+  Future<Response> fetchUserSchedule(String email) async {
+    var url = _rkService.baseUrl + '/user/deviceUsageScheduleFilter';
     Map<String, dynamic> json = {
-      "emailUser": "$email",
-      "scheduleName": "$scheduleName",
-      "deviceUsageStartTime": "$deviceUsageStartTime",
-      "deviceUsageEndTime": "$deviceUsageEndTime",
-      "deviceUsageDays": listData,
-      "status": "$status"
+      "whereKeyValues": {"emailUser": "$email"}
     };
+    print('param fetch user schedule list : $json');
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> saveSchedule(DeviceUsageSchedules data) async {
+    final url = _rkService.baseUrl + '/user/deviceUsageScheduleAdd';
+    final json = data.toJson();
     print('param save schedule : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
-  Future<Response> shceduleUpdate(String email, String scheduleName, String deviceUsageStartTime, String deviceUsageEndTime, String status) async {
+  Future<Response> scheduleUpdate(DeviceUsageSchedules data) async {
     var url = _rkService.baseUrl + '/user/deviceUsageScheduleUpdate';
-    List<String> listData = [];
-    if (scheduleName == 'everyday') {
-      listData = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
-    } else if (scheduleName == 'weekday') {
-      listData = ["mon", "tue", "wed", "thu", "fri"];
-    } else {
-      listData = ["sat", "sun"];
-    }
     Map<String, dynamic> json = {
-      "whereKeyValues": {"emailUser": "$email"},
-      "newKeyValues": {
-        "emailUser": "$email",
-        "scheduleName": "$scheduleName",
-        "deviceUsageStartTime": "$deviceUsageStartTime",
-        "deviceUsageEndTime": "$deviceUsageEndTime",
-        "deviceUsageDays": listData,
-        "status": "$status"
-      }
+      "whereValues": {"_id": "${data.id}"},
+      "newValues": data.toJson(),
     };
-    print('param schedule update : $json');
+    print('param update schedule : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> scheduleUpdateStatus(String status, String id) async {
+    var url = _rkService.baseUrl + '/user/deviceUsageScheduleUpdate';
+    Map<String, dynamic> json = {
+      "whereValues": {"_id": "$id"},
+      "newValues": {"status": '$status'},
+    };
+    print('param update schedule : $json');
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> scheduleRemove(String id) async {
+    var url = _rkService.baseUrl + '/user/deviceUsageScheduleRemove';
+    Map<String, dynamic> json = {
+      "whereValues": {"_id": "$id"}
+    };
+    print('param remove schedule : $json');
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    print('response remove schedule : ${response.body}');
     return response;
   }
 
