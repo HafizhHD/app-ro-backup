@@ -5,9 +5,6 @@ import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum GenderCharacter { Pria, Perempuan }
-enum StatusStudyLevel { SD, SMP, SMA }
-
 class InviteMoreChild extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -31,7 +28,6 @@ class _InviteMoreChildPageState extends State<InviteMoreChildPage> {
   TextEditingController cChildAge = TextEditingController();
   TextEditingController cChildOfNumber = TextEditingController();
   TextEditingController cChildNumber = TextEditingController();
-  GenderCharacter? _character = GenderCharacter.Pria;
   StatusStudyLevel? _statusLevel = StatusStudyLevel.SD;
   String emailUser = '';
   String nameUser = '';

@@ -44,6 +44,17 @@ class MediaRepository {
     return response;
   }
 
+  Future<Response> getParentChildData(String userID) async {
+    var url = _rkService.baseUrl + '/user/view';
+    Map<String, String> json = {
+      "userId": "610a51c2e14bbd32deb227ff",
+      // "userId": "$userID",
+    };
+    print('param get parent child data : $json');
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
   Future<dynamic> uploadImage(filepath, url) async {
     var request = http.MultipartRequest('POST', Uri.parse(url));
     request.files

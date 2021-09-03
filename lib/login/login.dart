@@ -266,11 +266,13 @@ class _LoginState extends State<LoginPage> {
                             _okPolicy = !_okPolicy;
                           });
                         }),
-                    Container(
-                      padding: EdgeInsets.all(10),
-                      child: Text(
-                        'Saya setuju dengan syarat dan ketentuan dari ruang-ortu',
-                        style: TextStyle(color: cOrtuWhite),
+                    Flexible(
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                          'Saya setuju dengan syarat dan ketentuan dari ruang-ortu',
+                          style: TextStyle(color: cOrtuWhite),
+                        ),
                       ),
                     ),
                   ],
@@ -278,7 +280,7 @@ class _LoginState extends State<LoginPage> {
               ),
               Container(
                   margin: const EdgeInsets.all(10).copyWith(bottom: 50),
-                  width: screenSize.width / 2,
+                  width: screenSize.width / 1.5,
                   decoration: BoxDecoration(
                     color: _okPolicy ? cOrtuWhite : cDisabled,
                     borderRadius: BorderRadius.circular(10),
@@ -290,12 +292,14 @@ class _LoginState extends State<LoginPage> {
                         child: Image.asset(
                           'assets/images/google_logo.png',
                         )),
-                    title: Text('Sign in with Google'),
+                    title: Text('Sign in with Google', textAlign: TextAlign.center, style: TextStyle(color: cPrimaryBg)),
                     onTap: _okPolicy
                         ? () async {
                             showLoadingOverlay();
                             await _handleSignIn();
                             closeOverlay();
+                            // Navigator.of(context)
+                            //     .pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'ruang ortu')));
                           }
                         : null,
                   )),

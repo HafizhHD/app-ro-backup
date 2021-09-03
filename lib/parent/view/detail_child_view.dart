@@ -465,81 +465,84 @@ class _DetailChildPageState extends State<DetailChildPage> {
             ),
           ),
           if (_switchModeAsuh)
-            Container(
-              child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                modeAsuhLevelTile(
-                  leading: Radio<ModeAsuh>(
-                    value: ModeAsuh.level1,
-                    groupValue: _switchLevel,
-                    activeColor: cOrtuBlue,
-                    onChanged: (ModeAsuh? value) {
-                      setState(() {
-                        _switchLevel = ModeAsuh.level1;
-                      });
-                    },
+            Theme(
+              data: ThemeData.dark(),
+              child: Container(
+                child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  modeAsuhLevelTile(
+                    leading: Radio<ModeAsuh>(
+                      value: ModeAsuh.level1,
+                      groupValue: _switchLevel,
+                      activeColor: cOrtuBlue,
+                      onChanged: (ModeAsuh? value) {
+                        setState(() {
+                          _switchLevel = ModeAsuh.level1;
+                        });
+                      },
+                    ),
+                    title: Text(
+                      'Level 1',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _switchLevel == ModeAsuh.level1 ? cOrtuBlue : cOrtuWhite),
+                    ),
+                    subtitle: Text(
+                      'Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka '
+                      'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi '
+                      'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana '
+                      'mereka dulu dan dimana mereka saat ini kapan saja.',
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(color: _switchLevel == ModeAsuh.level1 ? cOrtuBlue : cOrtuWhite),
+                    ),
                   ),
-                  title: Text(
-                    'Level 1',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _switchLevel == ModeAsuh.level1 ? cOrtuBlue : cOrtuWhite),
+                  modeAsuhLevelTile(
+                    leading: Radio<ModeAsuh>(
+                      value: ModeAsuh.level2,
+                      activeColor: cOrtuBlue,
+                      groupValue: _switchLevel,
+                      onChanged: (ModeAsuh? value) {
+                        setState(() {
+                          _switchLevel = ModeAsuh.level2;
+                        });
+                      },
+                    ),
+                    title: Text(
+                      'Level 2',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _switchLevel == ModeAsuh.level2 ? cOrtuBlue : cOrtuWhite),
+                    ),
+                    subtitle: Text(
+                      'Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka '
+                      'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi '
+                      'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana '
+                      'mereka dulu dan dimana mereka saat ini kapan saja.',
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(color: _switchLevel == ModeAsuh.level2 ? cOrtuBlue : cOrtuWhite),
+                    ),
                   ),
-                  subtitle: Text(
-                    'Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka '
-                    'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi '
-                    'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana '
-                    'mereka dulu dan dimana mereka saat ini kapan saja.',
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(color: _switchLevel == ModeAsuh.level1 ? cOrtuBlue : cOrtuWhite),
+                  modeAsuhLevelTile(
+                    leading: Radio<ModeAsuh>(
+                      value: ModeAsuh.level3,
+                      activeColor: cOrtuBlue,
+                      groupValue: _switchLevel,
+                      onChanged: (ModeAsuh? value) {
+                        setState(() {
+                          _switchLevel = ModeAsuh.level3;
+                        });
+                      },
+                    ),
+                    title: Text(
+                      'Level 3',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _switchLevel == ModeAsuh.level3 ? cOrtuBlue : cOrtuWhite),
+                    ),
+                    subtitle: Text(
+                      'Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka '
+                      'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi '
+                      'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana '
+                      'mereka dulu dan dimana mereka saat ini kapan saja.',
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(color: _switchLevel == ModeAsuh.level3 ? cOrtuBlue : cOrtuWhite),
+                    ),
                   ),
-                ),
-                modeAsuhLevelTile(
-                  leading: Radio<ModeAsuh>(
-                    value: ModeAsuh.level2,
-                    activeColor: cOrtuBlue,
-                    groupValue: _switchLevel,
-                    onChanged: (ModeAsuh? value) {
-                      setState(() {
-                        _switchLevel = ModeAsuh.level2;
-                      });
-                    },
-                  ),
-                  title: Text(
-                    'Level 2',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _switchLevel == ModeAsuh.level2 ? cOrtuBlue : cOrtuWhite),
-                  ),
-                  subtitle: Text(
-                    'Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka '
-                    'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi '
-                    'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana '
-                    'mereka dulu dan dimana mereka saat ini kapan saja.',
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(color: _switchLevel == ModeAsuh.level2 ? cOrtuBlue : cOrtuWhite),
-                  ),
-                ),
-                modeAsuhLevelTile(
-                  leading: Radio<ModeAsuh>(
-                    value: ModeAsuh.level3,
-                    activeColor: cOrtuBlue,
-                    groupValue: _switchLevel,
-                    onChanged: (ModeAsuh? value) {
-                      setState(() {
-                        _switchLevel = ModeAsuh.level3;
-                      });
-                    },
-                  ),
-                  title: Text(
-                    'Level 3',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _switchLevel == ModeAsuh.level3 ? cOrtuBlue : cOrtuWhite),
-                  ),
-                  subtitle: Text(
-                    'Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka '
-                    'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi '
-                    'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana '
-                    'mereka dulu dan dimana mereka saat ini kapan saja.',
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(color: _switchLevel == ModeAsuh.level3 ? cOrtuBlue : cOrtuWhite),
-                  ),
-                ),
-              ]),
+                ]),
+              ),
             ),
         ],
       ),

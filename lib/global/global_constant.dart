@@ -1,4 +1,5 @@
 final String isPrefLogin = "isPrefLogin";
+final String rkUserID = "rkUserID";
 final String rkEmailUser = "rkEmailUser";
 final String rkUserName = "rkUserName";
 final String rkPhotoUrl = "rkPhotoUrl";
