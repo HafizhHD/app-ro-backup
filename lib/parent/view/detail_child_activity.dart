@@ -674,38 +674,50 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
           elevation: 0,
         ),
         body: Container(
-            child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              choiceTabBar(),
-              chartDetail(types),
-              onLoadMostUsage(types),
-            ],
-          ),
-        )));
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ToggleBar(
+                    labels: ['Mingguan', 'Harian'],
+                    onSelectionUpdated: (index) {
+                      if (index == 0)
+                        types = 'week';
+                      else
+                        types = 'day';
+                      setState(() {});
+                    }),
+                chartDetail(types),
+                Flexible(child: onLoadMostUsage(types)),
+              ],
+            )));
   }
 
   Widget onLoadMostUsage(String type) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0, bottom: 10.0),
-              child: Text('MOST USED', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: cOrtuWhite)),
+    return Theme(
+      data: ThemeData.dark(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0, bottom: 10.0),
+                child: Text('MOST USED', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: cOrtuWhite)),
+              ),
+            ],
+          ),
+          Flexible(
+            child: Container(
+              height: 400,
+              margin: EdgeInsets.all(10.0),
+              child: type == 'week' ? onMostWeekData() : onMostDay(),
             ),
-          ],
-        ),
-        Container(
-          height: 400,
-          margin: EdgeInsets.all(10.0),
-          child: type == 'week' ? onMostWeekData() : onMostDay(),
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -1574,61 +1586,6 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
         );
       }
     }
-  }
-
-  Widget choiceTabBar() {
-    return Container(
-      margin: EdgeInsets.all(10),
-      height: 42,
-      decoration: BoxDecoration(color: cOrtuGrey, borderRadius: BorderRadius.circular(10.0)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          GestureDetector(
-            child: AnimatedContainer(
-              height: 40,
-              width: (MediaQuery.of(context).size.width / 2) - 20,
-              decoration: BoxDecoration(color: types == 'week' ? cPrimaryBg : cOrtuGrey, borderRadius: BorderRadius.circular(10.0)),
-              duration: const Duration(seconds: 0),
-              curve: Curves.easeInOutCirc,
-              child: Align(
-                alignment: Alignment.center,
-                child: Text(
-                  'Mingguan',
-                  style: TextStyle(color: cOrtuWhite),
-                ),
-              ),
-            ),
-            onTap: () => {
-              setState(() {
-                types = 'week';
-              })
-            },
-          ),
-          GestureDetector(
-            child: AnimatedContainer(
-              height: 40,
-              width: (MediaQuery.of(context).size.width / 2) - 20,
-              decoration: BoxDecoration(color: types == 'day' ? cPrimaryBg : cOrtuGrey, borderRadius: BorderRadius.circular(10.0)),
-              duration: const Duration(seconds: 0),
-              curve: Curves.easeInOutCirc,
-              child: Align(
-                alignment: Alignment.center,
-                child: Text(
-                  'Harian',
-                  style: TextStyle(color: cOrtuWhite),
-                ),
-              ),
-            ),
-            onTap: () => {
-              setState(() {
-                types = 'day';
-              })
-            },
-          ),
-        ],
-      ),
-    );
   }
 
   Widget chartDetail(String type) {

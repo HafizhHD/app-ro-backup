@@ -77,7 +77,7 @@ class MyApp extends StatelessWidget {
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeData.dark().copyWith(primaryColor: cOrtuBlue),
+        theme: ThemeData.light().copyWith(primaryColor: cOrtuBlue),
         home: MyHomePage(),
       ),
     );

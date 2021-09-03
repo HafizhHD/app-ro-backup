@@ -226,7 +226,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                           final int timeLimit = mapUsageDataApp[app.packageId] ?? 0;
                           var limitTime = "0hrs";
                           int limitHour = 0;
-                          if (timeLimit > 60) {
+                          if (timeLimit >= 60) {
                             limitHour = timeLimit ~/ 60;
                           }
                           int limitMinute = timeLimit % 60;
@@ -350,10 +350,15 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                                     showLoadingOverlay();
                                     final response = await addAppUsageLimit(app.appCategory, app.packageId ?? '', 0);
                                     if (response.statusCode == 200) {
-                                      await getData();
-                                      closeOverlay();
-                                      closeOverlay();
-                                      showSnackbar('Berhasil Reset Batas Penggunaan!');
+                                      final body = jsonDecode(response.body);
+                                      if (body['resultCode'] == "OK") {
+                                        await getData();
+                                        closeOverlay();
+                                        closeOverlay();
+                                        showSnackbar('Berhasil Reset Batas Penggunaan!');
+                                      } else {
+                                        showSnackbar('Gagal Reset Batas Penggunaan!');
+                                      }
                                     } else {
                                       showSnackbar('Gagal Reset Batas Penggunaan!');
                                     }
@@ -370,10 +375,15 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                             showLoadingOverlay();
                             final response = await addAppUsageLimit(app.appCategory, app.packageId ?? '', newLimit);
                             if (response.statusCode == 200) {
-                              await getData();
-                              closeOverlay();
-                              closeOverlay();
-                              showSnackbar('Berhasil Ubah Batas Penggunaan!');
+                              final body = jsonDecode(response.body);
+                              if (body['resultCode'] == "OK") {
+                                await getData();
+                                closeOverlay();
+                                closeOverlay();
+                                showSnackbar('Berhasil Ubah Batas Penggunaan!');
+                              } else {
+                                showSnackbar('Gagal Ubah Batas Penggunaan!');
+                              }
                             } else {
                               showSnackbar('Gagal Ubah Batas Penggunaan!');
                             }

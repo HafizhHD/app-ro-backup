@@ -1,20 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 
 class AkunPage extends StatelessWidget {
+  final parentController = Get.find<ParentController>();
+
   @override
   Widget build(BuildContext context) {
+    final parentData = parentController.parentProfile;
     return Container(
       // color: ,
       padding: EdgeInsets.all(5),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          profileContainer(imgUrl: 'assets/images/unsplash-reward.jpg', name: 'Nama Ayah', email: 'email@ayah.com', phone: '08180818080'),
-          profileContainer(imgUrl: 'assets/images/foto_anak.png', name: 'Nama Anak', email: 'email@anak.com'),
-          profileContainer(imgUrl: null, name: 'Nama Anak', email: 'email@anak.com', phone: '09019019'),
-        ],
+      child: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            profileContainer(imgUrl: parentData.imgPhoto, name: parentData.name, email: parentData.email, phone: parentData.phone),
+            Flexible(
+              child: ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: parentData.children.length,
+                itemBuilder: (ctx, idx) {
+                  final childData = parentData.children[idx];
+                  return profileContainer(
+                    // imgUrl: 'assets/images/foto_anak.png',
+                    name: childData.name ?? 'Nama Anak',
+                    email: childData.email ?? 'email@anak.com',
+                    // phone: ,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -57,7 +79,9 @@ class AkunPage extends StatelessWidget {
                       : Container(
                           margin: EdgeInsets.all(5),
                           decoration: BoxDecoration(
-                            image: DecorationImage(image: AssetImage(imgUrl), fit: BoxFit.cover),
+                            image: imgUrl.contains('http')
+                                ? DecorationImage(image: NetworkImage(imgUrl), fit: BoxFit.cover)
+                                : DecorationImage(image: AssetImage(imgUrl), fit: BoxFit.cover),
                             borderRadius: BorderRadius.circular(15.0),
                           ),
                         ),

@@ -11,7 +11,6 @@ import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum GenderCharacter { Ayah, Bunda }
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
 class SetupParentProfilePage extends StatefulWidget {
@@ -300,6 +299,40 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                           ),
                         ),
                       ),
+                      Theme(
+                        data: ThemeData.dark(),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Flexible(
+                              child: ListTile(
+                                title: Text("Ayah"),
+                                leading: Radio<GenderCharacter>(
+                                  value: GenderCharacter.Ayah,
+                                  groupValue: _character,
+                                  activeColor: cOrtuBlue,
+                                  onChanged: (GenderCharacter? value) {
+                                    setState(() => _character = value);
+                                  },
+                                ),
+                              ),
+                            ),
+                            Flexible(
+                              child: ListTile(
+                                title: Text("Bunda"),
+                                leading: Radio<GenderCharacter>(
+                                  value: GenderCharacter.Bunda,
+                                  groupValue: _character,
+                                  activeColor: cOrtuBlue,
+                                  onChanged: (GenderCharacter? value) {
+                                    setState(() => _character = value);
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
                     ],
                   ),
                 ),

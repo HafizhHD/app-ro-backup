@@ -16,6 +16,7 @@ import 'package:ruangkeluarga/parent/view/addon/addon_page.dart';
 import 'package:ruangkeluarga/parent/view/detail_child_view.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_drawer.dart';
+import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
 import 'package:ruangkeluarga/parent/view/setup_invite_child.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
 import 'package:ruangkeluarga/utils/app_usage.dart';
@@ -24,7 +25,7 @@ import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
 class HomeParentPage extends StatefulWidget {
   @override
@@ -33,22 +34,18 @@ class HomeParentPage extends StatefulWidget {
 
 class _HomeParentPageState extends State<HomeParentPage> {
   late SharedPreferences prefs;
-  late YoutubePlayerController _controller;
   bool flag = false;
   double _opacity = 0.0;
   List<AppUsageInfo> _infos = [];
   late Future<List<Application>> apps;
   List<Application> itemsApp = [];
   List<Child> childsList = [];
-  late Future<List<Child>> fChildList;
   String childName = '';
   String userName = '';
   String emailUser = '';
+  late Future fLogin;
+  final parentController = Get.find<ParentController>();
 
-  late PlayerState _playerState;
-  late YoutubeMetaData _videoMetaData;
-  double _volume = 100;
-  bool _muted = false;
   bool _isPlayerReady = false;
 
   final List<String> _ids = [
@@ -56,19 +53,6 @@ class _HomeParentPageState extends State<HomeParentPage> {
     'unsplash-reward.jpg',
     'unsplash-parenting.jpg',
   ];
-
-  void _changed(double opacity) {
-    setState(() {
-      // flag = visibility;
-      _opacity = opacity;
-    });
-  }
-
-  void _isVisibleChange(bool visibility) {
-    setState(() {
-      flag = visibility;
-    });
-  }
 
   void getUsageStats() async {
     try {
@@ -134,41 +118,6 @@ class _HomeParentPageState extends State<HomeParentPage> {
     }
   }
 
-  Future<List<Child>> onLogin() async {
-    String token = '';
-    await _firebaseMessaging.getToken().then((fcmToken) {
-      token = fcmToken!;
-    });
-    Response response = await MediaRepository().loginParent(prefs.getString(rkEmailUser)!, prefs.getString(accessGToken)!, token, '1.0');
-    if (response.statusCode == 200) {
-      print("user exist ${response.body}");
-      var json = jsonDecode(response.body);
-      if (json['resultCode'] == "OK") {
-        var jsonDataResult = json['resultData'];
-        var tokenApps = jsonDataResult['token'];
-        await prefs.setString(rkTokenApps, tokenApps);
-        var jsonUser = jsonDataResult['user'];
-        if (jsonUser != null) {
-          List<dynamic> childsData = jsonUser['childs'];
-          await prefs.setString(rkUserType, jsonUser['userType']);
-          await prefs.setString("rkChildName", childsData[0]['name']);
-          await prefs.setString("rkChildEmail", childsData[0]['email']);
-          // Iterable l = json.decode(jsonUser['childs']) as List;
-          List<Child> data = List<Child>.from(jsonUser['childs'].map((model) => Child.fromJson(model)));
-          return data;
-        } else {
-          return [];
-        }
-      } else {
-        return [];
-      }
-    } else if (response.statusCode == 404) {
-      return [];
-    } else {
-      return [];
-    }
-  }
-
   void onMessageListen() {
     FirebaseMessaging.instance.getInitialMessage().then((value) => {
           if (value != null) {print('remote message ${value.data}')}
@@ -187,8 +136,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
       //           channel.id,
       //           channel.name,
       //           channel.description,
-      //           // TODO add a proper drawable resource to android, for now using
-      //           //      one that already exists in example app.
+      //           // TODO add a proper drawable resource to android, for now using one that already exists in example app.
       //           icon: android?.smallIcon,
       //         ),
       //       ));
@@ -211,7 +159,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
 
   void setBindingData() async {
     String token = '';
-    await _firebaseMessaging.getToken().then((fcmToken) {
+    await firebaseMessaging.getToken().then((fcmToken) {
       token = fcmToken!;
     });
     print('fcm $token');
@@ -228,113 +176,86 @@ class _HomeParentPageState extends State<HomeParentPage> {
       // }
     }
 
-    setupYTPlayer(0);
     setState(() {});
-  }
-
-  YoutubePlayerController setupYTPlayer(int indeks) {
-    _controller = YoutubePlayerController(
-      initialVideoId: _ids[indeks],
-      flags: const YoutubePlayerFlags(
-        mute: false,
-        autoPlay: false,
-        disableDragSeek: false,
-        loop: false,
-        isLive: false,
-        forceHD: false,
-        enableCaption: true,
-      ),
-    )..addListener(listener);
-    _videoMetaData = const YoutubeMetaData();
-    _playerState = PlayerState.unknown;
-
-    return _controller;
-  }
-
-  void listener() {
-    if (_isPlayerReady && mounted && !_controller.value.isFullScreen) {
-      setState(() {
-        _playerState = _controller.value.playerState;
-        _videoMetaData = _controller.metadata;
-      });
-    }
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     setBindingData();
     onMessageListen();
-    // getUsageStatistik();
-    fChildList = onLogin();
+    getUsageStatistik();
+    fLogin = parentController.loginData();
   }
 
   @override
   Widget build(BuildContext context) {
-    // ApiResponse apiResponse = Provider.of<MediaViewModel>(context).response;
-    // log('response data : $apiResponse');
     final screenSize = MediaQuery.of(context).size;
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        Flexible(
-          flex: 1,
-          child: Container(
-            margin: const EdgeInsets.all(10.0), //Same as `blurRadius` i guess
-            child: ListView.builder(
-              padding: EdgeInsets.all(5.0),
-              shrinkWrap: false,
-              scrollDirection: Axis.horizontal,
-              itemCount: 2,
-              itemBuilder: (BuildContext context, int index) => Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: GestureDetector(
-                  child: Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0)),
-                        // child: Center(child: Text('Dummy Card Text', style: TextStyle(color: Colors.black)))
-                        child: Image.asset('assets/images/hkbpgo.png'),
+    return FutureBuilder(
+        future: fLogin,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) return wProgressIndicator();
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Flexible(
+                flex: 1,
+                child: Container(
+                  margin: const EdgeInsets.all(10.0), //Same as `blurRadius` i guess
+                  child: ListView.builder(
+                    padding: EdgeInsets.all(5.0),
+                    shrinkWrap: false,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 2,
+                    itemBuilder: (BuildContext context, int index) => Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
-                    ],
+                      child: GestureDetector(
+                        child: Row(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0)),
+                              // child: Center(child: Text('Dummy Card Text', style: TextStyle(color: Colors.black)))
+                              child: Image.asset('assets/images/hkbpgo.png'),
+                            ),
+                          ],
+                        ),
+                        onTap: () => parentController.setBottomNavIndex(1),
+                      ),
+                    ),
                   ),
-                  onTap: () => Get.find<ParentController>().setBottomNavIndex(1),
                 ),
               ),
-            ),
-          ),
-        ),
-        // Flexible(child: _childDataLayout()),
-        Flexible(flex: 2, child: _childDataLayout()),
-        Flexible(
-          flex: 2,
-          child: ListView.builder(
-            physics: BouncingScrollPhysics(),
-            scrollDirection: Axis.horizontal,
-            itemCount: _ids.length,
-            itemBuilder: (BuildContext context, int position) {
-              return Container(
-                width: screenSize.width / 2,
-                height: screenSize.height / 4,
-                color: Colors.transparent,
-                margin: const EdgeInsets.all(10),
-                child: _coBrandContent(
-                  _ids[position],
-                  'Title Here',
-                  'Content: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                  () {},
-                  screenSize.height / 4 / 2,
+              // Flexible(child: _childDataLayout()),
+              Flexible(flex: 2, child: _childDataLayout()),
+              Flexible(
+                flex: 2,
+                child: ListView.builder(
+                  physics: BouncingScrollPhysics(),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _ids.length,
+                  itemBuilder: (BuildContext context, int position) {
+                    return Container(
+                      width: screenSize.width / 2,
+                      height: screenSize.height / 4,
+                      color: Colors.transparent,
+                      margin: const EdgeInsets.all(10),
+                      child: _coBrandContent(
+                        _ids[position],
+                        'Title Here',
+                        'Content: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                        () {},
+                        screenSize.height / 4 / 2,
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
+              ),
+            ],
+          );
+        });
   }
 
   Widget _coBrandContent(String imagePath, String title, String content, Function onTap, double screenHeight) {
@@ -382,103 +303,109 @@ class _HomeParentPageState extends State<HomeParentPage> {
   }
 
   Widget _childDataLayout() {
-    return FutureBuilder<List<Child>>(
-        future: fChildList,
-        builder: (BuildContext context, AsyncSnapshot<List<Child>> data) {
-          if (!data.hasData) return wProgressIndicator();
-          if (data.data == null) {
-            return Container(
-              margin: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0), //Same as `blurRadius` i guess
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10.0),
-                color: cOrtuGrey,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'Buat Akun untuk Anak Anda',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-                    textAlign: TextAlign.center,
+    return Obx(
+      () {
+        return FutureBuilder<List<Child>>(
+            future: parentController.fChildList.value,
+            builder: (BuildContext context, AsyncSnapshot<List<Child>> data) {
+              print('Load Child Future : ${data.data}');
+              if (!data.hasData) return wProgressIndicator();
+              childsList = data.data!;
+
+              if (childsList.length == 0) {
+                return Container(
+                  margin: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0), //Same as `blurRadius` i guess
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    color: cOrtuGrey,
                   ),
-                  Container(
-                    padding: EdgeInsets.all(5),
-                    child: Text(
-                      'dekatkan ponsel anak Anda. \nBersama anak Anda,siapkan pengawasan di perangkat mereka',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.only(top: 10, left: 20, right: 20),
-                    child: ElevatedButton(
-                      style: ButtonStyle(
-                        shape: MaterialStateProperty.all((RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))),
-                        backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                          (Set<MaterialState> states) {
-                            if (states.contains(MaterialState.disabled)) return cDisabled;
-                            return cOrtuBlue;
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Buat Akun untuk Anak Anda',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                        textAlign: TextAlign.center,
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(5),
+                        child: Text(
+                          'dekatkan ponsel anak Anda. \nBersama anak Anda,siapkan pengawasan di perangkat mereka',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(top: 10, left: 20, right: 20),
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            shape: MaterialStateProperty.all((RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))),
+                            backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.disabled)) return cDisabled;
+                                return cOrtuBlue;
+                              },
+                            ),
+                            elevation: MaterialStateProperty.resolveWith((states) {
+                              if (states.contains(MaterialState.disabled) || states.contains(MaterialState.pressed)) return 0;
+                              if (states.contains(MaterialState.hovered)) return 6;
+                              return 4;
+                            }),
+                          ),
+                          child: Text('DAFTAR',
+                              style: TextStyle(
+                                color: cPrimaryBg,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 25,
+                              )),
+                          onPressed: () async {
+                            final res = await Navigator.push(
+                              context,
+                              MaterialPageRoute<Object>(builder: (BuildContext context) => SetupInviteChildPage()),
+                            );
+                            if (res.toString().toLowerCase() == 'addchild') parentController.getParentChildData();
                           },
                         ),
-                        elevation: MaterialStateProperty.resolveWith((states) {
-                          if (states.contains(MaterialState.disabled) || states.contains(MaterialState.pressed)) return 0;
-                          if (states.contains(MaterialState.hovered)) return 6;
-                          return 4;
-                        }),
                       ),
-                      child: Text('DAFTAR',
-                          style: TextStyle(
-                            color: cPrimaryBg,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25,
-                          )),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute<Object>(builder: (BuildContext context) => SetupInviteChildPage()),
-                        );
-                      },
-                    ),
+                      SizedBox(height: 10),
+                      Container(
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                          'waktu yang di perlukan sekitar 10 menit',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      //
+                    ],
                   ),
-                  SizedBox(height: 10),
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    child: Text(
-                      'waktu yang di perlukan sekitar 10 menit',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  //
-                ],
-              ),
-            );
-          } else {
-            childsList = data.data!;
-            if (childsList.length > 0) {
-              return ListView.builder(
-                  shrinkWrap: false,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: childsList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final parentController = Get.find<ParentController>();
-                    parentController.setModeAsuh(childsList[index].childOfNumber ?? 0, 1);
+                );
+              } else {
+                return ListView.builder(
+                    shrinkWrap: false,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: childsList.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      parentController.setModeAsuh(childsList[index].childOfNumber ?? 0, 1);
 
-                    return ChildCardWithBottomSheet(childData: childsList[index], prefs: prefs);
-                  });
-            } else {
-              return Center(
-                child: Text('No data.'),
-              );
-            }
-          }
-        });
+                      return ChildCardWithBottomSheet(
+                          childData: childsList[index],
+                          prefs: prefs,
+                          onAddChild: () {
+                            parentController.getParentChildData();
+                          });
+                    });
+              }
+            });
+      },
+    );
   }
 }
 
 class ChildCardWithBottomSheet extends StatelessWidget {
   final Child childData;
   final SharedPreferences prefs;
-  ChildCardWithBottomSheet({required this.childData, required this.prefs});
+  final Function() onAddChild;
+  ChildCardWithBottomSheet({required this.childData, required this.prefs, required this.onAddChild});
 
   @override
   Widget build(BuildContext context) {
@@ -503,11 +430,12 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                 iconSize: 40,
                 padding: EdgeInsets.all(0),
                 icon: Icon(Icons.add_circle_outline_rounded),
-                onPressed: () {
-                  Navigator.push(
+                onPressed: () async {
+                  final res = await Navigator.push(
                     context,
                     MaterialPageRoute<Object>(builder: (BuildContext context) => SetupInviteChildPage()),
                   );
+                  if (res.toString().toLowerCase() == 'addchild') onAddChild();
                 },
               ),
             ),

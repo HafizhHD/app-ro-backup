@@ -4,12 +4,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:ruangkeluarga/global/global_formatter.dart';
-import 'package:ruangkeluarga/parent/view/home_parent.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum GenderCharacter { Pria, Perempuan }
 enum StatusStudyLevel { SD, SMP, SMA }
 
 class SetupInviteChildPage extends StatefulWidget {
@@ -25,7 +23,6 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
   TextEditingController cChildAge = TextEditingController();
   TextEditingController cChildOfNumber = TextEditingController();
   TextEditingController cChildNumber = TextEditingController();
-  GenderCharacter? _character = GenderCharacter.Pria;
   StatusStudyLevel? _statusLevel = StatusStudyLevel.SD;
   String emailUser = '';
   String nameUser = '';
@@ -62,7 +59,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
     } else {
       await prefs.setBool(isPrefLogin, false);
       _showToastFailed();
-      print('isi response invite : ${response.statusCode}');
+      print('isi response invite : ${response.body}');
     }
   }
 
@@ -358,8 +355,8 @@ class InviteChildQR extends StatelessWidget {
                   shape: new RoundedRectangleBorder(
                     borderRadius: new BorderRadius.circular(15.0),
                   ),
-                  onPressed: () {
-                    Navigator.pop(context);
+                  onPressed: () async {
+                    Navigator.pop(context, 'AddChild');
                   },
                   color: cOrtuBlue,
                   child: Text(

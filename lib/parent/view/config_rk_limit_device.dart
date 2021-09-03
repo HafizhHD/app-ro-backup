@@ -342,7 +342,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
             child: Theme(
               data: ThemeData.light(),
               child: Container(
-                  color: Colors.grey.shade700,
+                  color: cPrimaryBg,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
