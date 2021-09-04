@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -5,6 +7,7 @@ import 'package:http/http.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:ruangkeluarga/global/global_formatter.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/global/global_snackbar.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -50,16 +53,21 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
     // Response response = await MediaRepository().inviteChild(emailUser, cChildEmail.text, cPhoneNumber.text, cChildName.text,
     //     int.parse(cChildAge.text), status, int.parse(cChildOfNumber.text), int.parse(cChildNumber.text));
     Response response = await MediaRepository().inviteChild(emailUser, cChildEmail.text, cPhoneNumber.text, cChildName.text, 10, status, 1, 1);
+    print('isi response invite : ${response.body}');
     if (response.statusCode == 200) {
-      print('isi response invite : ${response.body}');
-      _showToastSuccess();
-      await prefs.setBool(isPrefLogin, true);
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx) => InviteChildQR()));
-      // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeParentPage()));
+      final json = jsonDecode(response.body);
+      if (json['resultCode'] == 'OK') {
+        _showToastSuccess();
+        await prefs.setBool(isPrefLogin, true);
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx) => InviteChildQR()), result: 'AddChild');
+      } else {
+        await prefs.setBool(isPrefLogin, false);
+        _showToastFailed();
+        showSnackbar(json['message']);
+      }
     } else {
       await prefs.setBool(isPrefLogin, false);
       _showToastFailed();
-      print('isi response invite : ${response.body}');
     }
   }
 
@@ -289,7 +297,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
+                margin: EdgeInsets.only(top: 10),
                 child: FlatButton(
                   height: 50,
                   minWidth: 300,
@@ -330,21 +338,26 @@ class InviteChildQR extends StatelessWidget {
             children: [
               SizedBox(height: 20),
               Text(
-                'Di Ponsel Anak Anda',
-                style: TextStyle(fontSize: 40, color: cOrtuWhite),
+                'Di Ponsel Anak Anda \n',
+                style: TextStyle(fontSize: 35, color: cOrtuWhite),
                 textAlign: TextAlign.center,
               ),
               Text(
                 'Gunakan Camera Atau Aplikasi QR' + '\nScan QR Code Di Bawah ini' + '\nDan Klik Link Yang Anda Terima',
-                style: TextStyle(fontSize: 25, color: cOrtuWhite, height: 2),
+                style: TextStyle(fontSize: 20, color: cOrtuWhite, height: 1.5),
                 textAlign: TextAlign.center,
               ),
               Flexible(
-                child: Container(
-                  color: Colors.white,
-                  margin: EdgeInsets.all(30),
-                  padding: EdgeInsets.all(10),
-                  child: QrImage(data: 'https://defghi.id/#products'),
+                child: Center(
+                  child: Container(
+                    height: MediaQuery.of(context).size.height / 2.5,
+                    color: Colors.white,
+                    margin: EdgeInsets.all(30),
+                    padding: EdgeInsets.all(10),
+                    child: Align(
+                        alignment: Alignment.center,
+                        child: QrImage(data: 'https://drive.google.com/file/d/1N9a1VtJm-pXj1LMlU7LRKjlLW-SL7TF5/view?usp=sharing')),
+                  ),
                 ),
               ),
               Container(

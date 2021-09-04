@@ -47,8 +47,7 @@ class MediaRepository {
   Future<Response> getParentChildData(String userID) async {
     var url = _rkService.baseUrl + '/user/view';
     Map<String, String> json = {
-      "userId": "610a51c2e14bbd32deb227ff",
-      // "userId": "$userID",
+      "userId": "$userID",
     };
     print('param get parent child data : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));

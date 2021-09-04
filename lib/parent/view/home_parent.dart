@@ -363,6 +363,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
                               context,
                               MaterialPageRoute<Object>(builder: (BuildContext context) => SetupInviteChildPage()),
                             );
+                            print('Add Child Response: $res');
                             if (res.toString().toLowerCase() == 'addchild') parentController.getParentChildData();
                           },
                         ),
@@ -435,6 +436,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                     context,
                     MaterialPageRoute<Object>(builder: (BuildContext context) => SetupInviteChildPage()),
                   );
+                  print('Add Child Response: $res');
                   if (res.toString().toLowerCase() == 'addchild') onAddChild();
                 },
               ),
@@ -446,7 +448,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
               expand: false,
               initialChildSize: 0.18,
               minChildSize: 0.18,
-              maxChildSize: 0.55,
+              maxChildSize: 0.60,
               builder: (BuildContext context, ScrollController scrollController) {
                 return Container(
                   padding: EdgeInsets.all(5),
