@@ -446,8 +446,8 @@ class ChildCardWithBottomSheet extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             child: DraggableScrollableSheet(
               expand: false,
-              initialChildSize: 0.18,
-              minChildSize: 0.18,
+              initialChildSize: 0.2,
+              minChildSize: 0.2,
               maxChildSize: 0.60,
               builder: (BuildContext context, ScrollController scrollController) {
                 return Container(

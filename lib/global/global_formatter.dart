@@ -28,6 +28,60 @@ String weekdayToDayName(int pWeekday) {
   }
 }
 
+String setDayName(String name) {
+  String days = 'Minggu';
+  if (name == 'Sunday') {
+    days = 'Minggu';
+  } else if (name == 'Monday') {
+    days = 'Senin';
+  } else if (name == 'Tuesday') {
+    days = 'Selasa';
+  } else if (name == 'Wednesday') {
+    days = 'Rabu';
+  } else if (name == 'Thursday') {
+    days = 'Kamis';
+  } else if (name == 'Friday') {
+    days = 'Jum\'at';
+  } else if (name == 'Saturday') {
+    days = 'Sabtu';
+  }
+
+  return days;
+}
+
+String setMonthName(String tanggal) {
+  var data = tanggal.split('-');
+  int name = int.parse(data[1]);
+  String days = 'Minggu';
+  if (name == 1) {
+    days = '${data[0]} Januari ${data[2]}';
+  } else if (name == 2) {
+    days = '${data[0]} Februari ${data[2]}';
+  } else if (name == 3) {
+    days = '${data[0]} Maret ${data[2]}';
+  } else if (name == 4) {
+    days = '${data[0]} April ${data[2]}';
+  } else if (name == 5) {
+    days = '${data[0]} Mei ${data[2]}';
+  } else if (name == 6) {
+    days = '${data[0]} Juni ${data[2]}';
+  } else if (name == 7) {
+    days = '${data[0]} Juli ${data[2]}';
+  } else if (name == 8) {
+    days = '${data[0]} Agustus ${data[2]}';
+  } else if (name == 9) {
+    days = '${data[0]} September ${data[2]}';
+  } else if (name == 10) {
+    days = '${data[0]} Oktober ${data[2]}';
+  } else if (name == 11) {
+    days = '${data[0]} November ${data[2]}';
+  } else if (name == 12) {
+    days = '${data[0]} Desember ${data[2]}';
+  }
+
+  return days;
+}
+
 ///TEXT FORMAT
 String limitChar(String text, int limit, {bool dots = true}) =>
     text != null && text != '' && text.length > limit ? text.substring(0, limit - 3) + (dots ? '...' : '') : text;
@@ -108,10 +162,17 @@ String dateFormat(DateTime time) {
 }
 
 String dateFormat_EDMYHM(DateTime time) {
-  var formatter = new DateFormat("EEEE, dd MMMM yyyy HH:mm");
-  String formatted = formatter.format(time);
+  final formatter = new DateFormat("EEEE, dd MMMM yyyy HH:mm");
+  final formatted = formatter.format(time);
+  final formattedSplit = formatted.split(',');
+  return '${setDayName(formattedSplit[0])}, ${formattedSplit[1]}';
+}
 
-  return formatted;
+String dateFormat_EDMY(DateTime time) {
+  final formatter = new DateFormat("EEEE, dd MMMM yyyy");
+  final formatted = formatter.format(time);
+  final formattedSplit = formatted.split(',');
+  return '${setDayName(formattedSplit[0])}, ${formattedSplit[1]}';
 }
 
 String dateTimeTo_ddMMMMyyyy(DateTime date) {

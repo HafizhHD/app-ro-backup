@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:http/http.dart';
+import 'package:ruangkeluarga/global/global_formatter.dart';
 import 'package:ruangkeluarga/global/global_snackbar.dart';
 import 'package:ruangkeluarga/model/rk_child_location_model.dart';
 import 'package:ruangkeluarga/global/global.dart';
@@ -61,9 +62,9 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
 
   Future<Map<MarkerId, Marker>> fetchMarkers() async {
     markers.clear();
-    // var outputFormat = DateFo  rmat('yyyy-MM-dd');
-    // var outputDate = outputFormat.format(DateTime.now());
-    Response response = await MediaRepository().fetchUserLocation(widget.email);
+    var outputFormat = DateFormat('yyyy-MM-dd');
+    var outputDate = outputFormat.format(DateTime.now());
+    Response response = await MediaRepository().fetchUserLocation(widget.email, outputDate);
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
       List locationChilds = json['timeLine'];
@@ -92,6 +93,8 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
           zoom: 15.0,
         );
         _myLocationPlace = listLocationChild.first.location.place;
+        (await _controller.future).animateCamera(CameraUpdate.newCameraPosition(_myLocationLatLng));
+
         setState(() {});
       } else {
         print('response fetch markers : ${response.body}');
@@ -114,18 +117,30 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
       var json = jsonDecode(response.body);
       if (json['resultCode'] == 'OK') {
         print('response fetch markers : ${response.body}');
-        var locationChilds = json['timeLine'];
-        List<LocationChild> data = List<LocationChild>.from(locationChilds.map((model) => LocationChild.fromJson(model)));
-        // for (int i = 0; i < data.length; i++) {
-        //   MarkerId markerId = MarkerId("$i");
-        //   var locate = data[i].location;
-        //   var coordinates = locate['coordinates'];
-        //   Marker marker = Marker(
-        //       markerId: markerId,
-        //       position: LatLng(double.parse(coordinates[0]), double.parse(coordinates[1])),
-        //       infoWindow: InfoWindow(title: 'Location', snippet: locate['place']));
-        //   markers[markerId] = marker;
-        // }
+        List locationChilds = json['timeLine'];
+        listLocationChild = locationChilds.map((model) => LocationChild.fromJson(model)).toSet().toList();
+        listLocationChild.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+        for (int i = 0; i < listLocationChild.length; i++) {
+          final childLocation = listLocationChild[i];
+          MarkerId markerId = MarkerId("$i");
+          final coordinates = childLocation.location.coordinates;
+          Marker marker = Marker(
+              markerId: markerId,
+              position: LatLng(double.parse(coordinates[0]), double.parse(coordinates[1])),
+              infoWindow: InfoWindow(title: 'Location', snippet: childLocation.location.place));
+          markers[markerId] = marker;
+        }
+        _myLocationLatLng = CameraPosition(
+          target: LatLng(
+            double.parse(listLocationChild.first.location.coordinates[0]),
+            double.parse(listLocationChild.first.location.coordinates[1]),
+          ),
+          zoom: 15.0,
+        );
+        _myLocationPlace = listLocationChild.first.location.place;
+        (await _controller.future).animateCamera(CameraUpdate.newCameraPosition(_myLocationLatLng));
+
         setState(() {});
       } else {
         print('response fetch markers : ${response.body}');
@@ -137,60 +152,6 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
     }
   }
 
-  String setDayName(String name) {
-    String days = 'Minggu';
-    if (name == 'Sunday') {
-      days = 'Minggu';
-    } else if (name == 'Monday') {
-      days = 'Senin';
-    } else if (name == 'Tuesday') {
-      days = 'Selasa';
-    } else if (name == 'Wednesday') {
-      days = 'Rabu';
-    } else if (name == 'Thursday') {
-      days = 'Kamis';
-    } else if (name == 'Friday') {
-      days = 'Jum\'at';
-    } else if (name == 'Saturday') {
-      days = 'Sabtu';
-    }
-
-    return days;
-  }
-
-  String setMonthName(String tanggal) {
-    var data = tanggal.split('-');
-    int name = int.parse(data[1]);
-    String days = 'Minggu';
-    if (name == 1) {
-      days = '${data[0]} Januari ${data[2]}';
-    } else if (name == 2) {
-      days = '${data[0]} Februari ${data[2]}';
-    } else if (name == 3) {
-      days = '${data[0]} Maret ${data[2]}';
-    } else if (name == 4) {
-      days = '${data[0]} April ${data[2]}';
-    } else if (name == 5) {
-      days = '${data[0]} Mei ${data[2]}';
-    } else if (name == 6) {
-      days = '${data[0]} Juni ${data[2]}';
-    } else if (name == 7) {
-      days = '${data[0]} Juli ${data[2]}';
-    } else if (name == 8) {
-      days = '${data[0]} Agustus ${data[2]}';
-    } else if (name == 9) {
-      days = '${data[0]} September ${data[2]}';
-    } else if (name == 10) {
-      days = '${data[0]} Oktober ${data[2]}';
-    } else if (name == 11) {
-      days = '${data[0]} November ${data[2]}';
-    } else if (name == 12) {
-      days = '${data[0]} Desember ${data[2]}';
-    }
-
-    return days;
-  }
-
   void fetchCurrentLoc() async {
     prefs = await SharedPreferences.getInstance();
     Response response = await MediaRepository().fetchCurrentUserLocation(prefs.getString(rkEmailUser)!, widget.email);
@@ -200,11 +161,7 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
   @override
   void initState() {
     super.initState();
-    var outputFormat = DateFormat('dd-MM-yyyy');
-    var outputFormatDay = DateFormat('EEEE');
-    var dayName = outputFormatDay.format(DateTime.now());
-    var outputDate = outputFormat.format(DateTime.now());
-    tanggal = "${setDayName(dayName)}, ${setMonthName(outputDate)}";
+    tanggal = dateFormat_EDMY(DateTime.now());
     loadMarker = fetchMarkers();
   }
 
@@ -254,7 +211,6 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                           onPressed: () async {
                             showLoadingOverlay();
                             await fetchMarkers();
-                            (await _controller.future).animateCamera(CameraUpdate.newCameraPosition(_myLocationLatLng));
                             closeOverlay();
                           },
                         ),
@@ -288,7 +244,7 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                     Container(
                       padding: EdgeInsets.only(top: 10, bottom: 15),
                       child: Text(
-                        'Nama lokasi: $_myLocationPlace',
+                        _myLocationPlace != '' ? 'Nama lokasi: $_myLocationPlace' : '',
                         style: TextStyle(fontSize: 16, color: cOrtuWhite),
                       ),
                     ),
@@ -305,27 +261,43 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                             'Timeline',
                             style: TextStyle(fontSize: 16, color: cOrtuWhite),
                           ),
-                          // GestureDetector(
-                          //   child: Text(
-                          //     '$tanggal',
-                          //     style: TextStyle(fontSize: 16, color: cOrtuBlue),
-                          //   ),
-                          //   onTap: () async {
-                          //     final pickedRange = await showDateRangePicker(
-                          //       context: context,
-                          //       firstDate: DateTime.now().subtract(const Duration(days: 365 * 3)),
-                          //       lastDate: DateTime.now().add(const Duration(days: 365)),
-                          //       initialDateRange: selectedRange,
-                          //     );
-                          //     if (pickedRange != null) {
-                          //       selectedRange = pickedRange;
-                          //       selectedDates = [pickedRange.start, pickedRange.end];
-                          //       print('select date : $selectedDates');
-                          //       fetchFilterMarker(selectedDates);
-                          //       setState(() {});
-                          //     }
-                          //   },
-                          // )
+                          SizedBox(width: 10),
+                          Flexible(
+                            child: GestureDetector(
+                              child: Text(
+                                '$tanggal',
+                                maxLines: 2,
+                                textAlign: TextAlign.right,
+                                style: TextStyle(fontSize: 16, color: cOrtuBlue),
+                              ),
+                              onTap: () async {
+                                showLoadingOverlay();
+                                final pickedRange = await showDateRangePicker(
+                                    context: context,
+                                    confirmText: 'Confirm TExt',
+                                    firstDate: DateTime.now().subtract(const Duration(days: 365 * 3)),
+                                    lastDate: DateTime.now().add(const Duration(days: 365)),
+                                    initialDateRange: selectedRange,
+                                    initialEntryMode: DatePickerEntryMode.calendarOnly,
+                                    builder: (ctx, child) {
+                                      return Theme(
+                                        data: ThemeData.dark(),
+                                        child: child!,
+                                      );
+                                    });
+                                if (pickedRange != null) {
+                                  selectedRange = pickedRange;
+                                  selectedDates = [pickedRange.start, pickedRange.end];
+                                  tanggal = selectedDates.first == selectedDates.last
+                                      ? '${dateFormat_EDMY(selectedDates.first)}'
+                                      : '${dateFormat_EDMY(selectedDates.first)} -\n ${dateFormat_EDMY(selectedDates.last)}';
+                                  fetchFilterMarker(selectedDates);
+                                  setState(() {});
+                                }
+                                closeOverlay();
+                              },
+                            ),
+                          ),
                         ],
                       ),
                     ),
