@@ -63,6 +63,7 @@ class ParentController extends GetxController {
   }
 
   Future<List<Child>> _getUserData() async {
+    prefs = await SharedPreferences.getInstance();
     final userID = prefs.getString(rkUserID);
     Response response = await MediaRepository().getParentChildData(userID ?? '');
     if (response.statusCode == 200) {
@@ -74,6 +75,7 @@ class ParentController extends GetxController {
   }
 
   Future<List<Child>> onLogin() async {
+    prefs = await SharedPreferences.getInstance();
     String token = '';
     await firebaseMessaging.getToken().then((fcmToken) {
       token = fcmToken!;

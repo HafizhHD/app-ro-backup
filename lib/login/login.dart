@@ -243,16 +243,19 @@ class _LoginState extends State<LoginPage> {
                       )),
                 ),
               ),
-              Text(
-                'Sign in / Login \ndengan menggunakan akun Google anda',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20,
-                  color: cOrtuWhite,
+              Container(
+                padding: EdgeInsets.all(10),
+                child: Text(
+                  'Sign in / Login \ndengan menggunakan akun Google anda',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: cOrtuWhite,
+                  ),
                 ),
               ),
               Container(
-                padding: EdgeInsets.only(top: 50, bottom: 20),
+                padding: EdgeInsets.only(top: 50, bottom: 20, left: 20, right: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

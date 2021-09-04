@@ -49,7 +49,7 @@ class AkunPage extends StatelessWidget {
     String? phone,
   }) {
     return Container(
-      margin: EdgeInsets.all(10),
+      margin: EdgeInsets.all(5),
       padding: EdgeInsets.all(5),
       decoration: BoxDecoration(
         color: cOrtuGrey,
@@ -63,7 +63,7 @@ class AkunPage extends StatelessWidget {
             children: [
               ConstrainedBox(
                 constraints: BoxConstraints(
-                  maxWidth: 150,
+                  maxWidth: 100,
                 ),
                 child: AspectRatio(
                   aspectRatio: 1,
@@ -96,18 +96,18 @@ class AkunPage extends StatelessWidget {
                     children: [
                       Text(
                         '$name',
-                        style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 10),
                       Text(
                         '$email',
-                        style: TextStyle(fontSize: 20),
+                        // style: TextStyle(fontSize: 20),
                       ),
                       SizedBox(height: 10),
                       if (phone != null)
                         Text(
                           '$phone',
-                          style: TextStyle(fontSize: 20),
+                          // style: TextStyle(fontSize: 20),
                         ),
                     ],
                   ),

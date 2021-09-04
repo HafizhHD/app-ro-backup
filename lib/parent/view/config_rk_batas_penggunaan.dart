@@ -232,12 +232,12 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                           int limitMinute = timeLimit % 60;
                           if (limitHour > 0) {
                             if (limitMinute > 0) {
-                              limitTime = "${limitHour}hrs ${limitMinute}min, Setiap Hari";
+                              limitTime = "${limitHour}hrs ${limitMinute}min\nSetiap Hari";
                             } else {
-                              limitTime = "${limitHour}hrs, Setiap Hari";
+                              limitTime = "${limitHour}hrs\nSetiap Hari";
                             }
                           } else {
-                            limitTime = "${limitMinute}min, Setiap Hari";
+                            limitTime = "${limitMinute}min\nSetiap Hari";
                           }
 
                           return Container(
@@ -246,50 +246,60 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    app.appIcons != null && app.appIcons != ''
-                                        ? Container(
-                                            margin: EdgeInsets.all(5).copyWith(right: 10),
-                                            child: Image.network(
-                                              app.appIcons ?? '',
+                                Flexible(
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      app.appIcons != null && app.appIcons != ''
+                                          ? Container(
+                                              margin: EdgeInsets.all(5).copyWith(right: 10),
+                                              child: Image.network(
+                                                app.appIcons ?? '',
+                                                height: 50,
+                                                fit: BoxFit.contain,
+                                              ))
+                                          : Container(
+                                              margin: EdgeInsets.all(5).copyWith(right: 10),
+                                              color: cOrtuBlue,
                                               height: 50,
-                                              fit: BoxFit.contain,
-                                            ))
-                                        : Container(
-                                            margin: EdgeInsets.all(5).copyWith(right: 10),
-                                            color: cOrtuBlue,
-                                            height: 50,
-                                            child: Center(
-                                              child: Icon(Icons.photo),
+                                              child: Center(
+                                                child: Icon(Icons.photo),
+                                              ),
                                             ),
-                                          ),
-                                    Flexible(
-                                      child: Text(
-                                        app.appName ?? '',
-                                        style: TextStyle(color: cOrtuWhite),
+                                      Flexible(
+                                        child: Text(
+                                          app.appName ?? '',
+                                          style: TextStyle(color: cOrtuWhite),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    if (timeLimit > 0)
-                                      Text(
-                                        limitTime,
-                                        style: TextStyle(color: cOrtuBlue),
-                                      ),
-                                    IconButton(
-                                        onPressed: () {
-                                          addUsageLimitBottomSheet(app, timeLimit);
-                                        },
-                                        icon: Icon(
-                                          Icons.access_time,
-                                          color: timeLimit > 0 ? cOrtuBlue : cOrtuWhite,
-                                        )),
-                                  ],
+                                SizedBox(width: 5),
+                                Flexible(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      if (timeLimit > 0)
+                                        Flexible(
+                                          child: Text(
+                                            limitTime,
+                                            textAlign: TextAlign.right,
+                                            style: TextStyle(color: cOrtuBlue),
+                                          ),
+                                        ),
+                                      IconButton(
+                                          onPressed: () {
+                                            addUsageLimitBottomSheet(app, timeLimit);
+                                          },
+                                          icon: Icon(
+                                            Icons.access_time,
+                                            color: timeLimit > 0 ? cOrtuBlue : cOrtuWhite,
+                                          )),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
