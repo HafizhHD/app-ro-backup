@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/login/login.dart';
 import 'package:ruangkeluarga/main.dart';
-import 'package:ruangkeluarga/parent/view/invite_more_child.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
+import 'package:ruangkeluarga/parent/view/setup_invite_child.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ParentDrawer extends StatelessWidget {
@@ -104,7 +104,7 @@ class ParentDrawer extends StatelessWidget {
               // Then close the drawer
               Navigator.pop(context);
               // Update the state of the app
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => InviteMoreChildPage(title: 'ruang keluarga')));
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => SetupInviteChildPage()));
             },
           ),
           ListTile(

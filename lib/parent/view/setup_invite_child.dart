@@ -41,17 +41,9 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
   }
 
   void onInviteChild() async {
+    showLoadingOverlay();
     String status = "SD";
-    // if (_statusLevel.toString() == "StatusStudyLevel.SD") {
-    //   status = 'SD';
-    // } else if (_statusLevel.toString() == "StatusStudyLevel.SMP") {
-    //   status = 'SMP';
-    // } else {
-    //   status = 'SMA';
-    // }
     await prefs.setString("rkChildName", cChildName.text);
-    // Response response = await MediaRepository().inviteChild(emailUser, cChildEmail.text, cPhoneNumber.text, cChildName.text,
-    //     int.parse(cChildAge.text), status, int.parse(cChildOfNumber.text), int.parse(cChildNumber.text));
     Response response = await MediaRepository().inviteChild(emailUser, cChildEmail.text, cPhoneNumber.text, cChildName.text, 10, status, 1, 1);
     print('isi response invite : ${response.body}');
     if (response.statusCode == 200) {
@@ -59,14 +51,17 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
       if (json['resultCode'] == 'OK') {
         _showToastSuccess();
         await prefs.setBool(isPrefLogin, true);
+        closeOverlay();
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx) => InviteChildQR()), result: 'AddChild');
       } else {
         await prefs.setBool(isPrefLogin, false);
+        closeOverlay();
         _showToastFailed();
         showSnackbar(json['message']);
       }
     } else {
       await prefs.setBool(isPrefLogin, false);
+      closeOverlay();
       _showToastFailed();
     }
   }
@@ -178,13 +173,19 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                         margin: const EdgeInsets.only(top: 30.0, bottom: 10),
                         child: Theme(
                           data: Theme.of(context).copyWith(splashColor: Colors.transparent),
-                          child: TextField(
+                          child: TextFormField(
+                            validator: (val) {
+                              if (val == '') return 'Mohon engkapi nama anak';
+                              return null;
+                            },
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
                             style: TextStyle(fontSize: 16.0, color: Colors.black),
                             keyboardType: TextInputType.text,
                             minLines: 1,
                             maxLines: 1,
                             controller: cChildName,
                             decoration: InputDecoration(
+                              errorStyle: TextStyle(color: cOrtuOrange),
                               filled: true,
                               fillColor: Colors.white,
                               hintText: 'Nama Lengkap Anak',
@@ -205,7 +206,14 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                         margin: const EdgeInsets.only(top: 10.0, bottom: 10),
                         child: Theme(
                           data: Theme.of(context).copyWith(splashColor: Colors.transparent),
-                          child: TextField(
+                          child: TextFormField(
+                            validator: (val) {
+                              if (val == '')
+                                return 'Mohon lengkapi akun email anak.';
+                              else if (val != null && !isEmail(val)) return 'Mohon gunakan format email yang benar.';
+                              return null;
+                            },
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
                             style: TextStyle(fontSize: 16.0, color: Colors.black),
                             keyboardType: TextInputType.emailAddress,
                             minLines: 1,
@@ -247,7 +255,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                                 initialDatePickerMode: DatePickerMode.year,
                                 builder: (context, child) {
                                   return Theme(
-                                    data: Theme.of(context),
+                                    data: ThemeData.dark(),
                                     child: child!,
                                   );
                                 },
@@ -296,28 +304,33 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                   ),
                 ),
               ),
-              Container(
-                margin: EdgeInsets.only(top: 10),
-                child: FlatButton(
-                  height: 50,
-                  minWidth: 300,
-                  shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(15.0),
-                  ),
-                  onPressed: () {
-                    onInviteChild();
-                  },
-                  color: cOrtuBlue,
-                  child: Text(
-                    "LANJUTKAN",
-                    style: TextStyle(
-                      fontFamily: 'Raleway',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
+              MediaQuery.of(context).viewInsets.bottom > keyboardHeight
+                  ? SizedBox()
+                  : Container(
+                      margin: EdgeInsets.only(top: 10),
+                      child: FlatButton(
+                        height: 50,
+                        minWidth: 300,
+                        disabledColor: cOrtuGrey,
+                        shape: new RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(15.0),
+                        ),
+                        onPressed: cChildName.text != '' && cChildEmail.text != '' && isEmail(cChildEmail.text)
+                            ? () {
+                                onInviteChild();
+                              }
+                            : null,
+                        color: cOrtuBlue,
+                        child: Text(
+                          "LANJUTKAN",
+                          style: TextStyle(
+                            fontFamily: 'Raleway',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20.0,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
             ],
           ),
         ));
@@ -356,7 +369,7 @@ class InviteChildQR extends StatelessWidget {
                     padding: EdgeInsets.all(10),
                     child: Align(
                         alignment: Alignment.center,
-                        child: QrImage(data: 'https://drive.google.com/file/d/1N9a1VtJm-pXj1LMlU7LRKjlLW-SL7TF5/view?usp=sharing')),
+                        child: QrImage(data: 'https://drive.google.com/drive/folders/1U5V9ZbUel3O0kNBw96O4TY0m7TrLnTwe?usp=sharing')),
                   ),
                 ),
               ),

@@ -64,46 +64,51 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
     markers.clear();
     var outputFormat = DateFormat('yyyy-MM-dd');
     var outputDate = outputFormat.format(DateTime.now());
-    Response response = await MediaRepository().fetchUserLocation(widget.email, outputDate);
-    if (response.statusCode == 200) {
-      var json = jsonDecode(response.body);
-      List locationChilds = json['timeLine'];
+    try {
+      Response response = await MediaRepository().fetchUserLocation(widget.email, outputDate);
+      if (response.statusCode == 200) {
+        var json = jsonDecode(response.body);
+        List locationChilds = json['timeLine'];
 
-      if (json['resultCode'] == 'OK' && locationChilds.length > 0) {
-        print('response fetch markers : ${response.body}');
-        listLocationChild = locationChilds.map((model) => LocationChild.fromJson(model)).toSet().toList();
-        listLocationChild.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        if (json['resultCode'] == 'OK' && locationChilds.length > 0) {
+          print('response fetch markers : ${response.body}');
+          listLocationChild = locationChilds.map((model) => LocationChild.fromJson(model)).toSet().toList();
+          listLocationChild.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-        for (int i = 0; i < listLocationChild.length; i++) {
-          final childLocation = listLocationChild[i];
-          MarkerId markerId = MarkerId("$i");
-          final coordinates = childLocation.location.coordinates;
-          Marker marker = Marker(
-              markerId: markerId,
-              position: LatLng(double.parse(coordinates[0]), double.parse(coordinates[1])),
-              infoWindow: InfoWindow(title: 'Location', snippet: childLocation.location.place));
-          markers[markerId] = marker;
+          for (int i = 0; i < listLocationChild.length; i++) {
+            final childLocation = listLocationChild[i];
+            MarkerId markerId = MarkerId("$i");
+            final coordinates = childLocation.location.coordinates;
+            Marker marker = Marker(
+                markerId: markerId,
+                position: LatLng(double.parse(coordinates[0]), double.parse(coordinates[1])),
+                infoWindow: InfoWindow(title: 'Location', snippet: childLocation.location.place));
+            markers[markerId] = marker;
+          }
+          _myLocationLatLng = CameraPosition(
+            target: LatLng(
+              double.parse(listLocationChild.first.location.coordinates[0]),
+              double.parse(listLocationChild.first.location.coordinates[1]),
+            ),
+            zoom: 15.0,
+          );
+          _myLocationPlace = listLocationChild.first.location.place;
+          // (await _controller.future).animateCamera(CameraUpdate.newCameraPosition(_myLocationLatLng));
+          setState(() {});
+        } else {
+          print('response fetch markers : ${response.body}');
+          setState(() {});
         }
-
-        _myLocationLatLng = CameraPosition(
-          target: LatLng(
-            double.parse(listLocationChild.first.location.coordinates[0]),
-            double.parse(listLocationChild.first.location.coordinates[1]),
-          ),
-          zoom: 15.0,
-        );
-        _myLocationPlace = listLocationChild.first.location.place;
-        (await _controller.future).animateCamera(CameraUpdate.newCameraPosition(_myLocationLatLng));
-
-        setState(() {});
       } else {
-        print('response fetch markers : ${response.body}');
+        print('response fetch markers : ${response.statusCode}');
         setState(() {});
       }
-    } else {
-      print('response fetch markers : ${response.statusCode}');
-      setState(() {});
+    } catch (e, s) {
+      print('fetchMarkers error : $e');
+      print('fetchMarkers stack : $s');
     }
+
+    print('markers : $markers');
     return markers;
   }
 
@@ -274,7 +279,7 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                                 showLoadingOverlay();
                                 final pickedRange = await showDateRangePicker(
                                     context: context,
-                                    confirmText: 'Confirm TExt',
+                                    confirmText: 'Confirm Text',
                                     firstDate: DateTime.now().subtract(const Duration(days: 365 * 3)),
                                     lastDate: DateTime.now().add(const Duration(days: 365)),
                                     initialDateRange: selectedRange,

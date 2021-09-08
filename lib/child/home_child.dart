@@ -19,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:ruangkeluarga/child/sos_record_video.dart';
+import 'package:ruangkeluarga/login/login.dart';
 import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/model/rk_callLog_model.dart';
 import 'package:ruangkeluarga/model/rk_child_app_icon_list.dart';
@@ -990,7 +991,18 @@ class _HomeChildPageState extends State<HomeChildPage> {
                               child: const Text('Cancel', style: TextStyle(color: Color(0xff05745F))),
                             ),
                             TextButton(
-                              onPressed: () => Navigator.pop(context, 'OK'),
+                              onPressed: () async {
+                                showLoadingOverlay();
+                                SharedPreferences prefs = await SharedPreferences.getInstance();
+                                await prefs.clear();
+                                await signOutGoogle();
+                                closeOverlay();
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(builder: (builder) => MyHomePage()),
+                                  (route) => false,
+                                );
+                              },
                               child: const Text('OK', style: TextStyle(color: Color(0xff05745F))),
                             ),
                           ],

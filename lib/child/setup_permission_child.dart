@@ -2,108 +2,26 @@ import 'dart:convert';
 
 import 'package:app_usage/app_usage.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-import 'package:location/location.dart' as Locs;
-import 'package:permission_handler/permission_handler.dart' as PermsH;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:ruangkeluarga/child/home_child.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SetupPermissionChild extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp();
-  }
-}
-
 class SetupPermissionChildPage extends StatefulWidget {
-  SetupPermissionChildPage({Key? key, required this.title, required this.name}) : super(key: key);
+  SetupPermissionChildPage({Key? key, required this.email, required this.name}) : super(key: key);
 
-  final String title;
+  final String email;
   final String name;
   @override
   _SetupPermissionChildPageState createState() => _SetupPermissionChildPageState();
 }
 
 class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
-  String permissionName = 'Contact';
-  String levelStep = 'Step 1';
-  String titleStep = 'Contact';
-  String subTitleStep = 'Kami membutuhkan Contact Permission pada perangkat anak untuk memonitoring kontak anak.';
-  late bool _serviceEnabled;
   bool _serviceAppUsage = false;
-  final Locs.Location location = Locs.Location();
-  Locs.PermissionStatus _permissionGranted = Locs.PermissionStatus.denied;
-  PermsH.PermissionStatus? permissionStatusContact;
-  bool? _hasPermission;
-  bool? _hasPermissionLocation;
-  late SharedPreferences prefs;
-
-  Future<void> _checkPermissionContact() async {
-    // ignore: unrelated_type_equality_checks
-    while (permissionStatusContact != PermsH.PermissionStatus.denied) {
-      try {
-        permissionStatusContact = await _getContactPermission();
-        // ignore: unrelated_type_equality_checks
-        if (permissionStatusContact != PermsH.PermissionStatus.granted) {
-          _hasPermission = false;
-          permissionStatusContact = PermsH.PermissionStatus.denied;
-        } else {
-          _hasPermission = true;
-          levelStep = 'Step 2';
-          titleStep = 'Location';
-          subTitleStep = 'Kami membutuhkan Location Permission pada perangkat anak untuk memonitoring keberadaan lokasi anak berada.';
-          _serviceAppUsage = false;
-        }
-      } catch (e) {
-        _showContactDialog();
-      }
-    }
-    setState(() {});
-  }
-
-  Future<PermsH.PermissionStatus> _getContactPermission() async {
-    final status = await PermsH.Permission.contacts.status;
-    if (!status.isGranted) {
-      final result = await PermsH.Permission.contacts.request();
-      return result;
-    } else {
-      return status;
-    }
-  }
-
-  Future<void> _checkPermissions() async {
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
-        return;
-      }
-    }
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == Locs.PermissionStatus.denied) {
-      _hasPermissionLocation = false;
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != Locs.PermissionStatus.granted) {
-        _hasPermissionLocation = false;
-        _showMyDialog();
-      } else {
-        _hasPermissionLocation = true;
-        levelStep = 'Step 3';
-        titleStep = 'App Usage';
-        subTitleStep = 'Kami membutuhkan App Usage Permission pada perangkat anak untuk memonitoring penggunaan aplikasi/game anak.';
-        _serviceAppUsage = false;
-      }
-    } else {
-      _hasPermissionLocation = true;
-      levelStep = 'Step 3';
-      titleStep = 'App Usage';
-      subTitleStep = 'Kami membutuhkan App Usage Permission pada perangkat anak untuk memonitoring penggunaan aplikasi/game anak.';
-      _serviceAppUsage = false;
-    }
-
-    setState(() {});
-  }
+  bool _locationPermission = false;
+  bool _contactPermission = false;
 
   Future<void> _showMyDialog() async {
     return showDialog<void>(
@@ -132,267 +50,186 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
     );
   }
 
-  Future<void> _showDialogSuccess() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Informasi'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: const <Widget>[
-                Text('Permission sudah di allow.\nSilahkan klik Lanjut untuk melanjutkan proses'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _showContactDialog() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Konfirmasi'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: const <Widget>[
-                Text('Aplikasi ruang keluar membutuhkan akses kontak anda untuk dapat berjalan dengan baik.'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void checkUsageStatistik() async {
-    try {
-      DateTime endDate = new DateTime.now();
-      DateTime startDate = endDate.subtract(Duration(hours: 10));
-      List<AppUsageInfo> infoList = await AppUsage.getAppUsage(startDate, endDate);
-
-      if (infoList.length > 0) {
-        // SharedPreferences prefs = await SharedPreferences.getInstance();
-        // prefs.setString("usageLists", json.encode(infoList));
-        // prefs.commit();
-        _serviceAppUsage = true;
-      }
-
-      // return infoList;
-    } on AppUsageException catch (exception) {
-      print(exception);
-      // return [];
-    }
-  }
-
-  void getUsageStatistik() async {
-    prefs = await SharedPreferences.getInstance();
-    try {
-      DateTime endDate = new DateTime.now();
-      DateTime startDate = endDate.subtract(Duration(hours: 10));
-      List<AppUsageInfo> infoList = await AppUsage.getAppUsage(startDate, endDate);
-
-      if (infoList.length > 0) {
-        // SharedPreferences prefs = await SharedPreferences.getInstance();
-        // prefs.setString("usageLists", json.encode(infoList));
-        // prefs.commit();
-        _serviceAppUsage = true;
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => HomeChildPage(title: 'ruang keluarga', email: prefs.getString(rkEmailUser)!, name: prefs.getString(rkUserName)!)));
-      }
-
-      // return infoList;
-    } on AppUsageException catch (exception) {
-      print(exception);
-      // return [];
-    }
+  void initAsync() async {
+    _locationPermission = (await Permission.location.status).isGranted;
+    _contactPermission = (await Permission.contacts.status).isGranted;
+    setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
+    initAsync();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Container(
-            margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 50.0),
-            child: SingleChildScrollView(
-              child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                Container(
-                  margin: EdgeInsets.only(top: 10.0, left: 20.0, right: 10.0),
-                  height: 80,
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Hi, ${widget.name}',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
-                        Text(
-                          'Kami memerlukan beberapa permission yang dibutuhkan. Ikuti panduan berikut :',
-                          style: TextStyle(fontSize: 16),
-                        )
-                      ],
+    return SafeArea(
+      child: Scaffold(
+          backgroundColor: cPrimaryBg,
+          body: Container(
+              margin: EdgeInsets.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(top: 10.0, left: 20.0, right: 10.0),
+                    height: 80,
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Hi, ${widget.name}',
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: cOrtuWhite),
+                          ),
+                          Flexible(
+                            child: Text(
+                              'Aplikasi RuangOrtu memerlukan beberapa ijin untuk mengakses data yang dibutuhkan:',
+                              style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                    '$levelStep',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: 10.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Color(0xff3BDFD2),
-                            Color(0xff05745F),
-                          ],
-                        )),
-                    child: Column(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.all(20.0),
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              '$titleStep',
-                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-                            ),
-                          ),
+                  Flexible(child: checkAllPermission()),
+                  Container(
+                    margin: EdgeInsets.all(20),
+                    child: FlatButton(
+                      height: 50,
+                      minWidth: 300,
+                      shape: new RoundedRectangleBorder(
+                        borderRadius: new BorderRadius.circular(15.0),
+                      ),
+                      onPressed: () async {
+                        if (_locationPermission && _contactPermission && _serviceAppUsage) {
+                          Navigator.of(context).pushReplacement(MaterialPageRoute(
+                              builder: (context) => HomeChildPage(title: 'ruang keluarga', email: widget.email, name: widget.name)));
+                        } else {
+                          _showMyDialog();
+                        }
+                      },
+                      color: cOrtuBlue,
+                      child: Text(
+                        "LANJUT KE HOME",
+                        style: TextStyle(
+                          fontFamily: 'Raleway',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20.0,
                         ),
-                        Container(
-                          margin: EdgeInsets.all(20.0),
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              '$subTitleStep',
-                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.all(20.0),
-                          child: Align(
-                            alignment: Alignment.bottomRight,
-                            child: FlatButton(
-                              height: 50,
-                              color: Colors.white,
-                              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
-                              child: Text(
-                                'Masuk ke Pengaturan',
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                              onPressed: () {
-                                if (_hasPermission == true) {
-                                  if (permissionName == 'Contact') {
-                                    _showDialogSuccess();
-                                  } else {
-                                    if (_permissionGranted == Locs.PermissionStatus.granted) {
-                                      if (permissionName == 'Location') {
-                                        _showDialogSuccess();
-                                      } else {
-                                        checkUsageStatistik();
-                                      }
-                                    } else {
-                                      _checkPermissions();
-                                    }
-                                  }
-                                } else {
-                                  _checkPermissionContact();
-                                }
-                              },
-                            ),
-                          ),
-                        )
-                      ],
+                      ),
                     ),
                   ),
-                ),
-                Container(
-                  margin: EdgeInsets.all(10.0),
-                  child: Align(
-                      alignment: Alignment.bottomRight,
-                      child: GestureDetector(
-                        child: Text(
-                          'Lanjut',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xff05745F)),
-                        ),
-                        onTap: () {
-                          if (_hasPermission == true) {
-                            if (_permissionGranted == Locs.PermissionStatus.granted) {
-                              if (permissionName == 'Location') {
-                                // permissionName = 'App Usage';
-                                // levelStep = 'Step 3';
-                                // titleStep = 'App Usage';
-                                // subTitleStep = 'Kami membutuhkan App Usage Permission pada perangkat anak untuk memonitoring penggunaan aplikasi/game anak.';
-                                // _serviceAppUsage = false;
-                                // setState(() {});
-                                if (!_serviceAppUsage) {
-                                  getUsageStatistik();
-                                } else {
-                                  getUsageStatistik();
-                                }
-                              } else {
-                                if (!_serviceAppUsage) {
-                                  getUsageStatistik();
-                                } else {
-                                  getUsageStatistik();
-                                }
-                              }
-                            } else {
-                              if (permissionName == 'Contact') {
-                                permissionName = 'Location';
-                                levelStep = 'Step 2';
-                                titleStep = 'Location';
-                                subTitleStep =
-                                    'Kami membutuhkan Location Permission pada perangkat anak untuk memonitoring keberadaan lokasi anak berada.';
-                                _serviceAppUsage = false;
-                                setState(() {});
-                              } else {
-                                _showMyDialog();
-                              }
-                            }
-                          } else {
-                            _showMyDialog();
-                          }
-                        },
-                      )),
-                ),
-              ]),
-            )));
+                ],
+              ))),
+    );
+  }
+
+  Widget checkAllPermission() {
+    return Container(
+      padding: EdgeInsets.all(10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SwitchListTile.adaptive(
+            tileColor: cOrtuGrey,
+            title: Text('Kontak'),
+            subtitle: Text('Kami membutuhkan akses kontak pada perangkat anak untuk memonitoring kontak anak'),
+            value: _contactPermission,
+            onChanged: (val) async {
+              print(val);
+              var _permissionStatus = await Permission.contacts.status;
+              print('_permissionStatus $_permissionStatus');
+              if (_permissionStatus.isDenied) {
+                _permissionStatus = await Permission.contacts.request();
+                print('(await Permission.contacts.shouldShowRequestRationale)  ${(await Permission.contacts.shouldShowRequestRationale)}');
+                if (_permissionStatus.isPermanentlyDenied) {
+                  await Get.dialog(AlertDialog(
+                    title: Text('Akses ditolak'),
+                    content: Text('Akses untuk kontak telah di tolak sebelum nya. Buka setting untuk merubah akses'),
+                    actions: [
+                      TextButton(
+                          onPressed: () async {
+                            final res = await openAppSettings();
+                            if (res) Get.back();
+                          },
+                          child: Text('Buka Setting'))
+                    ],
+                  ));
+                  _permissionStatus = await Permission.contacts.status;
+                }
+              }
+              _contactPermission = _permissionStatus.isGranted;
+              setState(() {});
+            },
+            contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
+          ),
+          SizedBox(height: 10),
+          SwitchListTile.adaptive(
+            tileColor: cOrtuGrey,
+            title: Text('Lokasi'),
+            subtitle: Text('Kami membutuhkan akses lokasi pada perangkat anak untuk memonitoring keberadaan lokasi anak berada'),
+            value: _locationPermission,
+            onChanged: (val) async {
+              var _permissionStatus = await Permission.location.status;
+              if (_permissionStatus.isDenied) {
+                _permissionStatus = await Permission.location.request();
+                print('(await Permission.location.shouldShowRequestRationale)  ${(await Permission.location.shouldShowRequestRationale)}');
+                if (_permissionStatus.isPermanentlyDenied) {
+                  await Get.dialog(AlertDialog(
+                    title: Text('Akses ditolak'),
+                    content: Text('Akses untuk lokasi telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
+                    actions: [
+                      TextButton(
+                          onPressed: () async {
+                            final res = await openAppSettings();
+                            if (res) Get.back();
+                          },
+                          child: Text('Buka Setting'))
+                    ],
+                  ));
+                  _permissionStatus = await Permission.location.status;
+                }
+              }
+              _locationPermission = _permissionStatus.isGranted;
+              setState(() {});
+            },
+            contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
+          ),
+          SizedBox(height: 10),
+          SwitchListTile.adaptive(
+            tileColor: cOrtuGrey,
+            title: Text('Penggunaan Aplikasi'),
+            subtitle: Text('Kami membutuhkan akses data aplikasi pada perangkat anak untuk memonitoring penggunaan aplikasi/game anak.'),
+            value: _serviceAppUsage,
+            onChanged: (val) async {
+              if (val) {
+                try {
+                  DateTime endDate = new DateTime.now();
+                  DateTime startDate = endDate.subtract(Duration(hours: 10));
+                  List<AppUsageInfo> infoList = await AppUsage.getAppUsage(startDate, endDate);
+                  print('AppUsageInfo ${infoList.length}');
+                  if (infoList.length > 0) {
+                    _serviceAppUsage = true;
+                    setState(() {});
+                  }
+                } on AppUsageException catch (exception) {
+                  print(exception);
+                }
+              }
+            },
+            contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
+          ),
+        ],
+      ),
+    );
   }
 }

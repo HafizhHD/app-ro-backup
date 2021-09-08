@@ -5,3 +5,5 @@ export 'global_navigator_transition.dart';
 export 'custom_widget/global_widget.dart';
 export 'custom_widget/toggle_bar.dart';
 export 'global_enum.dart';
+
+const keyboardHeight = 150;

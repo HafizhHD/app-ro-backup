@@ -98,6 +98,15 @@ class MediaRepository {
     return response;
   }
 
+  Future<Response> removeUser(String id) async {
+    var url = _rkService.baseUrl + '/user/remove';
+    Map<String, dynamic> json = {"userId": "$id"};
+    print('param remove user : $json');
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    print('response remove user : ${response.body}');
+    return response;
+  }
+
   Future<Response> saveChildUsage(String email, String usageDate, List<dynamic> data) async {
     var url = _rkService.baseUrl + '/user/appUsage';
     Map<String, dynamic> json = {"emailUser": "$email", "appUsageDate": "$usageDate", "appUsages": data};
