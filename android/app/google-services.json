@@ -41,6 +41,51 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:78925276663:android:5deebe1fd237eba19f7af2",
+        "android_client_info": {
+          "package_name": "com.ruangortu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "78925276663-2adk6c4djoksmehv1r1s5ke4cguh23d0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ruangortu",
+            "certificate_hash": "2df758cb79175210e1cca0b09525f4e9b3525d81"
+          }
+        },
+        {
+          "client_id": "78925276663-fo1d1b7gi8158s8p11plvdeenr6povor.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ruangortu",
+            "certificate_hash": "a7027d153c39e44a450ffe5573b4fe0e8c1c00e5"
+          }
+        },
+        {
+          "client_id": "78925276663-urjebq8gu6etab5gokbu3vfefn0e11og.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCTWrG4jmikcH-vaGfSDyBC6qvjEOsi1Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "78925276663-urjebq8gu6etab5gokbu3vfefn0e11og.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

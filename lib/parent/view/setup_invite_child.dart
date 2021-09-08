@@ -220,6 +220,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                             maxLines: 1,
                             controller: cChildEmail,
                             decoration: InputDecoration(
+                              errorStyle: TextStyle(color: cOrtuOrange),
                               filled: true,
                               fillColor: Colors.white,
                               hintText: 'Email Anak',
