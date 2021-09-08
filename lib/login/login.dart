@@ -1,16 +1,14 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
-import 'package:location/location.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:ruangkeluarga/child/home_child.dart';
 import 'package:ruangkeluarga/child/setup_permission_child.dart';
 import 'package:ruangkeluarga/global/global.dart';
-import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,10 +31,6 @@ class _LoginState extends State<LoginPage> {
   GoogleSignInAccount? _currentUser;
   String _contactText = '';
   bool _okPolicy = false;
-  late bool _serviceEnabled;
-  late LocationData _locationData;
-  late Location location;
-  PermissionStatus _permissionGranted = PermissionStatus.denied;
 
   Future<void> _handleSignIn() async {
     try {
@@ -71,141 +65,52 @@ class _LoginState extends State<LoginPage> {
   Future onHandleLogin(Response response) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     print('response login ${response.body}');
-    if (response.statusCode == 200) {
-      print("user exist");
-      var json = jsonDecode(response.body);
-      if (json['resultCode'] == "OK") {
-        var jsonDataResult = json['resultData'];
-        var tokenApps = jsonDataResult['token'];
-        await prefs.setString(rkTokenApps, tokenApps);
-        var jsonUser = jsonDataResult['user'];
-        if (jsonUser != null) {
-          List<dynamic> childsData = jsonUser['childs'];
-          await prefs.setString(rkUserType, jsonUser['userType']);
-          if (childsData != null) {
+    try {
+      if (response.statusCode == 200) {
+        print("user exist");
+        var json = jsonDecode(response.body);
+        if (json['resultCode'] == "OK") {
+          var jsonDataResult = json['resultData'];
+          var tokenApps = jsonDataResult['token'];
+          await prefs.setString(rkTokenApps, tokenApps);
+          var jsonUser = jsonDataResult['user'];
+          if (jsonUser['userType'] == "child") {
+            final locationHandler = await Permission.location.status;
+            final contactHandler = await Permission.contacts.status;
+            print('Permision Status location : $locationHandler');
+            print('Permision Status contact : $contactHandler');
+            if (locationHandler.isDenied || contactHandler.isDenied) {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => SetupPermissionChildPage(email: jsonUser['emailUser'], name: jsonUser['nameUser'])));
+            } else {
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => HomeChildPage(
+                        title: 'ruang ortu',
+                        email: jsonUser['emailUser'],
+                        name: jsonUser['nameUser'],
+                      )));
+            }
+          } else {
+            List<dynamic> childsData = jsonUser['childs'];
+            await prefs.setString(rkUserType, jsonUser['userType']);
             if (childsData.length > 0) {
               await prefs.setString("rkChildName", childsData[0]['name']);
               await prefs.setString("rkChildEmail", childsData[0]['email']);
-
               await prefs.setBool(isPrefLogin, true);
-              if (jsonUser['userType'] == "child") {
-                _serviceEnabled = await location.serviceEnabled();
-                if (!_serviceEnabled) {
-                  _serviceEnabled = await location.requestService();
-                  if (!_serviceEnabled) {
-                    return;
-                  }
-                }
-                _permissionGranted = await location.hasPermission();
-                if (_permissionGranted == PermissionStatus.denied) {
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => SetupPermissionChildPage(title: 'ruang ortu', name: jsonUser['nameUser'])));
-                } else {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => HomeChildPage(
-                            title: 'ruang ortu',
-                            email: childsData[0]['email'],
-                            name: childsData[0]['name'],
-                          )));
-                }
-              } else {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ParentMain()));
-              }
-            } else {
-              await prefs.setBool(isPrefLogin, true);
-              if (jsonUser['userType'] == "child") {
-                _serviceEnabled = await location.serviceEnabled();
-                if (!_serviceEnabled) {
-                  _serviceEnabled = await location.requestService();
-                  if (!_serviceEnabled) {
-                    return;
-                  }
-                }
-                _permissionGranted = await location.hasPermission();
-                if (_permissionGranted == PermissionStatus.denied) {
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => SetupPermissionChildPage(title: 'ruang ortu', name: jsonUser['nameUser'])));
-                } else {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => HomeChildPage(title: 'ruang ortu', email: jsonUser['emailUser'], name: jsonUser['nameUser'])));
-                }
-              } else {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ParentMain()));
-              }
             }
-          } else {
-            await prefs.setBool(isPrefLogin, true);
-            if (jsonUser['userType'] == "child") {
-              _serviceEnabled = await location.serviceEnabled();
-              if (!_serviceEnabled) {
-                _serviceEnabled = await location.requestService();
-                if (!_serviceEnabled) {
-                  return;
-                }
-              }
-              _permissionGranted = await location.hasPermission();
-              if (_permissionGranted == PermissionStatus.denied) {
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => SetupPermissionChildPage(title: 'ruang ortu', name: jsonUser['nameUser'])));
-              } else {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => HomeChildPage(title: 'ruang ortu', email: jsonUser['emailUser'], name: jsonUser['nameUser'])));
-              }
-            } else {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ParentMain()));
-            }
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ParentMain()));
           }
-        } else {}
+        } else {
+          await prefs.setBool(isPrefLogin, false);
+          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'ruang ortu')));
+        }
       } else {
         await prefs.setBool(isPrefLogin, false);
         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'ruang ortu')));
       }
-    } else if (response.statusCode == 404) {
-      await prefs.setBool(isPrefLogin, false);
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'ruang ortu')));
-    } else {
-      await prefs.setBool(isPrefLogin, false);
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'ruang ortu')));
-    }
-  }
-
-  void fetchUserLocation() async {
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
-        return;
-      }
-    }
-
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied || _permissionGranted == PermissionStatus.deniedForever) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted == PermissionStatus.denied || _permissionGranted == PermissionStatus.deniedForever) {
-        return;
-      }
-    }
-
-    _locationData = await location.getLocation();
-    print('long : ${_locationData.longitude} & lat : ${_locationData.latitude}');
-    // final coordinates = new Coordinates(_locationData.latitude, _locationData.longitude);
-    // var addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
-    print('long : ${_locationData.longitude} & lat : ${_locationData.latitude}');
-    onSaveLocation(_locationData);
-
-    location.onLocationChanged.listen((dataLocation) {
-      print('long : ${dataLocation.longitude} & lat : ${dataLocation.latitude}');
-    });
-  }
-
-  void onSaveLocation(LocationData locations) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    Response response = await MediaRepository().saveUserLocation(prefs.getString(rkEmailUser).toString(), locations, new DateTime.now().toString());
-    // Response response = await MediaRepository().saveUserLocation("galih@defghi.global", locations, new DateTime.now().toString());
-    if (response.statusCode == 200) {
-      print('isi response save location : ${response.body}');
-    } else {
-      print('isi response save location : ${response.statusCode}');
+    } catch (e, s) {
+      print('onHandleLogin error : $e');
+      print('onHandleLogin stack : $s');
     }
   }
 
@@ -213,8 +118,6 @@ class _LoginState extends State<LoginPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    location = Location();
-    // fetchUserLocation();
   }
 
   @override
@@ -256,29 +159,32 @@ class _LoginState extends State<LoginPage> {
               ),
               Container(
                 padding: EdgeInsets.only(top: 50, bottom: 20, left: 20, right: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Checkbox(
-                        side: BorderSide(color: cOrtuWhite),
-                        activeColor: cOrtuWhite,
-                        checkColor: cPrimaryBg,
-                        value: _okPolicy,
-                        onChanged: (value) {
-                          setState(() {
-                            _okPolicy = !_okPolicy;
-                          });
-                        }),
-                    Flexible(
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                          'Saya setuju dengan syarat dan ketentuan dari ruang-ortu',
-                          style: TextStyle(color: cOrtuWhite),
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() => _okPolicy = !_okPolicy);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Checkbox(
+                          side: BorderSide(color: cOrtuWhite),
+                          activeColor: cOrtuWhite,
+                          checkColor: cPrimaryBg,
+                          value: _okPolicy,
+                          onChanged: (value) {
+                            // setState(() => _okPolicy = !_okPolicy);
+                          }),
+                      Flexible(
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          child: Text(
+                            'Saya setuju dengan syarat dan ketentuan dari ruang-ortu',
+                            style: TextStyle(color: cOrtuWhite),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               Container(

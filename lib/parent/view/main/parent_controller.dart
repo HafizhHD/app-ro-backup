@@ -54,8 +54,10 @@ class ParentController extends GetxController {
     prefs = await SharedPreferences.getInstance();
   }
 
-  void getParentChildData() {
+  Future getParentChildData() async {
     fChildList.value = _getUserData();
+    await fChildList.value;
+    update();
   }
 
   Future loginData() async {

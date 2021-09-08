@@ -317,3 +317,45 @@ extension ParseToString on Object {
     return this.toString().split('.').last;
   }
 }
+
+///VALIDATOR
+bool isEmail(String string) {
+  // Null or empty string is invalid
+  if (string.isEmpty) {
+    return false;
+  }
+  const pattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
+  final regExp = RegExp(pattern);
+
+  if (!regExp.hasMatch(string)) {
+    return false;
+  }
+  return true;
+}
+
+bool isNumeric(String str) {
+  RegExp _numeric = RegExp(r'^-?[0-9]+$');
+  return _numeric.hasMatch(str);
+}
+
+String validatePhone(String phoneNum) {
+  if (phoneNum.isEmpty) {
+    return "Tidak boleh kosong";
+  } else if (phoneNum.length < 6) {
+    return "Tidak valid";
+  } else if (!isNumeric(phoneNum)) {
+    return "Tidak valid";
+  } else {
+    return "";
+  }
+}
+
+String validateNumber(String numText) {
+  if (numText.isEmpty) {
+    return "Tidak boleh kosong";
+  }
+  if (numText != null && numText.length > 0 && isNumeric(numText.replaceAll(".", "")) == false) {
+    return "Tidak valid";
+  }
+  return "";
+}
