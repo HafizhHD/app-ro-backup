@@ -91,19 +91,29 @@ class ChildController extends GetxController {
   }
 
   void saveCurrentAppList() async {
-    final listAppLocal = await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: false, onlyAppsWithLaunchIntent: false);
     final listAppServer = await getListAppServer();
+    final listAppLocal = await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: false, onlyAppsWithLaunchIntent: false);
+    listAppLocal.forEach((localApp) async {
+      final cat = localApp.category.toString().split('.')[1];
+      await MediaRepository().saveIconApp(
+        childEmail,
+        localApp.appName,
+        localApp.packageName,
+        localApp is ApplicationWithIcon ? "data:image/png;base64,${base64Encode(localApp.icon)}" : '',
+        cat == 'undefined' ? 'other' : cat,
+      );
+    });
 
     final listAppsOK = listAppLocal.map((localApp) {
       final cat = localApp.category.toString().split('.')[1];
       final onServerApp = listAppServer.where((serverApp) => serverApp.packageId == localApp.packageName).toList();
       final isBlacklist = onServerApp.length > 0 ? onServerApp.first.blacklist : false;
+
       return ApplicationInstalled(
         appName: localApp.appName,
         packageId: localApp.packageName,
         blacklist: isBlacklist,
         appCategory: cat == 'undefined' ? 'other' : cat,
-        appIcon: localApp is ApplicationWithIcon ? "data:image/png;base64,${base64Encode(localApp.icon)}" : '',
       );
     }).toList();
 

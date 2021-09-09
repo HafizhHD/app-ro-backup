@@ -52,6 +52,7 @@ class ParentController extends GetxController {
 
   void initAsync() async {
     prefs = await SharedPreferences.getInstance();
+    await getAppIconList();
   }
 
   Future getParentChildData() async {
@@ -114,6 +115,18 @@ class ParentController extends GetxController {
       return [];
     } else {
       return [];
+    }
+  }
+
+  Future getAppIconList() async {
+    Response res = await MediaRepository().fetchAppIconList();
+    if (res.statusCode == 200) {
+      print('print res fetchAppIconList ${res.body}');
+      final json = jsonDecode(res.body);
+      if (json['resultCode'] == "OK") {
+        await prefs.setString(rkListAppIcons, res.body);
+        await prefs.setString(rkBaseUrlAppIcon, json['baseUrl']);
+      }
     }
   }
 }

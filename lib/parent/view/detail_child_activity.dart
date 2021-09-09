@@ -169,11 +169,11 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               return bUsage.compareTo(aUsage); //to get the order other way just switch `adate & bdate`
             });
 
-            if (prefs!.getString('rkListAppIcons') != null) {
-              var respList = jsonDecode(prefs!.getString('rkListAppIcons')!);
+            if (prefs!.getString(rkListAppIcons) != null) {
+              var respList = jsonDecode(prefs!.getString(rkListAppIcons)!);
               var listIcons = respList['appIcons'];
               List<AppIconList> dataListIconApps = List<AppIconList>.from(listIcons.map((model) => AppIconList.fromJson(model)));
-              var imageUrl = "${prefs!.getString('rkBaseUrlAppIcon')}";
+              var imageUrl = "${prefs!.getString(rkBaseUrlAppIcon)}";
               bool flagX = false;
               int indeksX = 0;
               for (int i = 0; i < tmpReturn.length; i++) {
@@ -408,12 +408,12 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
           });
 
           print('fix data $tmpFilterReturn');
-          /*if(prefs!.getString('rkListAppIcons') != null) {
-            var respList = jsonDecode(prefs!.getString('rkListAppIcons')!);
+          /*if(prefs!.getString(rkListAppIcons) != null) {
+            var respList = jsonDecode(prefs!.getString(rkListAppIcons)!);
             var listIcons = respList['appIcons'];
             List<AppIconList> dataListIconApps = List<AppIconList>.from(
                 listIcons.map((model) => AppIconList.fromJson(model)));
-            var imageUrl = "${prefs!.getString('rkBaseUrlAppIcon')}";
+            var imageUrl = "${prefs!.getString(rkBaseUrlAppIcon)}";
             bool flagX = false;
             int indeksX = 0;
             for(int i = 0; i < tmpReturn.length; i++) {
