@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:ruangkeluarga/child/child_main.dart';
 import 'package:ruangkeluarga/child/home_child.dart';
 import 'package:ruangkeluarga/child/setup_permission_child.dart';
 import 'package:ruangkeluarga/global/global.dart';
@@ -55,7 +56,7 @@ class _LoginState extends State<LoginPage> {
       await prefs.setString(rkUserName, googleUser.displayName.toString());
       await prefs.setString(rkPhotoUrl, googleUser.photoUrl.toString());
       await prefs.setString(accessGToken, googleKey.accessToken.toString());
-      Response response = await MediaRepository().loginParent(googleUser.email.toString(), googleKey.accessToken.toString(), token, '1.0');
+      Response response = await MediaRepository().userLogin(googleUser.email.toString(), googleKey.accessToken.toString(), token, '1.0');
       await onHandleLogin(response);
     }).catchError((err) {
       print('inner error : $err');
@@ -74,31 +75,42 @@ class _LoginState extends State<LoginPage> {
           var tokenApps = jsonDataResult['token'];
           await prefs.setString(rkTokenApps, tokenApps);
           var jsonUser = jsonDataResult['user'];
+          await prefs.setString(rkUserID, jsonUser["_id"]);
+          await prefs.setString(rkUserType, jsonUser['userType']);
+          await prefs.setBool(isPrefLogin, true);
           if (jsonUser['userType'] == "child") {
             final locationHandler = await Permission.location.status;
             final contactHandler = await Permission.contacts.status;
+            final phoneHandler = await Permission.phone.status;
+            final smsHandler = await Permission.sms.status;
             print('Permision Status location : $locationHandler');
             print('Permision Status contact : $contactHandler');
-            if (locationHandler.isDenied || contactHandler.isDenied) {
+            print('Permision Status phone : $phoneHandler');
+            print('Permision Status sms : $smsHandler');
+            if (locationHandler.isDenied || contactHandler.isDenied || phoneHandler.isDenied || smsHandler.isDenied) {
               Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context) => SetupPermissionChildPage(email: jsonUser['emailUser'], name: jsonUser['nameUser'])));
             } else {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => HomeChildPage(
-                        title: 'ruang ortu',
-                        email: jsonUser['emailUser'],
-                        name: jsonUser['nameUser'],
-                      )));
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                    builder: (context) => ChildMain(
+                          childEmail: jsonUser['emailUser'],
+                          childName: jsonUser['nameUser'],
+                        )),
+                (Route<dynamic> route) => false,
+              );
             }
           } else {
             List<dynamic> childsData = jsonUser['childs'];
-            await prefs.setString(rkUserType, jsonUser['userType']);
             if (childsData.length > 0) {
               await prefs.setString("rkChildName", childsData[0]['name']);
               await prefs.setString("rkChildEmail", childsData[0]['email']);
-              await prefs.setBool(isPrefLogin, true);
             }
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ParentMain()));
+            // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ParentMain()));
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => ParentMain()),
+              (Route<dynamic> route) => false,
+            );
           }
         } else {
           await prefs.setBool(isPrefLogin, false);
@@ -172,7 +184,7 @@ class _LoginState extends State<LoginPage> {
                           checkColor: cPrimaryBg,
                           value: _okPolicy,
                           onChanged: (value) {
-                            // setState(() => _okPolicy = !_okPolicy);
+                            setState(() => _okPolicy = !_okPolicy);
                           }),
                       Flexible(
                         child: Container(

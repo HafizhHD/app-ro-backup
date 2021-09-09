@@ -7,11 +7,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:ruangkeluarga/child/home_child.dart';
+import 'package:ruangkeluarga/child/child_controller.dart';
+import 'package:ruangkeluarga/child/child_main.dart';
+import 'package:ruangkeluarga/child/setup_permission_child.dart';
 import 'package:ruangkeluarga/login/splash_info.dart';
 import 'package:ruangkeluarga/global/global.dart';
-import 'package:ruangkeluarga/parent/view/home_parent.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 import 'package:ruangkeluarga/parent/view_model/vm_content_rk.dart';
@@ -94,6 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    Get.put(ChildController());
     Get.put(ParentController());
 
     WidgetsBinding.instance!.addPostFrameCallback((_) {
@@ -102,13 +105,33 @@ class _MyHomePageState extends State<MyHomePage> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         final prevLogin = prefs.getBool(isPrefLogin);
         final roUserType = prefs.getString(rkUserType);
+        final roUserEmail = prefs.getString(rkEmailUser) ?? '';
+        final roUserName = prefs.getString(rkUserName) ?? '';
+
         if (prevLogin != null && roUserType != null && roUserType != '') {
           if (roUserType == "child") {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (context) =>
-                    HomeChildPage(title: 'ruang keluarga', email: prefs.getString(rkEmailUser)!, name: prefs.getString(rkUserName)!)));
+            final locationHandler = await Permission.location.status;
+            final contactHandler = await Permission.contacts.status;
+            final phoneHandler = await Permission.phone.status;
+            final smsHandler = await Permission.sms.status;
+            print('Permision Status location : $locationHandler');
+            print('Permision Status contact : $contactHandler');
+            print('Permision Status phone : $phoneHandler');
+            print('Permision Status sms : $smsHandler');
+            if (locationHandler.isDenied || contactHandler.isDenied || phoneHandler.isDenied || smsHandler.isDenied) {
+              Navigator.of(context)
+                  .pushReplacement(MaterialPageRoute(builder: (context) => SetupPermissionChildPage(email: roUserEmail, name: roUserName)));
+            } else {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => ChildMain(childEmail: roUserEmail, childName: roUserName)),
+                (Route<dynamic> route) => false,
+              );
+            }
           } else {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ParentMain()));
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => ParentMain()),
+              (Route<dynamic> route) => false,
+            );
           }
         } else {
           Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SplashInfo()));

@@ -71,7 +71,7 @@ class ParentController extends GetxController {
     if (response.statusCode == 200) {
       final jsonUser = jsonDecode(response.body)['user'];
       parentProfile = ParentProfile.fromJson(jsonUser);
-      return parentProfile.children;
+      return parentProfile.children ?? [];
     }
     return [];
   }
@@ -82,7 +82,7 @@ class ParentController extends GetxController {
     await firebaseMessaging.getToken().then((fcmToken) {
       token = fcmToken!;
     });
-    Response response = await MediaRepository().loginParent(prefs.getString(rkEmailUser)!, prefs.getString(accessGToken)!, token, '1.0');
+    Response response = await MediaRepository().userLogin(prefs.getString(rkEmailUser)!, prefs.getString(accessGToken)!, token, '1.0');
     if (response.statusCode == 200) {
       print("user exist ${response.body}");
       var json = jsonDecode(response.body);
@@ -95,7 +95,7 @@ class ParentController extends GetxController {
 
         if (jsonUser != null) {
           parentProfile = ParentProfile.fromJson(jsonUser);
-          final childsData = parentProfile.children;
+          final childsData = parentProfile.children ?? [];
           if (childsData.length > 0) {
             await prefs.setString(rkUserID, parentProfile.id);
             await prefs.setString(rkUserType, parentProfile.userType);
