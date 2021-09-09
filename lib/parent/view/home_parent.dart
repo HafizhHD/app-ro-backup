@@ -12,18 +12,14 @@ import 'package:http/http.dart';
 import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/model/rk_child_model.dart';
 import 'package:ruangkeluarga/model/rk_user_model.dart';
-import 'package:ruangkeluarga/parent/view/addon/addon_page.dart';
 import 'package:ruangkeluarga/parent/view/detail_child_view.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
-import 'package:ruangkeluarga/parent/view/main/parent_drawer.dart';
-import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
 import 'package:ruangkeluarga/parent/view/setup_invite_child.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
 import 'package:ruangkeluarga/utils/app_usage.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 

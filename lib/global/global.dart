@@ -7,3 +7,4 @@ export 'custom_widget/toggle_bar.dart';
 export 'global_enum.dart';
 
 const keyboardHeight = 150;
+const appName = "Ruang Ortu";

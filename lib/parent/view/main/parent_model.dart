@@ -6,26 +6,26 @@ class ParentProfile {
   final String email;
   final String name;
   final String phone;
-  final String address;
+  final String? address;
   final GenderCharacter parentStatus;
   final String userType;
-  final String imgPhoto;
-  final List<Child> children;
+  final String? imgPhoto;
+  final List<Child>? children;
 
   ParentProfile({
     required this.id,
     required this.email,
     required this.name,
     required this.phone,
-    required this.address,
+    this.address,
     required this.parentStatus,
     required this.userType,
-    required this.imgPhoto,
-    required this.children,
+    this.imgPhoto,
+    this.children,
   });
 
   factory ParentProfile.fromJson(Map<String, dynamic> json) {
-    final List listChild = json['childs'];
+    final List listChild = json['childs'] ?? [];
     try {
       return ParentProfile(
         id: json['_id'],

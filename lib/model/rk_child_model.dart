@@ -19,7 +19,7 @@ class Child {
 
   factory Child.fromJson(Map<String, dynamic> json) {
     return Child(
-      id: json['_id'],
+      id: json['_id'] ?? '',
       name: json['name'] as String?,
       age: json['age'] as int?,
       email: json['email'] as String?,

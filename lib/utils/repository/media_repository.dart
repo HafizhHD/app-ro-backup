@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:location/location.dart';
 import 'package:ruangkeluarga/model/content_rk_model.dart';
+import 'package:ruangkeluarga/model/rk_child_apps.dart';
 import 'package:ruangkeluarga/model/rk_schedule_model.dart';
 import 'package:ruangkeluarga/model/rk_user_model.dart';
 import 'package:ruangkeluarga/utils/api_service.dart';
@@ -36,10 +37,10 @@ class MediaRepository {
     return userList;
   }
 
-  Future<Response> loginParent(String email, String gToken, String fcmToken, String version) async {
+  Future<Response> userLogin(String email, String gToken, String fcmToken, String version) async {
     var url = _rkService.baseUrl + '/user/userLogin';
     Map<String, String> json = {"emailUser": "$email", "googleToken": "$gToken", "fcmToken": "$fcmToken", "version": "$version"};
-    print('param login parent : $json');
+    print('param userLogin: $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
@@ -156,9 +157,9 @@ class MediaRepository {
     return response;
   }
 
-  Future<Response> saveAppList(String email, List<dynamic> appName) async {
+  Future<Response> saveAppList(String email, List<ApplicationInstalled> appName) async {
     var url = _rkService.baseUrl + '/user/appDeviceAdd';
-    Map<String, dynamic> json = {"emailUser": "$email", "appName": appName};
+    Map<String, dynamic> json = {"emailUser": "$email", "appName": appName.map((e) => e.toJson()).toList()};
     print('param save appList : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
@@ -230,14 +231,6 @@ class MediaRepository {
     return response;
   }
 
-  Future<Response> saveIconApp(String email, String appName, String appId, String appIcon, String category) async {
-    var url = _rkService.baseUrl + '/user/appIconAdd';
-    Map<String, dynamic> json = {"emailUser": "$email", "appName": appName, "appId": appId, "appIcon": appIcon, "appCategory": category};
-    print('param save icon app : $json');
-    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
-    return response;
-  }
-
   Future<Response> blackListContactAdd(String email, String name, String phoneNumber, String label) async {
     var url = _rkService.baseUrl + '/user/contactBlackListAdd';
     Map<String, dynamic> json = {
@@ -265,6 +258,14 @@ class MediaRepository {
       "contactType": "$contactType"
     };
     print('param blacklist contact notif : $json');
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> saveIconApp(String email, String appName, String appId, String appIcon, String category) async {
+    var url = _rkService.baseUrl + '/user/appIconAdd';
+    Map<String, dynamic> json = {"emailUser": "$email", "appName": appName, "appId": appId, "appIcon": appIcon, "appCategory": category};
+    print('param save icon app : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }

@@ -11,6 +11,7 @@ class AkunPage extends StatelessWidget {
     return GetBuilder<ParentController>(
       builder: (ctrl) {
         final parentData = ctrl.parentProfile;
+        final children = parentData.children ?? [];
         return Container(
           // color: ,
           padding: EdgeInsets.all(5),
@@ -25,9 +26,9 @@ class AkunPage extends StatelessWidget {
                   child: ListView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
-                    itemCount: parentData.children.length,
+                    itemCount: children.length,
                     itemBuilder: (ctx, idx) {
-                      final childData = parentData.children[idx];
+                      final childData = children[idx];
                       return profileContainer(
                         // imgUrl: 'assets/images/foto_anak.png',
                         name: childData.name ?? 'Nama Anak',
