@@ -10,11 +10,12 @@ class AppListWithIcons {
   AppListWithIcons({this.appName, this.packageId, this.blacklist, required this.appCategory, this.appIcons});
 
   factory AppListWithIcons.fromJson(Map<String, dynamic> json) {
+    print('json $json');
     return AppListWithIcons(
       appName: json['appName'] as String?,
       packageId: json['packageId'] as String?,
       appCategory: json['appCategory'],
-      blacklist: json['blacklist'] as bool?,
+      blacklist: json['blacklist'].toString().toLowerCase() == 'true' ? true : false,
       appIcons: json['appIcons'] as String?,
     );
   }

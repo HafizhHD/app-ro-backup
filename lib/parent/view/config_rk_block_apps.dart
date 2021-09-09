@@ -37,76 +37,38 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
 
   Future<List<AppListWithIcons>> fetchAppList() async {
     prefs = await SharedPreferences.getInstance();
+
     Response response = await MediaRepository().fetchAppList(widget.email);
     if (response.statusCode == 200) {
       print('isi response fetch appList : ${response.body}');
       var json = jsonDecode(response.body);
       if (json['resultCode'] == 'OK') {
         if (json['appdevices'].length > 0) {
-          var appDevices = json['appdevices'][0];
-          List<dynamic> tmpData = appDevices['appName'];
-          List<dynamic> dataList = [];
-          bool flag = false;
-          List<ApplicationInstalled> dataIconApps = List<ApplicationInstalled>.from(tmpData.map((model) => ApplicationInstalled.fromJson(model)));
-          for (int i = 0; i < dataIconApps.length; i++) {
-            if (prefs.getString('rkListAppIcons') != null) {
-              flag = true;
-              var respList = jsonDecode(prefs.getString('rkListAppIcons')!);
-              var listIcons = respList['appIcons'];
-              List<AppIconList> dataListIconApps = List<AppIconList>.from(listIcons.map((model) => AppIconList.fromJson(model)));
-              var imageUrl = "${prefs.getString('rkBaseUrlAppIcon')}";
-              bool flagX = false;
-              int indeksX = 0;
-              if (dataListIconApps.length > 0) {
-                for (int x = 0; x < dataListIconApps.length; x++) {
-                  if (dataIconApps[i].packageId == dataListIconApps[x].appId) {
-                    indeksX = x;
-                    flagX = true;
-                    break;
-                  }
-                }
-                if (flagX) {
-                  dataList.add({
-                    "appName": "${dataIconApps[i].appName}",
-                    "packageId": "${dataIconApps[i].packageId}",
-                    "blacklist": dataIconApps[i].blacklist,
-                    "appCategory": dataIconApps[i].appCategory,
-                    "appIcons": "${imageUrl + dataListIconApps[indeksX].appIcon.toString()}"
-                  });
-                } else {
-                  dataList.add({
-                    "appName": "${dataIconApps[i].appName}",
-                    "packageId": "${dataIconApps[i].packageId}",
-                    "blacklist": dataIconApps[i].blacklist,
-                    "appCategory": dataIconApps[i].appCategory,
-                    "appIcons": ""
-                  });
-                }
-              } else {
-                flag = false;
-                break;
-              }
-            } else {
-              break;
-            }
-          }
-          if (flag) {
-            List<AppListWithIcons> data = List<AppListWithIcons>.from(dataList.map((model) => AppListWithIcons.fromJson(model)));
-            data.sort((a, b) => a.appName!.compareTo(b.appName!));
-            print('SetData');
-            appList = data;
-            appListSearch = data;
-            setState(() {});
+          try {
+            var appDevices = json['appdevices'][0];
+            List<dynamic> tmpData = appDevices['appName'];
+            List<dynamic> dataList = [];
 
-            return data;
-          } else {
-            for (int i = 0; i < dataIconApps.length; i++) {
+            List<ApplicationInstalled> dataAppsInstalled =
+                List<ApplicationInstalled>.from(tmpData.map((model) => ApplicationInstalled.fromJson(model)));
+            var imageUrl = "${prefs.getString(rkBaseUrlAppIcon)}";
+
+            List<AppIconList> dataListIconApps = [];
+            if (prefs.getString(rkListAppIcons) != null) {
+              var respList = jsonDecode(prefs.getString(rkListAppIcons)!);
+              print('respList $respList');
+              var listIcons = respList['appIcons'];
+              dataListIconApps = List<AppIconList>.from(listIcons.map((model) => AppIconList.fromJson(model)));
+            }
+
+            for (int i = 0; i < dataAppsInstalled.length; i++) {
+              final appIcon = dataListIconApps.where((e) => e.appId == dataAppsInstalled[i].packageId).toList();
               dataList.add({
-                "appName": "${dataIconApps[i].appName}",
-                "packageId": "${dataIconApps[i].packageId}",
-                "blacklist": dataIconApps[i].blacklist,
-                "appCategory": dataIconApps[i].appCategory,
-                "appIcons": ""
+                "appName": "${dataAppsInstalled[i].appName}",
+                "packageId": "${dataAppsInstalled[i].packageId}",
+                "blacklist": dataAppsInstalled[i].blacklist,
+                "appCategory": dataAppsInstalled[i].appCategory,
+                "appIcons": appIcon.length > 0 ? "${imageUrl + appIcon.first.appIcon.toString()}" : '',
               });
             }
             List<AppListWithIcons> data = List<AppListWithIcons>.from(dataList.map((model) => AppListWithIcons.fromJson(model)));
@@ -115,8 +77,11 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
             appList = data;
             appListSearch = data;
             setState(() {});
-
             return data;
+          } catch (e, s) {
+            print(e);
+            print(s);
+            return [];
           }
         } else {
           return [];
@@ -144,7 +109,6 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
     // TODO: implement initState
     setBinding();
     super.initState();
-
     fAppList = fetchAppList();
   }
 

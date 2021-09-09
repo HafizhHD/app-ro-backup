@@ -270,12 +270,9 @@ class MediaRepository {
     return response;
   }
 
-  Future<Response> fetchAppIconList(String email) async {
+  Future<Response> fetchAppIconList() async {
     var url = _rkService.baseUrl + '/user/appIconFilter';
-    Map<String, dynamic> json = {
-      "whereKeyValues": {"emailUser": "$email"},
-      "limit": 1000
-    };
+    Map<String, dynamic> json = {"limit": 1000};
     print('param app icon list : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
