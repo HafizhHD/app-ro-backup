@@ -58,90 +58,10 @@ class _HomeChildPageState extends State<HomeChildPage> {
   List<Application> itemsApp = [];
   List<Application> listItemApps = [];
   late SharedPreferences prefs;
-  List<Contact>? _contacts;
-  bool _permissionDenied = false;
   Location location = new Location();
-  bool _serviceEnabled = false;
-  late PermissionStatus _permissionGranted;
-  late LocationData _locationData;
   List<BlackListContact> blackListData = [];
 
   final childController = Get.find<ChildController>();
-
-  void getUsageStatistik() async {
-    prefs = await SharedPreferences.getInstance();
-    try {
-      List<Application> appData = await getListApps();
-      var outputFormat = DateFormat('HH');
-      var outputFormatMinute = DateFormat('mm');
-      var outputFormatSecond = DateFormat('ss');
-      var outputDate = outputFormat.format(DateTime.now());
-      var outputDateMinute = outputFormatMinute.format(DateTime.now());
-      var outputDateSecond = outputFormatSecond.format(DateTime.now());
-      // DateTime endDate = outputFormat.parse(outputDate);
-      DateTime endDate = new DateTime.now();
-      // DateTime startDate = endDate.subtract(Duration(hours: int.parse(outputDate)));
-      DateTime startDate =
-          endDate.subtract(Duration(hours: int.parse(outputDate), minutes: int.parse(outputDateMinute), seconds: int.parse(outputDateSecond)));
-      // DateTime startDate = outputFormat.parse(outputDate);
-      List<AppUsageInfo> infoList = await AppUsage.getAppUsage(startDate, endDate);
-
-      if (infoList.length > 0) {
-        // SharedPreferences prefs = await SharedPreferences.getInstance();
-        // prefs.setString("usageLists", json.encode(infoList));
-        // prefs.commit();
-        List<dynamic> dataList = [];
-        for (int i = 0; i < infoList.length; i++) {
-          Application? iconApp = getIconAppsFromList(infoList[i].packageName);
-          var nameApp = getNameAppsFromList(infoList[i].packageName);
-          if (nameApp == "") {
-            nameApp = infoList[i].appName;
-          }
-
-          var cat = "other";
-          for (int xz = 0; xz < appData.length; xz++) {
-            if (infoList[i].packageName == appData[xz].packageName) {
-              if (appData[xz].category.toString().split('.')[1] != 'undefined') {
-                cat = appData[xz].category.toString().split('.')[1];
-              }
-              break;
-            }
-          }
-
-          if (infoList[i].packageName == 'com.google.android.youtube') {
-            var temp = {
-              'count': 0,
-              'appName': nameApp,
-              'packageId': infoList[i].packageName,
-              'duration': infoList[i].usage.inSeconds,
-              'icon': null,
-              'appCategory': cat
-            };
-            dataList.add(temp);
-          } else if (infoList[i].packageName.contains('com.android') ||
-              infoList[i].packageName.contains('com.google.android') ||
-              infoList[i].packageName.contains('com.miui')) {
-          } else {
-            var temp = {
-              'count': 0,
-              'appName': nameApp,
-              'packageId': infoList[i].packageName,
-              'duration': infoList[i].usage.inSeconds,
-              'icon': null,
-              'appCategory': cat
-            };
-            dataList.add(temp);
-          }
-        }
-        onSaveUsage(dataList);
-      }
-
-      // return infoList;
-    } on AppUsageException catch (exception) {
-      print(exception);
-      // return [];
-    }
-  }
 
   getFileSize(String filepath, int decimals) async {
     var file = File(filepath);
@@ -187,56 +107,6 @@ class _HomeChildPageState extends State<HomeChildPage> {
     return file;
   }
 
-  void onSaveUsage(List<dynamic> data) async {
-    prefs = await SharedPreferences.getInstance();
-    var outputFormat = DateFormat('yyyy-MM-dd');
-    var outputDate = outputFormat.format(DateTime.now());
-    Response response = await MediaRepository().saveChildUsage(prefs.getString(rkEmailUser).toString(), outputDate, data);
-    if (response.statusCode == 200) {
-      print('isi response save app usage : ${response.body}');
-    } else {
-      print('isi response save app usage : ${response.statusCode}');
-    }
-  }
-
-  Future _fetchContacts() async {
-    prefs = await SharedPreferences.getInstance();
-    if (!await FlutterContacts.requestPermission()) {
-      setState(() => _permissionDenied = true);
-    } else {
-      if (prefs.getBool('rkGetContactList') != null) {
-        if (prefs.getBool('rkGetContactList') == false) {
-          final contacts = await FlutterContacts.getContacts(withProperties: true, withPhoto: true);
-          await prefs.setBool('rkGetContactList', true);
-          onSaveContact(contacts);
-        }
-      } else {
-        final contacts = await FlutterContacts.getContacts(withProperties: true, withPhoto: true);
-        await prefs.setBool('rkGetContactList', true);
-        onSaveContact(contacts);
-      }
-    }
-  }
-
-  void onSaveContact(List<Contact> kontak) async {
-    var contacts = [];
-    var photo;
-    for (int i = 0; i < kontak.length; i++) {
-      var phonenum = [];
-      for (int j = 0; j < kontak[i].phones.length; j++) {
-        phonenum.add(kontak[i].phones[j].normalizedNumber);
-      }
-      contacts.add({"name": kontak[i].displayName, "nomor": phonenum, "blacklist": false});
-    }
-
-    Response response = await MediaRepository().saveContacts(prefs.getString(rkEmailUser).toString(), contacts);
-    if (response.statusCode == 200) {
-      print('isi response save contact : ${response.body}');
-    } else {
-      print('isi response save contact : ${response.statusCode}');
-    }
-  }
-
   void downloadTimeline() async {
     HttpClient httpClient = new HttpClient();
     File file;
@@ -259,46 +129,6 @@ class _HomeChildPageState extends State<HomeChildPage> {
       }
     } catch (ex) {
       filePath = 'Can not fetch url';
-    }
-  }
-
-  void fetchUserLocation() async {
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
-        return;
-      }
-    }
-
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied || _permissionGranted == PermissionStatus.deniedForever) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted == PermissionStatus.denied || _permissionGranted == PermissionStatus.deniedForever) {
-        return;
-      }
-    }
-
-    _locationData = await location.getLocation();
-    if (_locationData != null) {
-      print('long : ${_locationData.longitude} & lat : ${_locationData.latitude}');
-      onSaveLocation(_locationData);
-    }
-    location.onLocationChanged.listen((dataLocation) {
-      if (dataLocation != null) {
-        print('long : ${dataLocation.longitude} & lat : ${dataLocation.latitude}');
-      }
-    });
-  }
-
-  void onSaveLocation(LocationData locations) async {
-    var outputFormat = DateFormat('yyyy-MM-dd');
-    var outputDate = outputFormat.format(DateTime.now());
-    Response response = await MediaRepository().saveUserLocation(prefs.getString(rkEmailUser).toString(), locations, outputDate);
-    if (response.statusCode == 200) {
-      print('isi response save location : ${response.body}');
-    } else {
-      print('isi response save location : ${response.statusCode}');
     }
   }
 
@@ -383,18 +213,10 @@ class _HomeChildPageState extends State<HomeChildPage> {
     }
   }
 
-  void onGetSMS() async {
-    SmsQuery query = new SmsQuery();
-  }
-
   @override
   void initState() {
     super.initState();
     childController.initData();
-    // getUsageStatistik();
-    // _fetchContacts();
-    // fetchUserLocation();
-    // onUsageNew();
   }
 
   @override

@@ -52,7 +52,6 @@ class ParentController extends GetxController {
 
   void initAsync() async {
     prefs = await SharedPreferences.getInstance();
-    await getAppIconList();
   }
 
   Future getParentChildData() async {

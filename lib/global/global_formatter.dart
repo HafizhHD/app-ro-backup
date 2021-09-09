@@ -145,6 +145,12 @@ String now_ddMMMyyyy({String separator = ' '}) {
   return formatter.format(now);
 }
 
+String now_yyyyMMdd({String separator = '-'}) {
+  var now = DateTime.now();
+  final DateFormat formatter = DateFormat('yyyy${separator}MM${separator}dd');
+  return formatter.format(now);
+}
+
 int nowEpoch() {
   return DateTime.now().millisecondsSinceEpoch;
 }
