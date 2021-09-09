@@ -182,6 +182,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
     onMessageListen();
     getUsageStatistik();
     fLogin = parentController.loginData();
+    parentController.getAppIconList();
   }
 
   @override

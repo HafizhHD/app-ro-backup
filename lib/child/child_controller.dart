@@ -1,14 +1,19 @@
 import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:http/http.dart';
+import 'package:location/location.dart';
 import 'package:ruangkeluarga/child/child_model.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/global/global_formatter.dart';
 import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/model/rk_child_apps.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
+import 'package:ruangkeluarga/utils/app_usage.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,6 +22,7 @@ class ChildController extends GetxController {
   var childID = '';
   var childEmail = '';
   late ChildProfile childProfile;
+  Location location = new Location();
 
   int get bottomNavIndex => _bottomNavIndex.value;
   void setBottomNavIndex(int index) {
@@ -27,7 +33,11 @@ class ChildController extends GetxController {
   void initData() async {
     onMessageListen();
     getChildData();
-    saveCurrentAppList();
+    // saveCurrentAppList();
+    // fetchChildLocation();
+    // fetchContacts();
+    // onGetSMS();
+    getAppUsageData();
   }
 
   void onMessageListen() {
@@ -122,6 +132,98 @@ class ChildController extends GetxController {
       print('save appList ${response.body}');
     } else {
       print('gagal simpan appList ${response.statusCode}');
+    }
+  }
+
+  void fetchChildLocation() async {
+    var _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    var _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied || _permissionGranted == PermissionStatus.deniedForever) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted == PermissionStatus.denied || _permissionGranted == PermissionStatus.deniedForever) {
+        return;
+      }
+    }
+
+    await location.changeSettings(interval: 3600000); //1h = 3600000ms
+    location.onLocationChanged.listen((dataLocation) async {
+      Response response = await MediaRepository().saveUserLocation(childEmail, dataLocation, now_ddMMMyyyyHHmmss());
+      if (response.statusCode == 200) {
+        print('isi response save location : ${response.body}');
+      } else {
+        print('isi response save location : ${response.statusCode}');
+      }
+    });
+  }
+
+  Future fetchContacts() async {
+    var permission = await FlutterContacts.requestPermission();
+    if (permission) {
+      final kontak = await FlutterContacts.getContacts(withProperties: true, withPhoto: true);
+      var contacts = [];
+      for (int i = 0; i < kontak.length; i++) {
+        var phoneNum = [];
+        for (int j = 0; j < kontak[i].phones.length; j++) {
+          phoneNum.add(kontak[i].phones[j].normalizedNumber);
+        }
+        var photo = kontak[i].photo;
+        contacts.add({"name": kontak[i].displayName, "nomor": phoneNum, "blacklist": false});
+      }
+
+      Response response = await MediaRepository().saveContacts(childEmail, contacts);
+      if (response.statusCode == 200) {
+        print('isi response save contact : ${response.body}');
+      } else {
+        print('isi response save contact : ${response.statusCode}');
+      }
+    }
+  }
+
+  void onGetSMS() async {
+    SmsQuery query = new SmsQuery();
+    final listSms = await query.getAllSms;
+    listSms.forEach((sms) {
+      print(sms.sender);
+      print(sms.address);
+      print(sms.body);
+    });
+  }
+
+  void getAppUsageData() async {
+    final DateTime endDate = new DateTime.now();
+    final DateTime startDate = endDate.subtract(Duration(hours: DateTime.now().hour, minutes: DateTime.now().minute, seconds: DateTime.now().second));
+    final List<AppUsageInfo> infoList = await AppUsage.getAppUsage(startDate, endDate);
+    final listAppLocal = await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: false, onlyAppsWithLaunchIntent: false);
+
+    List<dynamic> usageDataList = [];
+    infoList.forEach((app) {
+      final hasData = listAppLocal.where((e) => e.packageName == app.packageName).toList();
+      if (hasData.length > 0) {
+        final appName = hasData.first.appName;
+        final cat = hasData.first.category.toString().split('.')[1];
+        var temp = {
+          'count': 0,
+          'appName': appName,
+          'packageId': app.packageName,
+          'duration': app.usage.inSeconds,
+          'appCategory': cat == 'undefined' ? 'other' : cat,
+        };
+        usageDataList.add(temp);
+      }
+    });
+
+    Response response = await MediaRepository().saveChildUsage(childEmail, now_yyyyMMdd(), usageDataList);
+    if (response.statusCode == 200) {
+      print('isi response save app usage : ${response.body}');
+    } else {
+      print('isi response save app usage : ${response.statusCode}');
     }
   }
 }
