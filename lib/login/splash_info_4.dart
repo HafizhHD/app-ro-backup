@@ -23,7 +23,7 @@ class SplashInfo4 extends StatelessWidget {
                     color: cOrtuWhite,
                     borderRadius: BorderRadius.only(bottomRight: borderRadiusSize, bottomLeft: borderRadiusSize),
                     image: DecorationImage(
-                      image: AssetImage('assets/images/ruangortu-icon_x4.png'),
+                      image: AssetImage(currentAppIconPath),
                       fit: BoxFit.contain,
                     )),
               ),

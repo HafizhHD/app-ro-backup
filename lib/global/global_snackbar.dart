@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
 
@@ -74,4 +75,28 @@ void showSnackbarSuccessWithTap(String pText, {required Function() fOnTap, Durat
           style: TextStyle(color: cOrtuOrange),
         )),
   );
+}
+
+Future<bool> onWillPopApp() async {
+  final bool res = await Get.dialog(AlertDialog(
+    title: new Text('Konfirmasi tutup', style: new TextStyle(fontSize: 20.0)),
+    content: new Text('Yakin ingin menutup aplikasi?'),
+    actions: <Widget>[
+      new TextButton(
+        onPressed: () {
+          Get.back(result: true);
+          SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        },
+        child: new Text('Ya', style: new TextStyle(color: cOrtuOrange)),
+      ),
+      new TextButton(
+        onPressed: () {
+          Get.back(result: false);
+        },
+        child: new Text('Tidak', style: new TextStyle(color: cOrtuOrange)),
+      )
+    ],
+  ));
+
+  return res;
 }

@@ -18,7 +18,7 @@ class SplashInfo extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Hero(tag: 'ruangortuIcon', child: Image.asset('assets/images/ruangortu-icon_x4.png')),
+                  Hero(tag: 'ruangortuIcon', child: Image.asset(currentAppIconPath)),
                   // Text(
                   //   'Ruang Ortu',
                   //   style: TextStyle(
@@ -29,7 +29,7 @@ class SplashInfo extends StatelessWidget {
                   // ),
                   SizedBox(height: 20),
                   Text(
-                    'Aplikasi Untuk Keluarga Indonesia',
+                    'Aplikasi Untuk Keluarga HKBP',
                     style: TextStyle(
                       fontSize: 20,
                       color: cOrtuWhite,

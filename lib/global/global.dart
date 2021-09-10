@@ -3,6 +3,8 @@ export 'global_colors.dart';
 export 'global_navigator_transition.dart';
 export 'custom_widget/global_widget.dart';
 export 'custom_widget/toggle_bar.dart';
+export 'global_formatter.dart';
+export 'global_snackbar.dart';
 export 'global_enum.dart';
 
 ///CONSTANT
@@ -20,3 +22,11 @@ final String rkUserType = "rkUserType";
 final String rkChilds = "rkChilds";
 final String rkListAppIcons = "rkListAppIcons";
 final String rkBaseUrlAppIcon = "rkBaseUrlAppIcon";
+
+const AppIconPathRO = 'assets/images/ruangortu-icon.png';
+const AppIconPathRO_x4 = 'assets/images/ruangortu-icon_4.png';
+const AppIconPathHKBP = 'assets/images/hkbp/logo-keluargahkbp.png';
+const currentAppIconPath = AppIconPathHKBP;
+
+const ApkDownloadURL = 'https://drive.google.com/drive/folders/1U5V9ZbUel3O0kNBw96O4TY0m7TrLnTwe?usp=sharing';
+const ApkDownloadURL_HKBP = 'https://drive.google.com/drive/folders/1nlj_EiHgD6goR-JTsdCaIfeomVHUFsNr?usp=sharing';
