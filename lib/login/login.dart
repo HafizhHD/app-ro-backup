@@ -190,7 +190,7 @@ class _LoginState extends State<LoginPage> {
                         child: Container(
                           padding: EdgeInsets.all(10),
                           child: Text(
-                            'Saya setuju dengan syarat dan ketentuan dari ruang-ortu',
+                            'Saya setuju dengan syarat dan ketentuan dari $appName',
                             style: TextStyle(color: cOrtuWhite),
                           ),
                         ),

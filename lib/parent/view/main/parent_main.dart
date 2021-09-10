@@ -14,6 +14,7 @@ class ParentMain extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    controller.getBinding();
     return SafeArea(
       child: WillPopScope(
         onWillPop: () async => onWillPopApp(),
@@ -91,18 +92,18 @@ class ParentMain extends StatelessWidget {
                 isSelected: controller.bottomNavIndex == 0,
                 onPressed: () => controller.setBottomNavIndex(0)),
             IconWithLabel(
-                defaultIcon: Icons.cloud_download_outlined,
-                activeIcon: Icons.cloud_download,
-                label: 'Addon',
-                isSelected: controller.bottomNavIndex == 1,
-                onPressed: () => controller.setBottomNavIndex(1)),
-            SizedBox(width: 40), // The dummy child
-            IconWithLabel(
                 defaultIcon: Icons.calendar_today_outlined,
                 activeIcon: Icons.calendar_today,
                 label: 'Jadwal',
                 isSelected: controller.bottomNavIndex == 3,
-                onPressed: () => controller.setBottomNavIndex(3)),
+                onPressed: () => controller.setBottomNavIndex(3)), // IconWithLabel(
+            //     defaultIcon: Icons.cloud_download_outlined,
+            //     activeIcon: Icons.cloud_download,
+            //     label: 'Addon',
+            //     isSelected: controller.bottomNavIndex == 1,
+            //     onPressed: () => controller.setBottomNavIndex(1)),
+            SizedBox(width: 40), // The dummy child
+
             IconWithLabel(
                 defaultIcon: Icons.person_outlined,
                 activeIcon: Icons.person,

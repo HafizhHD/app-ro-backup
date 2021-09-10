@@ -48,6 +48,7 @@ class ParentController extends GetxController {
     final prefs = await SharedPreferences.getInstance();
     userName = prefs.getString(rkUserName) ?? '';
     emailUser = prefs.getString(rkEmailUser) ?? '';
+    update();
   }
 
   void initAsync() async {
