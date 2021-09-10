@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -22,6 +23,8 @@ class ChildController extends GetxController {
   var childID = '';
   var childEmail = '';
   late ChildProfile childProfile;
+  late Timer locationPeriodic;
+
   Location location = new Location();
 
   int get bottomNavIndex => _bottomNavIndex.value;
@@ -31,13 +34,20 @@ class ChildController extends GetxController {
   }
 
   void initData() async {
-    onMessageListen();
-    getChildData();
-    saveCurrentAppList();
-    fetchChildLocation();
-    fetchContacts();
-    // onGetSMS();
-    getAppUsageData();
+    await getChildData().then((value) {
+      onMessageListen();
+      fetchChildLocation();
+      saveCurrentAppList();
+      fetchContacts();
+      // onGetSMS();
+      getAppUsageData();
+    });
+  }
+
+  @override
+  void onClose() {
+    locationPeriodic.cancel();
+    super.onClose();
   }
 
   void onMessageListen() {
@@ -64,7 +74,7 @@ class ChildController extends GetxController {
     });
   }
 
-  void getChildData() async {
+  Future getChildData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     Response response = await MediaRepository().getParentChildData(prefs.getString(rkUserID) ?? '');
     print('response getChildData: ${response.body}');
@@ -152,15 +162,34 @@ class ChildController extends GetxController {
       }
     }
 
-    await location.changeSettings(interval: 3600000); //1h = 3600000ms
-    location.onLocationChanged.listen((dataLocation) async {
-      Response response = await MediaRepository().saveUserLocation(childEmail, dataLocation, now_ddMMMyyyyHHmmss());
-      if (response.statusCode == 200) {
-        print('isi response save location : ${response.body}');
-      } else {
-        print('isi response save location : ${response.statusCode}');
-      }
-    });
+    try {
+      await location.changeSettings(interval: 1000);
+      await location.getLocation().then((locData) async {
+        await MediaRepository().saveUserLocation(childEmail, locData, now_ddMMMyyyyHHmmss()).then((response) {
+          if (response.statusCode == 200) {
+            print('isi response save location Current: ${response.body}');
+          } else {
+            print('isi response save location Current: ${response.statusCode}');
+          }
+        });
+      });
+
+      locationPeriodic = Timer.periodic(Duration(hours: 1), (timer) async {
+        print('timer save location $timer');
+        await location.getLocation().then((locData) async {
+          await MediaRepository().saveUserLocation(childEmail, locData, now_ddMMMyyyyHHmmss()).then((response) {
+            if (response.statusCode == 200) {
+              print('isi response save location : ${response.body}');
+            } else {
+              print('isi response save location : ${response.statusCode}');
+            }
+          });
+        });
+      });
+    } catch (e, s) {
+      print('err: $e');
+      print('stk: $s');
+    }
   }
 
   Future fetchContacts() async {

@@ -9,7 +9,7 @@ export 'global_enum.dart';
 
 ///CONSTANT
 const keyboardHeight = 150;
-const appName = "Ruang Ortu";
+const appName = "Keluarga HKBP";
 
 final String isPrefLogin = "isPrefLogin";
 final String rkUserID = "rkUserID";
