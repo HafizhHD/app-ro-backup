@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 import 'package:http/http.dart';
 import 'package:ruangkeluarga/global/global.dart';
-import 'package:ruangkeluarga/global/global_snackbar.dart';
 import 'package:ruangkeluarga/model/rk_app_list_with_icon.dart';
 import 'package:ruangkeluarga/model/rk_child_app_icon_list.dart';
 import 'package:ruangkeluarga/model/rk_child_apps.dart';

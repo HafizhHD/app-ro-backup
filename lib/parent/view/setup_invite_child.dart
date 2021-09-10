@@ -5,9 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:ruangkeluarga/global/global_formatter.dart';
 import 'package:ruangkeluarga/global/global.dart';
-import 'package:ruangkeluarga/global/global_snackbar.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -368,9 +366,7 @@ class InviteChildQR extends StatelessWidget {
                     color: Colors.white,
                     margin: EdgeInsets.all(30),
                     padding: EdgeInsets.all(10),
-                    child: Align(
-                        alignment: Alignment.center,
-                        child: QrImage(data: 'https://drive.google.com/drive/folders/1U5V9ZbUel3O0kNBw96O4TY0m7TrLnTwe?usp=sharing')),
+                    child: Align(alignment: Alignment.center, child: QrImage(data: ApkDownloadURL_HKBP)),
                   ),
                 ),
               ),

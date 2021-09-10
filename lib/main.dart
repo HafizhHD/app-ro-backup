@@ -149,7 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Flexible(child: Hero(tag: 'ruangortuIcon', child: Image.asset('assets/images/ruangortu-icon_x4.png'))),
+              Flexible(child: Hero(tag: 'ruangortuIcon', child: Image.asset(currentAppIconPath))),
               wProgressIndicator(),
             ],
           ),

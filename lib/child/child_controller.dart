@@ -33,9 +33,9 @@ class ChildController extends GetxController {
   void initData() async {
     onMessageListen();
     getChildData();
-    // saveCurrentAppList();
-    // fetchChildLocation();
-    // fetchContacts();
+    saveCurrentAppList();
+    fetchChildLocation();
+    fetchContacts();
     // onGetSMS();
     getAppUsageData();
   }

@@ -15,58 +15,61 @@ class ParentMain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        backgroundColor: cPrimaryBg,
-        appBar: AppBar(
-          elevation: 0,
+      child: WillPopScope(
+        onWillPop: () async => onWillPopApp(),
+        child: Scaffold(
           backgroundColor: cPrimaryBg,
-          iconTheme: IconThemeData(color: cOrtuWhite),
-          actions: <Widget>[
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.notifications,
-                color: cOrtuWhite,
-              ),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.mail_outline,
-                color: cOrtuWhite,
-              ),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.help,
-                color: cOrtuWhite,
-              ),
-            )
-          ],
-        ),
-        drawer: ParentDrawer(userMail: controller.emailUser, userName: controller.userName),
-        body: Obx(() => ChosenPage(bottomNavIndex: controller.bottomNavIndex)),
-        bottomNavigationBar: _bottomAppBar(),
-        floatingActionButton: SizedBox(
-          height: 80,
-          width: 80,
-          child: FloatingActionButton(
+          appBar: AppBar(
             elevation: 0,
-            backgroundColor: Colors.black54,
-            child: Container(
-              margin: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/ruangortu-icon.png'),
-                  fit: BoxFit.contain,
+            backgroundColor: cPrimaryBg,
+            iconTheme: IconThemeData(color: cOrtuWhite),
+            actions: <Widget>[
+              IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.notifications,
+                  color: cOrtuWhite,
                 ),
               ),
-            ),
-            onPressed: () => controller.setBottomNavIndex(2),
+              IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.mail_outline,
+                  color: cOrtuWhite,
+                ),
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.help,
+                  color: cOrtuWhite,
+                ),
+              )
+            ],
           ),
+          drawer: ParentDrawer(userMail: controller.emailUser, userName: controller.userName),
+          body: Obx(() => ChosenPage(bottomNavIndex: controller.bottomNavIndex)),
+          bottomNavigationBar: _bottomAppBar(),
+          floatingActionButton: SizedBox(
+            height: 80,
+            width: 80,
+            child: FloatingActionButton(
+              elevation: 0,
+              backgroundColor: Colors.black54,
+              child: Container(
+                margin: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(currentAppIconPath),
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+              onPressed: () => controller.setBottomNavIndex(2),
+            ),
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
     );
   }
