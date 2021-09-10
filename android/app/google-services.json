@@ -46,7 +46,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:78925276663:android:5deebe1fd237eba19f7af2",
         "android_client_info": {
-          "package_name": "com.ruangortu"
+          "package_name": "com.keluargahkbp"
         }
       },
       "oauth_client": [
@@ -54,7 +54,7 @@
           "client_id": "78925276663-2adk6c4djoksmehv1r1s5ke4cguh23d0.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.ruangortu",
+            "package_name": "com.keluargahkbp",
             "certificate_hash": "2df758cb79175210e1cca0b09525f4e9b3525d81"
           }
         },
@@ -62,7 +62,7 @@
           "client_id": "78925276663-fo1d1b7gi8158s8p11plvdeenr6povor.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.ruangortu",
+            "package_name": "com.keluargahkbp",
             "certificate_hash": "a7027d153c39e44a450ffe5573b4fe0e8c1c00e5"
           }
         },

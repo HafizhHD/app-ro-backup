@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.ruangortu">
+    package="com.keluargahkbp">
 
     <uses-permission
         android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -19,7 +19,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
-        android:label="Ruang Ortu"
+        android:label="Keluarga HKBP"
         android:icon="@mipmap/launcher_icon"
         android:allowBackup="false">
 
