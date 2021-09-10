@@ -258,7 +258,7 @@ ADDED from /Users/devinyonas/Development/Project/Flutter/ruangkeluargamobile/and
 		ADDED from /Users/devinyonas/Development/Project/Flutter/ruangkeluargamobile/android/app/src/main/AndroidManifest.xml:28:12-67
 	android:name
 		ADDED from /Users/devinyonas/Development/Project/Flutter/ruangkeluargamobile/android/app/src/main/AndroidManifest.xml:27:12-57
-activity#com.ruangortu.MainActivity
+activity#com.keluargahkbp.MainActivity
 ADDED from /Users/devinyonas/Development/Project/Flutter/ruangkeluargamobile/android/app/src/main/AndroidManifest.xml:30:9-58:20
 	android:launchMode
 		ADDED from /Users/devinyonas/Development/Project/Flutter/ruangkeluargamobile/android/app/src/main/AndroidManifest.xml:32:13-43
