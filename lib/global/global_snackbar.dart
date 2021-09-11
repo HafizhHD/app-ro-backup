@@ -87,13 +87,13 @@ Future<bool> onWillPopApp() async {
           Get.back(result: true);
           SystemChannels.platform.invokeMethod('SystemNavigator.pop');
         },
-        child: new Text('Ya', style: new TextStyle(color: cOrtuOrange)),
+        child: new Text('Ya', style: new TextStyle(color: cOrtuBlue)),
       ),
       new TextButton(
         onPressed: () {
           Get.back(result: false);
         },
-        child: new Text('Tidak', style: new TextStyle(color: cOrtuOrange)),
+        child: new Text('Tidak', style: new TextStyle(color: cOrtuBlue)),
       )
     ],
   ));

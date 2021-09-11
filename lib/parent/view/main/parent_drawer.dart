@@ -148,7 +148,7 @@ class ParentDrawer extends StatelessWidget {
                         actions: <Widget>[
                           TextButton(
                             onPressed: () => Navigator.pop(context, 'Cancel'),
-                            child: const Text('Cancel', style: TextStyle(color: cOrtuOrange)),
+                            child: const Text('Cancel', style: TextStyle(color: cOrtuBlue)),
                           ),
                           TextButton(
                             onPressed: () async {
@@ -163,7 +163,7 @@ class ParentDrawer extends StatelessWidget {
                                 (route) => false,
                               );
                             },
-                            child: const Text('OK', style: TextStyle(color: cOrtuOrange)),
+                            child: const Text('OK', style: TextStyle(color: cOrtuBlue)),
                           ),
                         ],
                       )))

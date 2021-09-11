@@ -128,6 +128,34 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                     width: MediaQuery.of(context).size.width,
                     child: Theme(
                       data: Theme.of(context).copyWith(splashColor: Colors.transparent),
+                      child: TextField(
+                        style: TextStyle(fontSize: 16.0, color: Colors.black),
+                        keyboardType: TextInputType.number,
+                        minLines: 1,
+                        maxLines: 1,
+                        // controller: cParoki,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: cOrtuWhite,
+                          hintText: 'Paroki Gereja',
+                          contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: cOrtuWhite),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: cOrtuWhite),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 10.0, bottom: 10),
+                    width: MediaQuery.of(context).size.width,
+                    child: Theme(
+                      data: Theme.of(context).copyWith(splashColor: Colors.transparent),
                       child: TextFormField(
                         validator: (val) {
                           print(val);

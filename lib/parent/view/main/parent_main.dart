@@ -32,13 +32,13 @@ class ParentMain extends StatelessWidget {
                   color: cOrtuWhite,
                 ),
               ),
-              IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.mail_outline,
-                  color: cOrtuWhite,
-                ),
-              ),
+              // IconButton(
+              //   onPressed: () {},
+              //   icon: Icon(
+              //     Icons.mail_outline,
+              //     color: cOrtuWhite,
+              //   ),
+              // ),
               IconButton(
                 onPressed: () {},
                 icon: Icon(
@@ -54,19 +54,21 @@ class ParentMain extends StatelessWidget {
           floatingActionButton: SizedBox(
             height: 80,
             width: 80,
-            child: FloatingActionButton(
-              elevation: 0,
-              backgroundColor: Colors.black54,
-              child: Container(
-                margin: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(currentAppIconPath),
-                    fit: BoxFit.contain,
+            child: Obx(
+              () => FloatingActionButton(
+                elevation: 0,
+                backgroundColor: controller.bottomNavIndex == 2 ? Colors.blueGrey : Colors.black54,
+                child: Container(
+                  margin: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(currentAppIconPath),
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
+                onPressed: () => controller.setBottomNavIndex(2),
               ),
-              onPressed: () => controller.setBottomNavIndex(2),
             ),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -88,22 +90,22 @@ class ParentMain extends StatelessWidget {
             IconWithLabel(
                 defaultIcon: Icons.home_outlined,
                 activeIcon: Icons.home_filled,
-                label: 'Home',
+                label: 'Discover',
                 isSelected: controller.bottomNavIndex == 0,
                 onPressed: () => controller.setBottomNavIndex(0)),
+            IconWithLabel(
+                defaultIcon: Icons.mail_outline,
+                activeIcon: Icons.mail,
+                label: 'Inbox',
+                isSelected: controller.bottomNavIndex == 1,
+                onPressed: () => controller.setBottomNavIndex(1)),
+            SizedBox(width: 40), // The dummy child
             IconWithLabel(
                 defaultIcon: Icons.calendar_today_outlined,
                 activeIcon: Icons.calendar_today,
                 label: 'Jadwal',
                 isSelected: controller.bottomNavIndex == 3,
-                onPressed: () => controller.setBottomNavIndex(3)), // IconWithLabel(
-            //     defaultIcon: Icons.cloud_download_outlined,
-            //     activeIcon: Icons.cloud_download,
-            //     label: 'Addon',
-            //     isSelected: controller.bottomNavIndex == 1,
-            //     onPressed: () => controller.setBottomNavIndex(1)),
-            SizedBox(width: 40), // The dummy child
-
+                onPressed: () => controller.setBottomNavIndex(3)),
             IconWithLabel(
                 defaultIcon: Icons.person_outlined,
                 activeIcon: Icons.person,
@@ -125,11 +127,11 @@ class ChosenPage extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (bottomNavIndex) {
       case 0:
-        return new HomeParentPage();
-      case 1:
-        return new AddonPage();
-      case 2:
         return new FeedPage();
+      case 1:
+      // return new AddonPage();
+      case 2:
+        return new HomeParentPage();
       case 3:
         return new JadwalPage();
       case 4:

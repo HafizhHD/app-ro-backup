@@ -16,7 +16,7 @@ class ParentController extends GetxController {
   late ParentProfile parentProfile;
   Rx<Future<List<Child>>> fChildList = Future<List<Child>>.value(<Child>[]).obs;
   RxMap _modeAsuh = <int, int>{}.obs;
-  var _bottomNavIndex = 0.obs;
+  var _bottomNavIndex = 2.obs;
 
   int get bottomNavIndex => _bottomNavIndex.value;
 
