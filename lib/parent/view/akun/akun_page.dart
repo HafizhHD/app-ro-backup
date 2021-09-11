@@ -153,7 +153,7 @@ class AkunPage extends StatelessWidget {
           onPressed: () {
             Get.back(result: false);
           },
-          child: Text('Batal', style: TextStyle(color: cOrtuOrange)),
+          child: Text('Batal', style: TextStyle(color: cOrtuBlue)),
         ),
         TextButton(
           onPressed: () async {
@@ -167,7 +167,7 @@ class AkunPage extends StatelessWidget {
             } else
               showSnackbar('Gagal menghapus anak dengan nama $childName');
           },
-          child: Text('Hapus', style: TextStyle(color: cOrtuOrange)),
+          child: Text('Hapus', style: TextStyle(color: cOrtuBlue)),
         ),
       ],
     ));

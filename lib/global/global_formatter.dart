@@ -330,7 +330,7 @@ bool isEmail(String string) {
   if (string.isEmpty) {
     return false;
   }
-  const pattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
+  const pattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$';
   final regExp = RegExp(pattern);
 
   if (!regExp.hasMatch(string)) {

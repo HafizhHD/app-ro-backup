@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
@@ -24,6 +26,7 @@ class ChildController extends GetxController {
   var childEmail = '';
   late ChildProfile childProfile;
   late Timer locationPeriodic;
+  bool isBackgroundServiceOn = false;
 
   Location location = new Location();
 
@@ -34,6 +37,12 @@ class ChildController extends GetxController {
   }
 
   void initData() async {
+    // if (!isBackgroundServiceOn) {
+    //   isBackgroundServiceOn = true;
+    //   print('START BACKGROUND SERVICE');
+    //   FlutterBackgroundService.initialize(childBackgroundTask);
+    // }
+
     await getChildData().then((value) {
       onMessageListen();
       fetchChildLocation();
@@ -255,4 +264,45 @@ class ChildController extends GetxController {
       print('isi response save app usage : ${response.statusCode}');
     }
   }
+}
+
+void childBackgroundTask() {
+  WidgetsFlutterBinding.ensureInitialized();
+  final service = FlutterBackgroundService();
+  // final childController = Get.find<ChildController>();
+  service.onDataReceived.listen((event) {
+    service.sendData(
+      {"got_event": event},
+    );
+
+    if (event!["action"] == "setAsForeground") {
+      service.setForegroundMode(true);
+      return;
+    }
+
+    if (event["action"] == "setAsBackground") {
+      service.setForegroundMode(false);
+    }
+
+    if (event["action"] == "stopService") {
+      service.stopBackgroundService();
+    }
+  });
+
+  // bring to foreground
+  service.setForegroundMode(true);
+  Timer.periodic(Duration(seconds: 5), (timer) async {
+    if (!(await service.isServiceRunning())) timer.cancel();
+    await Location().getLocation().then((locData) async {
+      service.setNotificationInfo(
+        title: "Keluarga HBKP Service",
+        content: "Updated at ${DateTime.now()}",
+        // content: "Updated at ${DateTime.now()} \n Location:[${locData.latitude}, ${locData.longitude}]",
+      );
+    });
+
+    service.sendData(
+      {"current_date": DateTime.now().toIso8601String()},
+    );
+  });
 }

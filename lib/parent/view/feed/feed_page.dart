@@ -13,17 +13,18 @@ class FeedPage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Flexible(
-            flex: 1,
-            child: Container(
-              child: ListView.builder(
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return roundAddonAvatar(imgUrl: 'assets/images/hkbpgo.png', addonName: 'HKBP GO $index');
-                },
-              ),
+          Container(
+            constraints: BoxConstraints(
+              maxHeight: screenSize.height / 6,
+              maxWidth: screenSize.width - 20,
+            ),
+            child: ListView.builder(
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              itemCount: 10,
+              itemBuilder: (context, index) {
+                return roundAddonAvatar(imgUrl: 'assets/images/hkbpgo.png', addonName: 'HKBP GO $index');
+              },
             ),
           ),
           Container(
