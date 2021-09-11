@@ -7,14 +7,6 @@ import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/model/rk_child_contact.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 
-class ConfigRKContact extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
-  }
-}
-
 class ConfigRKContactPage extends StatefulWidget {
   // List<charts.Series> seriesList;
   @override
@@ -28,6 +20,8 @@ class ConfigRKContactPage extends StatefulWidget {
 
 class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
   late Future<List<Contact>> fContactList;
+  late List<Contact> contactList;
+  late List<Contact> searchContactList;
   List<bool> listSwitchValue = [];
 
   Future<List<Contact>> fetchContact() async {
@@ -39,6 +33,13 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
         List tempContact = json['contacts'][0]['contacts'];
         if (tempContact.length > 0) {
           List<Contact> data = tempContact.map((model) => Contact.fromJson(model)).toList();
+          data.sort((a, b) {
+            var aName = a.name;
+            var bName = b.name;
+            return aName.compareTo(bName);
+          });
+          contactList = searchContactList = data;
+          setState(() {});
           return data;
         } else {
           return [];
@@ -85,7 +86,10 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             WSearchBar(
-              fOnChanged: (v) {},
+              fOnChanged: (v) {
+                searchContactList = contactList.where((e) => e.name.toLowerCase().contains(v.toLowerCase()) == true).toList();
+                setState(() {});
+              },
             ),
             //dropDown
             Flexible(
@@ -93,18 +97,12 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                   future: fContactList,
                   builder: (context, AsyncSnapshot<List<Contact>> snapshot) {
                     if (!snapshot.hasData) return wProgressIndicator();
+                    if ((snapshot.data ?? []).length <= 0) return Center(child: Text('Data kontak kosong', style: TextStyle(color: cOrtuWhite)));
 
-                    final contacts = snapshot.data ?? [];
-                    if (contacts.length <= 0) return Center(child: Text('Data kontak kosong', style: TextStyle(color: cOrtuWhite)));
-                    contacts.sort((a, b) {
-                      var aName = a.name;
-                      var bName = b.name;
-                      return aName.compareTo(bName);
-                    });
                     return ListView.builder(
-                        itemCount: contacts.length,
+                        itemCount: searchContactList.length,
                         itemBuilder: (ctx, index) {
-                          final dataContact = contacts[index];
+                          final dataContact = searchContactList[index];
                           return Container(
                             padding: EdgeInsets.all(10),
                             child: Row(
