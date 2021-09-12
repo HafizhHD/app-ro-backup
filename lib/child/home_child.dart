@@ -174,7 +174,6 @@ class _HomeChildPageState extends State<HomeChildPage> {
       } else {
         from = now.subtract(Duration(days: 1)).millisecondsSinceEpoch;
       }
-      // from = now.subtract(Duration(days: 1)).millisecondsSinceEpoch;
       int to = now.subtract(Duration(days: 0)).millisecondsSinceEpoch;
       if (blackListData[indeks].contact['name'] == null) {
         Iterable<CallLogEntry> entries = await CallLog.query(dateFrom: from, dateTo: to, number: '${blackListData[indeks].contact['phones'][0]}');

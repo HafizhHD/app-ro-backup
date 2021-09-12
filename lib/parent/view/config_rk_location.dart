@@ -112,6 +112,7 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
 
   void fetchFilterMarker(List<DateTime> rangeDate) async {
     markers.clear();
+    listLocationChild.clear();
     var outputFormat = DateFormat('yyyy-MM-dd');
     var startDate = outputFormat.format(rangeDate[0]);
     var endDate = outputFormat.format(rangeDate[rangeDate.length - 1]);
@@ -198,24 +199,25 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                         Flexible(
                           child: Text('Update Lokasi: 1 menit lalu', style: TextStyle(color: cOrtuWhite)),
                         ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 3,
-                        ),
-                        IconButton(
-                          color: cOrtuWhite,
-                          icon: Icon(Icons.directions),
-                          onPressed: () {
-                            showSnackbar('Belum di implementasi.', pShowDuration: Duration(seconds: 2));
-                          },
-                        ),
-                        IconButton(
-                          color: cOrtuWhite,
-                          icon: Icon(Icons.my_location),
-                          onPressed: () async {
-                            showLoadingOverlay();
-                            await fetchMarkers();
-                            closeOverlay();
-                          },
+                        Row(
+                          children: [
+                            IconButton(
+                              color: cOrtuWhite,
+                              icon: Icon(Icons.directions),
+                              onPressed: () {
+                                showSnackbar('Belum di implementasi.', pShowDuration: Duration(seconds: 2));
+                              },
+                            ),
+                            IconButton(
+                              color: cOrtuWhite,
+                              icon: Icon(Icons.my_location),
+                              onPressed: () async {
+                                showLoadingOverlay();
+                                await fetchMarkers();
+                                closeOverlay();
+                              },
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -324,7 +326,7 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                             //   style: TextStyle(fontSize: 16, color: cOrtuWhite),
                             // ),
                             trailing: Text(
-                              data.dateCreate,
+                              data.dateHistory,
                               style: TextStyle(fontSize: 16, color: cOrtuWhite),
                             ),
                             onTap: () async {

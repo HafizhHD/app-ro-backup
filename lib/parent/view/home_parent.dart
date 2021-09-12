@@ -225,7 +225,6 @@ class _HomeParentPageState extends State<HomeParentPage> {
                   ),
                 ),
               ),
-              // Flexible(child: _childDataLayout()),
               Flexible(flex: 2, child: _childDataLayout()),
               Flexible(
                 flex: 2,
@@ -312,6 +311,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
               if (childsList.length == 0) {
                 return Container(
                   margin: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0), //Same as `blurRadius` i guess
+                  constraints: BoxConstraints(maxHeight: 300, maxWidth: MediaQuery.of(context).size.width - 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10.0),
                     color: cOrtuGrey,
@@ -498,39 +498,47 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      GetBuilder<ParentController>(builder: (ctrl) {
-                                        return Row(
-                                          children: [
-                                            GestureDetector(
-                                              onTap: () => ctrl.setModeAsuh(childData.childOfNumber ?? 0, 1),
-                                              child: Icon(
-                                                ctrl.getmodeAsuh(childData.childOfNumber ?? 0) >= 1 ? Icons.looks_one : Icons.looks_one_outlined,
-                                                color: cOrtuBlue,
-                                                size: 35,
-                                              ),
-                                            ),
-                                            GestureDetector(
-                                              onTap: () => ctrl.setModeAsuh(childData.childOfNumber ?? 0, 2),
-                                              child: Icon(
-                                                ctrl.getmodeAsuh(childData.childOfNumber ?? 0) >= 2 ? Icons.looks_two : Icons.looks_two_outlined,
-                                                color: cOrtuBlue,
-                                                size: 35,
-                                              ),
-                                            ),
-                                            GestureDetector(
-                                              onTap: () => ctrl.setModeAsuh(childData.childOfNumber ?? 0, 3),
-                                              child: Icon(
-                                                ctrl.getmodeAsuh(childData.childOfNumber ?? 0) == 3 ? Icons.looks_3 : Icons.looks_3_outlined,
-                                                color: cOrtuBlue,
-                                                size: 35,
-                                              ),
-                                            ),
-                                          ],
-                                        );
-                                      }),
+                                      // GetBuilder<ParentController>(builder: (ctrl) {
+                                      //   return Row(
+                                      //     children: [
+                                      //       GestureDetector(
+                                      //         onTap: () => ctrl.setModeAsuh(childData.childOfNumber ?? 0, 1),
+                                      //         child: Icon(
+                                      //           ctrl.getmodeAsuh(childData.childOfNumber ?? 0) >= 1 ? Icons.looks_one : Icons.looks_one_outlined,
+                                      //           color: cOrtuBlue,
+                                      //           size: 35,
+                                      //         ),
+                                      //       ),
+                                      //       GestureDetector(
+                                      //         onTap: () => ctrl.setModeAsuh(childData.childOfNumber ?? 0, 2),
+                                      //         child: Icon(
+                                      //           ctrl.getmodeAsuh(childData.childOfNumber ?? 0) >= 2 ? Icons.looks_two : Icons.looks_two_outlined,
+                                      //           color: cOrtuBlue,
+                                      //           size: 35,
+                                      //         ),
+                                      //       ),
+                                      //       GestureDetector(
+                                      //         onTap: () => ctrl.setModeAsuh(childData.childOfNumber ?? 0, 3),
+                                      //         child: Icon(
+                                      //           ctrl.getmodeAsuh(childData.childOfNumber ?? 0) == 3 ? Icons.looks_3 : Icons.looks_3_outlined,
+                                      //           color: cOrtuBlue,
+                                      //           size: 35,
+                                      //         ),
+                                      //       ),
+                                      //     ],
+                                      //   );
+                                      // }),
                                       IconButton(
                                         iconSize: 35,
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          Navigator.of(context).push(MaterialPageRoute(
+                                              builder: (context) => DetailChildPage(
+                                                    title: 'Kontrol dan Konfigurasi',
+                                                    name: '${childData.name}',
+                                                    email: '${childData.email}',
+                                                    toLocation: true,
+                                                  )));
+                                        },
                                         icon: Icon(
                                           Icons.location_on_outlined,
                                           color: cOrtuBlue,

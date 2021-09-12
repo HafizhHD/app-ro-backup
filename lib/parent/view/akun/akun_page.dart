@@ -20,7 +20,12 @@ class AkunPage extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                profileContainer(imgUrl: parentData.imgPhoto, name: parentData.name, email: parentData.email, phone: parentData.phone),
+                profileContainer(
+                    imgUrl: parentData.imgPhoto,
+                    name: parentData.name,
+                    email: parentData.email,
+                    phone: parentData.phone,
+                    isParent: parentData.parentStatus.toEnumString()),
                 Flexible(
                   child: ListView.builder(
                     shrinkWrap: true,
@@ -48,6 +53,7 @@ class AkunPage extends StatelessWidget {
 
   // 'assets/images/foto_anak.png'
   Widget profileContainer({
+    String isParent = '',
     String? imgUrl,
     required String name,
     required String email,
@@ -112,6 +118,7 @@ class AkunPage extends StatelessWidget {
                           '$name',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
+                        Text(isParent != '' ? isParent : 'Anak'),
                         SizedBox(height: 10),
                         Text(
                           '$email',

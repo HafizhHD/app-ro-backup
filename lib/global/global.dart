@@ -30,3 +30,6 @@ const currentAppIconPath = AppIconPathHKBP;
 
 const ApkDownloadURL = 'https://drive.google.com/drive/folders/1U5V9ZbUel3O0kNBw96O4TY0m7TrLnTwe?usp=sharing';
 const ApkDownloadURL_HKBP = 'https://drive.google.com/drive/folders/1nlj_EiHgD6goR-JTsdCaIfeomVHUFsNr?usp=sharing';
+
+final urlPP = 'https://keluargahkbp.com/toc/privacy_policy_bahasa.html';
+final urlTOC = 'https://keluargahkbp.com/toc/toc_bahasa.html';
