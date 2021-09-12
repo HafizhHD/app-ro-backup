@@ -133,6 +133,12 @@ String now_ddMMMyyyyHHmmss() {
   return formatter.format(now);
 }
 
+String now_DateTime() {
+  var now = DateTime.now();
+  final DateFormat formatter = DateFormat('dd MMM yyyy HH:mm:ss');
+  return formatter.format(now);
+}
+
 String now_ddMMMMyyyy() {
   var now = DateTime.now();
   final DateFormat formatter = DateFormat('dd MMMM yyyy');
@@ -187,6 +193,15 @@ String dateTimeTo_ddMMMMyyyy(DateTime date) {
 }
 
 ///FROM STRING
+String strToEDMYHourOnly(String str) {
+  if (str == "") return "";
+  final DateFormat formatter = DateFormat('E, dd MMM yyyy HH:00:00');
+  var time = DateTime.parse(str);
+  String formatted = formatter.format(time);
+
+  return formatted;
+}
+
 String strToDayDDMMMYYYY(String str) {
   if (str == null || str == "") return "";
   var formatter = new DateFormat("E, dd MMM yyyy");

@@ -15,7 +15,7 @@ class LocationChild {
       // id: json['_id'],
       email: json['emailUser'],
       location: Location.fromJson(json['location']),
-      dateHistory: json['dateTimeHistory'],
+      dateHistory: strToEDMYHourOnly(json['dateTimeHistory']),
       dateCreate: strToDate_EddMMMyyyyHHmm(json['dateCreate']),
       createdAt: DateTime.parse(json['dateCreate']),
     );

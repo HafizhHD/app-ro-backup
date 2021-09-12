@@ -5,6 +5,7 @@ import 'package:ruangkeluarga/parent/view/addon/addon_page.dart';
 import 'package:ruangkeluarga/parent/view/akun/akun_page.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_page.dart';
 import 'package:ruangkeluarga/parent/view/home_parent.dart';
+import 'package:ruangkeluarga/parent/view/inbox/Inbox_page.dart';
 import 'package:ruangkeluarga/parent/view/jadwal/jadwal_page.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_drawer.dart';
@@ -25,13 +26,13 @@ class ParentMain extends StatelessWidget {
             backgroundColor: cPrimaryBg,
             iconTheme: IconThemeData(color: cOrtuWhite),
             actions: <Widget>[
-              IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.notifications,
-                  color: cOrtuWhite,
-                ),
-              ),
+              // IconButton(
+              //   onPressed: () {},
+              //   icon: Icon(
+              //     Icons.notifications,
+              //     color: cOrtuWhite,
+              //   ),
+              // ),
               // IconButton(
               //   onPressed: () {},
               //   icon: Icon(
@@ -57,7 +58,7 @@ class ParentMain extends StatelessWidget {
             child: Obx(
               () => FloatingActionButton(
                 elevation: 0,
-                backgroundColor: controller.bottomNavIndex == 2 ? Colors.blueGrey : Colors.black54,
+                backgroundColor: controller.bottomNavIndex == 2 ? cOrtuOrange : Colors.black54,
                 child: Container(
                   margin: EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -99,7 +100,7 @@ class ParentMain extends StatelessWidget {
                 label: 'Inbox',
                 isSelected: controller.bottomNavIndex == 1,
                 onPressed: () => controller.setBottomNavIndex(1)),
-            SizedBox(width: 40), // The dummy child
+            SizedBox(width: Get.width / 5), // The dummy child
             IconWithLabel(
                 defaultIcon: Icons.calendar_today_outlined,
                 activeIcon: Icons.calendar_today,
@@ -129,6 +130,7 @@ class ChosenPage extends StatelessWidget {
       case 0:
         return new FeedPage();
       case 1:
+        return new InboxPage();
       // return new AddonPage();
       case 2:
         return new HomeParentPage();
@@ -157,7 +159,7 @@ class IconWithLabel extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.defaultColor: cOrtuWhite,
-    this.activeColor: cOrtuBlue,
+    this.activeColor: cOrtuOrange,
     this.isSelected: false,
   });
 

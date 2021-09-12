@@ -174,7 +174,7 @@ class ChildController extends GetxController {
     try {
       await location.changeSettings(interval: 1000);
       await location.getLocation().then((locData) async {
-        await MediaRepository().saveUserLocation(childEmail, locData, now_ddMMMyyyyHHmmss()).then((response) {
+        await MediaRepository().saveUserLocation(childEmail, locData, DateTime.now().toIso8601String()).then((response) {
           if (response.statusCode == 200) {
             print('isi response save location Current: ${response.body}');
           } else {
@@ -186,7 +186,7 @@ class ChildController extends GetxController {
       locationPeriodic = Timer.periodic(Duration(hours: 1), (timer) async {
         print('timer save location $timer');
         await location.getLocation().then((locData) async {
-          await MediaRepository().saveUserLocation(childEmail, locData, now_ddMMMyyyyHHmmss()).then((response) {
+          await MediaRepository().saveUserLocation(childEmail, locData, DateTime.now().toIso8601String()).then((response) {
             if (response.statusCode == 200) {
               print('isi response save location : ${response.body}');
             } else {

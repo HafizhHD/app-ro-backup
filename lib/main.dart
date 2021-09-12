@@ -17,6 +17,7 @@ import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 import 'package:ruangkeluarga/parent/view_model/vm_content_rk.dart';
+import 'package:ruangkeluarga/utils/base_service/service_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'global/global.dart';
@@ -98,6 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     Get.put(ChildController());
     Get.put(ParentController());
+    Get.put(RKServiceController());
 
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       // Add Your Code here.

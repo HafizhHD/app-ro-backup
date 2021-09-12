@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 
@@ -37,8 +38,9 @@ class DetailChildPage extends StatefulWidget {
   final String title;
   final String name;
   final String email;
+  final bool toLocation;
 
-  DetailChildPage({Key? key, required this.title, required this.name, required this.email}) : super(key: key);
+  DetailChildPage({Key? key, required this.title, required this.name, required this.email, this.toLocation = false}) : super(key: key);
 }
 
 enum ModeAsuh { level1, level2, level3 }
@@ -97,6 +99,12 @@ class _DetailChildPageState extends State<DetailChildPage> {
     await prefs.setString("averageTime${widget.email}", avgData);
     onGetUsageDataWeekly();
     setState(() {});
+    if (widget.toLocation) {
+      WidgetsFlutterBinding.ensureInitialized();
+
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => RKConfigLocationPage(title: 'Penelurusan Lokasi', email: widget.email, name: widget.name)));
+    }
   }
 
   void onGetUsageDataWeekly() async {

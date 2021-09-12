@@ -7,6 +7,7 @@ import 'package:ruangkeluarga/child/home_child.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/addon/addon_page.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_page.dart';
+import 'package:ruangkeluarga/parent/view/inbox/Inbox_page.dart';
 import 'package:ruangkeluarga/parent/view/jadwal/jadwal_page.dart';
 
 class ChildMain extends StatelessWidget {
@@ -28,20 +29,20 @@ class ChildMain extends StatelessWidget {
             backgroundColor: cPrimaryBg,
             iconTheme: IconThemeData(color: cOrtuWhite),
             actions: <Widget>[
-              IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.notifications,
-                  color: cOrtuWhite,
-                ),
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.mail_outline,
-                  color: cOrtuWhite,
-                ),
-              ),
+              // IconButton(
+              //   onPressed: () {},
+              //   icon: Icon(
+              //     Icons.notifications,
+              //     color: cOrtuWhite,
+              //   ),
+              // ),
+              // IconButton(
+              //   onPressed: () {},
+              //   icon: Icon(
+              //     Icons.mail_outline,
+              //     color: cOrtuWhite,
+              //   ),
+              // ),
               IconButton(
                 onPressed: () {},
                 icon: Icon(
@@ -59,7 +60,7 @@ class ChildMain extends StatelessWidget {
             width: 80,
             child: FloatingActionButton(
               elevation: 0,
-              backgroundColor: Colors.black54,
+              backgroundColor: controller.bottomNavIndex == 2 ? Colors.blueGrey : Colors.black54,
               child: Container(
                 margin: EdgeInsets.all(8),
                 decoration: BoxDecoration(
@@ -91,16 +92,22 @@ class ChildMain extends StatelessWidget {
             IconWithLabel(
                 defaultIcon: Icons.home_outlined,
                 activeIcon: Icons.home_filled,
-                label: 'Home',
+                label: 'Discover',
                 isSelected: controller.bottomNavIndex == 0,
                 onPressed: () => controller.setBottomNavIndex(0)),
+            // IconWithLabel(
+            //     defaultIcon: Icons.cloud_download_outlined,
+            //     activeIcon: Icons.cloud_download,
+            //     label: 'Addon',
+            //     isSelected: controller.bottomNavIndex == 1,
+            //     onPressed: () => controller.setBottomNavIndex(1)),
             IconWithLabel(
-                defaultIcon: Icons.cloud_download_outlined,
-                activeIcon: Icons.cloud_download,
+                defaultIcon: Icons.mail_outline,
+                activeIcon: Icons.mail,
                 label: 'Addon',
                 isSelected: controller.bottomNavIndex == 1,
                 onPressed: () => controller.setBottomNavIndex(1)),
-            SizedBox(width: 40), // The dummy child
+            SizedBox(width: Get.width / 5), // The dummy child
             IconWithLabel(
                 defaultIcon: Icons.calendar_today_outlined,
                 activeIcon: Icons.calendar_today,
@@ -128,11 +135,12 @@ class ChosenPage extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (bottomNavIndex) {
       case 0:
-        return new HomeChild();
-      case 1:
-        return new AddonPage();
-      case 2:
         return new FeedPage();
+      case 1:
+        // return new AddonPage();
+        return new InboxPage();
+      case 2:
+        return new HomeChild();
       case 3:
         return new JadwalPage();
       case 4:

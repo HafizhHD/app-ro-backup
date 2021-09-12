@@ -132,13 +132,14 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                                     IconButton(
                                       color: cOrtuWhite,
                                       icon: Icon(
-                                        Icons.block_rounded,
+                                        dataContact.blacklist ? Icons.remove_red_eye : Icons.remove_red_eye_outlined,
                                         color: dataContact.blacklist ? cOrtuBlue : cOrtuWhite,
                                       ),
                                       onPressed: () async {
                                         showLoadingOverlay();
                                         final response = await onBlacklistContact(dataContact.name, dataContact.phone);
                                         if (response.statusCode == 200) {
+                                          await fetchContact();
                                           showSnackbar('Berhasil memblokir kontak ${dataContact.name}');
                                         } else {
                                           showSnackbar('Gagal memblokir kontak ${dataContact.name}. Silahkan coba lagi.');

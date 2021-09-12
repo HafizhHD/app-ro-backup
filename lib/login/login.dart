@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
@@ -12,6 +13,7 @@ import 'package:ruangkeluarga/child/setup_permission_child.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
+import 'package:ruangkeluarga/utils/rk_webview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../parent/view/setup_profile_parent.dart';
@@ -126,10 +128,34 @@ class _LoginState extends State<LoginPage> {
     }
   }
 
+  late TapGestureRecognizer _onTapPP;
+  late TapGestureRecognizer _onTapTOC;
+  bool readPP = false;
+  bool readTOC = false;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _onTapPP = TapGestureRecognizer()
+      ..onTap = () {
+        readPP = true;
+        showPrivacyPolicy();
+        setState(() {});
+      };
+    _onTapTOC = TapGestureRecognizer()
+      ..onTap = () {
+        readTOC = true;
+        showTermCondition();
+        setState(() {});
+      };
+  }
+
+  @override
+  void dispose() {
+    _onTapPP.dispose();
+    _onTapTOC.dispose();
+    super.dispose();
   }
 
   @override
@@ -171,32 +197,59 @@ class _LoginState extends State<LoginPage> {
               ),
               Container(
                 padding: EdgeInsets.only(top: 50, bottom: 20, left: 20, right: 20),
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() => _okPolicy = !_okPolicy);
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Checkbox(
-                          side: BorderSide(color: cOrtuWhite),
-                          activeColor: cOrtuWhite,
-                          checkColor: cPrimaryBg,
-                          value: _okPolicy,
-                          onChanged: (value) {
-                            setState(() => _okPolicy = !_okPolicy);
-                          }),
-                      Flexible(
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          child: Text(
-                            'Saya setuju dengan syarat dan ketentuan dari $appName',
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Checkbox(
+                        side: BorderSide(color: cOrtuWhite),
+                        activeColor: cOrtuWhite,
+                        checkColor: cPrimaryBg,
+                        value: _okPolicy,
+                        onChanged: (value) {
+                          setState(() => _okPolicy = !_okPolicy);
+                        }),
+                    Flexible(
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        child: RichText(
+                          text: TextSpan(
+                            text: 'Saya telah membaca dan menyetujui \n',
                             style: TextStyle(color: cOrtuWhite),
+                            children: <TextSpan>[
+                              TextSpan(
+                                recognizer: _onTapPP,
+                                text: 'Kebijakan Privasi',
+                                style: TextStyle(
+                                  color: cOrtuBlue,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              TextSpan(
+                                text: ' dan ',
+                                style: TextStyle(
+                                  color: cOrtuWhite,
+                                ),
+                              ),
+                              TextSpan(
+                                recognizer: _onTapTOC,
+                                text: 'Syarat dan Ketentuan',
+                                style: TextStyle(
+                                  color: cOrtuBlue,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              TextSpan(
+                                text: '\ndari $appName',
+                                style: TextStyle(
+                                  color: cOrtuWhite,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               Container(
@@ -213,7 +266,7 @@ class _LoginState extends State<LoginPage> {
                         child: Image.asset(
                           'assets/images/google_logo.png',
                         )),
-                    title: Text('Sign in with Google', textAlign: TextAlign.center, style: TextStyle(color: cPrimaryBg)),
+                    title: Text('Sign in with Google', textAlign: TextAlign.center, style: TextStyle(color: _okPolicy ? cPrimaryBg : cOrtuWhite)),
                     onTap: _okPolicy
                         ? () async {
                             showLoadingOverlay();
