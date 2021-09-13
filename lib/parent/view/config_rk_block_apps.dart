@@ -198,10 +198,11 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
                                           fAppList = fetchAppList();
                                           setState(() {});
 
-                                          showSnackbar("Berhasil memblokir aplikasi ${app.appName}");
+                                          showToastSuccess(ctx: context, successText: "Berhasil memblokir aplikasi ${app.appName}");
                                         } else {
                                           closeOverlay();
-                                          showSnackbar("Gagal memblokir aplikasi ${app.appName}. Terjadi kesalahan server");
+                                          showToastFailed(
+                                              ctx: context, failedText: "Gagal memblokir aplikasi ${app.appName}. Terjadi kesalahan server");
                                         }
                                       },
                                       icon: Icon(

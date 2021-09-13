@@ -64,7 +64,7 @@ class MediaRepository {
   }
 
   Future<Response> registerParent(
-      String email, String name, String token, String photo, nohp, String alamat, String status, String accessToken) async {
+      String email, String name, String token, String photo, nohp, String alamat, String status, String accessToken, String imgByte) async {
     var url = _rkService.baseUrl + '/user/register';
     Map<String, dynamic> json = {
       "emailUser": "$email",
@@ -76,13 +76,15 @@ class MediaRepository {
       "parentStatus": "$status",
       "accessCode": "$accessToken"
     };
+    if (imgByte != "") json["imagePhoto"] = imgByte;
+
     print('param register parent : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
   Future<Response> inviteChild(String email, String childEmail, String nohp, String childName, int childAge, String childStudyLevel,
-      int childOfNumber, int childNumber) async {
+      int childOfNumber, int childNumber, String imgByte) async {
     var url = _rkService.baseUrl + '/user/invite';
     Map<String, dynamic> json = {
       "emailUser": "$email",
@@ -94,6 +96,8 @@ class MediaRepository {
       "childOfNumber": childOfNumber,
       "childNumber": childNumber
     };
+    if (imgByte != "") json["imagePhoto"] = imgByte;
+
     print('param register parent : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
@@ -105,6 +109,18 @@ class MediaRepository {
     print('param remove user : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     print('response remove user : ${response.body}');
+    return response;
+  }
+
+  Future<Response> editUser(String id, Map<String, dynamic> newValue) async {
+    var url = _rkService.baseUrl + '/user/edit';
+    Map<String, dynamic> json = {
+      "whereValues": {"_id": "$id"},
+      "newValues": newValue,
+    };
+    print('param update user data : $json');
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    print('response update user data: ${response.body}');
     return response;
   }
 
@@ -143,6 +159,16 @@ class MediaRepository {
     var url = _rkService.baseUrl + '/user/contactAdd';
     Map<String, dynamic> json = {"emailUser": "$email", "contacts": contact};
     print('param child contact : $json');
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> fetchBlacklistedContact(String email) async {
+    var url = _rkService.baseUrl + '/user/contactBlackListFilter';
+    Map<String, dynamic> json = {
+      "whereKeyValues": {"emailUser": "$email"}
+    };
+    print('param fetch blacklisted contact : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
@@ -233,13 +259,14 @@ class MediaRepository {
 
   Future<Response> blackListContactAdd(String email, String name, String phoneNumber, String label) async {
     var url = _rkService.baseUrl + '/user/contactBlackListAdd';
+    List phoneNums = phoneNumber.split(',');
     Map<String, dynamic> json = {
-      "emailUser": "$email",
+      "emailUser": email.trim(),
       "contact": {
-        "name": "$name",
-        "phones": ["$phoneNumber"]
+        "name": name.trim(),
+        "phones": phoneNums,
       },
-      "label": "Test Black List"
+      "label": "Test Black List",
     };
     print('param blacklist contact : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));

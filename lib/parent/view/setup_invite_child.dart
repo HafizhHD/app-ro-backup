@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:ruangkeluarga/global/custom_widget/photo_image_picker.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,6 +33,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
   late FToast fToast;
   String birthDateString = '';
   DateTime birthDate = DateTime.now().subtract(Duration(days: 365 * 5));
+  File? _selectedImage;
 
   void setBindingData() async {
     prefs = await SharedPreferences.getInstance();
@@ -42,7 +46,19 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
     showLoadingOverlay();
     String status = "SD";
     await prefs.setString("rkChildName", cChildName.text);
-    Response response = await MediaRepository().inviteChild(emailUser, cChildEmail.text, cPhoneNumber.text, cChildName.text, 10, status, 1, 1);
+    final Uint8List? _imageBytes = _selectedImage != null ? _selectedImage!.readAsBytesSync() : null;
+
+    Response response = await MediaRepository().inviteChild(
+      emailUser,
+      cChildEmail.text,
+      cPhoneNumber.text,
+      cChildName.text,
+      10,
+      status,
+      1,
+      1,
+      _imageBytes != null ? "data:image/png;base64,${base64Encode(_imageBytes)}" : "",
+    );
     print('isi response invite : ${response.body}');
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
@@ -55,7 +71,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
         await prefs.setBool(isPrefLogin, false);
         closeOverlay();
         _showToastFailed();
-        showSnackbar(json['message']);
+        showToastFailed(ctx: context, failedText: json['message']);
       }
     } else {
       await prefs.setBool(isPrefLogin, false);
@@ -131,6 +147,20 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
     final borderRadiusSize = Radius.circular(10);
 
     return Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text('Buat Profile Anak'),
+          leading: SizedBox(),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.close))
+          ],
+          backgroundColor: cPrimaryBg,
+          elevation: 0,
+        ),
         backgroundColor: cPrimaryBg,
         body: Container(
           margin: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20),
@@ -141,30 +171,33 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
               Flexible(
                 child: SingleChildScrollView(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Container(
-                        height: screenSize.height / 3,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: cOrtuBlue,
-                          borderRadius: BorderRadius.only(bottomLeft: borderRadiusSize, bottomRight: borderRadiusSize),
-                        ),
-                        child: Stack(
-                          alignment: AlignmentDirectional.center,
-                          children: [
-                            Positioned(
-                              top: 20,
-                              child: Container(
-                                padding: EdgeInsets.all(20),
-                                child: Text(
-                                  'Buat Profile Anak',
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                                ),
-                              ),
-                            ),
-                            Icon(Icons.camera_alt, size: 50),
-                          ],
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxHeight: screenSize.height / 4),
+                        child: GestureDetector(
+                          onTap: () async {
+                            final imgPicker = await openCamOrDirDialog();
+                            if (imgPicker != null) setState(() => _selectedImage = imgPicker);
+                          },
+                          child: AspectRatio(
+                            aspectRatio: 1,
+                            child: _selectedImage != null
+                                ? Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(borderRadiusSize),
+                                      image: DecorationImage(image: FileImage(_selectedImage!), fit: BoxFit.cover),
+                                    ),
+                                  )
+                                : Container(
+                                    height: screenSize.height / 3,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: cOrtuBlue,
+                                      borderRadius: BorderRadius.all(borderRadiusSize),
+                                    ),
+                                    child: Center(child: Icon(Icons.add_a_photo, size: 50)),
+                                  ),
+                          ),
                         ),
                       ),
                       Container(
@@ -235,11 +268,14 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                           ),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.only(top: 10.0),
-                        child: Text(
-                          'Tanggal Lahir',
-                          style: TextStyle(color: cOrtuGrey),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 10.0),
+                          child: Text(
+                            'Tanggal Lahir (opsional)',
+                            style: TextStyle(color: cOrtuGrey),
+                          ),
                         ),
                       ),
                       Container(
@@ -303,7 +339,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                   ),
                 ),
               ),
-              MediaQuery.of(context).viewInsets.bottom > keyboardHeight
+              !showKeyboard(context)
                   ? SizedBox()
                   : Container(
                       margin: EdgeInsets.only(top: 10),

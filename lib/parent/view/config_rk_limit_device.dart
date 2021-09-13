@@ -228,9 +228,9 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                               final response = await MediaRepository().scheduleUpdateStatus(status ? '' : 'Aktif', schedule.id!);
                                               if (response.statusCode == 200) {
                                                 await fetchListSchedule();
-                                                showSnackbar('Berhasil Ubah Status Jadwal Penggunaan!');
+                                                showToastSuccess(ctx: context, successText: 'Berhasil Ubah Status Jadwal Penggunaan!');
                                               } else {
-                                                showSnackbar('Gagal Ubah Status Jadwal Penggunaan!');
+                                                showToastFailed(ctx: context, failedText: 'Gagal Ubah Status Jadwal Penggunaan!');
                                               }
                                             },
                                             icon: Icon(
@@ -251,9 +251,9 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                               final response = await MediaRepository().scheduleRemove(schedule.id!);
                                               if (response.statusCode == 200) {
                                                 await fetchListSchedule();
-                                                showSnackbar('Berhasil Menghapus Jadwal Penggunaan!');
+                                                showToastSuccess(ctx: context, successText: 'Berhasil Menghapus Jadwal Penggunaan!');
                                               } else {
-                                                showSnackbar('Gagal Menghapus Jadwal Penggunaan!');
+                                                showToastFailed(ctx: context, failedText: 'Gagal Menghapus Jadwal Penggunaan!');
                                               }
                                             },
                                             icon: Icon(
@@ -453,9 +453,9 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                 await fetchListSchedule();
                                 closeOverlay();
                                 closeOverlay();
-                                showSnackbar('Berhasil Ubah Jadwal Penggunaan!');
+                                showToastSuccess(ctx: context, successText: 'Berhasil Ubah Jadwal Penggunaan!');
                               } else {
-                                showSnackbar('Gagal Ubah Jadwal Penggunaan!');
+                                showToastFailed(ctx: context, failedText: 'Gagal Ubah Jadwal Penggunaan!');
                               }
                             } else {
                               final response = await onSaveSchedule('aktif');
@@ -463,9 +463,9 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                 await fetchListSchedule();
                                 closeOverlay();
                                 closeOverlay();
-                                showSnackbar('Berhasil Tambah Jadwal Penggunaan!');
+                                showToastSuccess(ctx: context, successText: 'Berhasil Tambah Jadwal Penggunaan!');
                               } else {
-                                showSnackbar('Gagal Tambah Jadwal Penggunaan!');
+                                showToastFailed(ctx: context, failedText: 'Gagal Tambah Jadwal Penggunaan!');
                               }
                             }
                           },

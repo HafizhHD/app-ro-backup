@@ -205,7 +205,7 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                               color: cOrtuWhite,
                               icon: Icon(Icons.directions),
                               onPressed: () {
-                                showSnackbar('Belum di implementasi.', pShowDuration: Duration(seconds: 2));
+                                showToastSuccess(ctx: context, successText: 'Belum di implementasi.');
                               },
                             ),
                             IconButton(
