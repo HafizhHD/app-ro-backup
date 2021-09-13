@@ -112,6 +112,7 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                         itemBuilder: (ctx, index) {
                           final dataContact = searchContactList[index];
                           return Container(
+                            key: Key('${dataContact.name}+${dataContact.phone}'),
                             padding: EdgeInsets.all(10),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,

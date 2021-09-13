@@ -36,7 +36,7 @@ class AkunPage extends StatelessWidget {
                     itemBuilder: (ctx, idx) {
                       final childData = children[idx];
                       return profileContainer(
-                        // imgUrl: 'assets/images/foto_anak.png',
+                        imgUrl: childData.imgPhoto,
                         name: childData.name ?? 'Nama Anak',
                         email: childData.email ?? 'email@anak.com',
                         id: childData.id,

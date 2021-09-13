@@ -6,6 +6,7 @@ class Child {
   final int? childOfNumber;
   final int? childNumber;
   final String? studyLevel;
+  final String? imgPhoto;
 
   Child({
     required this.id,
@@ -15,6 +16,7 @@ class Child {
     this.childOfNumber,
     this.childNumber,
     this.studyLevel,
+    this.imgPhoto,
   });
 
   factory Child.fromJson(Map<String, dynamic> json) {
@@ -26,16 +28,7 @@ class Child {
       childOfNumber: json['childOfNumber'] as int?,
       childNumber: json['childNumber'] as int?,
       studyLevel: json['StudyLevel'] as String?,
+      imgPhoto: json['imagePhoto'],
     );
-  }
-
-  void printData() {
-    print('_id: $id');
-    print('Name: $name');
-    print('age: $age');
-    print('email: $email');
-    print('StudyLevel: $studyLevel');
-    print('childNumber: $childNumber');
-    print('childOfNumber: $childOfNumber');
   }
 }
