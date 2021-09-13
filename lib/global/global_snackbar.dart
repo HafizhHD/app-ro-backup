@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
 
@@ -77,26 +77,50 @@ void showSnackbarSuccessWithTap(String pText, {required Function() fOnTap, Durat
   );
 }
 
-Future<bool> onWillPopApp() async {
-  final bool res = await Get.dialog(AlertDialog(
-    title: new Text('Konfirmasi tutup', style: new TextStyle(fontSize: 20.0)),
-    content: new Text('Yakin ingin menutup aplikasi?'),
-    actions: <Widget>[
-      new TextButton(
-        onPressed: () {
-          Get.back(result: true);
-          SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-        },
-        child: new Text('Ya', style: new TextStyle(color: cOrtuBlue)),
-      ),
-      new TextButton(
-        onPressed: () {
-          Get.back(result: false);
-        },
-        child: new Text('Tidak', style: new TextStyle(color: cOrtuBlue)),
-      )
-    ],
-  ));
+void showToastSuccess({required String successText, required BuildContext ctx}) {
+  FToast().init(ctx).showToast(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25.0),
+            color: Color(0xff05745F),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.check, color: Colors.white),
+              SizedBox(
+                width: 12.0,
+              ),
+              Text(successText, style: TextStyle(color: Colors.white, fontSize: 12)),
+            ],
+          ),
+        ),
+        gravity: ToastGravity.BOTTOM,
+        toastDuration: Duration(seconds: 2),
+      );
+}
 
-  return res;
+void showToastFailed({required String failedText, required BuildContext ctx}) {
+  FToast().init(ctx).showToast(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25.0),
+            color: Colors.redAccent,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.close, color: Colors.white),
+              SizedBox(
+                width: 12.0,
+              ),
+              Text(failedText, style: TextStyle(color: Colors.white, fontSize: 12)),
+            ],
+          ),
+        ),
+        gravity: ToastGravity.BOTTOM,
+        toastDuration: Duration(seconds: 2),
+      );
 }

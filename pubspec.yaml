@@ -5,7 +5,7 @@ description: A new Flutter project.
 # pub.dev using `pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.0.21-alpha+220000201A
+version: 0.0.23-alpha+220000231A
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -27,6 +27,8 @@ dependencies:
 
   http: ^0.13.3
 
+  image_cropper: ^1.4.1
+  image_picker: ^0.8.4
   intl: ^0.17.0
 
   firebase_core: ^1.2.1

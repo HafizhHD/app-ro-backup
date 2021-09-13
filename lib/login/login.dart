@@ -42,6 +42,7 @@ class _LoginState extends State<LoginPage> {
         await onLogin(googleUser);
       } else {}
     } catch (error) {
+      closeOverlay();
       print(error);
     }
   }
@@ -177,7 +178,7 @@ class _LoginState extends State<LoginPage> {
                   width: double.infinity,
                   decoration: BoxDecoration(
                       color: cOrtuWhite,
-                      borderRadius: BorderRadius.only(bottomRight: borderRadiusSize, bottomLeft: borderRadiusSize),
+                      borderRadius: BorderRadius.all(borderRadiusSize),
                       image: DecorationImage(
                         image: AssetImage(currentAppIconPath),
                         fit: BoxFit.contain,
@@ -271,7 +272,6 @@ class _LoginState extends State<LoginPage> {
                         ? () async {
                             showLoadingOverlay();
                             await _handleSignIn();
-                            closeOverlay();
                             // Navigator.of(context)
                             //     .pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'ruang ortu')));
                           }

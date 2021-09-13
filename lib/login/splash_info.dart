@@ -6,56 +6,58 @@ import 'package:ruangkeluarga/login/splash_info_1.dart';
 class SplashInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Container(
-        color: cPrimaryBg,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SizedBox(height: 50),
-            Flexible(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Hero(tag: 'ruangortuIcon', child: Image.asset(currentAppIconPath)),
-                  // Text(
-                  //   'Ruang Ortu',
-                  //   style: TextStyle(
-                  //     fontSize: 50,
-                  //     fontWeight: FontWeight.bold,
-                  //     color: ortuBlue,
-                  //   ),
-                  // ),
-                  SizedBox(height: 20),
-                  Text(
-                    'Aplikasi Untuk Keluarga HKBP',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: cOrtuWhite,
+    return SafeArea(
+      child: Material(
+        child: Container(
+          color: cPrimaryBg,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(height: 50),
+              Flexible(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Hero(tag: 'ruangortuIcon', child: Image.asset(currentAppIconPath)),
+                    // Text(
+                    //   'Ruang Ortu',
+                    //   style: TextStyle(
+                    //     fontSize: 50,
+                    //     fontWeight: FontWeight.bold,
+                    //     color: ortuBlue,
+                    //   ),
+                    // ),
+                    SizedBox(height: 20),
+                    Text(
+                      'Aplikasi Untuk Keluarga HKBP',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: cOrtuWhite,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            Hero(
-              tag: 'next_info',
-              child: Material(
-                color: Colors.transparent,
-                child: Container(
-                  margin: EdgeInsets.all(10).copyWith(bottom: 50),
-                  child: IconButton(
-                    iconSize: 50,
-                    icon: Container(
-                      decoration: BoxDecoration(color: cAccentButton, shape: BoxShape.circle),
-                      child: Icon(Icons.arrow_forward_rounded, color: cPrimaryBg),
-                    ),
-                    onPressed: () => Navigator.of(context).push(leftTransitionRoute(SplashInfo1())),
-                  ),
+                  ],
                 ),
               ),
-            )
-          ],
+              Hero(
+                tag: 'next_info',
+                child: Material(
+                  color: Colors.transparent,
+                  child: Container(
+                    margin: EdgeInsets.all(10).copyWith(bottom: 50),
+                    child: IconButton(
+                      iconSize: 50,
+                      icon: Container(
+                        decoration: BoxDecoration(color: cAccentButton, shape: BoxShape.circle),
+                        child: Icon(Icons.arrow_forward_rounded, color: cPrimaryBg),
+                      ),
+                      onPressed: () => Navigator.of(context).push(leftTransitionRoute(SplashInfo1())),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

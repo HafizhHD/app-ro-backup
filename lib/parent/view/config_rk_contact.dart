@@ -30,14 +30,22 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
       print('isi response fetch contact : ${response.body}');
       var json = jsonDecode(response.body);
       if (json['resultCode'] == 'OK') {
+        List<BlacklistedContact> blackListed = [];
+        final resBL = await MediaRepository().fetchBlacklistedContact(widget.email);
+        print('isi response fetch blacklisted contact : ${resBL.body}');
+        if (resBL.statusCode == 200) {
+          final List blacklistedJson = jsonDecode(resBL.body)['contacts'];
+          blackListed = blacklistedJson.map((e) => BlacklistedContact.fromJson(e)).toList();
+        }
         List tempContact = json['contacts'][0]['contacts'];
         if (tempContact.length > 0) {
-          List<Contact> data = tempContact.map((model) => Contact.fromJson(model)).toList();
+          List<Contact> data = tempContact.map((model) => Contact.fromJson(model, blackListed)).toList();
           data.sort((a, b) {
             var aName = a.name;
             var bName = b.name;
             return aName.compareTo(bName);
           });
+
           contactList = searchContactList = data;
           setState(() {});
           return data;
@@ -128,7 +136,10 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                                     //     setState(() {});
                                     //   },
                                     // ),
-                                    Text(dataContact.blacklist ? 'Terblokir' : ''),
+                                    Text(
+                                      dataContact.blacklist ? 'Dipantau' : '',
+                                      style: TextStyle(color: cOrtuWhite),
+                                    ),
                                     IconButton(
                                       color: cOrtuWhite,
                                       icon: Icon(
@@ -140,9 +151,10 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                                         final response = await onBlacklistContact(dataContact.name, dataContact.phone);
                                         if (response.statusCode == 200) {
                                           await fetchContact();
-                                          showSnackbar('Berhasil memblokir kontak ${dataContact.name}');
+                                          showToastSuccess(ctx: context, successText: 'Berhasil watchlist kontak ${dataContact.name}');
                                         } else {
-                                          showSnackbar('Gagal memblokir kontak ${dataContact.name}. Silahkan coba lagi.');
+                                          showToastFailed(
+                                              ctx: context, failedText: 'Gagal memblokir kontak ${dataContact.name}. Silahkan coba lagi.');
                                         }
                                         closeOverlay();
                                       },

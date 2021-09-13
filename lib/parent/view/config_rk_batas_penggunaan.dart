@@ -323,12 +323,12 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                                         await getData();
                                         closeOverlay();
                                         closeOverlay();
-                                        showSnackbar('Berhasil Reset Batas Penggunaan!');
+                                        showToastSuccess(ctx: context, successText: 'Berhasil Reset Batas Penggunaan!');
                                       } else {
-                                        showSnackbar('Gagal Reset Batas Penggunaan!');
+                                        showToastFailed(ctx: context, failedText: 'Gagal Reset Batas Penggunaan!');
                                       }
                                     } else {
-                                      showSnackbar('Gagal Reset Batas Penggunaan!');
+                                      showToastFailed(ctx: context, failedText: 'Gagal Reset Batas Penggunaan!');
                                     }
                                   }
                                 : null,
@@ -348,12 +348,12 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                                 await getData();
                                 closeOverlay();
                                 closeOverlay();
-                                showSnackbar('Berhasil Ubah Batas Penggunaan!');
+                                showToastSuccess(ctx: context, successText: 'Berhasil Ubah Batas Penggunaan!');
                               } else {
-                                showSnackbar('Gagal Ubah Batas Penggunaan!');
+                                showToastFailed(ctx: context, failedText: 'Gagal Ubah Batas Penggunaan!');
                               }
                             } else {
-                              showSnackbar('Gagal Ubah Batas Penggunaan!');
+                              showToastFailed(ctx: context, failedText: 'Gagal Ubah Batas Penggunaan!');
                             }
                           },
                           text: Text('Simpan', style: TextStyle(color: cPrimaryBg)),

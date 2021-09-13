@@ -9,55 +9,61 @@ class SplashInfo4 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Container(
-        color: cPrimaryBg,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Flexible(
-              child: Container(
-                margin: EdgeInsets.only(left: 20, right: 20, bottom: 20),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    color: cOrtuWhite,
-                    borderRadius: BorderRadius.only(bottomRight: borderRadiusSize, bottomLeft: borderRadiusSize),
-                    image: DecorationImage(
-                      image: AssetImage(currentAppIconPath),
-                      fit: BoxFit.contain,
-                    )),
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.all(10),
-              child: Text(
-                'melalui konten yang sehat \nmembangun keluarga',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20,
-                  color: cOrtuWhite,
-                ),
-              ),
-            ),
-            linearProgressBar(1),
-            Hero(
-              tag: 'next_info',
-              child: Material(
-                color: Colors.transparent,
-                child: Container(
-                  margin: EdgeInsets.all(10).copyWith(bottom: 50),
-                  child: IconButton(
-                    iconSize: 50,
-                    icon: Container(
-                      decoration: BoxDecoration(color: cAccentButton, shape: BoxShape.circle),
-                      child: Icon(Icons.arrow_forward_rounded, color: cPrimaryBg),
-                    ),
-                    onPressed: () => Navigator.of(context).push(leftTransitionRoute(LoginPage())),
+    return SafeArea(
+      child: Material(
+        child: Container(
+          color: cPrimaryBg,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                child: Hero(
+                  tag: 'carousel',
+                  child: Container(
+                    constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height / 1.8),
+                    margin: EdgeInsets.all(20),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                        color: cOrtuWhite,
+                        borderRadius: BorderRadius.all(borderRadiusSize),
+                        image: DecorationImage(
+                          image: AssetImage(currentAppIconPath),
+                          fit: BoxFit.contain,
+                        )),
                   ),
                 ),
               ),
-            ),
-          ],
+              Container(
+                margin: EdgeInsets.all(10),
+                child: Text(
+                  'melalui konten yang sehat \nmembangun keluarga',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: cOrtuWhite,
+                  ),
+                ),
+              ),
+              linearProgressBar(1),
+              Hero(
+                tag: 'next_info',
+                child: Material(
+                  color: Colors.transparent,
+                  child: Container(
+                    margin: EdgeInsets.all(10).copyWith(bottom: 50),
+                    child: IconButton(
+                      iconSize: 50,
+                      icon: Container(
+                        decoration: BoxDecoration(color: cAccentButton, shape: BoxShape.circle),
+                        child: Icon(Icons.arrow_forward_rounded, color: cPrimaryBg),
+                      ),
+                      onPressed: () => Navigator.of(context).push(leftTransitionRoute(LoginPage())),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

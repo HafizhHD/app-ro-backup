@@ -10,65 +10,67 @@ class SplashInfo1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     precacheImage(assetImg, context);
-    return Material(
-      child: Container(
-        color: cPrimaryBg,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SizedBox(height: 50),
-            Flexible(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Flexible(
-                    child: Hero(
-                      tag: 'carousel',
-                      child: Container(
-                        margin: EdgeInsets.only(left: 20),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            color: cOrtuWhite,
-                            borderRadius: BorderRadius.only(topLeft: borderRadiusSize, bottomLeft: borderRadiusSize),
-                            image: DecorationImage(
-                              image: assetImg,
-                              fit: BoxFit.cover,
-                            )),
+    return SafeArea(
+      child: Material(
+        child: Container(
+          color: cPrimaryBg,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Hero(
+                        tag: 'carousel',
+                        child: Container(
+                          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height / 1.8),
+                          margin: EdgeInsets.all(20),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              color: cOrtuWhite,
+                              borderRadius: BorderRadius.all(borderRadiusSize),
+                              image: DecorationImage(
+                                image: assetImg,
+                                fit: BoxFit.cover,
+                              )),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                    'Bantu keluarga Anda \nmenciptakan kebiasaan digital \nyang sehat',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: cOrtuWhite,
+                    SizedBox(height: 20),
+                    Text(
+                      'Bantu keluarga Anda \nmenciptakan kebiasaan digital \nyang sehat',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: cOrtuWhite,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            linearProgressBar(0.25),
-            Hero(
-              tag: 'next_info',
-              child: Material(
-                color: Colors.transparent,
-                child: Container(
-                  margin: EdgeInsets.all(10).copyWith(bottom: 50),
-                  child: IconButton(
-                    iconSize: 50,
-                    icon: Container(
-                      decoration: BoxDecoration(color: cOrtuOrange, shape: BoxShape.circle),
-                      child: Icon(Icons.arrow_forward_rounded, color: cPrimaryBg),
-                    ),
-                    onPressed: () => Navigator.of(context).push(leftTransitionRoute(SplashInfo2())),
-                  ),
+                  ],
                 ),
               ),
-            )
-          ],
+              linearProgressBar(0.25),
+              Hero(
+                tag: 'next_info',
+                child: Material(
+                  color: Colors.transparent,
+                  child: Container(
+                    margin: EdgeInsets.all(10).copyWith(bottom: 50),
+                    child: IconButton(
+                      iconSize: 50,
+                      icon: Container(
+                        decoration: BoxDecoration(color: cOrtuOrange, shape: BoxShape.circle),
+                        child: Icon(Icons.arrow_forward_rounded, color: cPrimaryBg),
+                      ),
+                      onPressed: () => Navigator.of(context).push(leftTransitionRoute(SplashInfo2())),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
