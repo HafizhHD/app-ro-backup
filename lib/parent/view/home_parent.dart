@@ -409,16 +409,48 @@ class ChildCardWithBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final double paddingValue = 8;
+    final bool hasPhoto = childData.imgPhoto != null && childData.imgPhoto != '';
 
     return Container(
       margin: EdgeInsets.all(paddingValue),
       width: screenSize.width - paddingValue * 2,
       decoration: BoxDecoration(
+        color: cOrtuBlue,
         borderRadius: BorderRadius.circular(15.0),
-        image: DecorationImage(image: AssetImage('assets/images/foto_anak.png'), fit: BoxFit.cover),
       ),
       child: Stack(
         children: [
+          hasPhoto
+              ? Positioned.fill(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15.0),
+                    child: Image.network(
+                      childData.imgPhoto!,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: cOrtuOrange,
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                )
+              : Align(
+                  alignment: Alignment.center,
+                  child: Container(
+                    child: Icon(
+                      Icons.person,
+                      size: 200,
+                      color: cPrimaryBg,
+                    ),
+                  ),
+                ),
           Align(
             alignment: Alignment.topRight,
             child: Container(

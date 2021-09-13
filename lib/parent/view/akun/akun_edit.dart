@@ -397,8 +397,15 @@ class _AkunEditPageState extends State<AkunEditPage> {
                                     showToastFailed(ctx: context, failedText: 'Gagal edit data user ${widget.name}');
                                   }
                                 } else {
-                                  closeOverlay();
-                                  showToastFailed(ctx: context, failedText: 'Gagal edit data user ${widget.name}');
+                                  final res = await onEditProfileChild();
+                                  if (res.statusCode == 200) {
+                                    showToastSuccess(ctx: context, successText: 'Berhasil edit data anak ${widget.name}');
+                                    await Get.find<ParentController>().getParentChildData();
+                                    Get.close(2);
+                                  } else {
+                                    closeOverlay();
+                                    showToastFailed(ctx: context, failedText: 'Gagal edit data anak ${widget.name}');
+                                  }
                                 }
                               }
                             : null,
@@ -432,12 +439,11 @@ class _AkunEditPageState extends State<AkunEditPage> {
   }
 
   Future<Response> onEditProfileChild() async {
-    final Uint8List _imageBytes = _selectedImage != null ? _selectedImage!.readAsBytesSync() : Uint8List.fromList([]);
+    final Uint8List? _imageBytes = _selectedImage != null ? _selectedImage!.readAsBytesSync() : null;
     Map<String, dynamic> editedValue = {
       "nameUser": cName.text,
       "phoneNumber": cPhoneNumber.text,
       "address": cAlamat.text,
-      "parentStatus": widget.parentGender ?? GenderCharacter.Ayah.toEnumString(),
     };
     if (_imageBytes != null) editedValue["imagePhoto"] = "data:image/png;base64,${base64Encode(_imageBytes)}";
 
