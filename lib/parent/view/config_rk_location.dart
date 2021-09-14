@@ -60,10 +60,12 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
 
   Future<Map<MarkerId, Marker>> fetchMarkers() async {
     markers.clear();
-    var outputFormat = DateFormat('yyyy-MM-dd');
-    var outputDate = outputFormat.format(DateTime.now());
     try {
-      Response response = await MediaRepository().fetchUserLocation(widget.email, outputDate);
+      Response response = await MediaRepository().fetchFilterUserLocation(
+        widget.email,
+        DateFormat('yyyy-MM-ddT00:00:00').format(DateTime.now()),
+        DateFormat('yyyy-MM-ddT23:59:59').format(DateTime.now()),
+      );
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
         List locationChilds = json['timeLine'];
@@ -113,9 +115,8 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
   void fetchFilterMarker(List<DateTime> rangeDate) async {
     markers.clear();
     listLocationChild.clear();
-    var outputFormat = DateFormat('yyyy-MM-dd');
-    var startDate = outputFormat.format(rangeDate[0]);
-    var endDate = outputFormat.format(rangeDate[rangeDate.length - 1]);
+    var startDate = DateFormat('yyyy-MM-ddT00:00:00').format(rangeDate[0]);
+    var endDate = DateFormat('yyyy-MM-ddT23:59:59').format(rangeDate[1]);
     Response response = await MediaRepository().fetchFilterUserLocation(widget.email, startDate, endDate);
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);

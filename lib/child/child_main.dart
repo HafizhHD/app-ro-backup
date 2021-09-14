@@ -19,6 +19,7 @@ class ChildMain extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    controller.setBottomNavIndex(2);
     return SafeArea(
       child: WillPopScope(
         onWillPop: () async => onWillPopApp(),

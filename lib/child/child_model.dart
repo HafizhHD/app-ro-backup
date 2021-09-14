@@ -10,7 +10,7 @@ class ChildProfile {
   final String? address;
   final String userType;
   final String? imgPhoto;
-  final ParentProfile? parent;
+  final ParentProfile parent;
   final Child? childInfo;
 
   ChildProfile({
@@ -21,7 +21,7 @@ class ChildProfile {
     this.address,
     required this.userType,
     this.imgPhoto,
-    this.parent,
+    required this.parent,
     this.childInfo,
   });
 
@@ -47,6 +47,7 @@ class ChildProfile {
         email: json['emailUser'],
         phone: json['phoneNumber'],
         address: json['address'],
+        parent: ParentProfile.fromJson(json['parent']),
         imgPhoto: json['imagePhoto'],
         userType: json['userType'],
       );

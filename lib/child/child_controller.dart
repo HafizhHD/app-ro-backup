@@ -15,16 +15,18 @@ import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/global/global_formatter.dart';
 import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/model/rk_child_apps.dart';
+import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
 import 'package:ruangkeluarga/utils/app_usage.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ChildController extends GetxController {
-  var _bottomNavIndex = 0.obs;
+  var _bottomNavIndex = 2.obs;
   var childID = '';
   var childEmail = '';
   late ChildProfile childProfile;
+  late ParentProfile parentProfile;
   late Timer locationPeriodic;
   bool isBackgroundServiceOn = false;
 
@@ -44,6 +46,7 @@ class ChildController extends GetxController {
     // }
 
     await getChildData().then((value) {
+      getParentData();
       onMessageListen();
       fetchChildLocation();
       saveCurrentAppList();
@@ -100,6 +103,21 @@ class ChildController extends GetxController {
         //   blackListData = data;
         //   onGetCallLog(0);
         // }
+        update();
+      }
+    } else {
+      print('no user found');
+    }
+  }
+
+  Future getParentData() async {
+    Response response = await MediaRepository().getParentChildData(childProfile.parent.id);
+    print('response getParentData: ${response.body}');
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body);
+      if (json['resultCode'] == "OK") {
+        var jsonUser = json['user'];
+        parentProfile = ParentProfile.fromJson(jsonUser);
         update();
       }
     } else {

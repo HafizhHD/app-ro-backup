@@ -15,6 +15,7 @@ class SetupPermissionChildPage extends StatefulWidget {
 
   final String email;
   final String name;
+
   @override
   _SetupPermissionChildPageState createState() => _SetupPermissionChildPageState();
 }
@@ -23,7 +24,7 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
   bool _serviceAppUsage = false;
   bool _locationPermission = false;
   bool _phonePermission = false;
-  bool _smsPermission = false;
+  // bool _smsPermission = false;
   bool _contactPermission = false;
 
   final _waitDelay = 400;
@@ -77,31 +78,40 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Container(
-                color: cPrimaryBg,
-                padding: EdgeInsets.only(top: 30.0, left: 20.0, right: 20.0, bottom: 10),
-                // margin: EdgeInsets.only(bottom: 10),
-                // height: 80,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Hi, ${widget.name}',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: cOrtuWhite),
-                    ),
-                    Text(
-                      'Aplikasi $appName memerlukan beberapa ijin untuk mengakses data yang dibutuhkan:',
-                      style: TextStyle(fontSize: 16, color: cOrtuWhite),
-                    )
-                  ],
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        color: cPrimaryBg,
+                        padding: EdgeInsets.only(top: 30.0, left: 20.0, right: 20.0, bottom: 10),
+                        // margin: EdgeInsets.only(bottom: 10),
+                        // height: 80,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Hi, ${widget.name}',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: cOrtuWhite),
+                            ),
+                            Text(
+                              'Aplikasi $appName memerlukan beberapa ijin untuk mengakses data yang dibutuhkan:',
+                              style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                            )
+                          ],
+                        ),
+                      ),
+                      checkAllPermission(),
+                    ],
+                  ),
                 ),
               ),
-              Flexible(child: checkAllPermission()),
               Container(
                 color: cPrimaryBg,
-                padding: EdgeInsets.all(10),
+                padding: EdgeInsets.all(10).copyWith(top: 0),
                 child: FlatButton(
                   height: 50,
                   minWidth: 300,
@@ -109,7 +119,7 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
                     borderRadius: new BorderRadius.circular(15.0),
                   ),
                   onPressed: () async {
-                    if (_locationPermission && _contactPermission && _phonePermission && _smsPermission && _serviceAppUsage) {
+                    if (_locationPermission && _contactPermission && _phonePermission && _serviceAppUsage) {
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (context) => ChildMain(
@@ -249,40 +259,40 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
             ),
             SizedBox(height: 10),
-            SwitchListTile.adaptive(
-              tileColor: cOrtuGrey,
-              title: Text('SMS'),
-              subtitle: Text('Kami membutuhkan akses sms pada perangkat anak untuk mengirimkan sms dari SOS.'),
-              value: _smsPermission,
-              onChanged: (val) async {
-                var _permissionStatus = await Permission.sms.status;
-                if (_permissionStatus.isDenied) {
-                  final s = Stopwatch()..start();
-                  _permissionStatus = await Permission.sms.request();
-                  s.stop();
-                  if (s.elapsedMilliseconds < _waitDelay && _permissionStatus.isPermanentlyDenied) {
-                    await Get.dialog(AlertDialog(
-                      title: Text('Akses ditolak'),
-                      content: Text('Akses untuk sms telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
-                      actions: [
-                        TextButton(
-                            onPressed: () async {
-                              final res = await openAppSettings();
-                              if (res) Get.back();
-                            },
-                            child: Text('Buka Setting'))
-                      ],
-                    ));
-                    _permissionStatus = await Permission.sms.status;
-                  }
-                }
-                _smsPermission = _permissionStatus.isGranted;
-                setState(() {});
-              },
-              contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
-            ),
-            SizedBox(height: 10),
+            // SwitchListTile.adaptive(
+            //   tileColor: cOrtuGrey,
+            //   title: Text('SMS'),
+            //   subtitle: Text('Kami membutuhkan akses sms pada perangkat anak untuk mengirimkan sms dari SOS.'),
+            //   value: _smsPermission,
+            //   onChanged: (val) async {
+            //     var _permissionStatus = await Permission.sms.status;
+            //     if (_permissionStatus.isDenied) {
+            //       final s = Stopwatch()..start();
+            //       _permissionStatus = await Permission.sms.request();
+            //       s.stop();
+            //       if (s.elapsedMilliseconds < _waitDelay && _permissionStatus.isPermanentlyDenied) {
+            //         await Get.dialog(AlertDialog(
+            //           title: Text('Akses ditolak'),
+            //           content: Text('Akses untuk sms telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
+            //           actions: [
+            //             TextButton(
+            //                 onPressed: () async {
+            //                   final res = await openAppSettings();
+            //                   if (res) Get.back();
+            //                 },
+            //                 child: Text('Buka Setting'))
+            //           ],
+            //         ));
+            //         _permissionStatus = await Permission.sms.status;
+            //       }
+            //     }
+            //     _smsPermission = _permissionStatus.isGranted;
+            //     setState(() {});
+            //   },
+            //   contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+            //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
+            // ),
+            // SizedBox(height: 10),
             SwitchListTile.adaptive(
               tileColor: cOrtuGrey,
               title: Text('Penggunaan Aplikasi'),
