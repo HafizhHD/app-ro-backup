@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "78925276663-ulgasm85vlb7oa4cidgdlup5ffk8t8qm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.keluargahkbp",
+            "certificate_hash": "2f2ebea419e95690fcb8f4b51042c243579810ec"
+          }
+        },
+        {
           "client_id": "78925276663-urjebq8gu6etab5gokbu3vfefn0e11og.apps.googleusercontent.com",
           "client_type": 3
         }

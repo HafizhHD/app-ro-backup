@@ -133,12 +133,12 @@ class AkunPage extends StatelessWidget {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       Text(isParent != '' ? isParent : 'Anak'),
-                      SizedBox(height: 10),
+                      SizedBox(height: 5),
                       Text(
                         '$email',
                         // style: TextStyle(fontSize: 20),
                       ),
-                      SizedBox(height: 10),
+                      SizedBox(height: 5),
                       if (phone != null)
                         Text(
                           '$phone',

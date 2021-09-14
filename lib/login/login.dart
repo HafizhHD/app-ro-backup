@@ -43,7 +43,8 @@ class _LoginState extends State<LoginPage> {
       } else {}
     } catch (error) {
       closeOverlay();
-      print(error);
+      showSnackbar('$error', bgColor: Colors.red, pShowDuration: Duration(seconds: 10));
+      print('Google Login Error: $error');
     }
   }
 
@@ -85,12 +86,12 @@ class _LoginState extends State<LoginPage> {
             final locationHandler = await Permission.location.status;
             final contactHandler = await Permission.contacts.status;
             final phoneHandler = await Permission.phone.status;
-            final smsHandler = await Permission.sms.status;
+            // final smsHandler = await Permission.sms.status;
             print('Permision Status location : $locationHandler');
             print('Permision Status contact : $contactHandler');
             print('Permision Status phone : $phoneHandler');
-            print('Permision Status sms : $smsHandler');
-            if (locationHandler.isDenied || contactHandler.isDenied || phoneHandler.isDenied || smsHandler.isDenied) {
+            // print('Permision Status sms : $smsHandler');
+            if (locationHandler.isDenied || contactHandler.isDenied || phoneHandler.isDenied) {
               Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context) => SetupPermissionChildPage(email: jsonUser['emailUser'], name: jsonUser['nameUser'])));
             } else {

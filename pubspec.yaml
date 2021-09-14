@@ -93,8 +93,8 @@ flutter_icons:
   android: 'launcher_icon'
   ios: true
   image_path: 'assets/images/hkbp/logo-keluargahkbp.png'
-#  adaptive_icon_background: 'assets/images/nupos-bg.png'
-#  adaptive_icon_foreground: 'assets/images/nupos-fg.png'
+  adaptive_icon_background: 'assets/images/hkbp/background.png'
+  adaptive_icon_foreground: 'assets/images/hkbp/logo-keluargahkbp.png'
 # flutter pub run flutter_launcher_icons:main
 
 flutter_native_splash:
