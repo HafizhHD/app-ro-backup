@@ -97,6 +97,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
     Get.put(ChildController());
     Get.put(ParentController());
     Get.put(RKServiceController());
