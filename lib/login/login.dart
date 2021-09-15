@@ -40,7 +40,10 @@ class _LoginState extends State<LoginPage> {
       final GoogleSignInAccount? googleUser = await _googleSignIn.isSignedIn() ? await _googleSignIn.signInSilently() : await _googleSignIn.signIn();
       if (googleUser != null) {
         await onLogin(googleUser);
-      } else {}
+      } else {
+        closeOverlay();
+        showToastFailed(failedText: 'Gagal login google', ctx: context);
+      }
     } catch (error) {
       closeOverlay();
       showSnackbar('$error', bgColor: Colors.red, pShowDuration: Duration(seconds: 10));
@@ -54,7 +57,7 @@ class _LoginState extends State<LoginPage> {
       token = fcmToken!;
     });
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    googleUser.authentication.then((googleKey) async {
+    await googleUser.authentication.then((googleKey) async {
       print('access token : ${googleKey.accessToken}');
       await prefs.setString(rkEmailUser, googleUser.email.toString());
       await prefs.setString(rkUserName, googleUser.displayName.toString());

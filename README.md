@@ -3,13 +3,13 @@ Create key.properties
 ```bash
 storePassword=KeluargaHKBP
 keyPassword=KeluargaHKBP
-keyAlias=signKey
+keyAlias=key
 storeFile=key.jks
 ```
 
 Generate Release SHA:
 ``` 
-keytool -list -v -keystore ./android/app/key.jks -alias signKey 
+keytool -list -v -keystore ./android/app/key.jks -alias key
 ```
 
 Generate Debug SHA:
