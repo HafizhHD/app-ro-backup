@@ -97,11 +97,17 @@ MaterialStateProperty<double> globalBtnElevation() {
   });
 }
 
-Future<bool> onWillPopApp() async {
+Future<bool> onWillCloseApp() async {
   final bool res = await Get.dialog(AlertDialog(
     title: new Text('Konfirmasi tutup', style: new TextStyle(fontSize: 20.0)),
     content: new Text('Yakin ingin menutup aplikasi?'),
     actions: <Widget>[
+      new TextButton(
+        onPressed: () {
+          Get.back(result: false);
+        },
+        child: new Text('Tidak', style: new TextStyle(color: cOrtuBlue)),
+      ),
       new TextButton(
         onPressed: () {
           Get.back(result: true);
@@ -109,12 +115,6 @@ Future<bool> onWillPopApp() async {
         },
         child: new Text('Ya', style: new TextStyle(color: cOrtuBlue)),
       ),
-      new TextButton(
-        onPressed: () {
-          Get.back(result: false);
-        },
-        child: new Text('Tidak', style: new TextStyle(color: cOrtuBlue)),
-      )
     ],
   ));
 

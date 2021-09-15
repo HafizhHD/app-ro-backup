@@ -18,7 +18,7 @@ class ParentMain extends StatelessWidget {
     controller.getBinding();
     return SafeArea(
       child: WillPopScope(
-        onWillPop: () async => onWillPopApp(),
+        onWillPop: () async => onWillCloseApp(),
         child: Scaffold(
           backgroundColor: cPrimaryBg,
           appBar: AppBar(

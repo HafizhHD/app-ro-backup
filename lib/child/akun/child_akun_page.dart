@@ -9,6 +9,7 @@ class ChildAkunPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: GetBuilder<ChildController>(
         builder: (ctrl) {
           final childProfile = ctrl.childProfile;

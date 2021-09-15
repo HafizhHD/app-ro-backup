@@ -57,8 +57,6 @@ class HomeChildPage extends StatefulWidget {
 }
 
 class _HomeChildPageState extends State<HomeChildPage> {
-  List<Application> itemsApp = [];
-  List<Application> listItemApps = [];
   late SharedPreferences prefs;
   Location location = new Location();
   List<BlackListContact> blackListData = [];
@@ -72,41 +70,6 @@ class _HomeChildPageState extends State<HomeChildPage> {
     const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
     var i = (log(bytes) / log(1024)).floor();
     return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) + ' ' + suffixes[i];
-  }
-
-  Future<List<Application>> getListApps() async {
-    List<Application> appData =
-        await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: false, onlyAppsWithLaunchIntent: false);
-
-    itemsApp = appData;
-    return appData;
-  }
-
-  String getNameAppsFromList(String package) {
-    String name = "";
-    for (int i = 0; i < itemsApp.length; i++) {
-      if (itemsApp[i].packageName == package) {
-        name = itemsApp[i].appName;
-      }
-    }
-    return name;
-  }
-
-  Application? getIconAppsFromList(String package) {
-    for (int i = 0; i < itemsApp.length; i++) {
-      if (itemsApp[i].packageName == package) {
-        return itemsApp[i];
-      }
-    }
-    return null;
-  }
-
-  Future<File> getImageFileFromAssets(String path, Uint8List? data) async {
-    final file = File('${(await getTemporaryDirectory()).path}/$path');
-    // await file.writeAsBytes(byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
-    await file.writeAsBytes(data!);
-
-    return file;
   }
 
   void downloadTimeline() async {
@@ -131,36 +94,6 @@ class _HomeChildPageState extends State<HomeChildPage> {
       }
     } catch (ex) {
       filePath = 'Can not fetch url';
-    }
-  }
-
-  void onSaveIconApps(int indeks) async {
-    if (indeks < listItemApps.length) {
-      Application? iconApp = listItemApps[indeks];
-      var photo;
-      if (iconApp is ApplicationWithIcon) {
-        photo = "data:image/png;base64,${base64Encode(iconApp.icon)}";
-      } else {
-        photo = null;
-      }
-      var category = 'other';
-      if (iconApp.category.toString().split('.')[1] != 'undefined') {
-        category = iconApp.category.toString().split('.')[1];
-      }
-      Response response = await MediaRepository().saveIconApp(prefs.getString(rkEmailUser)!, iconApp.appName, iconApp.packageName, photo, category);
-      if (response.statusCode == 200) {
-        print('save iconApp ${response.body}');
-        indeks++;
-        if (indeks < listItemApps.length) {
-          onSaveIconApps(indeks);
-        }
-      } else {
-        print('gagal save icon app ${response.statusCode}');
-        indeks++;
-        if (indeks < listItemApps.length) {
-          onSaveIconApps(indeks);
-        }
-      }
     }
   }
 

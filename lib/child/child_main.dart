@@ -22,7 +22,7 @@ class ChildMain extends StatelessWidget {
     controller.setBottomNavIndex(2);
     return SafeArea(
       child: WillPopScope(
-        onWillPop: () async => onWillPopApp(),
+        onWillPop: () async => onWillCloseApp(),
         child: Scaffold(
           backgroundColor: cPrimaryBg,
           appBar: AppBar(
