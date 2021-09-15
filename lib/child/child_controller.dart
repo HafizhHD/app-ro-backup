@@ -14,7 +14,9 @@ import 'package:ruangkeluarga/child/child_model.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/global/global_formatter.dart';
 import 'package:ruangkeluarga/main.dart';
+import 'package:ruangkeluarga/model/rk_callLog_model.dart';
 import 'package:ruangkeluarga/model/rk_child_apps.dart';
+import 'package:ruangkeluarga/model/rk_child_contact.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
 import 'package:ruangkeluarga/utils/app_usage.dart';
@@ -27,6 +29,7 @@ class ChildController extends GetxController {
   var childEmail = '';
   late ChildProfile childProfile;
   late ParentProfile parentProfile;
+  List<BlacklistedContact> blackListed = [];
   Rx<Future<bool>> fParentProfile = Future<bool>.value(false).obs;
 
   late Timer locationPeriodic;
@@ -55,6 +58,7 @@ class ChildController extends GetxController {
       fetchContacts();
       // onGetSMS();
       getAppUsageData();
+      onGetCallLog();
     });
   }
 
@@ -254,6 +258,53 @@ class ChildController extends GetxController {
       print(sms.address);
       print(sms.body);
     });
+  }
+
+  Future getBlackListed() async {
+    final resBL = await MediaRepository().fetchBlacklistedContact(childEmail);
+    print('isi response fetch blacklisted contact : ${resBL.body}');
+    if (resBL.statusCode == 200) {
+      final List blacklistedJson = jsonDecode(resBL.body)['contacts'];
+      blackListed = blacklistedJson.map((e) => BlacklistedContact.fromJson(e)).toList();
+      update();
+    }
+  }
+
+  void onGetCallLog() async {
+    await getBlackListed();
+    Iterable<CallLogEntry> entries = [];
+    final to = DateTime.now().millisecondsSinceEpoch;
+    final from = DateTime.now()
+        .subtract(Duration(hours: DateTime.now().hour, minutes: DateTime.now().minute, seconds: DateTime.now().second))
+        .millisecondsSinceEpoch;
+
+    if (blackListed.length > 0) {
+      blackListed.forEach((bl) async {
+        final List phoneNums = bl.phone.split(', ');
+        phoneNums.forEach((phone) async {
+          entries = await CallLog.query(dateFrom: from, dateTo: to, number: '$phone');
+          if (entries.length > 0) {
+            var date = DateTime.fromMillisecondsSinceEpoch(entries.elementAt(0).timestamp! * 1000);
+            Response response = await MediaRepository().blContactNotification(childEmail, entries.elementAt(0).name.toString(),
+                entries.elementAt(0).number.toString(), date.toString(), entries.elementAt(0).callType.toString().split('.')[1]);
+            if (response.statusCode == 200) {
+              print('response notif blacklist ${response.body}');
+            } else {
+              print('error blacklist notif ${response.statusCode}');
+            }
+          }
+        });
+      });
+    } else {
+      entries = await CallLog.get();
+      print('CALL DATA LOG');
+      entries.forEach((entry) {
+        print('name: ${entry.name}; num: ${entry.number}');
+        print('cachedMatchedNumber: ${entry.cachedMatchedNumber}; cachedNumberLabel: ${entry.cachedNumberLabel}');
+        print('duration: ${entry.duration}; phoneAccountId: ${entry.phoneAccountId}');
+        print('simDisplayName: ${entry.simDisplayName}; timestamp: ${entry.timestamp}');
+      });
+    }
   }
 
   void getAppUsageData() async {

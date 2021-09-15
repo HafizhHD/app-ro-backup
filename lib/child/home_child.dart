@@ -1,42 +1,18 @@
-import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 import 'dart:io';
 import 'dart:math';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
-import 'package:flutter_contacts/flutter_contacts.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 import 'package:get/get.dart' hide Response;
-
-import 'package:http/http.dart';
-
-import 'package:intl/intl.dart';
-
-import 'package:app_usage/app_usage.dart';
 import 'package:flutter/material.dart';
 
 import 'package:location/location.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:ruangkeluarga/child/child_controller.dart';
 import 'package:ruangkeluarga/child/sos_record_video.dart';
-import 'package:ruangkeluarga/login/login.dart';
-import 'package:ruangkeluarga/main.dart';
-import 'package:ruangkeluarga/model/rk_callLog_model.dart';
-import 'package:ruangkeluarga/model/rk_child_app_icon_list.dart';
-import 'package:ruangkeluarga/model/rk_child_apps.dart';
 import 'package:ruangkeluarga/model/rk_child_blacklist_contact.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
-import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:ruangkeluarga/plugin_device_app.dart';
-
-import '../plugin_device_app.dart';
-
-final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
 class HomeChild extends StatelessWidget {
   @override
@@ -94,56 +70,6 @@ class _HomeChildPageState extends State<HomeChildPage> {
       }
     } catch (ex) {
       filePath = 'Can not fetch url';
-    }
-  }
-
-  void onGetCallLog(int indeks) async {
-    prefs = await SharedPreferences.getInstance();
-    if (indeks < blackListData.length) {
-      var now = DateTime.now();
-      int timestamps = prefs.getInt("timestamp") ?? 0;
-      int from = 0;
-      if (timestamps > 0) {
-        from = timestamps;
-      } else {
-        from = now.subtract(Duration(days: 1)).millisecondsSinceEpoch;
-      }
-      int to = now.subtract(Duration(days: 0)).millisecondsSinceEpoch;
-      if (blackListData[indeks].contact['name'] == null) {
-        Iterable<CallLogEntry> entries = await CallLog.query(dateFrom: from, dateTo: to, number: '${blackListData[indeks].contact['phones'][0]}');
-        print('data $entries');
-        if (entries.length > 0) {
-          await prefs.setInt("timestamp", entries.elementAt(0).timestamp ?? 0);
-          var date = DateTime.fromMillisecondsSinceEpoch(entries.elementAt(0).timestamp! * 1000);
-          Response response = await MediaRepository().blContactNotification(widget.email, entries.elementAt(0).name.toString(),
-              entries.elementAt(0).number.toString(), date.toString(), entries.elementAt(0).callType.toString().split('.')[1]);
-
-          if (response.statusCode == 200) {
-            print('response notif blacklist ${response.body}');
-            onGetCallLog(indeks++);
-          } else {
-            print('error blacklist notif ${response.statusCode}');
-            onGetCallLog(indeks++);
-          }
-        }
-      } else {
-        Iterable<CallLogEntry> entries = await CallLog.query(dateFrom: from, dateTo: to, name: '${blackListData[indeks].contact['name']}');
-        print('data $entries');
-        if (entries.length > 0) {
-          await prefs.setInt("timestamp", entries.elementAt(0).timestamp ?? 0);
-          var date = DateTime.fromMillisecondsSinceEpoch(entries.elementAt(0).timestamp! * 1000);
-          Response response = await MediaRepository().blContactNotification(widget.email, entries.elementAt(0).name.toString(),
-              entries.elementAt(0).number.toString(), date.toString(), entries.elementAt(0).callType.toString().split('.')[1]);
-
-          if (response.statusCode == 200) {
-            print('response notif blacklist ${response.body}');
-            onGetCallLog(indeks++);
-          } else {
-            print('error blacklist notif ${response.statusCode}');
-            onGetCallLog(indeks++);
-          }
-        }
-      }
     }
   }
 
