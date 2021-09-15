@@ -193,63 +193,68 @@ class _HomeParentPageState extends State<HomeParentPage> {
         future: fLogin,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) return wProgressIndicator();
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Flexible(
-                flex: 1,
-                child: Container(
-                  margin: const EdgeInsets.all(10.0), //Same as `blurRadius` i guess
-                  child: ListView.builder(
-                    padding: EdgeInsets.all(5.0),
-                    shrinkWrap: false,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 2,
-                    itemBuilder: (BuildContext context, int index) => Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: GestureDetector(
-                        child: Row(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0)),
-                              // child: Center(child: Text('Dummy Card Text', style: TextStyle(color: Colors.black)))
-                              child: Image.asset('assets/images/hkbpgo.png'),
-                            ),
-                          ],
-                        ),
-                        onTap: () => parentController.setBottomNavIndex(1),
-                      ),
-                    ),
-                  ),
+          return SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                // Flexible(
+                //   flex: 1,
+                //   child: Container(
+                //     margin: const EdgeInsets.all(10.0), //Same as `blurRadius` i guess
+                //     child: ListView.builder(
+                //       padding: EdgeInsets.all(5.0),
+                //       shrinkWrap: false,
+                //       scrollDirection: Axis.horizontal,
+                //       itemCount: 2,
+                //       itemBuilder: (BuildContext context, int index) => Card(
+                //         shape: RoundedRectangleBorder(
+                //           borderRadius: BorderRadius.circular(10.0),
+                //         ),
+                //         child: GestureDetector(
+                //           child: Row(
+                //             children: [
+                //               Container(
+                //                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0)),
+                //                 // child: Center(child: Text('Dummy Card Text', style: TextStyle(color: Colors.black)))
+                //                 child: Image.asset('assets/images/hkbpgo.png'),
+                //               ),
+                //             ],
+                //           ),
+                //           onTap: () => parentController.setBottomNavIndex(1),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                Container(
+                  constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
+                  child: _childDataLayout(),
                 ),
-              ),
-              Flexible(flex: 2, child: _childDataLayout()),
-              Flexible(
-                flex: 2,
-                child: ListView.builder(
-                  physics: BouncingScrollPhysics(),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _ids.length,
-                  itemBuilder: (BuildContext context, int position) {
-                    return Container(
-                      width: screenSize.width / 2,
-                      height: screenSize.height / 4,
-                      color: Colors.transparent,
-                      margin: const EdgeInsets.all(10),
-                      child: _coBrandContent(
-                        _ids[position],
-                        'Title Here',
-                        'Content: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                        () {},
-                        screenSize.height / 4 / 2,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
+                // Flexible(
+                //   flex: 2,
+                //   child: ListView.builder(
+                //     physics: BouncingScrollPhysics(),
+                //     scrollDirection: Axis.horizontal,
+                //     itemCount: _ids.length,
+                //     itemBuilder: (BuildContext context, int position) {
+                //       return Container(
+                //         width: screenSize.width / 2,
+                //         height: screenSize.height / 4,
+                //         color: Colors.transparent,
+                //         margin: const EdgeInsets.all(10),
+                //         child: _coBrandContent(
+                //           _ids[position],
+                //           'Title Here',
+                //           'Content: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                //           () {},
+                //           screenSize.height / 4 / 2,
+                //         ),
+                //       );
+                //     },
+                //   ),
+                // ),
+              ],
+            ),
           );
         });
   }
@@ -304,7 +309,6 @@ class _HomeParentPageState extends State<HomeParentPage> {
         return FutureBuilder<List<Child>>(
             future: parentController.fChildList.value,
             builder: (BuildContext context, AsyncSnapshot<List<Child>> data) {
-              print('Load Child Future : ${data.data}');
               if (!data.hasData) return wProgressIndicator();
               childsList = data.data!;
 

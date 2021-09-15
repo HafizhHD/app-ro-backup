@@ -83,9 +83,7 @@ class ParentDrawer extends StatelessWidget {
                   title: Text('Statistik Penggunaan'),
                   leading: Icon(Icons.show_chart, color: Colors.black),
                   onTap: () {
-                    // Then close the drawer
                     Navigator.pop(context);
-                    // Update the state of the app
                   },
                 ),
                 // ListTile(
@@ -120,35 +118,10 @@ class ParentDrawer extends StatelessWidget {
                   },
                 ),
                 ListTile(
-                    title: Text('Keluar'),
-                    leading: Icon(Icons.exit_to_app_outlined, color: Colors.black),
-                    onTap: () => showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                              title: const Text('Konfirmasi'),
-                              content: const Text('Apakah anda yakin ingin keluar aplikasi ?'),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, 'Cancel'),
-                                  child: const Text('Cancel', style: TextStyle(color: cOrtuBlue)),
-                                ),
-                                TextButton(
-                                  onPressed: () async {
-                                    showLoadingOverlay();
-                                    SharedPreferences prefs = await SharedPreferences.getInstance();
-                                    await prefs.clear();
-                                    await signOutGoogle();
-                                    closeOverlay();
-                                    Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(builder: (builder) => MyHomePage()),
-                                      (route) => false,
-                                    );
-                                  },
-                                  child: const Text('OK', style: TextStyle(color: cOrtuBlue)),
-                                ),
-                              ],
-                            )))
+                  title: Text('Keluar'),
+                  leading: Icon(Icons.exit_to_app_outlined, color: Colors.black),
+                  onTap: () => logUserOut(),
+                )
               ],
             ),
           ),

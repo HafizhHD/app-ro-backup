@@ -251,7 +251,14 @@ class _HomeChildPageState extends State<HomeChildPage> {
           ),
           Container(
               constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
-              child: CardWithBottomSheet(parentData: childController.parentProfile)),
+              child: Obx(
+                () => FutureBuilder<bool>(
+                    future: childController.fParentProfile.value,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData && snapshot.data!) return CardWithBottomSheet(parentData: childController.parentProfile);
+                      return wProgressIndicator();
+                    }),
+              )),
         ],
       ),
     );

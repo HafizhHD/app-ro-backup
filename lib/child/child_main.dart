@@ -102,19 +102,19 @@ class ChildMain extends StatelessWidget {
             //     label: 'Addon',
             //     isSelected: controller.bottomNavIndex == 1,
             //     onPressed: () => controller.setBottomNavIndex(1)),
-            IconWithLabel(
-                defaultIcon: Icons.mail_outline,
-                activeIcon: Icons.mail,
-                label: 'Addon',
-                isSelected: controller.bottomNavIndex == 1,
-                onPressed: () => controller.setBottomNavIndex(1)),
+            // IconWithLabel(
+            //     defaultIcon: Icons.mail_outline,
+            //     activeIcon: Icons.mail,
+            //     label: 'Addon',
+            //     isSelected: controller.bottomNavIndex == 1,
+            //     onPressed: () => controller.setBottomNavIndex(1)),
             SizedBox(width: Get.width / 5), // The dummy child
-            IconWithLabel(
-                defaultIcon: Icons.calendar_today_outlined,
-                activeIcon: Icons.calendar_today,
-                label: 'Jadwal',
-                isSelected: controller.bottomNavIndex == 3,
-                onPressed: () => controller.setBottomNavIndex(3)),
+            // IconWithLabel(
+            //     defaultIcon: Icons.calendar_today_outlined,
+            //     activeIcon: Icons.calendar_today,
+            //     label: 'Jadwal',
+            //     isSelected: controller.bottomNavIndex == 3,
+            //     onPressed: () => controller.setBottomNavIndex(3)),
             IconWithLabel(
                 defaultIcon: Icons.person_outlined,
                 activeIcon: Icons.person,

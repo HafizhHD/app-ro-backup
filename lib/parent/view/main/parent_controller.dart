@@ -17,6 +17,7 @@ class ParentController extends GetxController {
   Rx<Future<List<Child>>> fChildList = Future<List<Child>>.value(<Child>[]).obs;
   RxMap _modeAsuh = <int, int>{}.obs;
   var _bottomNavIndex = 2.obs;
+  bool hasLogin = false;
 
   int get bottomNavIndex => _bottomNavIndex.value;
 
@@ -78,6 +79,7 @@ class ParentController extends GetxController {
   }
 
   Future<List<Child>> onLogin() async {
+    if (hasLogin) return parentProfile.children ?? [];
     prefs = await SharedPreferences.getInstance();
     String token = '';
     await firebaseMessaging.getToken().then((fcmToken) {
@@ -102,6 +104,7 @@ class ParentController extends GetxController {
             await prefs.setString(rkUserType, parentProfile.userType);
             await prefs.setString("rkChildName", childsData[0].name ?? "");
             await prefs.setString("rkChildEmail", childsData[0].email ?? "");
+            hasLogin = true;
             return childsData;
           }
           return [];

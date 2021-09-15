@@ -27,6 +27,8 @@ class ChildController extends GetxController {
   var childEmail = '';
   late ChildProfile childProfile;
   late ParentProfile parentProfile;
+  Rx<Future<bool>> fParentProfile = Future<bool>.value(false).obs;
+
   late Timer locationPeriodic;
   bool isBackgroundServiceOn = false;
 
@@ -46,7 +48,7 @@ class ChildController extends GetxController {
     // }
 
     await getChildData().then((value) {
-      getParentData();
+      fParentProfile.value = getParentData();
       onMessageListen();
       fetchChildLocation();
       saveCurrentAppList();
@@ -110,7 +112,7 @@ class ChildController extends GetxController {
     }
   }
 
-  Future getParentData() async {
+  Future<bool> getParentData() async {
     Response response = await MediaRepository().getParentChildData(childProfile.parent.id);
     print('response getParentData: ${response.body}');
     if (response.statusCode == 200) {
@@ -119,10 +121,12 @@ class ChildController extends GetxController {
         var jsonUser = json['user'];
         parentProfile = ParentProfile.fromJson(jsonUser);
         update();
+        return true;
       }
     } else {
       print('no user found');
     }
+    return false;
   }
 
   Future<List<ApplicationInstalled>> getListAppServer() async {
