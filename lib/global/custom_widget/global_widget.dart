@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/login/login.dart';
+import 'package:ruangkeluarga/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future showLoadingOverlay() {
   return Get.dialog(
@@ -79,7 +82,7 @@ Widget roElevatedButton({Color cColor = cOrtuBlue, required Widget text, require
           return cColor;
         },
       ),
-      elevation: globalBtnElevation(),
+      // elevation: globalBtnElevation(),
     ),
     child: text,
     onPressed: onPress,
@@ -119,3 +122,33 @@ Future<bool> onWillPopApp() async {
 }
 
 bool showKeyboard(BuildContext ctx) => MediaQuery.of(ctx).viewInsets.bottom < keyboardHeight;
+
+void logUserOut() {
+  Get.dialog(
+    AlertDialog(
+      title: const Text('Konfirmasi'),
+      content: const Text('Apakah anda yakin ingin keluar aplikasi ?'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Get.back(),
+          child: const Text('Cancel', style: TextStyle(color: cOrtuBlue)),
+        ),
+        TextButton(
+          onPressed: () async {
+            showLoadingOverlay();
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.clear();
+            await signOutGoogle();
+            closeOverlay();
+            Navigator.pushAndRemoveUntil(
+              Get.context!,
+              MaterialPageRoute(builder: (builder) => MyHomePage()),
+              (route) => false,
+            );
+          },
+          child: const Text('OK', style: TextStyle(color: cOrtuBlue)),
+        ),
+      ],
+    ),
+  );
+}

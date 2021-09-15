@@ -53,8 +53,8 @@ class ParentMain extends StatelessWidget {
           body: Obx(() => ChosenPage(bottomNavIndex: controller.bottomNavIndex)),
           bottomNavigationBar: _bottomAppBar(),
           floatingActionButton: SizedBox(
-            height: 80,
-            width: 80,
+            height: 70,
+            width: 70,
             child: Obx(
               () => FloatingActionButton(
                 elevation: 0,

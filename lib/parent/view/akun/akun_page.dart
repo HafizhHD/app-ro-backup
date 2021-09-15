@@ -8,48 +8,57 @@ import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 class AkunPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<ParentController>(
-      builder: (ctrl) {
-        final parentData = ctrl.parentProfile;
-        final children = parentData.children ?? [];
-        return Container(
-          // color: ,
-          padding: EdgeInsets.all(5),
-          child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                profileContainer(
-                    id: parentData.id,
-                    imgUrl: parentData.imgPhoto,
-                    name: parentData.name,
-                    email: parentData.email,
-                    phone: parentData.phone,
-                    isParent: parentData.parentStatus.toEnumString()),
-                Flexible(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: children.length,
-                    itemBuilder: (ctx, idx) {
-                      final childData = children[idx];
-                      return profileContainer(
-                        imgUrl: childData.imgPhoto,
-                        name: childData.name ?? 'Nama Anak',
-                        email: childData.email ?? 'email@anak.com',
-                        id: childData.id,
-                        // phone: ,
-                      );
-                    },
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: GetBuilder<ParentController>(
+        builder: (ctrl) {
+          final parentData = ctrl.parentProfile;
+          final children = parentData.children ?? [];
+          return Container(
+            // color: ,
+            padding: EdgeInsets.all(5),
+            child: SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  profileContainer(
+                      id: parentData.id,
+                      imgUrl: parentData.imgPhoto,
+                      name: parentData.name,
+                      email: parentData.email,
+                      phone: parentData.phone,
+                      isParent: parentData.parentStatus.toEnumString()),
+                  Flexible(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: children.length,
+                      itemBuilder: (ctx, idx) {
+                        final childData = children[idx];
+                        return profileContainer(
+                          imgUrl: childData.imgPhoto,
+                          name: childData.name ?? 'Nama Anak',
+                          email: childData.email ?? 'email@anak.com',
+                          id: childData.id,
+                          // phone: ,
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => logUserOut(),
+        label: Text('Sign Out'),
+        backgroundColor: cOrtuOrange,
+        foregroundColor: cPrimaryBg,
+      ),
     );
   }
 

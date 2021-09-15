@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "78925276663-80mgar6viu602a0uadm7bqdm8m8fmc45.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.keluargahkbp",
+            "certificate_hash": "ba6b52e16631b93b429e7dba1c947dfeac41cb32"
+          }
+        },
+        {
+          "client_id": "78925276663-gc55t87c71m4r73avjij2bcf8aic7q4p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.keluargahkbp",
+            "certificate_hash": "7dd3124cc148db2823fc68a42ca5d337288dfa85"
+          }
+        },
+        {
           "client_id": "78925276663-roqhhei24o741k9015htbanqq9iacb8u.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
