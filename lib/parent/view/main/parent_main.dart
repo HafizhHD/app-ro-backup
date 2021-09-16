@@ -1,6 +1,14 @@
+import 'dart:convert';
+
+import 'package:badges/badges.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart' hide Response;
+import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/parent/view/addon/addon_page.dart';
 import 'package:ruangkeluarga/parent/view/akun/akun_page.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_page.dart';
@@ -9,9 +17,97 @@ import 'package:ruangkeluarga/parent/view/inbox/Inbox_page.dart';
 import 'package:ruangkeluarga/parent/view/jadwal/jadwal_page.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_drawer.dart';
+import 'package:ruangkeluarga/utils/repository/media_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class ParentMain extends StatelessWidget {
+final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+
+class ParentMain extends StatefulWidget {
+  @override
+  _ParentMainState createState() => _ParentMainState();
+}
+
+class _ParentMainState extends State<ParentMain> {
   final controller = Get.find<ParentController>();
+  late SharedPreferences prefs;
+
+  void onMessageListen() {
+    FirebaseMessaging.instance.getInitialMessage().then((value) => {
+          if (value != null) {print('remote message ${value.data}')}
+        });
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      // if(message.data.length > 0) {
+      //   flutterLocalNotificationsPlugin.show(
+      //       message.data.hashCode,
+      //       message.data['title'],
+      //       message.data['content'],
+      //       NotificationDetails(
+      //         android: AndroidNotificationDetails(
+      //           channel.id,
+      //           channel.name,
+      //           channel.description,
+      //           // TODO add a proper drawable resource to android, for now using one that already exists in example app.
+      //           icon: android?.smallIcon,
+      //         ),
+      //       ));
+      // } else
+      if (notification != null) {
+        flutterLocalNotificationsPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+              android: AndroidNotificationDetails(channel.id, channel.name, channel.description,
+                  // TODO add a proper drawable resource to android, for now using
+                  //      one that already exists in example app.
+                  icon: 'launch_background',
+                  styleInformation: BigTextStyleInformation(notification.body.toString())),
+            ));
+      }
+    });
+  }
+
+  void getUsageStatistik() async {
+    prefs = await SharedPreferences.getInstance();
+    var outputFormat = DateFormat('yyyy-MM-dd');
+    var outputDate = outputFormat.format(DateTime.now());
+    Response response = await MediaRepository().fetchAppUsageFilter(prefs.getString("rkChildEmail").toString(), outputDate);
+    if (response.statusCode == 200) {
+      print('isi response filter app usage : ${response.body}');
+      var json = jsonDecode(response.body);
+      if (json['resultCode'] == "OK") {
+        var jsonDataResult = json['appUsages'] as List;
+        await prefs.setString("childAppUsage", jsonEncode(jsonDataResult));
+        if (jsonDataResult.length == 0) {
+          await prefs.setInt("dataMinggu${prefs.getString("rkChildEmail")}", 0);
+        } else {
+          var data = jsonDataResult[1]['appUsages'] as List;
+          int seconds = 0;
+          for (int i = 0; i < data.length; i++) {
+            var jsonDt = data[i];
+            int sec = jsonDt['duration'];
+            seconds = seconds + sec;
+          }
+          await prefs.setInt("dataMinggu${prefs.getString("rkChildEmail")}", seconds);
+        }
+      }
+    } else {
+      print('isi response filter app usage : ${response.statusCode}');
+      await prefs.setInt("dataMinggu${prefs.getString("rkChildEmail")}", 0);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    controller.loginData();
+    controller.getAppIconList();
+    onMessageListen();
+    getUsageStatistik();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,12 +190,22 @@ class ParentMain extends StatelessWidget {
                 label: 'Discover',
                 isSelected: controller.bottomNavIndex == 0,
                 onPressed: () => controller.setBottomNavIndex(0)),
-            IconWithLabel(
-                defaultIcon: Icons.mail_outline,
-                activeIcon: Icons.mail,
-                label: 'Inbox',
-                isSelected: controller.bottomNavIndex == 1,
-                onPressed: () => controller.setBottomNavIndex(1)),
+            Obx(
+              () => Badge(
+                position: BadgePosition.topEnd(end: 0),
+                showBadge: controller.unreadNotif > 0 ? true : false,
+                badgeContent: Text(
+                  controller.unreadNotif > 99 ? '99+' : controller.unreadNotif.toString(),
+                  style: TextStyle(fontSize: 10),
+                ),
+                child: IconWithLabel(
+                    defaultIcon: Icons.mail_outline,
+                    activeIcon: Icons.mail,
+                    label: 'Inbox',
+                    isSelected: controller.bottomNavIndex == 1,
+                    onPressed: () => controller.setBottomNavIndex(1)),
+              ),
+            ),
             SizedBox(width: Get.width / 5), // The dummy child
             IconWithLabel(
                 defaultIcon: Icons.calendar_today_outlined,

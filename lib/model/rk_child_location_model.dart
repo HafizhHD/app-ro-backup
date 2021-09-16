@@ -17,7 +17,7 @@ class LocationChild {
       location: Location.fromJson(json['location']),
       dateHistory: strToEDMYHourOnly(json['dateTimeHistory']),
       dateCreate: strToDate_EddMMMyyyyHHmm(json['dateCreate']),
-      createdAt: DateTime.parse(json['dateCreate']),
+      createdAt: DateTime.parse(json['dateCreate']).toUtc().toLocal(),
     );
   }
 }

@@ -289,6 +289,35 @@ class MediaRepository {
     return response;
   }
 
+  Future<Response> fetchParentInbox(String email) async {
+    var url = _rkService.baseUrl + '/user/inboxFilter';
+    Map<String, dynamic> json = {"emailUser": "$email"};
+    print('param fetchParentInbox: $json');
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> updateReadNotif(String notifID) async {
+    var url = _rkService.baseUrl + '/user/inboxUpdate';
+    Map<String, dynamic> json = {
+      "whereValues": {"_id": "$notifID"},
+      "newValues": {"status": "read"},
+    };
+    print('param updateReadNotif: $json');
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> removeInboxNotif(String notifID) async {
+    var url = _rkService.baseUrl + '/user/inboxRemove';
+    Map<String, dynamic> json = {
+      "whereValues": {"_id": "$notifID"},
+    };
+    print('param removeInboxNotif: $json');
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
   Future<Response> saveIconApp(String email, String appName, String appId, String appIcon, String category) async {
     var url = _rkService.baseUrl + '/user/appIconAdd';
     Map<String, dynamic> json = {"emailUser": "$email", "appName": appName, "appId": appId, "appIcon": appIcon, "appCategory": category};
