@@ -5,9 +5,7 @@ import 'package:ruangkeluarga/child/child_controller.dart';
 import 'package:ruangkeluarga/child/child_drawer.dart';
 import 'package:ruangkeluarga/child/home_child.dart';
 import 'package:ruangkeluarga/global/global.dart';
-import 'package:ruangkeluarga/parent/view/addon/addon_page.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_page.dart';
-import 'package:ruangkeluarga/parent/view/inbox/Inbox_page.dart';
 import 'package:ruangkeluarga/parent/view/jadwal/jadwal_page.dart';
 
 class ChildMain extends StatelessWidget {
@@ -138,8 +136,7 @@ class ChosenPage extends StatelessWidget {
       case 0:
         return new FeedPage();
       case 1:
-        // return new AddonPage();
-        return new InboxPage();
+      // return new AddonPage();
       case 2:
         return new HomeChild();
       case 3:

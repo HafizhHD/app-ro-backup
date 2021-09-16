@@ -40,6 +40,8 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
   DateTime birthDate = DateTime.now().subtract(Duration(days: 365 * 5));
   GenderCharacter? _character = GenderCharacter.Ayah;
   File? _selectedImage;
+  final List<String> listGerejaHKBP = ['Petojo', 'Grogol', 'Tanjung Duren', 'Duren Sawit', 'Cengkareng', 'Green Lake', 'Taman Alfa', 'Pemabelas'];
+  String? selectedGereja;
 
   void onRegister() async {
     String token = '';
@@ -227,30 +229,32 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                         //   ),
                         // ),
                         Container(
-                          margin: const EdgeInsets.only(top: 10.0, bottom: 10),
+                          margin: EdgeInsets.only(top: 10.0, bottom: 10),
+                          padding: EdgeInsets.only(left: 10.0, right: 10),
                           width: MediaQuery.of(context).size.width,
-                          child: Theme(
-                            data: Theme.of(context).copyWith(splashColor: Colors.transparent),
-                            child: TextField(
-                              style: TextStyle(fontSize: 16.0, color: Colors.black),
-                              keyboardType: TextInputType.number,
-                              minLines: 1,
-                              maxLines: 1,
-                              // controller: cParoki,
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: cOrtuWhite,
-                                hintText: 'Pilih Jemaat Gereja',
-                                contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: cOrtuWhite),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: cOrtuWhite),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: DropdownButtonFormField<String>(
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            validator: (value) => value == null ? 'Harus dipilih' : null,
+                            value: selectedGereja,
+                            items: listGerejaHKBP
+                                .map((value) => DropdownMenuItem(
+                                      child: Text(
+                                        value,
+                                      ),
+                                      value: value,
+                                    ))
+                                .toList(),
+                            onChanged: (v) {
+                              selectedGereja = v;
+                              setState(() {});
+                            },
+                            isExpanded: true,
+                            hint: Text(
+                              'Pilih Gereja',
                             ),
                           ),
                         ),

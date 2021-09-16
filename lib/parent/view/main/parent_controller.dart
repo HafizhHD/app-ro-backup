@@ -10,8 +10,13 @@ import 'package:get/get.dart' hide Response;
 import 'package:http/http.dart';
 
 class ParentController extends GetxController {
+  ///ParentData
   String userName = '';
+  String userId = '';
   String emailUser = '';
+
+  ///
+
   late SharedPreferences prefs;
   late ParentProfile parentProfile;
   Rx<Future<List<Child>>> fChildList = Future<List<Child>>.value(<Child>[]).obs;
