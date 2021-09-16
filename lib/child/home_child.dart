@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:ruangkeluarga/child/child_controller.dart';
 import 'package:ruangkeluarga/child/sos_record_video.dart';
+import 'package:ruangkeluarga/global/global_shimmer.dart';
 import 'package:ruangkeluarga/model/rk_child_blacklist_contact.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
@@ -41,15 +42,6 @@ class _HomeChildPageState extends State<HomeChildPage> {
   List<BlackListContact> blackListData = [];
 
   final childController = Get.find<ChildController>();
-
-  getFileSize(String filepath, int decimals) async {
-    var file = File(filepath);
-    int bytes = await file.length();
-    if (bytes <= 0) return "0 B";
-    const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-    var i = (log(bytes) / log(1024)).floor();
-    return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) + ' ' + suffixes[i];
-  }
 
   void downloadTimeline() async {
     HttpClient httpClient = new HttpClient();
@@ -123,7 +115,7 @@ class _HomeChildPageState extends State<HomeChildPage> {
                     future: childController.fParentProfile.value,
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data!) return CardWithBottomSheet(parentData: childController.parentProfile);
-                      return wProgressIndicator();
+                      return Container(padding: EdgeInsets.all(10), child: shimmerUserCard());
                     }),
               )),
         ],
@@ -188,7 +180,7 @@ class CardWithBottomSheet extends StatelessWidget {
               expand: false,
               initialChildSize: 0.2,
               minChildSize: 0.2,
-              maxChildSize: 0.5,
+              maxChildSize: 0.6,
               builder: (BuildContext context, ScrollController scrollController) {
                 return Container(
                   padding: EdgeInsets.all(5),
@@ -203,75 +195,85 @@ class CardWithBottomSheet extends StatelessWidget {
                       overscroll.disallowGlow();
                       return true;
                     },
-                    child: SingleChildScrollView(
-                      controller: scrollController,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Center(
-                            child: Container(
-                              margin: EdgeInsets.only(top: 5, bottom: 10),
-                              width: screenSize.width / 6,
-                              height: 5,
-                              decoration: BoxDecoration(color: cOrtuGrey, borderRadius: BorderRadius.all(Radius.circular(15))),
-                            ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Center(
+                          child: Container(
+                            margin: EdgeInsets.only(top: 2),
+                            width: screenSize.width / 6,
+                            height: 5,
+                            decoration: BoxDecoration(color: cOrtuGrey, borderRadius: BorderRadius.all(Radius.circular(15))),
                           ),
-                          Container(
-                            margin: EdgeInsets.only(left: 10.0, right: 10),
-                            child: Text(
-                              '${parentData.name}',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Center(
-                            child: Container(
-                                height: 60,
-                                width: screenSize.width / 2,
-                                margin: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                        ),
+                        Flexible(
+                          child: SingleChildScrollView(
+                            controller: scrollController,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(left: 10.0, right: 10),
+                                  child: Text(
+                                    '${parentData.name}',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                                  ),
                                 ),
-                                child: Container(
-                                  margin: EdgeInsets.all(10),
-                                  child: roElevatedButton(
-                                      cColor: Colors.white,
-                                      radius: 20,
-                                      text: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            child: Align(
-                                              alignment: Alignment.centerLeft,
-                                              child: Icon(
-                                                Icons.add_ic_call,
-                                                color: Colors.red,
-                                              ),
-                                            ),
-                                          ),
-                                          Container(
-                                            margin: EdgeInsets.only(left: 10.0),
-                                            child: Align(
-                                              alignment: Alignment.centerRight,
-                                              child: Text(
-                                                'SOS',
-                                                style: TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold),
-                                              ),
-                                            ),
-                                          )
-                                        ],
+                                Center(
+                                  child: Container(
+                                      height: 60,
+                                      width: screenSize.width / 2,
+                                      margin: EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red,
+                                        borderRadius: BorderRadius.all(Radius.circular(30)),
                                       ),
-                                      onPress: () {
-                                        // Navigator.of(context).push(MaterialPageRoute(builder: (context) => SOSRecordVideoPage()));
-                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => CameraApp()));
-                                      }),
-                                )),
+                                      child: Container(
+                                        margin: EdgeInsets.all(10),
+                                        child: roElevatedButton(
+                                            cColor: Colors.white,
+                                            radius: 20,
+                                            text: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Container(
+                                                  child: Align(
+                                                    alignment: Alignment.centerLeft,
+                                                    child: Icon(
+                                                      Icons.add_ic_call,
+                                                      color: Colors.red,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  margin: EdgeInsets.only(left: 10.0),
+                                                  child: Align(
+                                                    alignment: Alignment.centerRight,
+                                                    child: Text(
+                                                      'SOS',
+                                                      style: TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            onPress: () {
+                                              // Navigator.of(context).push(MaterialPageRoute(builder: (context) => SOSRecordVideoPage()));
+                                              Navigator.of(context).push(MaterialPageRoute(builder: (context) => CameraApp()));
+                                            }),
+                                      )),
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 );

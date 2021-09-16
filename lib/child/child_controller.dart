@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
 
+import 'package:camera/camera.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -51,14 +54,16 @@ class ChildController extends GetxController {
     // }
 
     await getChildData().then((value) {
-      fParentProfile.value = getParentData();
-      onMessageListen();
-      fetchChildLocation();
-      saveCurrentAppList();
-      fetchContacts();
-      // onGetSMS();
-      getAppUsageData();
-      onGetCallLog();
+      if (value) {
+        fParentProfile.value = getParentData();
+        onMessageListen();
+        fetchChildLocation();
+        saveCurrentAppList();
+        fetchContacts();
+        // onGetSMS();
+        getAppUsageData();
+        onGetCallLog();
+      }
     });
   }
 
@@ -92,7 +97,7 @@ class ChildController extends GetxController {
     });
   }
 
-  Future getChildData() async {
+  Future<bool> getChildData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     Response response = await MediaRepository().getParentChildData(prefs.getString(rkUserID) ?? '');
     print('response getChildData: ${response.body}');
@@ -110,10 +115,12 @@ class ChildController extends GetxController {
         //   onGetCallLog(0);
         // }
         update();
+        return true;
       }
     } else {
       print('no user found');
     }
+    return false;
   }
 
   Future<bool> getParentData() async {
@@ -208,7 +215,6 @@ class ChildController extends GetxController {
           }
         });
       });
-
       locationPeriodic = Timer.periodic(Duration(hours: 1), (timer) async {
         print('timer save location $timer');
         await location.getLocation().then((locData) async {
@@ -327,6 +333,27 @@ class ChildController extends GetxController {
     } else {
       print('isi response save app usage : ${response.statusCode}');
     }
+  }
+
+  Future sentPanicSOS(XFile recording) async {
+    print('File Size: ${getFileSize(await recording.length())}');
+    final recordAsBytes = await recording.readAsBytes();
+    final locData = await location.getLocation();
+    final base64Video = "data:image/png;base64,${base64Encode(recordAsBytes)}";
+
+    Response response = await MediaRepository().postPanicSOS(childEmail, locData, base64Video);
+    if (response.statusCode == 200) {
+      print('isi response sentPanicSOS : ${response.body}');
+    } else {
+      print('isi response sentPanicSOS error : ${response.statusCode}');
+    }
+  }
+
+  String getFileSize(int bytes) {
+    if (bytes <= 0) return "0 B";
+    const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+    var i = (log(bytes) / log(1024)).floor();
+    return ((bytes / pow(1024, i)).toStringAsFixed(2)) + ' ' + suffixes[i];
   }
 }
 

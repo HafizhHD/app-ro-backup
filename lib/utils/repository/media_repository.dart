@@ -421,4 +421,28 @@ class MediaRepository {
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
+
+  Future<Response> postPanicSOS(String email, LocationData location, String base64Video) async {
+    final coordinates = new Coordinates(location.latitude, location.longitude);
+    var addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
+    var url = _rkService.baseUrl + '/user/panicVideoSend';
+    var place = "";
+    if (addresses[0].thoroughfare != null) {
+      place = addresses[0].thoroughfare!;
+    } else {
+      place = addresses[0].addressLine!;
+    }
+    Map<String, dynamic> json = {
+      "emailUser": "$email",
+      "location": {
+        "place": "$place",
+        "type": "Point",
+        "coordinates": ["${location.latitude}", "${location.longitude}"]
+      },
+      "panicVideo": "$base64Video"
+    };
+    print('param panicSOS: $json');
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
 }

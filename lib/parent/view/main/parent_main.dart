@@ -236,6 +236,7 @@ class ChosenPage extends StatelessWidget {
       case 0:
         return new FeedPage();
       case 1:
+        Get.find<ParentController>().getInboxNotif();
         return new InboxPage();
       // return new AddonPage();
       case 2:

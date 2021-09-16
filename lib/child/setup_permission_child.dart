@@ -61,6 +61,9 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
   void initAsync() async {
     _locationPermission = (await Permission.location.status).isGranted;
     _contactPermission = (await Permission.contacts.status).isGranted;
+    _phonePermission = (await Permission.phone.status).isGranted;
+    _cameraPermission = (await Permission.camera.status).isGranted;
+    _audioPermission = (await Permission.microphone.status).isGranted;
     setState(() {});
   }
 
@@ -80,32 +83,33 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Container(
+                color: cPrimaryBg,
+                padding: EdgeInsets.only(top: 30.0, left: 20.0, right: 20.0, bottom: 10),
+                // margin: EdgeInsets.only(bottom: 10),
+                // height: 80,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Hi, ${widget.name}',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: cOrtuWhite),
+                    ),
+                    Text(
+                      'Aplikasi $appName memerlukan beberapa ijin untuk mengakses data yang dibutuhkan:',
+                      style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                    )
+                  ],
+                ),
+              ),
               Flexible(
                 child: SingleChildScrollView(
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Container(
-                        color: cPrimaryBg,
-                        padding: EdgeInsets.only(top: 30.0, left: 20.0, right: 20.0, bottom: 10),
-                        // margin: EdgeInsets.only(bottom: 10),
-                        // height: 80,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Hi, ${widget.name}',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: cOrtuWhite),
-                            ),
-                            Text(
-                              'Aplikasi $appName memerlukan beberapa ijin untuk mengakses data yang dibutuhkan:',
-                              style: TextStyle(fontSize: 16, color: cOrtuWhite),
-                            )
-                          ],
-                        ),
-                      ),
                       checkAllPermission(),
                     ],
                   ),

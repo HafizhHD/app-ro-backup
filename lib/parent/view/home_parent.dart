@@ -88,9 +88,6 @@ class _HomeParentPageState extends State<HomeParentPage> {
     emailUser = prefs.getString(rkEmailUser)!;
     if (prefs.getString("rkChildName") != null) {
       childName = prefs.getString("rkChildName")!;
-    } else {
-      List<User> data = json.decode(prefs.getString(rkChilds)!);
-      childName = data[0].name.toString();
     }
 
     setState(() {});

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart' hide Response;
 
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
@@ -11,6 +12,7 @@ import 'package:ruangkeluarga/child/child_main.dart';
 import 'package:ruangkeluarga/child/home_child.dart';
 import 'package:ruangkeluarga/child/setup_permission_child.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:ruangkeluarga/utils/rk_webview.dart';
@@ -78,6 +80,7 @@ class _LoginState extends State<LoginPage> {
         print("user exist");
         var json = jsonDecode(response.body);
         if (json['resultCode'] == "OK") {
+          final parentController = Get.find<ParentController>();
           var jsonDataResult = json['resultData'];
           var tokenApps = jsonDataResult['token'];
           await prefs.setString(rkTokenApps, tokenApps);
@@ -85,6 +88,10 @@ class _LoginState extends State<LoginPage> {
           await prefs.setString(rkUserID, jsonUser["_id"]);
           await prefs.setString(rkUserType, jsonUser['userType']);
           await prefs.setBool(isPrefLogin, true);
+          parentController.userId = jsonUser["_id"];
+          parentController.userName = jsonUser["nameUser"];
+          parentController.emailUser = jsonUser["emailUser"];
+
           if (jsonUser['userType'] == "child") {
             if (await childNeedPermission()) {
               Navigator.of(context).pushReplacement(
