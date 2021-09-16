@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/model/rk_child_model.dart';
-import 'package:ruangkeluarga/parent/view/home_parent.dart';
+import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +18,8 @@ class ParentController extends GetxController {
   RxMap _modeAsuh = <int, int>{}.obs;
   var _bottomNavIndex = 2.obs;
   bool hasLogin = false;
+  var inboxData = <InboxNotif>[];
+  var unreadNotif = 0.obs;
 
   int get bottomNavIndex => _bottomNavIndex.value;
 
@@ -66,6 +68,10 @@ class ParentController extends GetxController {
     fChildList.value = onLogin();
   }
 
+  Future futureHasLogin() async {
+    await fChildList.value;
+  }
+
   Future<List<Child>> _getUserData() async {
     prefs = await SharedPreferences.getInstance();
     final userID = prefs.getString(rkUserID);
@@ -99,6 +105,7 @@ class ParentController extends GetxController {
         if (jsonUser != null) {
           parentProfile = ParentProfile.fromJson(jsonUser);
           final childsData = parentProfile.children ?? [];
+          getInboxNotif();
           if (childsData.length > 0) {
             await prefs.setString(rkUserID, parentProfile.id);
             await prefs.setString(rkUserType, parentProfile.userType);
@@ -129,6 +136,38 @@ class ParentController extends GetxController {
       if (json['resultCode'] == "OK") {
         await prefs.setString(rkListAppIcons, res.body);
         await prefs.setString(rkBaseUrlAppIcon, json['baseUrl']);
+      }
+    }
+  }
+
+  Future getInboxNotif() async {
+    Response res = await MediaRepository().fetchParentInbox(parentProfile.email);
+    if (res.statusCode == 200) {
+      print('print res fetchParentInbox ${res.body}');
+      final json = jsonDecode(res.body);
+      if (json['resultCode'] == "OK") {
+        unreadNotif.value = 0;
+        final List dataInbox = json['inbox'];
+        inboxData = dataInbox.map((e) {
+          final notif = InboxNotif.fromJson(e);
+          if (!notif.readStatus) unreadNotif.value++;
+          return notif;
+        }).toList();
+        inboxData.sort((a, b) => b.createAt.compareTo(a.createAt));
+        update();
+      }
+    }
+  }
+
+  Future readNotifByID(String id, int index) async {
+    Response res = await MediaRepository().updateReadNotif(id);
+    if (res.statusCode == 200) {
+      print('print res updateReadNotif ${res.body}');
+      final json = jsonDecode(res.body);
+      if (json['resultCode'] == "OK") {
+        inboxData[index].readStatus = true;
+        unreadNotif.value--;
+        update();
       }
     }
   }

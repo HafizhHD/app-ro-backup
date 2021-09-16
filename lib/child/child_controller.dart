@@ -295,15 +295,6 @@ class ChildController extends GetxController {
           }
         });
       });
-    } else {
-      entries = await CallLog.get();
-      print('CALL DATA LOG');
-      entries.forEach((entry) {
-        print('name: ${entry.name}; num: ${entry.number}');
-        print('cachedMatchedNumber: ${entry.cachedMatchedNumber}; cachedNumberLabel: ${entry.cachedNumberLabel}');
-        print('duration: ${entry.duration}; phoneAccountId: ${entry.phoneAccountId}');
-        print('simDisplayName: ${entry.simDisplayName}; timestamp: ${entry.timestamp}');
-      });
     }
   }
 

@@ -21,8 +21,6 @@ import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-
 class HomeParentPage extends StatefulWidget {
   @override
   _HomeParentPageState createState() => _HomeParentPageState();
@@ -68,36 +66,6 @@ class _HomeParentPageState extends State<HomeParentPage> {
     }
   }
 
-  void getUsageStatistik() async {
-    prefs = await SharedPreferences.getInstance();
-    var outputFormat = DateFormat('yyyy-MM-dd');
-    var outputDate = outputFormat.format(DateTime.now());
-    Response response = await MediaRepository().fetchAppUsageFilter(prefs.getString("rkChildEmail").toString(), outputDate);
-    if (response.statusCode == 200) {
-      print('isi response filter app usage : ${response.body}');
-      var json = jsonDecode(response.body);
-      if (json['resultCode'] == "OK") {
-        var jsonDataResult = json['appUsages'] as List;
-        await prefs.setString("childAppUsage", jsonEncode(jsonDataResult));
-        if (jsonDataResult.length == 0) {
-          await prefs.setInt("dataMinggu${prefs.getString("rkChildEmail")}", 0);
-        } else {
-          var data = jsonDataResult[1]['appUsages'] as List;
-          int seconds = 0;
-          for (int i = 0; i < data.length; i++) {
-            var jsonDt = data[i];
-            int sec = jsonDt['duration'];
-            seconds = seconds + sec;
-          }
-          await prefs.setInt("dataMinggu${prefs.getString("rkChildEmail")}", seconds);
-        }
-      }
-    } else {
-      print('isi response filter app usage : ${response.statusCode}');
-      await prefs.setInt("dataMinggu${prefs.getString("rkChildEmail")}", 0);
-    }
-  }
-
   void getListApps() async {
     try {
       List<Application> appData =
@@ -114,51 +82,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
     }
   }
 
-  void onMessageListen() {
-    FirebaseMessaging.instance.getInitialMessage().then((value) => {
-          if (value != null) {print('remote message ${value.data}')}
-        });
-
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      RemoteNotification? notification = message.notification;
-      AndroidNotification? android = message.notification?.android;
-      // if(message.data.length > 0) {
-      //   flutterLocalNotificationsPlugin.show(
-      //       message.data.hashCode,
-      //       message.data['title'],
-      //       message.data['content'],
-      //       NotificationDetails(
-      //         android: AndroidNotificationDetails(
-      //           channel.id,
-      //           channel.name,
-      //           channel.description,
-      //           // TODO add a proper drawable resource to android, for now using one that already exists in example app.
-      //           icon: android?.smallIcon,
-      //         ),
-      //       ));
-      // } else
-      if (notification != null) {
-        flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
-            NotificationDetails(
-              android: AndroidNotificationDetails(channel.id, channel.name, channel.description,
-                  // TODO add a proper drawable resource to android, for now using
-                  //      one that already exists in example app.
-                  icon: 'launch_background',
-                  styleInformation: BigTextStyleInformation(notification.body.toString())),
-            ));
-      }
-    });
-  }
-
   void setBindingData() async {
-    String token = '';
-    await firebaseMessaging.getToken().then((fcmToken) {
-      token = fcmToken!;
-    });
-    print('fcm $token');
     prefs = await SharedPreferences.getInstance();
     userName = prefs.getString(rkUserName)!;
     emailUser = prefs.getString(rkEmailUser)!;
@@ -167,9 +91,6 @@ class _HomeParentPageState extends State<HomeParentPage> {
     } else {
       List<User> data = json.decode(prefs.getString(rkChilds)!);
       childName = data[0].name.toString();
-      // for(int i = 0; i < jsonChild.length; i++) {
-      //   childName = jsonChild[i]['name'];
-      // }
     }
 
     setState(() {});
@@ -179,10 +100,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
   void initState() {
     super.initState();
     setBindingData();
-    onMessageListen();
-    getUsageStatistik();
-    fLogin = parentController.loginData();
-    parentController.getAppIconList();
+    fLogin = parentController.futureHasLogin();
   }
 
   @override
@@ -383,18 +301,22 @@ class _HomeParentPageState extends State<HomeParentPage> {
                 );
               } else {
                 return ListView.builder(
-                    shrinkWrap: false,
-                    scrollDirection: Axis.horizontal,
+                    // physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal, //Keluarga HKBP kebawah
                     itemCount: childsList.length,
                     itemBuilder: (BuildContext context, int index) {
                       parentController.setModeAsuh(childsList[index].childOfNumber ?? 0, 1);
-
-                      return ChildCardWithBottomSheet(
-                          childData: childsList[index],
-                          prefs: prefs,
-                          onAddChild: () {
-                            parentController.getParentChildData();
-                          });
+                      final screenSize = MediaQuery.of(context).size;
+                      return Container(
+                        // constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
+                        child: ChildCardWithBottomSheet(
+                            childData: childsList[index],
+                            prefs: prefs,
+                            onAddChild: () {
+                              parentController.getParentChildData();
+                            }),
+                      );
                     });
               }
             });
