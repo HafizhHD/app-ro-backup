@@ -114,15 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
         if (prevLogin != null && roUserType != null && roUserType != '') {
           if (roUserType == "child") {
-            final locationHandler = await Permission.location.status;
-            final contactHandler = await Permission.contacts.status;
-            final phoneHandler = await Permission.phone.status;
-            // final smsHandler = await Permission.sms.status;
-            print('Permision Status location : $locationHandler');
-            print('Permision Status contact : $contactHandler');
-            print('Permision Status phone : $phoneHandler');
-            // print('Permision Status sms : $smsHandler');
-            if (locationHandler.isDenied || contactHandler.isDenied || phoneHandler.isDenied) {
+            if (await childNeedPermission()) {
               Navigator.of(context)
                   .pushReplacement(MaterialPageRoute(builder: (context) => SetupPermissionChildPage(email: roUserEmail, name: roUserName)));
             } else {

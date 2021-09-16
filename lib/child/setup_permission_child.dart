@@ -24,6 +24,8 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
   bool _serviceAppUsage = false;
   bool _locationPermission = false;
   bool _phonePermission = false;
+  bool _cameraPermission = false;
+  bool _audioPermission = false;
   // bool _smsPermission = false;
   bool _contactPermission = false;
 
@@ -119,7 +121,7 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
                     borderRadius: new BorderRadius.circular(15.0),
                   ),
                   onPressed: () async {
-                    if (_locationPermission && _contactPermission && _phonePermission && _serviceAppUsage) {
+                    if (_locationPermission && _contactPermission && _phonePermission && _serviceAppUsage && _cameraPermission && _audioPermission) {
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (context) => ChildMain(
@@ -253,6 +255,74 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
                   }
                 }
                 _phonePermission = _permissionStatus.isGranted;
+                setState(() {});
+              },
+              contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
+            ),
+            SizedBox(height: 10),
+            SwitchListTile.adaptive(
+              tileColor: cOrtuGrey,
+              title: Text('Kamera'),
+              subtitle: Text('Kami membutuhkan akses kamera pada perangkat anak untuk mengirimkan rekaman video sos.'),
+              value: _cameraPermission,
+              onChanged: (val) async {
+                var _permissionStatus = await Permission.camera.status;
+                if (_permissionStatus.isDenied) {
+                  final s = Stopwatch()..start();
+                  _permissionStatus = await Permission.camera.request();
+                  s.stop();
+                  if (s.elapsedMilliseconds < _waitDelay && _permissionStatus.isPermanentlyDenied) {
+                    await Get.dialog(AlertDialog(
+                      title: Text('Akses ditolak'),
+                      content: Text('Akses untuk kamera telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
+                      actions: [
+                        TextButton(
+                            onPressed: () async {
+                              final res = await openAppSettings();
+                              if (res) Get.back();
+                            },
+                            child: Text('Buka Setting'))
+                      ],
+                    ));
+                    _permissionStatus = await Permission.phone.status;
+                  }
+                }
+                _cameraPermission = _permissionStatus.isGranted;
+                setState(() {});
+              },
+              contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
+            ),
+            SizedBox(height: 10),
+            SwitchListTile.adaptive(
+              tileColor: cOrtuGrey,
+              title: Text('Audio'),
+              subtitle: Text('Kami membutuhkan akses microphone pada perangkat anak untuk mengirimkan rekaman suara ketika sos.'),
+              value: _audioPermission,
+              onChanged: (val) async {
+                var _permissionStatus = await Permission.microphone.status;
+                if (_permissionStatus.isDenied) {
+                  final s = Stopwatch()..start();
+                  _permissionStatus = await Permission.microphone.request();
+                  s.stop();
+                  if (s.elapsedMilliseconds < _waitDelay && _permissionStatus.isPermanentlyDenied) {
+                    await Get.dialog(AlertDialog(
+                      title: Text('Akses ditolak'),
+                      content: Text('Akses untuk microphone telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
+                      actions: [
+                        TextButton(
+                            onPressed: () async {
+                              final res = await openAppSettings();
+                              if (res) Get.back();
+                            },
+                            child: Text('Buka Setting'))
+                      ],
+                    ));
+                    _permissionStatus = await Permission.phone.status;
+                  }
+                }
+                _audioPermission = _permissionStatus.isGranted;
                 setState(() {});
               },
               contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),

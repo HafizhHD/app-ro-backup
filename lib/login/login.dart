@@ -86,15 +86,7 @@ class _LoginState extends State<LoginPage> {
           await prefs.setString(rkUserType, jsonUser['userType']);
           await prefs.setBool(isPrefLogin, true);
           if (jsonUser['userType'] == "child") {
-            final locationHandler = await Permission.location.status;
-            final contactHandler = await Permission.contacts.status;
-            final phoneHandler = await Permission.phone.status;
-            // final smsHandler = await Permission.sms.status;
-            print('Permision Status location : $locationHandler');
-            print('Permision Status contact : $contactHandler');
-            print('Permision Status phone : $phoneHandler');
-            // print('Permision Status sms : $smsHandler');
-            if (locationHandler.isDenied || contactHandler.isDenied || phoneHandler.isDenied) {
+            if (await childNeedPermission()) {
               Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context) => SetupPermissionChildPage(email: jsonUser['emailUser'], name: jsonUser['nameUser'])));
             } else {

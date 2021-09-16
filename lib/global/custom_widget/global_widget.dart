@@ -72,17 +72,17 @@ class WSearchBar extends StatelessWidget {
   }
 }
 
-Widget roElevatedButton({Color cColor = cOrtuBlue, required Widget text, required Function()? onPress}) {
+Widget roElevatedButton({Color cColor = cOrtuBlue, double radius = 10, required Widget text, required Function()? onPress}) {
   return ElevatedButton(
     style: ButtonStyle(
-      shape: MaterialStateProperty.all((RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))),
+      shape: MaterialStateProperty.all((RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius)))),
       backgroundColor: MaterialStateProperty.resolveWith<Color>(
         (Set<MaterialState> states) {
           if (states.contains(MaterialState.disabled)) return Colors.grey.shade700;
           return cColor;
         },
       ),
-      // elevation: globalBtnElevation(),
+      elevation: globalBtnElevation(),
     ),
     child: text,
     onPressed: onPress,

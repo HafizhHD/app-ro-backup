@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'package:camera/camera.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart' hide Response;
@@ -13,6 +14,8 @@ import 'package:ruangkeluarga/model/rk_child_blacklist_contact.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+late List<CameraDescription> cameras;
 
 class HomeChild extends StatelessWidget {
   @override
@@ -76,7 +79,12 @@ class _HomeChildPageState extends State<HomeChildPage> {
   @override
   void initState() {
     super.initState();
+    initAsync();
     childController.initData();
+  }
+
+  void initAsync() async {
+    cameras = await availableCameras();
   }
 
   @override
@@ -180,7 +188,7 @@ class CardWithBottomSheet extends StatelessWidget {
               expand: false,
               initialChildSize: 0.2,
               minChildSize: 0.2,
-              maxChildSize: 0.60,
+              maxChildSize: 0.5,
               builder: (BuildContext context, ScrollController scrollController) {
                 return Container(
                   padding: EdgeInsets.all(5),
@@ -190,6 +198,7 @@ class CardWithBottomSheet extends StatelessWidget {
                   ),
                   width: screenSize.width,
                   child: NotificationListener(
+                    //buat hilangin clamp scroll android
                     onNotification: (OverscrollIndicatorNotification overscroll) {
                       overscroll.disallowGlow();
                       return true;
@@ -198,11 +207,11 @@ class CardWithBottomSheet extends StatelessWidget {
                       controller: scrollController,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        // crossAxisAlignment: CrossAxisAlignment.stretch,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Center(
                             child: Container(
-                              margin: EdgeInsets.only(top: 5),
+                              margin: EdgeInsets.only(top: 5, bottom: 10),
                               width: screenSize.width / 6,
                               height: 5,
                               decoration: BoxDecoration(color: cOrtuGrey, borderRadius: BorderRadius.all(Radius.circular(15))),
@@ -212,56 +221,54 @@ class CardWithBottomSheet extends StatelessWidget {
                             margin: EdgeInsets.only(left: 10.0, right: 10),
                             child: Text(
                               '${parentData.name}',
+                              textAlign: TextAlign.left,
                               style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
                             ),
                           ),
-                          Container(
-                            height: 60,
-                            margin: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.all(Radius.circular(30)),
-                            ),
+                          Center(
                             child: Container(
-                              height: 40,
-                              margin: EdgeInsets.all(10.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              child: Align(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      child: Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Icon(
-                                          Icons.add_ic_call,
-                                          color: Colors.red,
-                                        ),
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      child: Container(
-                                        margin: EdgeInsets.only(left: 10.0),
-                                        child: Align(
-                                          alignment: Alignment.centerRight,
-                                          child: Text(
-                                            'SOS',
-                                            style: TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                      ),
-                                      onTap: () {
-                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => SOSRecordVideoPage()));
-                                      },
-                                    )
-                                  ],
+                                height: 60,
+                                width: screenSize.width / 2,
+                                margin: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.all(Radius.circular(30)),
                                 ),
-                              ),
-                            ),
+                                child: Container(
+                                  margin: EdgeInsets.all(10),
+                                  child: roElevatedButton(
+                                      cColor: Colors.white,
+                                      radius: 20,
+                                      text: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Icon(
+                                                Icons.add_ic_call,
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.only(left: 10.0),
+                                            child: Align(
+                                              alignment: Alignment.centerRight,
+                                              child: Text(
+                                                'SOS',
+                                                style: TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold),
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      onPress: () {
+                                        // Navigator.of(context).push(MaterialPageRoute(builder: (context) => SOSRecordVideoPage()));
+                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => CameraApp()));
+                                      }),
+                                )),
                           ),
                         ],
                       ),
