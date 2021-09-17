@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart' hide Response;
 import 'package:http/http.dart';
 import 'package:ruangkeluarga/global/custom_widget/photo_image_picker.dart';
 
@@ -11,7 +12,9 @@ import 'package:ruangkeluarga/global/global_formatter.dart';
 import 'package:ruangkeluarga/login/login.dart';
 import 'package:ruangkeluarga/parent/view/home_parent.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
+import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -40,8 +43,7 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
   DateTime birthDate = DateTime.now().subtract(Duration(days: 365 * 5));
   GenderCharacter? _character = GenderCharacter.Ayah;
   File? _selectedImage;
-  final List<String> listGerejaHKBP = ['Petojo', 'Grogol', 'Tanjung Duren', 'Duren Sawit', 'Cengkareng', 'Green Lake', 'Taman Alfa', 'Pemabelas'];
-  String? selectedGereja;
+  GerejaHKBP? selectedGereja;
 
   void onRegister() async {
     String token = '';
@@ -60,6 +62,8 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
       (_character ?? GenderCharacter.Ayah).toEnumString(),
       accessToken,
       _imageBytes != null ? "data:image/png;base64,${base64Encode(_imageBytes)}" : "",
+      selectedGereja != null ? '${selectedGereja!.nama} (${selectedGereja!.distrik})' : '',
+      birthDate.toIso8601String(),
     );
     if (response.statusCode == 200) {
       print('isi response register : ${response.body}');
@@ -199,35 +203,35 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                             ),
                           ),
                         ),
-                        // Container(
-                        //   margin: const EdgeInsets.only(top: 10.0, bottom: 10),
-                        //   width: MediaQuery.of(context).size.width,
-                        //   child: Theme(
-                        //     data: Theme.of(context).copyWith(splashColor: Colors.transparent),
-                        //     child: TextField(
-                        //       style: TextStyle(fontSize: 16.0, color: Colors.black),
-                        //       readOnly: true,
-                        //       keyboardType: TextInputType.emailAddress,
-                        //       minLines: 1,
-                        //       maxLines: 1,
-                        //       controller: cEmail,
-                        //       decoration: InputDecoration(
-                        //         filled: true,
-                        //         fillColor: cOrtuWhite,
-                        //         hintText: 'Email',
-                        //         contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
-                        //         focusedBorder: OutlineInputBorder(
-                        //           borderSide: BorderSide(color: cOrtuWhite),
-                        //           borderRadius: BorderRadius.circular(10),
-                        //         ),
-                        //         enabledBorder: UnderlineInputBorder(
-                        //           borderSide: BorderSide(color: cOrtuWhite),
-                        //           borderRadius: BorderRadius.circular(10),
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 10.0, bottom: 10),
+                          width: MediaQuery.of(context).size.width,
+                          child: Theme(
+                            data: Theme.of(context).copyWith(splashColor: Colors.transparent),
+                            child: TextField(
+                              style: TextStyle(fontSize: 16.0, color: Colors.black),
+                              readOnly: true,
+                              keyboardType: TextInputType.emailAddress,
+                              minLines: 1,
+                              maxLines: 1,
+                              controller: cEmail,
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: cOrtuWhite,
+                                hintText: 'Email',
+                                contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: cOrtuWhite),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: cOrtuWhite),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                         Container(
                           margin: EdgeInsets.only(top: 10.0, bottom: 10),
                           padding: EdgeInsets.only(left: 10.0, right: 10),
@@ -236,16 +240,19 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: DropdownButtonFormField<String>(
+                          child: DropdownButtonFormField<GerejaHKBP>(
                             autovalidateMode: AutovalidateMode.onUserInteraction,
                             validator: (value) => value == null ? 'Harus dipilih' : null,
                             value: selectedGereja,
-                            items: listGerejaHKBP
-                                .map((value) => DropdownMenuItem(
+                            items: Get.find<ParentController>()
+                                .listGereja
+                                .map((gereja) => DropdownMenuItem(
                                       child: Text(
-                                        value,
+                                        '${gereja.nama} (${gereja.distrik}) \n${gereja.alamat}',
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      value: value,
+                                      value: gereja,
                                     ))
                                 .toList(),
                             onChanged: (v) {

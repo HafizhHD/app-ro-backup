@@ -35,21 +35,28 @@ class InboxPage extends StatelessWidget {
         itemCount: inbox.length,
         itemBuilder: (ctx, idx) {
           final notifData = inbox[idx];
-          return Container(
-            decoration: BoxDecoration(color: cOrtuGrey, borderRadius: BorderRadius.all(Radius.circular(15))),
-            margin: EdgeInsets.all(5),
-            padding: EdgeInsets.only(top: 5, bottom: 2),
-            child: ListTile(
-              onTap: () async {
-                showLoadingOverlay();
-                await controller.readNotifByID(notifData.id, idx);
-                closeOverlay();
-              },
-              title: Text(
-                notifData.message.split('pada')[0],
-                style: TextStyle(fontWeight: notifData.readStatus ? FontWeight.normal : FontWeight.bold),
+          return Dismissible(
+            key: Key(notifData.id),
+            // direction: if == '' ? DismissDirection.horizontal : DismissDirection.none,
+            confirmDismiss: (_) async {
+              return await controller.deleteNotif(notifData.id);
+            },
+            child: Container(
+              decoration: BoxDecoration(color: cOrtuGrey, borderRadius: BorderRadius.all(Radius.circular(15))),
+              margin: EdgeInsets.all(5),
+              padding: EdgeInsets.only(top: 5, bottom: 2),
+              child: ListTile(
+                onTap: () async {
+                  showLoadingOverlay();
+                  await controller.readNotifByID(notifData.id, idx);
+                  closeOverlay();
+                },
+                title: Text(
+                  notifData.message.split('pada')[0],
+                  style: TextStyle(fontWeight: notifData.readStatus ? FontWeight.normal : FontWeight.bold),
+                ),
+                subtitle: Text('\n${dateFormat_EDMYHM(notifData.createAt)}'),
               ),
-              subtitle: Text('\n${dateFormat_EDMYHM(notifData.createAt)}'),
             ),
           );
         },

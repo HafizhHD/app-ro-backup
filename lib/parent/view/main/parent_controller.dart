@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/model/rk_child_model.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
@@ -23,8 +24,11 @@ class ParentController extends GetxController {
   RxMap _modeAsuh = <int, int>{}.obs;
   var _bottomNavIndex = 2.obs;
   bool hasLogin = false;
+
   var inboxData = <InboxNotif>[];
   var unreadNotif = 0.obs;
+
+  List<GerejaHKBP> listGereja = [];
 
   int get bottomNavIndex => _bottomNavIndex.value;
 
@@ -50,6 +54,7 @@ class ParentController extends GetxController {
     super.onInit();
     initAsync();
     getBinding();
+    getListGerejaHKBP();
   }
 
   void getBinding() async {
@@ -172,6 +177,48 @@ class ParentController extends GetxController {
       if (json['resultCode'] == "OK") {
         inboxData[index].readStatus = true;
         unreadNotif.value--;
+        update();
+      }
+    }
+  }
+
+  Future<bool?> deleteNotif(String notifID) async {
+    return Get.dialog<bool>(AlertDialog(
+      title: Text('Hapus Notifikasi'),
+      content: Text('Yakin ingin menghapus notifikasi ini?'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Get.back(result: false);
+          },
+          child: Text('Batal', style: TextStyle(color: cOrtuBlue)),
+        ),
+        TextButton(
+          onPressed: () async {
+            showLoadingOverlay();
+            final response = await MediaRepository().removeInboxNotif(notifID);
+            if (response.statusCode == 200) {
+              await getInboxNotif();
+              closeOverlay();
+              closeOverlay();
+              showToastSuccess(ctx: Get.context!, successText: 'Berhasil menghapus notifikasi');
+            } else
+              showToastFailed(ctx: Get.context!, failedText: 'Gagal menghapus notifikasi');
+          },
+          child: Text('Hapus', style: TextStyle(color: cOrtuBlue)),
+        ),
+      ],
+    ));
+  }
+
+  Future getListGerejaHKBP() async {
+    Response res = await MediaRepository().fetchGerejaHKBP();
+    if (res.statusCode == 200) {
+      print('print res getListGerejaHKBP ${res.body}');
+      final json = jsonDecode(res.body);
+      if (json['resultCode'] == "OK") {
+        List HKBPData = json['HKBPData'];
+        listGereja = HKBPData.map((e) => GerejaHKBP.fromJson(e)).toList();
         update();
       }
     }
