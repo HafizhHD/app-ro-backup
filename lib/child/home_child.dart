@@ -1,46 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
-import 'package:camera/camera.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:flutter/material.dart';
 
-import 'package:location/location.dart';
 import 'package:ruangkeluarga/child/child_controller.dart';
 import 'package:ruangkeluarga/child/sos_record_video.dart';
 import 'package:ruangkeluarga/global/global_shimmer.dart';
-import 'package:ruangkeluarga/model/rk_child_blacklist_contact.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-late List<CameraDescription> cameras;
 
 class HomeChild extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return HomeChildPage(title: 'ruang keluarga', email: '', name: '');
-  }
-}
-
-class HomeChildPage extends StatefulWidget {
-  HomeChildPage({Key? key, required this.title, required this.email, required this.name}) : super(key: key);
-
-  final String title;
-  final String email;
-  final String name;
-
-  @override
-  _HomeChildPageState createState() => _HomeChildPageState();
-}
-
-class _HomeChildPageState extends State<HomeChildPage> {
-  late SharedPreferences prefs;
-  Location location = new Location();
-  List<BlackListContact> blackListData = [];
-
   final childController = Get.find<ChildController>();
 
   void downloadTimeline() async {
@@ -66,17 +36,6 @@ class _HomeChildPageState extends State<HomeChildPage> {
     } catch (ex) {
       filePath = 'Can not fetch url';
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    initAsync();
-    childController.initData();
-  }
-
-  void initAsync() async {
-    cameras = await availableCameras();
   }
 
   @override

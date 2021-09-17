@@ -106,13 +106,14 @@ class _ParentMainState extends State<ParentMain> {
     super.initState();
     controller.loginData();
     controller.getAppIconList();
+    controller.setBottomNavIndex(2);
+    controller.getBinding();
     onMessageListen();
     getUsageStatistik();
   }
 
   @override
   Widget build(BuildContext context) {
-    controller.getBinding();
     return SafeArea(
       child: WillPopScope(
         onWillPop: () async => onWillCloseApp(),
@@ -151,23 +152,26 @@ class _ParentMainState extends State<ParentMain> {
           drawer: ParentDrawer(userMail: controller.emailUser, userName: controller.userName),
           body: Obx(() => ChosenPage(bottomNavIndex: controller.bottomNavIndex)),
           bottomNavigationBar: _bottomAppBar(),
-          floatingActionButton: SizedBox(
-            height: 70,
-            width: 70,
-            child: Obx(
-              () => FloatingActionButton(
-                elevation: 0,
-                backgroundColor: controller.bottomNavIndex == 2 ? cOrtuOrange : Colors.black54,
-                child: Container(
-                  margin: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(currentAppIconPath),
-                      fit: BoxFit.contain,
+          floatingActionButton: Visibility(
+            visible: !showKeyboard(context),
+            child: SizedBox(
+              height: 70,
+              width: 70,
+              child: Obx(
+                () => FloatingActionButton(
+                  elevation: 0,
+                  backgroundColor: controller.bottomNavIndex == 2 ? cOrtuOrange : Colors.black54,
+                  child: Container(
+                    margin: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(currentAppIconPath),
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
+                  onPressed: () => controller.setBottomNavIndex(2),
                 ),
-                onPressed: () => controller.setBottomNavIndex(2),
               ),
             ),
           ),

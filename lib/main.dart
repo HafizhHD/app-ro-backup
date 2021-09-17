@@ -14,6 +14,7 @@ import 'package:ruangkeluarga/child/child_main.dart';
 import 'package:ruangkeluarga/child/setup_permission_child.dart';
 import 'package:ruangkeluarga/login/splash_info.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/parent/view/feed/feed_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 import 'package:ruangkeluarga/parent/view_model/vm_content_rk.dart';
@@ -93,16 +94,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  void initGetXService() {
+    Get.put(ChildController());
+    Get.put(ParentController());
+    Get.put(RKServiceController());
+    Get.put(FeedController());
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-
-    Get.put(ChildController());
-    Get.put(ParentController());
-    Get.put(RKServiceController());
-
+    initGetXService();
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       // Add Your Code here.
       Future.delayed(Duration(seconds: 2), () async {

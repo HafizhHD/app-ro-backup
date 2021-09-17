@@ -26,6 +26,8 @@ import 'package:ruangkeluarga/utils/app_usage.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+late List<CameraDescription> cameras;
+
 class ChildController extends GetxController {
   var _bottomNavIndex = 2.obs;
   var childID = '';
@@ -44,6 +46,12 @@ class ChildController extends GetxController {
   void setBottomNavIndex(int index) {
     _bottomNavIndex.value = index;
     // update();
+  }
+
+  @override
+  void onInit() async {
+    super.onInit();
+    cameras = await availableCameras();
   }
 
   void initData() async {
