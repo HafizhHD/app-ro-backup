@@ -18,6 +18,7 @@ import 'package:ruangkeluarga/parent/view/jadwal/jadwal_page.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_drawer.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
+import 'package:ruangkeluarga/utils/rk_webview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
@@ -137,7 +138,9 @@ class _ParentMainState extends State<ParentMain> {
               //   ),
               // ),
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  showFAQ();
+                },
                 icon: Icon(
                   Icons.help,
                   color: cOrtuWhite,

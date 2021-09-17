@@ -137,10 +137,10 @@ class _CameraAppState extends State<CameraApp> {
                     ),
                     onPress: cancelSOSCountDown > 0
                         ? () async {
-                            showLoadingOverlay();
-                            await controller.stopVideoRecording();
-                            closeOverlay();
-                            controller.dispose();
+                            // showLoadingOverlay();
+                            // await controller.stopVideoRecording();
+                            // closeOverlay();
+                            // controller.dispose();
                             Navigator.pop(context);
                           }
                         : null,

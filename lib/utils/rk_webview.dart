@@ -56,3 +56,13 @@ void showTermCondition() {
     transitionCurve: Curves.decelerate,
   );
 }
+
+void showFAQ() {
+  Get.dialog(
+    RKWebViewDialog(
+      url: urlFAQ,
+      title: 'FAQ',
+    ),
+    transitionCurve: Curves.decelerate,
+  );
+}

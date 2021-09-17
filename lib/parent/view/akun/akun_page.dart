@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/akun/akun_edit.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
+import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 
 class AkunPage extends StatelessWidget {
@@ -14,6 +15,14 @@ class AkunPage extends StatelessWidget {
         builder: (ctrl) {
           final parentData = ctrl.parentProfile;
           final children = parentData.children ?? [];
+
+          final namaGereja = parentData.namaGereja;
+          GerejaHKBP? selectedGereja;
+          if (namaGereja != null && namaGereja.isNotEmpty && namaGereja != '') {
+            final gereja = namaGereja.split(' (');
+            selectedGereja = ctrl.listGereja.where((e) => e.nama == gereja[0].trim() && '${e.distrik})' == gereja[1]).first;
+          }
+
           return Container(
             // color: ,
             padding: EdgeInsets.all(5),
@@ -29,6 +38,8 @@ class AkunPage extends StatelessWidget {
                       name: parentData.name,
                       email: parentData.email,
                       phone: parentData.phone,
+                      birthDate: parentData.birdDate,
+                      namaGereja: selectedGereja,
                       isParent: parentData.parentStatus.toEnumString()),
                   Flexible(
                     child: ListView.builder(
@@ -69,6 +80,8 @@ class AkunPage extends StatelessWidget {
     required String email,
     required String id,
     String? phone,
+    DateTime? birthDate,
+    GerejaHKBP? namaGereja,
   }) {
     return Dismissible(
       key: Key('$name+$email'),
@@ -96,6 +109,8 @@ class AkunPage extends StatelessWidget {
                 phoneNum: phone,
                 isParent: boolParent,
                 imgUrl: imgUrl,
+                birthDate: birthDate,
+                selectedGereja: namaGereja,
                 parentGender: boolParent ? genderCharFromString(isParent) : null,
               ),
             );

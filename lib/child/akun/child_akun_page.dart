@@ -81,6 +81,7 @@ class ChildAkunPage extends StatelessWidget {
     required String email,
     required String id,
     String? phone,
+    DateTime? birthDate,
     bool canEdit = false,
   }) {
     return Container(
@@ -102,6 +103,7 @@ class ChildAkunPage extends StatelessWidget {
                     phoneNum: phone,
                     isParent: boolParent,
                     imgUrl: imgUrl,
+                    birthDate: birthDate,
                     parentGender: boolParent ? genderCharFromString(isParent) : null,
                   ),
                 );

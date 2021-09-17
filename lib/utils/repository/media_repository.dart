@@ -63,8 +63,8 @@ class MediaRepository {
     return res;
   }
 
-  Future<Response> registerParent(
-      String email, String name, String token, String photo, nohp, String alamat, String status, String accessToken, String imgByte) async {
+  Future<Response> registerParent(String email, String name, String token, String photo, nohp, String alamat, String status, String accessToken,
+      String imgByte, String namaHKPB, String birthDate) async {
     var url = _rkService.baseUrl + '/user/register';
     Map<String, dynamic> json = {
       "emailUser": "$email",
@@ -74,6 +74,8 @@ class MediaRepository {
       "phoneNumber": "$nohp",
       "address": "$alamat",
       "parentStatus": "$status",
+      "birdDate": "$birthDate",
+      "namaHkbp": "$namaHKPB",
       "accessCode": "$accessToken"
     };
     if (imgByte != "") json["imagePhoto"] = imgByte;
@@ -443,6 +445,13 @@ class MediaRepository {
     };
     print('param panicSOS: $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> fetchGerejaHKBP() async {
+    var url = _rkService.baseUrl + '/cobrand/HKBPDataFilter';
+    print('param fetchGerejaHKBP: $json');
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders);
     return response;
   }
 }

@@ -107,7 +107,7 @@ class ParentDrawer extends StatelessWidget {
                   title: Text('FAQ'),
                   leading: Icon(Icons.help, color: Colors.black),
                   onTap: () {
-                    Navigator.pop(context);
+                    showFAQ();
                   },
                 ),
                 ListTile(

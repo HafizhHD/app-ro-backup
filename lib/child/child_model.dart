@@ -10,6 +10,7 @@ class ChildProfile {
   final String? address;
   final String userType;
   final String? imgPhoto;
+  final DateTime? birdDate;
   final ParentProfile parent;
   final Child? childInfo;
 
@@ -21,11 +22,13 @@ class ChildProfile {
     this.address,
     required this.userType,
     this.imgPhoto,
+    this.birdDate,
     required this.parent,
     this.childInfo,
   });
 
   factory ChildProfile.fromJson(Map<String, dynamic> json) {
+    final bdate = json['birdDate'];
     try {
       return ChildProfile(
         id: json['_id'],
@@ -35,6 +38,7 @@ class ChildProfile {
         address: json['address'],
         imgPhoto: json['imagePhoto'],
         userType: json['userType'],
+        birdDate: bdate != null && bdate != '' ? DateTime.parse(bdate).toUtc().toLocal() : null,
         parent: ParentProfile.fromJson(json['parent']),
         childInfo: Child.fromJson(json['childInfo']),
       );

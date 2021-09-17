@@ -3,11 +3,13 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:http/http.dart';
 import 'package:ruangkeluarga/global/custom_widget/photo_image_picker.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
+import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 
 class AkunEditPage extends StatefulWidget {
@@ -19,6 +21,7 @@ class AkunEditPage extends StatefulWidget {
   bool isParent;
   GenderCharacter? parentGender;
   DateTime? birthDate;
+  GerejaHKBP? selectedGereja;
   String? imgUrl;
 
   AkunEditPage({
@@ -30,6 +33,7 @@ class AkunEditPage extends StatefulWidget {
     required this.isParent,
     this.parentGender = GenderCharacter.Ayah,
     this.birthDate,
+    this.selectedGereja,
     this.imgUrl,
   });
 
@@ -44,8 +48,6 @@ class _AkunEditPageState extends State<AkunEditPage> {
   TextEditingController cAlamat = TextEditingController();
   String birthDateString = '';
   File? _selectedImage;
-  final List<String> listGerejaHKBP = ['Petojo', 'Grogol', 'Tanjung Duren', 'Duren Sawit', 'Cengkareng', 'Green Lake', 'Taman Alfa', 'Pemabelas'];
-  String? selectedGereja;
 
   @override
   void initState() {
@@ -54,6 +56,7 @@ class _AkunEditPageState extends State<AkunEditPage> {
     cEmail.text = widget.email;
     cPhoneNumber.text = widget.phoneNum ?? '';
     cAlamat.text = widget.alamat ?? '';
+    if (widget.birthDate != null) birthDateString = dateTimeTo_ddMMMMyyyy(widget.birthDate!);
   }
 
   @override
@@ -65,6 +68,7 @@ class _AkunEditPageState extends State<AkunEditPage> {
         appBar: AppBar(
           title: Text('Edit Profile'),
           elevation: 0,
+          systemOverlayStyle: SystemUiOverlayStyle.dark,
           backgroundColor: cPrimaryBg,
         ),
         backgroundColor: cPrimaryBg,
@@ -196,20 +200,23 @@ class _AkunEditPageState extends State<AkunEditPage> {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: DropdownButtonFormField<String>(
+                          child: DropdownButtonFormField<GerejaHKBP>(
                             autovalidateMode: AutovalidateMode.onUserInteraction,
                             validator: (value) => value == null ? 'Harus dipilih' : null,
-                            value: selectedGereja,
-                            items: listGerejaHKBP
-                                .map((value) => DropdownMenuItem(
+                            value: widget.selectedGereja,
+                            items: Get.find<ParentController>()
+                                .listGereja
+                                .map((gereja) => DropdownMenuItem(
                                       child: Text(
-                                        value,
+                                        '${gereja.nama} (${gereja.distrik}) \n${gereja.alamat}',
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      value: value,
+                                      value: gereja,
                                     ))
                                 .toList(),
                             onChanged: (v) {
-                              selectedGereja = v;
+                              widget.selectedGereja = v;
                               setState(() {});
                             },
                             isExpanded: true,
@@ -246,70 +253,70 @@ class _AkunEditPageState extends State<AkunEditPage> {
                           ),
                         ),
                       ),
-                      // Container(
-                      //   margin: const EdgeInsets.only(top: 10.0),
-                      //   child: Text(
-                      //     'Tanggal Lahir (opsional)',
-                      //     style: TextStyle(color: cOrtuGrey),
-                      //   ),
-                      // ),
-                      // Container(
-                      //   margin: const EdgeInsets.only(top: 10.0, bottom: 10),
-                      //   decoration: BoxDecoration(
-                      //     color: cOrtuWhite,
-                      //     borderRadius: BorderRadius.circular(10),
-                      //   ),
-                      //   child: InkWell(
-                      //     onTap: () async {
-                      //       final DateTime? picked = await showDatePicker(
-                      //           initialDatePickerMode: DatePickerMode.year,
-                      //           builder: (context, child) {
-                      //             return Theme(
-                      //               data: Theme.of(context),
-                      //               child: child!,
-                      //             );
-                      //           },
-                      //           context: context,
-                      //           initialDate: widget.birthDate ?? DateTime.now().subtract(Duration(days: 365 * 5)),
-                      //           firstDate: DateTime(1940, 1),
-                      //           lastDate: DateTime.now());
-                      //       if (picked != null && picked != widget.birthDate) {
-                      //         setState(() {
-                      //           widget.birthDate = picked;
-                      //           birthDateString = dateTimeTo_ddMMMMyyyy(picked);
-                      //         });
-                      //       }
-                      //     },
-                      //     child: IgnorePointer(
-                      //       ignoring: true,
-                      //       child: Row(
-                      //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      //         children: <Widget>[
-                      //           Expanded(
-                      //             child: TextField(
-                      //               decoration: InputDecoration(
-                      //                 contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
-                      //                 border: InputBorder.none,
-                      //                 hintText: birthDateString == '' ? "- Pilih Tanggal -" : birthDateString,
-                      //                 hintStyle: birthDateString == '' ? TextStyle(fontSize: 16) : TextStyle(fontSize: 16, color: Colors.black),
-                      //               ),
-                      //               readOnly: true,
-                      //             ),
-                      //           ),
-                      //           SizedBox(
-                      //             width: 10,
-                      //           ),
-                      //           Container(
-                      //             padding: EdgeInsets.only(right: 10),
-                      //             child: Icon(
-                      //               Icons.calendar_today,
-                      //             ),
-                      //           ),
-                      //         ],
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
+                      Container(
+                        margin: const EdgeInsets.only(top: 10.0),
+                        child: Text(
+                          'Tanggal Lahir (opsional)',
+                          style: TextStyle(color: cOrtuGrey),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(top: 10.0, bottom: 10),
+                        decoration: BoxDecoration(
+                          color: cOrtuWhite,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: InkWell(
+                          onTap: () async {
+                            final DateTime? picked = await showDatePicker(
+                                initialDatePickerMode: DatePickerMode.year,
+                                builder: (context, child) {
+                                  return Theme(
+                                    data: Theme.of(context),
+                                    child: child!,
+                                  );
+                                },
+                                context: context,
+                                initialDate: widget.birthDate ?? DateTime.now().subtract(Duration(days: 365 * 5)),
+                                firstDate: DateTime(1940, 1),
+                                lastDate: DateTime.now());
+                            if (picked != null && picked != widget.birthDate) {
+                              setState(() {
+                                widget.birthDate = picked;
+                                birthDateString = dateTimeTo_ddMMMMyyyy(picked);
+                              });
+                            }
+                          },
+                          child: IgnorePointer(
+                            ignoring: true,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Expanded(
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                                      border: InputBorder.none,
+                                      hintText: birthDateString == '' ? "- Pilih Tanggal -" : birthDateString,
+                                      hintStyle: birthDateString == '' ? TextStyle(fontSize: 16) : TextStyle(fontSize: 16, color: Colors.black),
+                                    ),
+                                    readOnly: true,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Container(
+                                  padding: EdgeInsets.only(right: 10),
+                                  child: Icon(
+                                    Icons.calendar_today,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                       Container(
                         margin: const EdgeInsets.only(top: 10.0, bottom: 10),
                         width: MediaQuery.of(context).size.width,
@@ -438,6 +445,8 @@ class _AkunEditPageState extends State<AkunEditPage> {
       "parentStatus": (widget.parentGender ?? GenderCharacter.Ayah).toEnumString(),
     };
     if (_imageBytes != null) editedValue["imagePhoto"] = "data:image/png;base64,${base64Encode(_imageBytes)}";
+    if (widget.birthDate != null) editedValue["birdDate"] = widget.birthDate?.toIso8601String();
+    if (widget.selectedGereja != null) editedValue["namaHkbp"] = '${widget.selectedGereja!.nama} (${widget.selectedGereja!.distrik})';
 
     return await MediaRepository().editUser(widget.id, editedValue);
   }
@@ -448,8 +457,10 @@ class _AkunEditPageState extends State<AkunEditPage> {
       "nameUser": cName.text,
       "phoneNumber": cPhoneNumber.text,
       "address": cAlamat.text,
+      "birdDate": widget.birthDate?.toIso8601String(),
     };
     if (_imageBytes != null) editedValue["imagePhoto"] = "data:image/png;base64,${base64Encode(_imageBytes)}";
+    if (widget.birthDate != null) editedValue["birdDate"] = widget.birthDate?.toIso8601String();
 
     return await MediaRepository().editUser(widget.id, editedValue);
   }

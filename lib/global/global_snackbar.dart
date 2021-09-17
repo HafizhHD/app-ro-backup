@@ -92,7 +92,7 @@ void showToastSuccess({required String successText, required BuildContext ctx}) 
               SizedBox(
                 width: 12.0,
               ),
-              Text(successText, style: TextStyle(color: Colors.white, fontSize: 12)),
+              Flexible(child: Text(successText, style: TextStyle(color: Colors.white, fontSize: 12))),
             ],
           ),
         ),

@@ -35,6 +35,7 @@ const ApkDownloadURL_HKBP = 'https://drive.google.com/drive/folders/1nlj_EiHgD6g
 
 final urlPP = 'https://keluargahkbp.com/toc/privacy_policy_bahasa.html';
 final urlTOC = 'https://keluargahkbp.com/toc/toc_bahasa.html';
+final urlFAQ = 'https://keluargahkbp.com/toc/faq_bahasa.html';
 
 Future<bool> childNeedPermission() async {
   final locationHandler = await Permission.location.status;
