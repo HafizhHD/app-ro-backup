@@ -384,7 +384,7 @@ class _AkunEditPageState extends State<AkunEditPage> {
                   ),
                 ),
               ),
-              !showKeyboard(context)
+              showKeyboard(context)
                   ? SizedBox()
                   : Container(
                       constraints: BoxConstraints(minHeight: 50),

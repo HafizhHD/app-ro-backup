@@ -448,9 +448,16 @@ class MediaRepository {
     return response;
   }
 
+  /// API COBRAND
   Future<Response> fetchGerejaHKBP() async {
     var url = _rkService.baseUrl + '/cobrand/HKBPDataFilter';
-    print('param fetchGerejaHKBP: $json');
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders);
+    return response;
+  }
+
+  Future<Response> fetchCoBrandContents() async {
+    var url = _rkService.baseUrl + '/cobrand/contentFilter';
+    print('fetchCoBrandContents');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders);
     return response;
   }

@@ -8,16 +8,28 @@ import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_page.dart';
 import 'package:ruangkeluarga/parent/view/jadwal/jadwal_page.dart';
 
-class ChildMain extends StatelessWidget {
+class ChildMain extends StatefulWidget {
   final String childName;
   final String childEmail;
   ChildMain({required this.childName, required this.childEmail});
 
+  @override
+  _ChildMainState createState() => _ChildMainState();
+}
+
+class _ChildMainState extends State<ChildMain> {
   final controller = Get.find<ChildController>();
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    // TODO: implement initState
+    super.initState();
     controller.setBottomNavIndex(2);
+    controller.initData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return SafeArea(
       child: WillPopScope(
         onWillPop: () async => onWillCloseApp(),
@@ -51,25 +63,28 @@ class ChildMain extends StatelessWidget {
               )
             ],
           ),
-          drawer: ChildDrawer(childName, childEmail),
+          drawer: ChildDrawer(widget.childName, widget.childEmail),
           body: Obx(() => ChosenPage(bottomNavIndex: controller.bottomNavIndex)),
           bottomNavigationBar: _bottomAppBar(),
-          floatingActionButton: SizedBox(
-            height: 80,
-            width: 80,
-            child: FloatingActionButton(
-              elevation: 0,
-              backgroundColor: controller.bottomNavIndex == 2 ? Colors.blueGrey : Colors.black54,
-              child: Container(
-                margin: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(currentAppIconPath),
-                    fit: BoxFit.contain,
+          floatingActionButton: Visibility(
+            visible: !showKeyboard(context),
+            child: SizedBox(
+              height: 80,
+              width: 80,
+              child: FloatingActionButton(
+                elevation: 0,
+                backgroundColor: controller.bottomNavIndex == 2 ? Colors.blueGrey : Colors.black54,
+                child: Container(
+                  margin: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(currentAppIconPath),
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
+                onPressed: () => controller.setBottomNavIndex(2),
               ),
-              onPressed: () => controller.setBottomNavIndex(2),
             ),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

@@ -121,7 +121,7 @@ Future<bool> onWillCloseApp() async {
   return res;
 }
 
-bool showKeyboard(BuildContext ctx) => MediaQuery.of(ctx).viewInsets.bottom < keyboardHeight;
+bool showKeyboard(BuildContext ctx) => MediaQuery.of(ctx).viewInsets.bottom > keyboardHeight;
 
 void logUserOut() {
   Get.dialog(

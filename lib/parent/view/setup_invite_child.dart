@@ -339,7 +339,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                   ),
                 ),
               ),
-              !showKeyboard(context)
+              showKeyboard(context)
                   ? SizedBox()
                   : Container(
                       margin: EdgeInsets.only(top: 10),

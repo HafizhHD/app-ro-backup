@@ -427,7 +427,7 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                     ),
                   ),
                 ),
-                !showKeyboard(context)
+                showKeyboard(context)
                     ? SizedBox()
                     : Container(
                         child: FlatButton(
