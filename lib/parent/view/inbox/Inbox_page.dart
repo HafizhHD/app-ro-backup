@@ -52,7 +52,7 @@ class InboxPage extends StatelessWidget {
                   closeOverlay();
                 },
                 title: Text(
-                  notifData.message.split('pada')[0],
+                  notifData.message.message,
                   style: TextStyle(fontWeight: notifData.readStatus ? FontWeight.normal : FontWeight.bold),
                 ),
                 subtitle: Text('\n${dateFormat_EDMYHM(notifData.createAt)}'),

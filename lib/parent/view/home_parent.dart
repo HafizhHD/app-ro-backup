@@ -1,24 +1,18 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:ui';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart' hide Response;
-import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 
-import 'package:http/http.dart';
-import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/model/rk_child_model.dart';
-import 'package:ruangkeluarga/model/rk_user_model.dart';
 import 'package:ruangkeluarga/parent/view/detail_child_view.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/setup_invite_child.dart';
+import 'package:ruangkeluarga/parent/view_model/appUsage_model.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
 import 'package:ruangkeluarga/utils/app_usage.dart';
 import 'package:ruangkeluarga/global/global.dart';
-import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeParentPage extends StatefulWidget {
@@ -305,10 +299,11 @@ class _HomeParentPageState extends State<HomeParentPage> {
                     itemBuilder: (BuildContext context, int index) {
                       parentController.setModeAsuh(childsList[index].childOfNumber ?? 0, 1);
                       final screenSize = MediaQuery.of(context).size;
+                      final thisChild = childsList[index];
                       return Container(
                         // constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
                         child: ChildCardWithBottomSheet(
-                            childData: childsList[index],
+                            childData: thisChild,
                             prefs: prefs,
                             onAddChild: () {
                               parentController.getParentChildData();
@@ -440,13 +435,18 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                 ),
                                 Container(
                                   margin: EdgeInsets.only(left: 10, top: 5, bottom: 5, right: 10),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      contentTime('Screen Time', '${prefs.getString("averageTime${childData.email}") ?? '00:00'}'),
-                                      contentTime('Gaming', '00:00'),
-                                      contentTime('Social Media', '00:00'),
-                                    ],
+                                  child: GetBuilder<ParentController>(
+                                    builder: (ctrl) {
+                                      final thisScreenTime = ctrl.mapChildScreentime[childData.email];
+                                      return Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          contentTime('Screen Time', thisScreenTime ?? '00:00'),
+                                          contentTime('Gaming', '00:00'),
+                                          contentTime('Social Media', '00:00'),
+                                        ],
+                                      );
+                                    },
                                   ),
                                 ),
                                 Container(
@@ -512,7 +512,10 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                         onPressed: () {
                                           Navigator.of(context).push(MaterialPageRoute(
                                               builder: (context) => DetailChildPage(
-                                                  title: 'Kontrol dan Konfigurasi', name: '${childData.name}', email: '${childData.email}')));
+                                                    title: 'Kontrol dan Konfigurasi',
+                                                    name: '${childData.name}',
+                                                    email: '${childData.email}',
+                                                  )));
                                         },
                                         icon: Icon(
                                           Icons.settings,

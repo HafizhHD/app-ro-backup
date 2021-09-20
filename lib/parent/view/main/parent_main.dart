@@ -83,7 +83,6 @@ class _ParentMainState extends State<ParentMain> {
         var jsonDataResult = json['appUsages'] as List;
         await prefs.setString("childAppUsage", jsonEncode(jsonDataResult));
         if (jsonDataResult.length == 0) {
-          await prefs.setInt("dataMinggu${prefs.getString("rkChildEmail")}", 0);
         } else {
           var data = jsonDataResult[0]['appUsages'] as List;
           int seconds = 0;
@@ -92,12 +91,10 @@ class _ParentMainState extends State<ParentMain> {
             int sec = jsonDt['duration'];
             seconds = seconds + sec;
           }
-          await prefs.setInt("dataMinggu${prefs.getString("rkChildEmail")}", seconds);
         }
       }
     } else {
       print('isi response filter app usage : ${response.statusCode}');
-      await prefs.setInt("dataMinggu${prefs.getString("rkChildEmail")}", 0);
     }
   }
 
