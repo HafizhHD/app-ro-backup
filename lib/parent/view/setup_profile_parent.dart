@@ -10,11 +10,10 @@ import 'package:ruangkeluarga/global/custom_widget/photo_image_picker.dart';
 
 import 'package:ruangkeluarga/global/global_formatter.dart';
 import 'package:ruangkeluarga/login/login.dart';
-import 'package:ruangkeluarga/parent/view/home_parent.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
-import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
+import 'package:ruangkeluarga/parent/view_model/gereja_hkbp_model.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

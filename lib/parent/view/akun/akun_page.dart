@@ -4,6 +4,7 @@ import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/akun/akun_edit.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
+import 'package:ruangkeluarga/parent/view_model/gereja_hkbp_model.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 
 class AkunPage extends StatelessWidget {
