@@ -19,8 +19,7 @@ class AkunPage extends StatelessWidget {
           final namaGereja = parentData.namaGereja;
           GerejaHKBP? selectedGereja;
           if (namaGereja != null && namaGereja.isNotEmpty && namaGereja != '') {
-            final gereja = namaGereja.split(' (');
-            selectedGereja = ctrl.listGereja.where((e) => e.nama == gereja[0].trim() && '${e.distrik})' == gereja[1]).first;
+            selectedGereja = ctrl.listGereja.where((e) => e.displayName.trim().toLowerCase() == namaGereja.trim().toLowerCase()).first;
           }
 
           return Container(
