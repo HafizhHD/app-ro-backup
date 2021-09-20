@@ -22,6 +22,7 @@ class DetailChildActivityPage extends StatefulWidget {
   final List<AppUsages> listAppUsageWeekly;
   final String averageTimeWeekly;
   final Widget weeklyChart;
+  final String lastUpdate;
 
   @override
   _DetailChildActivityPageState createState() => _DetailChildActivityPageState();
@@ -33,6 +34,7 @@ class DetailChildActivityPage extends StatefulWidget {
     required this.listAppUsageWeekly,
     required this.averageTimeWeekly,
     required this.weeklyChart,
+    required this.lastUpdate,
   }) : super(key: key);
 }
 
@@ -50,7 +52,6 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
   String avgTime = '0s';
   String avgTimeDaily = '0s';
   String totalToday = '0s';
-  String dateToday = '00.01';
   var dtx = [0, 0, 0, 0, 0, 0, 0];
   var dty = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
   var dtxDaily = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -215,7 +216,6 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
   }
 
   void initAsync() async {
-    dateToday = now_HHmm();
     await loadPrefs();
     await setWeeklyData();
   }
@@ -315,7 +315,8 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
           ),
           Container(
             margin: EdgeInsets.only(bottom: 10, left: 15),
-            child: Align(alignment: Alignment.centerLeft, child: Text('Update today $dateToday', style: TextStyle(fontSize: 14, color: cOrtuWhite))),
+            child: Align(
+                alignment: Alignment.centerLeft, child: Text('Update today ${widget.lastUpdate}', style: TextStyle(fontSize: 14, color: cOrtuWhite))),
           ),
         ],
       ),
