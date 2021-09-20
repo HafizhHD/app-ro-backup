@@ -54,9 +54,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
 
   void setBindingData() async {
     prefs = await SharedPreferences.getInstance();
-    var outputFormat = DateFormat('HH.mm');
-    var outputDate = outputFormat.format(DateTime.now());
-    dateToday = outputDate;
+    dateToday = now_HHmm();
 
     setState(() {});
     if (widget.toLocation) {
@@ -510,6 +508,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                       listAppUsageWeekly: listAppUsage,
                       averageTimeWeekly: avgData,
                       weeklyChart: _chartDailyAverage(),
+                      lastUpdate: dateToday,
                     ))),
           ),
           Container(
