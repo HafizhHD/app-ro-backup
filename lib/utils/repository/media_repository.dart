@@ -293,7 +293,11 @@ class MediaRepository {
 
   Future<Response> fetchParentInbox(String email) async {
     var url = _rkService.baseUrl + '/user/inboxFilter';
-    Map<String, dynamic> json = {"emailUser": "$email"};
+    Map<String, dynamic> json = {
+      "whereKeyValues": {
+        "emailUser": "$email",
+      }
+    };
     print('param fetchParentInbox: $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;

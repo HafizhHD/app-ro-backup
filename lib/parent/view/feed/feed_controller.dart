@@ -73,7 +73,7 @@ class FeedController extends GetxController {
         List contents = json['contents'];
         listContent = contents.map((e) => ContentModel.fromJson(e)).toList();
         listContent.sort((a, b) => b.dateCreated.compareTo(a.dateCreated));
-        listSearchContent = listContent;
+        listSearchContent = listContent.where((e) => e.status).toList();
         update();
         return true;
       }
@@ -85,7 +85,7 @@ class FeedController extends GetxController {
 
   void setSearchData(String text) {
     print("Text: $text");
-    listSearchContent = listContent.where((element) => element.contentName.contains(text)).toList();
+    listSearchContent = listContent.where((element) => element.status && element.contentName.contains(text)).toList();
     update();
   }
 }

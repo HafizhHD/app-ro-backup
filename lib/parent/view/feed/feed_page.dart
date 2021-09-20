@@ -42,17 +42,20 @@ class FeedPage extends GetView<FeedController> {
                 future: controller.fGetList,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) return wProgressIndicator();
-                  return Container(
-                    padding: EdgeInsets.all(5),
-                    child: GetBuilder<FeedController>(
-                      builder: (builderCtrl) {
-                        return ListView.separated(
-                          shrinkWrap: true,
-                          itemCount: builderCtrl.listSearchContent.length,
-                          itemBuilder: (context, index) => feedContainer(builderCtrl.listSearchContent[index]),
-                          separatorBuilder: (ctx, idx) => Divider(color: cOrtuGrey),
-                        );
-                      },
+                  return RefreshIndicator(
+                    onRefresh: () => controller.getContents(),
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      child: GetBuilder<FeedController>(
+                        builder: (builderCtrl) {
+                          return ListView.separated(
+                            shrinkWrap: true,
+                            itemCount: builderCtrl.listSearchContent.length,
+                            itemBuilder: (context, index) => feedContainer(builderCtrl.listSearchContent[index]),
+                            separatorBuilder: (ctx, idx) => Divider(color: cOrtuGrey),
+                          );
+                        },
+                      ),
                     ),
                   );
                 }),
