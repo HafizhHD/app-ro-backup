@@ -495,7 +495,7 @@ Future<GerejaHKBP?> selectGerejaHKBP(List<GerejaHKBP> listGereja) async {
                   final item = searchList[idx];
                   return ListTile(
                     title: Text(item.displayName),
-                    subtitle: item.alamat != '' ? Text(item.alamat) : null,
+                    // subtitle: item.alamat != '' ? Text(item.alamat) : null,
                     onTap: () {
                       Get.back(result: item);
                     },
