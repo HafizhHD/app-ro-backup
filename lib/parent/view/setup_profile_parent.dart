@@ -31,6 +31,7 @@ class SetupParentProfilePage extends StatefulWidget {
 class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
   late SharedPreferences prefs;
   TextEditingController cName = TextEditingController();
+  TextEditingController cGereja = TextEditingController();
   TextEditingController cEmail = TextEditingController();
   TextEditingController cPhoneNumber = TextEditingController();
   TextEditingController cAlamat = TextEditingController();
@@ -62,7 +63,7 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
       (_character ?? GenderCharacter.Ayah).toEnumString(),
       accessToken,
       _imageBytes != null ? "data:image/png;base64,${base64Encode(_imageBytes)}" : "",
-      selectedGereja != null ? '${selectedGereja!.nama} (${selectedGereja!.distrik})' : '',
+      selectedGereja != null ? selectedGereja!.displayName : '',
       birthDate.toIso8601String(),
     );
     if (response.statusCode == 200) {
@@ -233,35 +234,39 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                           ),
                         ),
                         Container(
-                          margin: EdgeInsets.only(top: 10.0, bottom: 10),
-                          padding: EdgeInsets.only(left: 10.0, right: 10),
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: DropdownButtonFormField<GerejaHKBP>(
-                            autovalidateMode: AutovalidateMode.onUserInteraction,
-                            validator: (value) => value == null ? 'Harus dipilih' : null,
-                            value: selectedGereja,
-                            items: Get.find<ParentController>()
-                                .listGereja
-                                .map((gereja) => DropdownMenuItem(
-                                      child: Text(
-                                        '${gereja.nama} (${gereja.distrik}) \n${gereja.alamat}',
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      value: gereja,
-                                    ))
-                                .toList(),
-                            onChanged: (v) {
-                              selectedGereja = v;
-                              setState(() {});
+                          child: TextField(
+                            onTap: () async {
+                              print('SELECT GEREJA');
+                              final selected = await selectGerejaHKBP(Get.find<ParentController>().listGereja);
+                              if (selected != null) {
+                                selectedGereja = selected;
+                                cGereja.text = selected.displayName;
+                                setState(() {});
+                              }
                             },
-                            isExpanded: true,
-                            hint: Text(
-                              'Pilih Gereja',
+                            textAlignVertical: TextAlignVertical.center,
+                            style: TextStyle(fontSize: 14.0, color: Colors.black),
+                            readOnly: true,
+                            minLines: 1,
+                            maxLines: 3,
+                            controller: cGereja,
+                            decoration: InputDecoration(
+                              suffixIcon: Icon(
+                                Icons.arrow_drop_down_rounded,
+                                color: cPrimaryBg,
+                              ),
+                              filled: true,
+                              fillColor: cOrtuWhite,
+                              hintText: 'Pilih Gereja',
+                              contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: cOrtuWhite),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: cOrtuWhite),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                             ),
                           ),
                         ),
@@ -437,7 +442,7 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                           shape: new RoundedRectangleBorder(
                             borderRadius: new BorderRadius.circular(15.0),
                           ),
-                          onPressed: cName.text != '' && cPhoneNumber != ''
+                          onPressed: cName.text != '' && cPhoneNumber.text != '' && cGereja.text != ''
                               ? () {
                                   onRegister();
                                 }
@@ -458,4 +463,50 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
           )),
     );
   }
+}
+
+Future<GerejaHKBP?> selectGerejaHKBP(List<GerejaHKBP> listGereja) async {
+  List<GerejaHKBP> searchList = listGereja;
+  return await Get.bottomSheet<GerejaHKBP>(
+    StatefulBuilder(
+      builder: (ctx, setState) {
+        return Container(
+          decoration: BoxDecoration(color: cOrtuGrey, borderRadius: BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15))),
+          padding: EdgeInsets.only(top: 20, left: 15, right: 15),
+          child: Column(
+            children: [
+              WSearchBar(
+                hintText: 'Cari Gereja',
+                fOnChanged: (text) {
+                  searchList = listGereja
+                      .where((e) =>
+                          e.nama.toLowerCase().contains(text.toLowerCase()) ||
+                          e.distrik.toLowerCase().contains(text.toLowerCase()) ||
+                          e.ressort.toLowerCase().contains(text.toLowerCase()))
+                      .toList();
+                  setState(() {});
+                },
+              ),
+              Flexible(
+                  child: ListView.separated(
+                physics: BouncingScrollPhysics(),
+                separatorBuilder: (ctx, idx) => Divider(color: cPrimaryBg),
+                itemCount: searchList.length,
+                itemBuilder: (ctx, idx) {
+                  final item = searchList[idx];
+                  return ListTile(
+                    title: Text(item.displayName),
+                    subtitle: item.alamat != '' ? Text(item.alamat) : null,
+                    onTap: () {
+                      Get.back(result: item);
+                    },
+                  );
+                },
+              ))
+            ],
+          ),
+        );
+      },
+    ),
+  );
 }

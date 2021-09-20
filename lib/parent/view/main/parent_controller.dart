@@ -11,25 +11,27 @@ import 'package:get/get.dart' hide Response;
 import 'package:http/http.dart';
 
 class ParentController extends GetxController {
-  ///ParentData
+  ///ParentData Locale
   String userName = '';
   String userId = '';
   String emailUser = '';
+  var _bottomNavIndex = 2.obs;
+  bool hasLogin = false;
 
-  ///
-
+  /// Parent Data Fetch
   late SharedPreferences prefs;
   late ParentProfile parentProfile;
   Rx<Future<List<Child>>> fChildList = Future<List<Child>>.value(<Child>[]).obs;
   RxMap _modeAsuh = <int, int>{}.obs;
-  var _bottomNavIndex = 2.obs;
-  bool hasLogin = false;
 
+  ///INBOX DATA
   var inboxData = <InboxNotif>[];
   var unreadNotif = 0.obs;
 
+  ///LIST GEREJA HKBP
   List<GerejaHKBP> listGereja = [];
 
+  ///Getter & Setter
   int get bottomNavIndex => _bottomNavIndex.value;
 
   void setBottomNavIndex(int index) {
