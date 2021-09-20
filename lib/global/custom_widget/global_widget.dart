@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/login/login.dart';
 import 'package:ruangkeluarga/main.dart';
+import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future showLoadingOverlay() {
@@ -139,6 +140,7 @@ void logUserOut() {
             SharedPreferences prefs = await SharedPreferences.getInstance();
             await prefs.clear();
             await signOutGoogle();
+            Get.find<ParentController>().logoutParent();
             closeOverlay();
             Navigator.pushAndRemoveUntil(
               Get.context!,

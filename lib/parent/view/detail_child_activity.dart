@@ -980,7 +980,6 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
           itemCount: values.length,
           itemBuilder: (BuildContext context, int index) {
             var app = values[index];
-            Application? tmpApp = getIconAppsFromList(app['packageId']);
             var secs = app['duration'];
             int jam = 0;
             if (secs >= 3600) {

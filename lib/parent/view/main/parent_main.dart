@@ -85,7 +85,7 @@ class _ParentMainState extends State<ParentMain> {
         if (jsonDataResult.length == 0) {
           await prefs.setInt("dataMinggu${prefs.getString("rkChildEmail")}", 0);
         } else {
-          var data = jsonDataResult[1]['appUsages'] as List;
+          var data = jsonDataResult[0]['appUsages'] as List;
           int seconds = 0;
           for (int i = 0; i < data.length; i++) {
             var jsonDt = data[i];

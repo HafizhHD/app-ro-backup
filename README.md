@@ -7,7 +7,9 @@ keyAlias=key
 storeFile=key.jks
 ```
 
-Generate Release SHA:
+Agar Dapat Login menggunakan Google, Tambahkan SHA1 ke Firebase
+
+Generate Release SHA (dari key.jks / key store):
 ``` 
 keytool -list -v -keystore ./android/app/key.jks -alias key
 ```

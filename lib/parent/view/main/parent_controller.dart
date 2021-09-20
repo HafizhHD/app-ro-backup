@@ -47,6 +47,11 @@ class ParentController extends GetxController {
     update();
   }
 
+  void logoutParent() {
+    hasLogin = false;
+    update();
+  }
+
   int getmodeAsuh(int childIndex) => _modeAsuh[childIndex];
 
   @override
