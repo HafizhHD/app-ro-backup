@@ -9,8 +9,8 @@ import 'package:http/http.dart';
 import 'package:ruangkeluarga/global/custom_widget/photo_image_picker.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
-import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
 import 'package:ruangkeluarga/parent/view/setup_profile_parent.dart';
+import 'package:ruangkeluarga/parent/view_model/gereja_hkbp_model.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 
 class AkunEditPage extends StatefulWidget {
