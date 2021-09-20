@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
-import 'package:get/get.dart' hide Response;
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 
@@ -8,7 +6,6 @@ import 'package:flutter/material.dart';
 
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/model/rk_child_app_icon_list.dart';
-import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view_model/appUsage_model.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
 import 'package:ruangkeluarga/utils/app_usage.dart';
