@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/model/rk_child_model.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
+import 'package:ruangkeluarga/parent/view_model/appUsage_model.dart';
 import 'package:ruangkeluarga/parent/view_model/gereja_hkbp_model.dart';
 import 'package:ruangkeluarga/parent/view_model/inbox_notification_model.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
@@ -32,6 +34,10 @@ class ParentController extends GetxController {
 
   ///LIST GEREJA HKBP
   List<GerejaHKBP> listGereja = [];
+
+  ///Child Activity Detail
+  Map<String, List<AppUsages>> mapChildActivity = {};
+  Map<String, String> mapChildScreentime = {};
 
   ///Getter & Setter
   int get bottomNavIndex => _bottomNavIndex.value;
@@ -125,6 +131,7 @@ class ParentController extends GetxController {
           parentProfile = ParentProfile.fromJson(jsonUser);
           final childsData = parentProfile.children ?? [];
           getInboxNotif();
+          getWeeklyUsageStatistic();
           if (childsData.length > 0) {
             await prefs.setString(rkUserID, parentProfile.id);
             await prefs.setString(rkUserType, parentProfile.userType);
@@ -231,5 +238,69 @@ class ParentController extends GetxController {
         update();
       }
     }
+  }
+
+  ///child activity
+  DateTime findFirstDateOfTheWeek(DateTime dateTime) {
+    return dateTime.subtract(Duration(days: dateTime.weekday - 1));
+  }
+
+  DateTime findLastDateOfTheWeek(DateTime dateTime) {
+    return dateTime.add(Duration(days: DateTime.daysPerWeek - dateTime.weekday));
+  }
+
+  Future getWeeklyUsageStatistic() async {
+    var outputFormat = DateFormat('yyyy-MM-dd');
+    var startDate = outputFormat.format(findFirstDateOfTheWeek(DateTime.now()));
+    var endDate = outputFormat.format(findLastDateOfTheWeek(DateTime.now()));
+    if (parentProfile.children != null) {
+      parentProfile.children!.forEach((child) async {
+        Response response = await MediaRepository().fetchAppUsageFilterRange(child.email!, startDate, endDate);
+        if (response.statusCode == 200) {
+          int seconds = 0;
+          print('isi response filter app usage : ${response.body}');
+          var json = jsonDecode(response.body);
+          if (json['resultCode'] == "OK") {
+            var jsonDataResult = json['appUsages'] as List;
+            final listAppUsage = jsonDataResult.map((e) => AppUsages.fromJson(e)).toList();
+            mapChildActivity[child.email!] = listAppUsage;
+            listAppUsage.forEach((appUsage) {
+              appUsage.appUsagesDetail.forEach((e) {
+                seconds += e.duration;
+              });
+            });
+          }
+          mapChildScreentime[child.email!] = setAverageDaily(seconds);
+          update();
+        }
+      });
+    }
+  }
+
+  String setAverageDaily(int secs) {
+    String avgData = '0s';
+    if (secs > 0) {
+      int tmpAvg = secs ~/ 1;
+      int totalHour = 0;
+      if (tmpAvg >= 3600) {
+        totalHour = tmpAvg ~/ 3600;
+        tmpAvg = tmpAvg - (totalHour * 3600);
+      }
+      int totalMenit = 0;
+      if (tmpAvg >= 60) {
+        totalMenit = tmpAvg ~/ 60;
+        tmpAvg = tmpAvg - (totalMenit * 60);
+      }
+      if (totalHour == 0) {
+        if (totalMenit == 0) {
+          avgData = '${tmpAvg}s';
+        } else {
+          avgData = '${totalMenit}m ${tmpAvg}s';
+        }
+      } else {
+        avgData = '${totalHour}h ${totalMenit}m';
+      }
+    }
+    return avgData;
   }
 }

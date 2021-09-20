@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/login/login.dart';
@@ -51,7 +52,7 @@ class SplashInfo extends StatelessWidget {
                         decoration: BoxDecoration(color: cAccentButton, shape: BoxShape.circle),
                         child: Icon(Icons.arrow_forward_rounded, color: cPrimaryBg),
                       ),
-                      onPressed: () => Navigator.of(context).push(leftTransitionRoute(SplashInfo1())),
+                      onPressed: () => Navigator.of(context).push(leftTransitionRoute(kReleaseMode ? SplashInfo1() : LoginPage())),
                     ),
                   ),
                 ),

@@ -157,6 +157,12 @@ String now_yyyyMMdd({String separator = '-'}) {
   return formatter.format(now);
 }
 
+String now_HHmm() {
+  var now = DateTime.now();
+  final DateFormat formatter = DateFormat('HH:mm');
+  return formatter.format(now);
+}
+
 int nowEpoch() {
   return DateTime.now().millisecondsSinceEpoch;
 }

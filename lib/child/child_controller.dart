@@ -335,7 +335,7 @@ class ChildController extends GetxController {
       }
     });
 
-    Response response = await MediaRepository().saveChildUsage(childEmail, now_yyyyMMdd(), usageDataList);
+    Response response = await MediaRepository().saveChildUsage(childEmail, usageDataList);
     if (response.statusCode == 200) {
       print('isi response save app usage : ${response.body}');
     } else {

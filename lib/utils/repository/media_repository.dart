@@ -6,6 +6,7 @@ import 'package:flutter_geocoder/geocoder.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:location/location.dart';
+import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/model/content_rk_model.dart';
 import 'package:ruangkeluarga/model/rk_child_apps.dart';
 import 'package:ruangkeluarga/model/rk_schedule_model.dart';
@@ -126,9 +127,11 @@ class MediaRepository {
     return response;
   }
 
-  Future<Response> saveChildUsage(String email, String usageDate, List<dynamic> data) async {
+  Future<Response> saveChildUsage(String email, List<dynamic> data) async {
     var url = _rkService.baseUrl + '/user/appUsage';
-    Map<String, dynamic> json = {"emailUser": "$email", "appUsageDate": "$usageDate", "appUsages": data};
+    final usageDate = now_yyyyMMdd();
+    final usageHour = now_HHmm();
+    Map<String, dynamic> json = {"emailUser": "$email", "appUsageDate": "$usageDate", "appUsageHour": "$usageHour", "appUsages": data};
     print('param child usage : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;

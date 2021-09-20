@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 
@@ -16,23 +17,13 @@ import 'package:ruangkeluarga/parent/view/config_rk_contact.dart';
 import 'package:ruangkeluarga/parent/view/config_rk_limit_device.dart';
 import 'package:ruangkeluarga/parent/view/config_rk_location.dart';
 import 'package:ruangkeluarga/parent/view/detail_child_activity.dart';
+import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
+import 'package:ruangkeluarga/parent/view_model/appUsage_model.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class DetailChildView extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Kontrol dan Konfigurasi',
-      theme: ThemeData(primaryColor: Colors.white70),
-      home: DetailChildPage(title: 'Kontrol dan Konfigurasi', name: '', email: ''),
-    );
-  }
-}
-
 class DetailChildPage extends StatefulWidget {
-  // List<charts.Series> seriesList;
   @override
   _DetailChildPageState createState() => _DetailChildPageState();
   final String title;
@@ -46,6 +37,7 @@ class DetailChildPage extends StatefulWidget {
 enum ModeAsuh { level1, level2, level3 }
 
 class _DetailChildPageState extends State<DetailChildPage> {
+  final parentController = Get.find<ParentController>();
   int dataTotal = 0;
   int dataTotalSecond = 0;
   late SharedPreferences prefs;
@@ -53,15 +45,12 @@ class _DetailChildPageState extends State<DetailChildPage> {
   var dtx = [0, 0, 0, 0, 0, 0, 0];
   var dty = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
   String dateToday = '00.01';
-  int countUsage = 1;
 
   // List<charts.Series> seriesList = [];
   bool _switchLockScreen = false;
   bool _switchModeAsuh = false;
   ModeAsuh _switchLevel = ModeAsuh.level1;
-  // bool _switchLevel1 = false;
-  // bool _switchLevel2 = false;
-  // bool _switchLevel3 = false;
+  late List<AppUsages> listAppUsage;
 
   void setBindingData() async {
     prefs = await SharedPreferences.getInstance();
@@ -69,42 +58,40 @@ class _DetailChildPageState extends State<DetailChildPage> {
     var outputDate = outputFormat.format(DateTime.now());
     dateToday = outputDate;
 
-    dataTotalSecond = await getUsageStatistik();
-    dataTotal = dataTotalSecond ~/ 3600;
-    int secs = dataTotalSecond;
-    if (secs > 0) {
-      int tmpAvg = secs ~/ countUsage;
-      int totalHour = 0;
-      if (tmpAvg >= 3600) {
-        totalHour = tmpAvg ~/ 3600;
-        tmpAvg = tmpAvg - (totalHour * 3600);
-      }
-      int totalMenit = 0;
-      if (tmpAvg >= 60) {
-        totalMenit = tmpAvg ~/ 60;
-        tmpAvg = tmpAvg - (totalMenit * 60);
-      }
-      if (totalHour == 0) {
-        if (totalMenit == 0) {
-          avgData = '${tmpAvg}s';
-        } else {
-          avgData = '${totalMenit}m ${tmpAvg}s';
-        }
-      } else {
-        avgData = '${totalHour}h ${totalMenit}m';
-      }
-    } else {
-      avgData = '0s';
-    }
-    await prefs.setString("averageTime${widget.email}", avgData);
-    onGetUsageDataWeekly();
     setState(() {});
     if (widget.toLocation) {
       WidgetsFlutterBinding.ensureInitialized();
-
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => RKConfigLocationPage(title: 'Penelurusan Lokasi', email: widget.email, name: widget.name)));
     }
+  }
+
+  DateTime findFirstDateOfTheWeek(DateTime dateTime) {
+    return dateTime.subtract(Duration(days: dateTime.weekday - 1));
+  }
+
+  DateTime findSecondDateOfTheWeek(DateTime dateTime) {
+    return dateTime.subtract(Duration(days: dateTime.weekday - 2));
+  }
+
+  DateTime findThirdDateOfTheWeek(DateTime dateTime) {
+    return dateTime.subtract(Duration(days: dateTime.weekday - 3));
+  }
+
+  DateTime findFourthDateOfTheWeek(DateTime dateTime) {
+    return dateTime.subtract(Duration(days: dateTime.weekday - 4));
+  }
+
+  DateTime findFifthDateOfTheWeek(DateTime dateTime) {
+    return dateTime.subtract(Duration(days: dateTime.weekday - 5));
+  }
+
+  DateTime findSixthDateOfTheWeek(DateTime dateTime) {
+    return dateTime.subtract(Duration(days: dateTime.weekday - 6));
+  }
+
+  DateTime findLastDateOfTheWeek(DateTime dateTime) {
+    return dateTime.add(Duration(days: DateTime.daysPerWeek - dateTime.weekday));
   }
 
   void onGetUsageDataWeekly() async {
@@ -143,103 +130,27 @@ class _DetailChildPageState extends State<DetailChildPage> {
     setState(() {});
   }
 
-  Future<int> getUsageStatistik() async {
-    prefs = await SharedPreferences.getInstance();
-    int seconds = 0;
-    var outputFormat = DateFormat('yyyy-MM-dd');
-    var startDate = outputFormat.format(findFirstDateOfTheWeek(DateTime.now()));
-    var endDate = outputFormat.format(findLastDateOfTheWeek(DateTime.now()));
-    Response response = await MediaRepository().fetchAppUsageFilterRange(widget.email, startDate, endDate);
-    if (response.statusCode == 200) {
-      print('isi response filter app usage : ${response.body}');
-      var json = jsonDecode(response.body);
-      if (json['resultCode'] == "OK") {
-        var jsonDataResult = json['appUsages'] as List;
-        await prefs.setString("childAppUsage", jsonEncode(jsonDataResult));
-        if (jsonDataResult.length == 0) {
-          await prefs.setInt("dataMinggu${widget.email}", 0);
-        } else {
-          countUsage = jsonDataResult.length;
-          for (int j = 0; j < jsonDataResult.length; j++) {
-            var data = jsonDataResult[j]['appUsages'] as List;
-            for (int i = 0; i < data.length; i++) {
-              var jsonDt = data[i];
-              int sec = jsonDt['duration'];
-              seconds = seconds + sec;
-            }
-          }
-          await prefs.setInt("dataMinggu${widget.email}", seconds);
-        }
-      }
-    } else {
-      print('isi response filter app usage : ${response.statusCode}');
-      await prefs.setInt("dataMinggu${widget.email}", 0);
-    }
-    return seconds;
-  }
-
   Future<int> getDailyUsageStatistik(String tanggal) async {
     prefs = await SharedPreferences.getInstance();
     int seconds = 0;
-    Response response = await MediaRepository().fetchAppUsageFilter(widget.email, tanggal);
-    if (response.statusCode == 200) {
-      print('isi response filter app usage : ${response.body}');
-      var json = jsonDecode(response.body);
-      if (json['resultCode'] == "OK") {
-        var jsonDataResult = json['appUsages'] as List;
-        await prefs.setString("childAppUsage", jsonEncode(jsonDataResult));
-        if (jsonDataResult.length == 0) {
-          await prefs.setInt("dataMinggu${widget.email}", 0);
-        } else {
-          var data = jsonDataResult[jsonDataResult.length - 1]['appUsages'] as List;
-          for (int i = 0; i < data.length; i++) {
-            var jsonDt = data[i];
-            int sec = jsonDt['duration'];
-            seconds = seconds + sec;
-          }
-          await prefs.setInt("dataMinggu${widget.email}", seconds);
-        }
-      }
-    } else {
-      print('isi response filter app usage : ${response.statusCode}');
-      await prefs.setInt("dataMinggu${widget.email}", 0);
+    final thisDayAppUsage = listAppUsage.where((e) => e.appUsageDate == tanggal);
+    if (thisDayAppUsage.length > 0) {
+      var data = thisDayAppUsage.first.appUsagesDetail;
+      data.forEach((e) {
+        seconds += e.duration;
+      });
     }
     return seconds;
-  }
-
-  DateTime findFirstDateOfTheWeek(DateTime dateTime) {
-    return dateTime.subtract(Duration(days: dateTime.weekday - 1));
-  }
-
-  DateTime findSecondDateOfTheWeek(DateTime dateTime) {
-    return dateTime.subtract(Duration(days: dateTime.weekday - 2));
-  }
-
-  DateTime findThirdDateOfTheWeek(DateTime dateTime) {
-    return dateTime.subtract(Duration(days: dateTime.weekday - 3));
-  }
-
-  DateTime findFourthDateOfTheWeek(DateTime dateTime) {
-    return dateTime.subtract(Duration(days: dateTime.weekday - 4));
-  }
-
-  DateTime findFifthDateOfTheWeek(DateTime dateTime) {
-    return dateTime.subtract(Duration(days: dateTime.weekday - 5));
-  }
-
-  DateTime findSixthDateOfTheWeek(DateTime dateTime) {
-    return dateTime.subtract(Duration(days: dateTime.weekday - 6));
-  }
-
-  DateTime findLastDateOfTheWeek(DateTime dateTime) {
-    return dateTime.add(Duration(days: DateTime.daysPerWeek - dateTime.weekday));
   }
 
   @override
   void initState() {
     super.initState();
-    // seriesList = _createRandomData(dataTotal, dtx);
+
     setBindingData();
+    listAppUsage = parentController.mapChildActivity[widget.email] ?? [];
+    avgData = parentController.mapChildScreentime[widget.email] ?? '0s';
+    onGetUsageDataWeekly();
   }
 
   @override
@@ -592,8 +503,14 @@ class _DetailChildPageState extends State<DetailChildPage> {
               'Detail Penggunaan',
               style: TextStyle(color: cOrtuBlue),
             ),
-            onPressed: () =>
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => DetailChildActivityPage(name: widget.name, email: widget.email))),
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => DetailChildActivityPage(
+                      name: widget.name,
+                      email: widget.email,
+                      listAppUsageWeekly: listAppUsage,
+                      averageTimeWeekly: avgData,
+                      weeklyChart: _chartDailyAverage(),
+                    ))),
           ),
           Container(
             margin: EdgeInsets.only(bottom: 10, left: 15),
@@ -605,7 +522,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
   }
 
   Widget _chartDailyAverage() {
-    final desktopSalesData = [
+    final weeklyData = [
       DailyAverage('${dty[0]}', dtx[0]),
       DailyAverage('${dty[1]}', dtx[1]),
       DailyAverage('${dty[2]}', dtx[2]),
@@ -620,7 +537,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
         color: cOrtuBlue,
         borderColor: Colors.red,
         trackColor: Colors.teal,
-        dataSource: desktopSalesData,
+        dataSource: weeklyData,
         // borderRadius: BorderRadius.only(bottomRight: Radius.circular(10), topRight: Radius.circular(10)),
         xValueMapper: (data, _) => data.day,
         yValueMapper: (data, _) => data.average,
