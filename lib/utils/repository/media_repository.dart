@@ -137,17 +137,19 @@ class MediaRepository {
     return response;
   }
 
-  Future<Response> fetchAppUsageFilter(String email, String usageDate) async {
+  Future<Response> fetchAppUsageFilter(String email, String usageDate, {bool isDaily = false}) async {
     var url = _rkService.baseUrl + '/user/appUsageFilter';
     Map<String, dynamic> json = {
       "whereKeyValues": {"emailUser": "$email", "appUsageDate": "$usageDate"}
     };
+    if (isDaily) json['viewBy'] = 'daily';
+
     print('param app usage filter : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
-  Future<Response> fetchAppUsageFilterRange(String email, String startDate, String endDate) async {
+  Future<Response> fetchAppUsageFilterRange(String email, String startDate, String endDate, {bool isDaily = false}) async {
     var url = _rkService.baseUrl + '/user/appUsageFilter';
     Map<String, dynamic> json = {
       "whereKeyValues": {
@@ -155,6 +157,8 @@ class MediaRepository {
         "appUsageDate": {"\$gte": "$startDate", "\$lte": "$endDate"}
       }
     };
+    if (isDaily) json['viewBy'] = 'daily';
+
     print('param app usage filter : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
