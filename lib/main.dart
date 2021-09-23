@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:ruangkeluarga/child/child_controller.dart';
 import 'package:ruangkeluarga/child/child_main.dart';
 import 'package:ruangkeluarga/child/setup_permission_child.dart';
+import 'package:ruangkeluarga/login/setup_permissions.dart';
 import 'package:ruangkeluarga/login/splash_info.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_controller.dart';
@@ -117,16 +118,19 @@ class _MyHomePageState extends State<MyHomePage> {
         final roUserName = prefs.getString(rkUserName) ?? '';
 
         if (prevLogin != null && roUserType != null && roUserType != '') {
+          if (await childNeedPermission()) {
+            Navigator.of(context).push(leftTransitionRoute(SetupPermissionPage()));
+          }
           if (roUserType == "child") {
-            if (await childNeedPermission()) {
-              Navigator.of(context)
-                  .pushReplacement(MaterialPageRoute(builder: (context) => SetupPermissionChildPage(email: roUserEmail, name: roUserName)));
-            } else {
+            // if (await childNeedPermission()) {
+            //   Navigator.of(context)
+            //       .pushReplacement(MaterialPageRoute(builder: (context) => SetupPermissionChildPage(email: roUserEmail, name: roUserName)));
+            // } else {
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => ChildMain(childEmail: roUserEmail, childName: roUserName)),
                 (Route<dynamic> route) => false,
               );
-            }
+            //}
           } else {
             Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => ParentMain()),

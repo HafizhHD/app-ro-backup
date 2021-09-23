@@ -8,7 +8,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # flutter.versionName=0.0.31-alpha
 # flutter.versionCode=220000310A
 # versionCode: minSDK + major 00 + minor 62+ patch 01 +testing 0 + Alpha / Beta / Release
-version: 0.0.31-alpha+220000310A
+version: 0.0.33-alpha+220000312A
 
 environment:
   sdk: ">=2.12.0 <3.0.0"

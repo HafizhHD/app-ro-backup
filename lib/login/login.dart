@@ -118,11 +118,13 @@ class _LoginState extends State<LoginPage> {
               (Route<dynamic> route) => false,
             );
           }
-        } else {
+        }
+        else {
           await prefs.setBool(isPrefLogin, false);
           Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'ruang ortu')));
         }
-      } else {
+      }
+      else {
         await prefs.setBool(isPrefLogin, false);
         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'ruang ortu')));
       }

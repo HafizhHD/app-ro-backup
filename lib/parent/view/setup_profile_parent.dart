@@ -11,6 +11,7 @@ import 'package:ruangkeluarga/global/custom_widget/photo_image_picker.dart';
 import 'package:ruangkeluarga/global/global_formatter.dart';
 import 'package:ruangkeluarga/login/login.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/login/setup_permissions.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 import 'package:ruangkeluarga/parent/view_model/gereja_hkbp_model.dart';
@@ -66,11 +67,22 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
       birthDate.toIso8601String(),
     );
     if (response.statusCode == 200) {
+      var json = jsonDecode(response.body);
+      if (json['resultCode'] == "OK") {
+        var jsonDataResult = json['resultData'];
+        var jsonUser = jsonDataResult['user'];
+        await prefs.setString(rkUserType, jsonUser['userType']);
+        await prefs.setString(rkUserID, jsonUser["_id"]);
+        await prefs.setBool(isPrefLogin, true);
+      }
       print('isi response register : ${response.body}');
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => ParentMain()),
-        (Route<dynamic> route) => false,
-      );
+      if (await childNeedPermission()) {
+        Navigator.of(context).push(leftTransitionRoute(SetupPermissionPage()));
+      }
+      // Navigator.of(context).pushAndRemoveUntil(
+      //   MaterialPageRoute(builder: (context) => ParentMain()),
+      //   (Route<dynamic> route) => false,
+      // );
     } else {
       print('isi response register : ${response.statusCode}');
     }
