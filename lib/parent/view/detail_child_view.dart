@@ -275,47 +275,47 @@ class _DetailChildPageState extends State<DetailChildPage> {
                   .push(MaterialPageRoute(builder: (context) => ConfigRKContactPage(title: 'Daftar Kontak', name: widget.name, email: widget.email)))
             },
           ),
-          wKontrolKonfigurasiContent(
-            title: 'Akses Internet',
-            content: 'Dengan SafeSearch, Anda dapat memperbaiki penelusuran negatif'
-                'apa pun di Google, Bing atau Youtube. Pemfilteran internet memungkinkan'
-                'Anda memblokir situs web, gambar dan video dari kategori tertentu yang'
-                'Anda pilih. Anda juga dapat melihat riwayat internet dan bookmark mereka.',
-            onTap: () => Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => RKConfigAccessInternetPage(title: 'Akses Internet', name: widget.name))),
-          ),
-          wKontrolKonfigurasiContent(
-            title: 'Batas Penggunaan',
-            content: 'Dengan menggunakan aplikasi Ruang Keluarga untuk orang tua dari perangkat'
-                'anda. Anda dapat memantau dan mengontrol perangkat anak-anak anda'
-                'dari mana saja di dunia. Dapatkan aplikasi, internet, dan statistik'
-                'penggunaan telepon langsung dari dasbor anda.',
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute<Object>(
-                  builder: (BuildContext context) => RKConfigBatasPenggunaanPage(title: 'Batas Penggunaan', name: widget.name, email: widget.email)),
-            ),
-          ),
-          wKontrolKonfigurasiContent(
-            title: 'Blok Aplikasi / Games',
-            content: 'Tetapkan jadwal untuk aplikasi atau game tertentu agar anak anda'
-                'dapat menggunakanya hanya pada waktu yang dijadwalkan.'
-                'Anda juga dapat memblokir sepenuhnya aplikasi atau game apa pun'
-                'yang anda anggap berbahaya dan tidak ingin diberikan akses kepada mereka.',
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute<Object>(builder: (BuildContext context) => RKConfigBlockAppsPage(email: widget.email)),
-            ),
-          ),
-          wKontrolKonfigurasiContent(
-            title: 'Set Jadwal Penggunaan',
-            content: 'Tetapkan jadwal agar anak Anda dapat menggunakan ponsel mereka hanya pada'
-                'waktu tertentu dan memblokir akses selama waktu makan malam atau saat'
-                'waktunya tidur. Anda juga dapat langsung memblokir akses ke ponsel'
-                'mereka dengan fitur kunci layar.',
-            onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => RKConfigLimitDevicePage(title: 'Jadwal Penggunaan', name: widget.name, email: widget.email))),
-          ),
+          // wKontrolKonfigurasiContent(
+          //   title: 'Akses Internet',
+          //   content: 'Dengan SafeSearch, Anda dapat memperbaiki penelusuran negatif'
+          //       'apa pun di Google, Bing atau Youtube. Pemfilteran internet memungkinkan'
+          //       'Anda memblokir situs web, gambar dan video dari kategori tertentu yang'
+          //       'Anda pilih. Anda juga dapat melihat riwayat internet dan bookmark mereka.',
+          //   onTap: () => Navigator.of(context)
+          //       .push(MaterialPageRoute(builder: (context) => RKConfigAccessInternetPage(title: 'Akses Internet', name: widget.name))),
+          // ),
+          // wKontrolKonfigurasiContent(
+          //   title: 'Batas Penggunaan',
+          //   content: 'Dengan menggunakan aplikasi Ruang Keluarga untuk orang tua dari perangkat'
+          //       'anda. Anda dapat memantau dan mengontrol perangkat anak-anak anda'
+          //       'dari mana saja di dunia. Dapatkan aplikasi, internet, dan statistik'
+          //       'penggunaan telepon langsung dari dasbor anda.',
+          //   onTap: () => Navigator.push(
+          //     context,
+          //     MaterialPageRoute<Object>(
+          //         builder: (BuildContext context) => RKConfigBatasPenggunaanPage(title: 'Batas Penggunaan', name: widget.name, email: widget.email)),
+          //   ),
+          // ),
+          // wKontrolKonfigurasiContent(
+          //   title: 'Blok Aplikasi / Games',
+          //   content: 'Tetapkan jadwal untuk aplikasi atau game tertentu agar anak anda'
+          //       'dapat menggunakanya hanya pada waktu yang dijadwalkan.'
+          //       'Anda juga dapat memblokir sepenuhnya aplikasi atau game apa pun'
+          //       'yang anda anggap berbahaya dan tidak ingin diberikan akses kepada mereka.',
+          //   onTap: () => Navigator.push(
+          //     context,
+          //     MaterialPageRoute<Object>(builder: (BuildContext context) => RKConfigBlockAppsPage(email: widget.email)),
+          //   ),
+          // ),
+          // wKontrolKonfigurasiContent(
+          //   title: 'Set Jadwal Penggunaan',
+          //   content: 'Tetapkan jadwal agar anak Anda dapat menggunakan ponsel mereka hanya pada'
+          //       'waktu tertentu dan memblokir akses selama waktu makan malam atau saat'
+          //       'waktunya tidur. Anda juga dapat langsung memblokir akses ke ponsel'
+          //       'mereka dengan fitur kunci layar.',
+          //   onTap: () => Navigator.of(context).push(
+          //       MaterialPageRoute(builder: (context) => RKConfigLimitDevicePage(title: 'Jadwal Penggunaan', name: widget.name, email: widget.email))),
+          // ),
         ],
       ),
     );
