@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
+import 'package:ruangkeluarga/utils/rk_webview.dart';
 
 class InboxPage extends StatelessWidget {
   @override
@@ -50,6 +51,10 @@ class InboxPage extends StatelessWidget {
                   showLoadingOverlay();
                   await controller.readNotifByID(notifData.id, idx);
                   closeOverlay();
+                  final String videoUrl = notifData.message.videoUrl != null ? notifData.message.videoUrl.toString() : "";
+                  if (videoUrl != '') {
+                    showUrl(videoUrl, "Panic Video");
+                  }
                 },
                 title: Text(
                   notifData.message.message,

@@ -59,7 +59,6 @@ class SplashInfo4 extends StatelessWidget {
                         child: Icon(Icons.arrow_forward_rounded, color: cPrimaryBg),
                       ),
                       onPressed: () => Navigator.of(context).push(leftTransitionRoute(LoginPage())),
-                      //onPressed: () => Navigator.of(context).push(leftTransitionRoute(SetupPermissionPage())),
                     ),
                   ),
                 ),

@@ -430,7 +430,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                   subtitle: Row(
                     children: <Widget>[
                       Container(
-                        width: (app.duration / appList[0].duration) * 200,
+                        width: (app.duration / appList[0].duration) * 180,
                         height: 5,
                         margin: EdgeInsets.only(right: 10.0),
                         decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),

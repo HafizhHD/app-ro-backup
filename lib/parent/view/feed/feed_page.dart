@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_controller.dart';
+import 'package:ruangkeluarga/utils/rk_webview.dart';
 
 class FeedPage extends GetView<FeedController> {
   @override
@@ -99,6 +100,13 @@ class FeedPage extends GetView<FeedController> {
           ],
         ),
       ),
+        onTap: (){
+          if(data.contentType == 'artikel') {
+            showContent(data.contentDescription, data.contentName);
+          } else {
+            showContent(data.contents, data.contentName);
+          }
+        }
     );
   }
 

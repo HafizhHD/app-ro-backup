@@ -38,6 +38,7 @@ class AkunPage extends StatelessWidget {
                       name: parentData.name,
                       email: parentData.email,
                       phone: parentData.phone,
+                      alamat: parentData.address,
                       birthDate: parentData.birdDate,
                       namaGereja: selectedGereja,
                       isParent: parentData.parentStatus.toEnumString()),
@@ -52,7 +53,7 @@ class AkunPage extends StatelessWidget {
                           imgUrl: childData.imgPhoto,
                           name: childData.name ?? 'Nama Anak',
                           email: childData.email ?? 'email@anak.com',
-                          id: childData.id,
+                          id: childData.id
                           // phone: ,
                         );
                       },
@@ -82,6 +83,7 @@ class AkunPage extends StatelessWidget {
     String? phone,
     DateTime? birthDate,
     GerejaHKBP? namaGereja,
+    String? alamat,
   }) {
     return Dismissible(
       key: Key('$name+$email'),
@@ -107,6 +109,7 @@ class AkunPage extends StatelessWidget {
                 name: name,
                 email: email,
                 phoneNum: phone,
+                alamat: alamat,
                 isParent: boolParent,
                 imgUrl: imgUrl,
                 birthDate: birthDate,

@@ -29,11 +29,19 @@ class InboxNotif {
   });
 
   factory InboxNotif.fromJson(Map<String, dynamic> json) {
+    final messages = MessageNotif.fromJson(json['message']);
+    // if (json['type'].toString() == 'sos') {
+    //
+    //   String? place = messages.location != null ? messages.location.place : "";
+    //   messages.message = "Panggilan SOS dari lokasi " +  messages.location.place;
+    // } else {
+    //
+    // }
     return InboxNotif(
       readStatus: json['status'].toString().toLowerCase() == 'unread' ? false : true,
       id: json['_id'],
       type: notifTypeFromString(json['type'].toString()),
-      message: MessageNotif.fromJson(json['message']),
+      message: messages,
       createAt: DateTime.parse(json['dateCreate']).toUtc().toLocal(),
     );
   }
@@ -54,10 +62,15 @@ class MessageNotif {
 
   factory MessageNotif.fromJson(Map<String, dynamic> json) {
     final jsonLocation = json['location'];
-
+    try {
+      final xx = json['location'];
+    } catch (e, s) {
+      print('err: $e');
+      print('stk: $s');
+    }
     return MessageNotif(
       message: json['message'],
-      location: jsonLocation != null ? LocationModel.fromJson(json['location']['location']) : null,
+      location: jsonLocation != null ? LocationModel.fromJson(json['location']) : null,
       childEmail: json['childEmail'],
       videoUrl: json['videoUrl'],
     );

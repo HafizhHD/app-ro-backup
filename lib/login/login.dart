@@ -12,6 +12,7 @@ import 'package:ruangkeluarga/child/child_main.dart';
 import 'package:ruangkeluarga/child/home_child.dart';
 import 'package:ruangkeluarga/child/setup_permission_child.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/login/setup_permissions.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
@@ -91,32 +92,39 @@ class _LoginState extends State<LoginPage> {
           parentController.userId = jsonUser["_id"];
           parentController.userName = jsonUser["nameUser"];
           parentController.emailUser = jsonUser["emailUser"];
-
-          if (jsonUser['userType'] == "child") {
-            if (await childNeedPermission()) {
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => SetupPermissionChildPage(email: jsonUser['emailUser'], name: jsonUser['nameUser'])));
-            } else {
+          if (await childNeedPermission()) {
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => SetupPermissionPage(email: jsonUser['emailUser'], name: jsonUser['nameUser'], userType: jsonUser['userType'])));
+          } else {
+            if (jsonUser['userType'] == "child") {
+              // if (await childNeedPermission()) {
+              //   Navigator.of(context).pushReplacement(
+              //       MaterialPageRoute(builder: (context) =>
+              //           SetupPermissionChildPage(email: jsonUser['emailUser'],
+              //               name: jsonUser['nameUser'])));
+              // } else {
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(
-                    builder: (context) => ChildMain(
-                          childEmail: jsonUser['emailUser'],
-                          childName: jsonUser['nameUser'],
-                        )),
-                (Route<dynamic> route) => false,
+                  builder: (context) =>
+                    ChildMain(
+                      childEmail: jsonUser['emailUser'],
+                      childName: jsonUser['nameUser'],
+                    )),
+                  (Route<dynamic> route) => false,
+              );
+              //}
+            } else {
+              List<dynamic> childsData = jsonUser['childs'];
+              if (childsData.length > 0) {
+                await prefs.setString("rkChildName", childsData[0]['name']);
+                await prefs.setString("rkChildEmail", childsData[0]['email']);
+              }
+              // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ParentMain()));
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => ParentMain()),
+                    (Route<dynamic> route) => false,
               );
             }
-          } else {
-            List<dynamic> childsData = jsonUser['childs'];
-            if (childsData.length > 0) {
-              await prefs.setString("rkChildName", childsData[0]['name']);
-              await prefs.setString("rkChildEmail", childsData[0]['email']);
-            }
-            // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ParentMain()));
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => ParentMain()),
-              (Route<dynamic> route) => false,
-            );
           }
         }
         else {
