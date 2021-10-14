@@ -403,7 +403,7 @@ class _AkunEditPageState extends State<AkunEditPage> {
                         shape: new RoundedRectangleBorder(
                           borderRadius: new BorderRadius.circular(15.0),
                         ),
-                        onPressed: cName.text != '' && cPhoneNumber.text != '' && cGereja.text != ''
+                        onPressed: cName.text != '' || cPhoneNumber.text != '' || cGereja.text != ''
                             ? () async {
                                 showLoadingOverlay();
                                 print('widget.isParent ${widget.isParent}');

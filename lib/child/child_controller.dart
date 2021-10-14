@@ -6,10 +6,10 @@ import 'dart:math';
 import 'package:camera/camera.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
+// import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
+// import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:http/http.dart';
 import 'package:location/location.dart';
@@ -17,7 +17,7 @@ import 'package:ruangkeluarga/child/child_model.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/global/global_formatter.dart';
 import 'package:ruangkeluarga/main.dart';
-import 'package:ruangkeluarga/model/rk_callLog_model.dart';
+// import 'package:ruangkeluarga/model/rk_callLog_model.dart';
 import 'package:ruangkeluarga/model/rk_child_apps.dart';
 import 'package:ruangkeluarga/model/rk_child_contact.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
@@ -61,8 +61,9 @@ class ChildController extends GetxController {
     //   FlutterBackgroundService.initialize(childBackgroundTask);
     // }
 
+    //var permission = await childNeedPermission();
     await getChildData().then((value) {
-      if (value) {
+      if ((value)) {
         fParentProfile.value = getParentData();
         onMessageListen();
         fetchChildLocation();
@@ -70,7 +71,7 @@ class ChildController extends GetxController {
         fetchContacts();
         // onGetSMS();
         getAppUsageData();
-        onGetCallLog();
+        // onGetCallLog(); tutup sementara
       }
     });
   }
@@ -160,19 +161,55 @@ class ChildController extends GetxController {
     return [];
   }
 
+  Future getAppIconList() async {
+    Response res = await MediaRepository().fetchAppIconList();
+    if (res.statusCode == 200) {
+      print('print res fetchAppIconList ${res.body}');
+      return jsonDecode(res.body);
+    } else return [];
+  }
+
   void saveCurrentAppList() async {
     final listAppServer = await getListAppServer();
+    final listAppIcon = await getAppIconList();
     final listAppLocal = await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: false, onlyAppsWithLaunchIntent: false);
-    listAppLocal.forEach((localApp) async {
-      final cat = localApp.category.toString().split('.')[1];
-      await MediaRepository().saveIconApp(
-        childEmail,
-        localApp.appName,
-        localApp.packageName,
-        localApp is ApplicationWithIcon ? "data:image/png;base64,${base64Encode(localApp.icon)}" : '',
-        cat == 'undefined' ? 'other' : cat,
-      );
-    });
+    print ("listAppLocal::::");
+    print (listAppLocal);
+    int ada = 0;
+    String? cat;
+    // listAppLocal.forEach((localApp) async {
+    // for (var localApp in listAppLocal) {
+    for (var i=0; i < listAppLocal.length; i++) {
+      try {
+        var localApp = listAppLocal[i];
+        cat = "";
+        if (localApp.category != null) {
+          cat = localApp.category.toString().split('.').last;
+        }
+        for (var n = 0; n < listAppIcon["appIcons"].length; n++) {
+          final appIcon = listAppIcon["appIcons"][n];
+          if (appIcon["appId"].toString() == localApp.packageName.toString()) {
+            ada = 1;
+            break;
+          }
+        }
+        if (ada == 0) {
+          await MediaRepository().saveIconApp(
+            childEmail,
+            localApp.appName,
+            localApp.packageName,
+            localApp is ApplicationWithIcon
+                ? "data:image/png;base64,${base64Encode(localApp.icon)}"
+                : '',
+            cat == 'undefined' ? 'other' : cat,
+          );
+        }
+      } catch (e, s) {
+        print('err: $e');
+        print('stk: $s');
+      }
+    }
+    //);
 
     final listAppsOK = listAppLocal.map((localApp) {
       final cat = localApp.category.toString().split('.')[1];
@@ -242,8 +279,8 @@ class ChildController extends GetxController {
   }
 
   Future fetchContacts() async {
-    var permission = await FlutterContacts.requestPermission();
-    if (permission) {
+    // var permission = await FlutterContacts.requestPermission();
+    // if (permission) {
       final kontak = await FlutterContacts.getContacts(withProperties: true, withPhoto: true);
       var contacts = [];
       for (int i = 0; i < kontak.length; i++) {
@@ -261,17 +298,17 @@ class ChildController extends GetxController {
       } else {
         print('isi response save contact : ${response.statusCode}');
       }
-    }
+    // }
   }
 
   void onGetSMS() async {
-    SmsQuery query = new SmsQuery();
-    final listSms = await query.getAllSms;
-    listSms.forEach((sms) {
-      print(sms.sender);
-      print(sms.address);
-      print(sms.body);
-    });
+    // SmsQuery query = new SmsQuery();
+    // final listSms = await query.getAllSms;
+    // listSms.forEach((sms) {
+    //   print(sms.sender);
+    //   print(sms.address);
+    //   print(sms.body);
+    // });
   }
 
   Future getBlackListed() async {
@@ -285,31 +322,32 @@ class ChildController extends GetxController {
   }
 
   void onGetCallLog() async {
-    await getBlackListed();
-    Iterable<CallLogEntry> entries = [];
-    final to = DateTime.now().millisecondsSinceEpoch;
-    final from = DateTime.now()
-        .subtract(Duration(hours: DateTime.now().hour, minutes: DateTime.now().minute, seconds: DateTime.now().second))
-        .millisecondsSinceEpoch;
-
-    if (blackListed.length > 0) {
-      blackListed.forEach((bl) async {
-        final List phoneNums = bl.phone.split(', ');
-        phoneNums.forEach((phone) async {
-          entries = await CallLog.query(dateFrom: from, dateTo: to, number: '$phone');
-          if (entries.length > 0) {
-            var date = DateTime.fromMillisecondsSinceEpoch(entries.elementAt(0).timestamp! * 1000);
-            Response response = await MediaRepository().blContactNotification(childEmail, entries.elementAt(0).name.toString(),
-                entries.elementAt(0).number.toString(), date.toString(), entries.elementAt(0).callType.toString().split('.')[1]);
-            if (response.statusCode == 200) {
-              print('response notif blacklist ${response.body}');
-            } else {
-              print('error blacklist notif ${response.statusCode}');
-            }
-          }
-        });
-      });
-    }
+    // tutup sementara
+    // await getBlackListed();
+    // Iterable<CallLogEntry> entries = [];
+    // final to = DateTime.now().millisecondsSinceEpoch;
+    // final from = DateTime.now()
+    //     .subtract(Duration(hours: DateTime.now().hour, minutes: DateTime.now().minute, seconds: DateTime.now().second))
+    //     .millisecondsSinceEpoch;
+    //
+    // if (blackListed.length > 0) {
+    //   blackListed.forEach((bl) async {
+    //     final List phoneNums = bl.phone.split(', ');
+    //     phoneNums.forEach((phone) async {
+    //       entries = await CallLog.query(dateFrom: from, dateTo: to, number: '$phone');
+    //       if (entries.length > 0) {
+    //         var date = DateTime.fromMillisecondsSinceEpoch(entries.elementAt(0).timestamp! * 1000);
+    //         Response response = await MediaRepository().blContactNotification(childEmail, entries.elementAt(0).name.toString(),
+    //             entries.elementAt(0).number.toString(), date.toString(), entries.elementAt(0).callType.toString().split('.')[1]);
+    //         if (response.statusCode == 200) {
+    //           print('response notif blacklist ${response.body}');
+    //         } else {
+    //           print('error blacklist notif ${response.statusCode}');
+    //         }
+    //       }
+    //     });
+    //   });
+    // }
   }
 
   void getAppUsageData() async {
@@ -347,7 +385,7 @@ class ChildController extends GetxController {
     print('File Size: ${getFileSize(await recording.length())}');
     final recordAsBytes = await recording.readAsBytes();
     final locData = await location.getLocation();
-    final base64Video = "data:image/png;base64,${base64Encode(recordAsBytes)}";
+    final base64Video = "data:video/mp4;base64,${base64Encode(recordAsBytes)}";
 
     Response response = await MediaRepository().postPanicSOS(childEmail, locData, base64Video);
     if (response.statusCode == 200) {
@@ -367,41 +405,41 @@ class ChildController extends GetxController {
 
 void childBackgroundTask() {
   WidgetsFlutterBinding.ensureInitialized();
-  final service = FlutterBackgroundService();
-  // final childController = Get.find<ChildController>();
-  service.onDataReceived.listen((event) {
-    service.sendData(
-      {"got_event": event},
-    );
-
-    if (event!["action"] == "setAsForeground") {
-      service.setForegroundMode(true);
-      return;
-    }
-
-    if (event["action"] == "setAsBackground") {
-      service.setForegroundMode(false);
-    }
-
-    if (event["action"] == "stopService") {
-      service.stopBackgroundService();
-    }
-  });
-
-  // bring to foreground
-  service.setForegroundMode(true);
-  Timer.periodic(Duration(seconds: 5), (timer) async {
-    if (!(await service.isServiceRunning())) timer.cancel();
-    await Location().getLocation().then((locData) async {
-      service.setNotificationInfo(
-        title: "Keluarga HBKP Service",
-        content: "Updated at ${DateTime.now()}",
-        // content: "Updated at ${DateTime.now()} \n Location:[${locData.latitude}, ${locData.longitude}]",
-      );
-    });
-
-    service.sendData(
-      {"current_date": DateTime.now().toIso8601String()},
-    );
-  });
+  // final service = FlutterBackgroundService();
+  // // final childController = Get.find<ChildController>();
+  // service.onDataReceived.listen((event) {
+  //   service.sendData(
+  //     {"got_event": event},
+  //   );
+  //
+  //   if (event!["action"] == "setAsForeground") {
+  //     service.setForegroundMode(true);
+  //     return;
+  //   }
+  //
+  //   if (event["action"] == "setAsBackground") {
+  //     service.setForegroundMode(false);
+  //   }
+  //
+  //   if (event["action"] == "stopService") {
+  //     service.stopBackgroundService();
+  //   }
+  // });
+  //
+  // // bring to foreground
+  // service.setForegroundMode(true);
+  // Timer.periodic(Duration(seconds: 5), (timer) async {
+  //   if (!(await service.isServiceRunning())) timer.cancel();
+  //   await Location().getLocation().then((locData) async {
+  //     service.setNotificationInfo(
+  //       title: "Keluarga HBKP Service",
+  //       content: "Updated at ${DateTime.now()}",
+  //       // content: "Updated at ${DateTime.now()} \n Location:[${locData.latitude}, ${locData.longitude}]",
+  //     );
+  //   });
+  //
+  //   service.sendData(
+  //     {"current_date": DateTime.now().toIso8601String()},
+  //   );
+  // });
 }

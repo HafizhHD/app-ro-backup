@@ -23,7 +23,6 @@ class SetupPermissionChildPage extends StatefulWidget {
 class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
   bool _serviceAppUsage = false;
   bool _locationPermission = false;
-  bool _phonePermission = false;
   bool _cameraPermission = false;
   bool _audioPermission = false;
   // bool _smsPermission = false;
@@ -61,7 +60,6 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
   void initAsync() async {
     _locationPermission = (await Permission.location.status).isGranted;
     _contactPermission = (await Permission.contacts.status).isGranted;
-    _phonePermission = (await Permission.phone.status).isGranted;
     _cameraPermission = (await Permission.camera.status).isGranted;
     _audioPermission = (await Permission.microphone.status).isGranted;
     setState(() {});
@@ -125,7 +123,7 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
                     borderRadius: new BorderRadius.circular(15.0),
                   ),
                   onPressed: () async {
-                    if (_locationPermission && _contactPermission && _phonePermission && _serviceAppUsage && _cameraPermission && _audioPermission) {
+                    if (_locationPermission && _contactPermission && _serviceAppUsage && _cameraPermission && _audioPermission) {
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (context) => ChildMain(
@@ -200,7 +198,27 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
             SwitchListTile.adaptive(
               tileColor: cOrtuGrey,
               title: Text('Lokasi'),
-              subtitle: Text('Kami membutuhkan akses lokasi pada perangkat anak untuk memonitoring keberadaan lokasi anak berada'),
+              subtitle: Text('Aplikasi Keluarga HKBP mengumpulkan data lokasi untuk mengaktifkan "Pantau Lokasi Anak", "Riwayat Lokasi Anak", "ETA" dan "Pesan Darurat" bahkan jika aplikasi ditutup atau tidak digunakan.\n'+
+
+                  '\nLokasi adalah  informasi tempat/posisi berdasarkan lokasi ponsel. Lokasi yang diperlukan dan dikumpulkan berupa Geolokasi dan nama tempat.\n'
+
+                  '\nAplikasi Keluarga HKBP memungkinkan orang tua dalam memantau dan mengelola aktivitas penggunaan perangkat anak mereka termasuk melihat lokasi anak.\n'
+
+                  '\nAplikasi keluarga HKBP mengumpulkan data dan informasi lokasi perangkat anak sehingga dapat ditampilkan pada dasbor Aplikasi orang tua.\n'
+
+                  '\nFitur Lokasi yang digunakan dalam aplikasi Keluarga HKBP menggunakan Software Development Kit dari google. Pengguna dapat melihat permission yang digunakan dan memerlukan persetujuan dari pengguna untuk mengaktifkan fitur lokasi.\n'
+
+                  '\nAplikasi Keluarga HKBP selalu meminta akses lokasi bahkan saat aplikasi tidak digunakan untuk memberikan informasi lokasi yang tepat kepada orangtua dan memastikan mereka berada di lokasi yang aman, meskipun anak tidak mengaktifkan aplikasi Keluarga HKBP di perangkat mereka.\n'
+
+                  '\nDengan mengaktifkan fitur akses lokasi orang tua dapat melihat lokasi anak, prediksi perjalanan dan riwayat perjalanan anak.\n'
+
+                  '\nCara Kerja Lokasi pada Perangkat :\n'
+                  'Pengguna harus mengunduh aplikasi keluarga HKBP dan mendaftarkan akun gmail sebagai orangtua dan anak\n'
+                  'Sistem akan meminta persetujuan pengguna untuk mengaktifkan data lokasi untuk memberikan informasi terkait tempat dan informasi jarak lokasi\n'
+                  'Untuk melihat lokasi pada perangkat anak. Pengguna(Orang tua) dapat mendaftarkan perangkat anak yang ingin di monitor dengan memasukkan nama, email dan tanggal lahir anak.\n'
+                  'Pengguna(Anak) melakukan aktivasi pada perangkat anak dan login menggunakan akun yang sudah didaftarkan sebagai anak.\n'
+                  'Pada Aplikasi akan diminta persetujuan untuk mengaktifkan akses data lokasi untuk memberikan informasi lokasi di perangkat berada.\n'
+                  'Dengan kondisi lokasi sudah aktif, maka secara berkala aplikasi akan melakukan pengumpulan lokasi pada perangkat anak sehingga orang tua dapat mengetahui informasi lokasi anak mereka melalui aplikasi keluarga HKBP di perangkat orangtua.'),
               value: _locationPermission,
               onChanged: (val) async {
                 var _permissionStatus = await Permission.location.status;
@@ -233,40 +251,6 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
             SizedBox(height: 10),
             SwitchListTile.adaptive(
               tileColor: cOrtuGrey,
-              title: Text('Telepon'),
-              subtitle: Text('Kami membutuhkan akses Telepon pada perangkat anak untuk memonitoring panggilan telepon anak dan sos.'),
-              value: _phonePermission,
-              onChanged: (val) async {
-                var _permissionStatus = await Permission.phone.status;
-                if (_permissionStatus.isDenied) {
-                  final s = Stopwatch()..start();
-                  _permissionStatus = await Permission.phone.request();
-                  s.stop();
-                  if (s.elapsedMilliseconds < _waitDelay && _permissionStatus.isPermanentlyDenied) {
-                    await Get.dialog(AlertDialog(
-                      title: Text('Akses ditolak'),
-                      content: Text('Akses untuk telepon telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
-                      actions: [
-                        TextButton(
-                            onPressed: () async {
-                              final res = await openAppSettings();
-                              if (res) Get.back();
-                            },
-                            child: Text('Buka Setting'))
-                      ],
-                    ));
-                    _permissionStatus = await Permission.phone.status;
-                  }
-                }
-                _phonePermission = _permissionStatus.isGranted;
-                setState(() {});
-              },
-              contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
-            ),
-            SizedBox(height: 10),
-            SwitchListTile.adaptive(
-              tileColor: cOrtuGrey,
               title: Text('Kamera'),
               subtitle: Text('Kami membutuhkan akses kamera pada perangkat anak untuk mengirimkan rekaman video sos.'),
               value: _cameraPermission,
@@ -289,7 +273,6 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
                             child: Text('Buka Setting'))
                       ],
                     ));
-                    _permissionStatus = await Permission.phone.status;
                   }
                 }
                 _cameraPermission = _permissionStatus.isGranted;
@@ -323,7 +306,6 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
                             child: Text('Buka Setting'))
                       ],
                     ));
-                    _permissionStatus = await Permission.phone.status;
                   }
                 }
                 _audioPermission = _permissionStatus.isGranted;

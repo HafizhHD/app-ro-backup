@@ -1,58 +1,59 @@
-import 'dart:async';
-import 'package:flutter/services.dart';
+// import 'dart:async';
+// import 'package:flutter/services.dart';
 
 class CallLog {
-  static const Iterable<CallLogEntry> _EMPTY_RESULT =
-  Iterable<CallLogEntry>.empty();
-  static const MethodChannel _channel = MethodChannel('sk.fourq.call_log');
-
-  /// Get all call history log entries. Permissions are handled automatically
-  static Future<Iterable<CallLogEntry>> get() async {
-    final Iterable<dynamic>? result = await _channel.invokeMethod('get', null);
-    return result?.map((dynamic m) => CallLogEntry.fromMap(m)) ?? _EMPTY_RESULT;
-  }
-
-  /// Query call history log entries
-  /// dateFrom: unix timestamp. precision in millis
-  /// dateTo: unix timestamp. precision in millis
-  /// durationFrom: minimal call length in seconds
-  /// durationTo: minimal call length in seconds
-  /// name: call participant name (present only if in contacts)
-  /// number: call participant phone number
-  /// type: value from [CallType] enum
-  static Future<Iterable<CallLogEntry>> query({
-    int? dateFrom,
-    int? dateTo,
-    int? durationFrom,
-    int? durationTo,
-    String? name,
-    String? number,
-    CallType? type,
-    String? numbertype,
-    String? numberlabel,
-    String? cachedNumberType,
-    String? cachedNumberLabel,
-    String? cachedMatchedNumber,
-    String? phoneAccountId,
-  }) async {
-    final Map<String, String?> params = <String, String?>{
-      'dateFrom': dateFrom?.toString(),
-      'dateTo': dateTo?.toString(),
-      'durationFrom': durationFrom?.toString(),
-      'durationTo': durationTo?.toString(),
-      'name': name,
-      'number': number,
-      'type': type?.index == null ? null : (type!.index + 1).toString(),
-      'cachedNumberType': cachedNumberType,
-      'cachedNumberLabel': cachedNumberLabel,
-      'cachedMatchedNumber': cachedMatchedNumber,
-      'phoneAccountId': phoneAccountId,
-    };
-    final Iterable<dynamic>? records =
-    await _channel.invokeMethod('query', params);
-    return records?.map((dynamic m) => CallLogEntry.fromMap(m)) ??
-        _EMPTY_RESULT;
-  }
+  // tutup sementara
+  // static const Iterable<CallLogEntry> _EMPTY_RESULT =
+  // Iterable<CallLogEntry>.empty();
+  // static const MethodChannel _channel = MethodChannel('sk.fourq.call_log');
+  //
+  // /// Get all call history log entries. Permissions are handled automatically
+  // static Future<Iterable<CallLogEntry>> get() async {
+  //   final Iterable<dynamic>? result = await _channel.invokeMethod('get', null);
+  //   return result?.map((dynamic m) => CallLogEntry.fromMap(m)) ?? _EMPTY_RESULT;
+  // }
+  //
+  // /// Query call history log entries
+  // /// dateFrom: unix timestamp. precision in millis
+  // /// dateTo: unix timestamp. precision in millis
+  // /// durationFrom: minimal call length in seconds
+  // /// durationTo: minimal call length in seconds
+  // /// name: call participant name (present only if in contacts)
+  // /// number: call participant phone number
+  // /// type: value from [CallType] enum
+  // static Future<Iterable<CallLogEntry>> query({
+  //   int? dateFrom,
+  //   int? dateTo,
+  //   int? durationFrom,
+  //   int? durationTo,
+  //   String? name,
+  //   String? number,
+  //   CallType? type,
+  //   String? numbertype,
+  //   String? numberlabel,
+  //   String? cachedNumberType,
+  //   String? cachedNumberLabel,
+  //   String? cachedMatchedNumber,
+  //   String? phoneAccountId,
+  // }) async {
+  //   final Map<String, String?> params = <String, String?>{
+  //     'dateFrom': dateFrom?.toString(),
+  //     'dateTo': dateTo?.toString(),
+  //     'durationFrom': durationFrom?.toString(),
+  //     'durationTo': durationTo?.toString(),
+  //     'name': name,
+  //     'number': number,
+  //     'type': type?.index == null ? null : (type!.index + 1).toString(),
+  //     'cachedNumberType': cachedNumberType,
+  //     'cachedNumberLabel': cachedNumberLabel,
+  //     'cachedMatchedNumber': cachedMatchedNumber,
+  //     'phoneAccountId': phoneAccountId,
+  //   };
+  //   final Iterable<dynamic>? records =
+  //   await _channel.invokeMethod('query', params);
+  //   return records?.map((dynamic m) => CallLogEntry.fromMap(m)) ??
+  //       _EMPTY_RESULT;
+  // }
 }
 
 ///method for returning the callType

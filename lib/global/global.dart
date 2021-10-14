@@ -31,7 +31,7 @@ const AppIconPathHKBP = 'assets/images/hkbp/logo-keluargahkbp.png';
 const currentAppIconPath = AppIconPathHKBP;
 
 const ApkDownloadURL = 'https://drive.google.com/drive/folders/1U5V9ZbUel3O0kNBw96O4TY0m7TrLnTwe?usp=sharing';
-const ApkDownloadURL_HKBP = 'https://drive.google.com/drive/folders/1nlj_EiHgD6goR-JTsdCaIfeomVHUFsNr?usp=sharing';
+const ApkDownloadURL_HKBP = 'https://play.google.com/store/apps/details?id=com.keluargahkbp';
 
 final urlPP = 'https://keluargahkbp.com/toc/privacy_policy_bahasa.html';
 final urlTOC = 'https://keluargahkbp.com/toc/toc_bahasa.html';
@@ -40,15 +40,13 @@ final urlFAQ = 'https://keluargahkbp.com/toc/faq_bahasa.html';
 Future<bool> childNeedPermission() async {
   final locationHandler = await Permission.location.status;
   final contactHandler = await Permission.contacts.status;
-  final phoneHandler = await Permission.phone.status;
   final cameraHandler = await Permission.camera.status;
   final audioHandler = await Permission.microphone.status;
   // final smsHandler = await Permission.sms.status;
   print('Permision Status location : $locationHandler');
   print('Permision Status contact : $contactHandler');
-  print('Permision Status phone : $phoneHandler');
   print('Permision Status camera : $cameraHandler');
   print('Permision Status microphone : $audioHandler');
   // print('Permision Status sms : $smsHandler');
-  return locationHandler.isDenied || contactHandler.isDenied || phoneHandler.isDenied || cameraHandler.isDenied || audioHandler.isDenied;
+  return locationHandler.isDenied || contactHandler.isDenied || cameraHandler.isDenied || audioHandler.isDenied;
 }

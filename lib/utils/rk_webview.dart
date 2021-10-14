@@ -4,18 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'dart:convert';
 
 class RKWebViewDialog extends StatefulWidget {
   final String url;
   final String title;
+  final String contents;
 
-  RKWebViewDialog({required this.url, required this.title});
+
+  RKWebViewDialog({required this.url, required this.title, this.contents = ''});
 
   @override
   _RKWebViewDialogState createState() => _RKWebViewDialogState();
 }
 
 class _RKWebViewDialogState extends State<RKWebViewDialog> {
+  late WebViewController _webViewController;
   @override
   void initState() {
     super.initState();
@@ -32,8 +36,24 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
       ),
       body: WebView(
         initialUrl: widget.url,
+        javascriptMode: JavascriptMode.unrestricted,
+
+        onWebViewCreated: (WebViewController webViewController){
+          _webViewController=webViewController;
+          loadAsset();
+        },
       ),
     );
+  }
+
+  loadAsset() async {
+    if (widget.contents != '') {
+      String fileHtmlContents = "<!DOCTYPE html> <html> <body> " + widget.contents + "</body></html>";
+      _webViewController.loadUrl(Uri.dataFromString(
+          fileHtmlContents, mimeType: 'text/html',
+          encoding: Encoding.getByName('utf-8'))
+          .toString());
+    }
   }
 }
 
@@ -66,3 +86,26 @@ void showFAQ() {
     transitionCurve: Curves.decelerate,
   );
 }
+
+void showContent(String contents, title) {
+  Get.dialog(
+    RKWebViewDialog(
+      url: "",
+      title: title,
+      contents: contents,
+    ),
+    transitionCurve: Curves.decelerate,
+  );
+}
+
+void showUrl(String url, title) {
+  Get.dialog(
+    RKWebViewDialog(
+      url: url,
+      title: title,
+      contents: "",
+    ),
+    transitionCurve: Curves.decelerate,
+  );
+}
+

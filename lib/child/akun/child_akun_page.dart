@@ -30,6 +30,8 @@ class ChildAkunPage extends StatelessWidget {
                     name: childProfile.name,
                     email: childProfile.email,
                     phone: childProfile.phone,
+                    alamat: childProfile.address,
+                    birthDate: childProfile.birdDate,
                     canEdit: true,
                   ),
                   profileContainer(
@@ -38,6 +40,8 @@ class ChildAkunPage extends StatelessWidget {
                     name: parentData.name,
                     email: parentData.email,
                     phone: parentData.phone,
+                    alamat: parentData.address,
+                    birthDate: childProfile.birdDate,
                     isParent: parentData.parentStatus.toEnumString(),
                   ),
                   Flexible(
@@ -81,6 +85,7 @@ class ChildAkunPage extends StatelessWidget {
     required String email,
     required String id,
     String? phone,
+    String? alamat,
     DateTime? birthDate,
     bool canEdit = false,
   }) {
@@ -101,6 +106,7 @@ class ChildAkunPage extends StatelessWidget {
                     name: name,
                     email: email,
                     phoneNum: phone,
+                    alamat: alamat,
                     isParent: boolParent,
                     imgUrl: imgUrl,
                     birthDate: birthDate,

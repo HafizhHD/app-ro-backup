@@ -469,7 +469,15 @@ class MediaRepository {
   Future<Response> fetchCoBrandContents() async {
     var url = _rkService.baseUrl + '/cobrand/contentFilter';
     print('fetchCoBrandContents');
-    Response response = await post(Uri.parse(url), headers: noAuthHeaders);
+    Map<String, dynamic> json = {
+      "whereKeyValues": {
+        "cobrandEmail": "hkbp@test.com",
+        "status": 'active'
+      }
+    };
+    print('param app usage filter : $json');
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    // Response response = await post(Uri.parse(url), headers: noAuthHeaders);
     return response;
   }
 }

@@ -14,6 +14,7 @@ import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/login/setup_permissions.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
+import 'package:ruangkeluarga/child/child_main.dart';
 import 'package:ruangkeluarga/parent/view_model/gereja_hkbp_model.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -74,15 +75,40 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
         await prefs.setString(rkUserType, jsonUser['userType']);
         await prefs.setString(rkUserID, jsonUser["_id"]);
         await prefs.setBool(isPrefLogin, true);
+        print('isi response register : ${response.body}');
+        if (await childNeedPermission()) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) =>
+              SetupPermissionPage(email: jsonUser['emailUser'],
+                  name: jsonUser['nameUser'],
+                  userType: jsonUser['userType'])));
+          // Navigator.of(context).push(leftTransitionRoute(SetupPermissionPage(
+          //     email: jsonUser['emailUser'],
+          //     name: jsonUser['nameUser'],
+          //     userType: jsonUser['userType'])));
+        } else {
+          if(jsonUser['userType'] == 'parent'){
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => ParentMain()),
+                  (Route<dynamic> route) => false,
+            );
+          } else {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                  builder: (context) =>
+                      ChildMain(
+                        childEmail: jsonUser['emailUser'],
+                        childName: jsonUser['nameUser'],
+                      )),
+                  (Route<dynamic> route) => false,
+            );
+          }
+        }
+        // Navigator.of(context).pushAndRemoveUntil(
+        //   MaterialPageRoute(builder: (context) => ParentMain()),
+        //   (Route<dynamic> route) => false,
+        // );
       }
-      print('isi response register : ${response.body}');
-      if (await childNeedPermission()) {
-        Navigator.of(context).push(leftTransitionRoute(SetupPermissionPage()));
-      }
-      // Navigator.of(context).pushAndRemoveUntil(
-      //   MaterialPageRoute(builder: (context) => ParentMain()),
-      //   (Route<dynamic> route) => false,
-      // );
     } else {
       print('isi response register : ${response.statusCode}');
     }

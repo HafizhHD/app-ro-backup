@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:ruangkeluarga/child/child_controller.dart';
 import 'package:ruangkeluarga/child/child_main.dart';
 import 'package:ruangkeluarga/child/setup_permission_child.dart';
+import 'package:ruangkeluarga/login/login.dart';
 import 'package:ruangkeluarga/login/setup_permissions.dart';
 import 'package:ruangkeluarga/login/splash_info.dart';
 import 'package:ruangkeluarga/global/global.dart';
@@ -119,23 +120,31 @@ class _MyHomePageState extends State<MyHomePage> {
 
         if (prevLogin != null && roUserType != null && roUserType != '') {
           if (await childNeedPermission()) {
-            Navigator.of(context).push(leftTransitionRoute(SetupPermissionPage()));
-          }
-          if (roUserType == "child") {
-            // if (await childNeedPermission()) {
-            //   Navigator.of(context)
-            //       .pushReplacement(MaterialPageRoute(builder: (context) => SetupPermissionChildPage(email: roUserEmail, name: roUserName)));
-            // } else {
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => ChildMain(childEmail: roUserEmail, childName: roUserName)),
-                (Route<dynamic> route) => false,
-              );
-            //}
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.clear();
+            await signOutGoogle();
+            // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
+            Navigator.of(context).push(leftTransitionRoute(LoginPage()));
           } else {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => ParentMain()),
-              (Route<dynamic> route) => false,
-            );
+            if (roUserType == "child") {
+              if (await childNeedPermission()) {
+                Navigator.of(context)
+                    .pushReplacement(MaterialPageRoute(builder: (context) =>
+                    SetupPermissionChildPage(
+                        email: roUserEmail, name: roUserName)));
+              } else {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => ChildMain(
+                      childEmail: roUserEmail, childName: roUserName)),
+                      (Route<dynamic> route) => false,
+                );
+              }
+            } else {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => ParentMain()),
+                    (Route<dynamic> route) => false,
+              );
+            }
           }
         } else {
           Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SplashInfo()));

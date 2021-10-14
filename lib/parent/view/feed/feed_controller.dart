@@ -18,6 +18,7 @@ class ContentModel {
   String contentName;
   String contentDescription;
   ContentType contentType;
+  String contents;
   String? contentThumbnail;
   bool status;
   DateTime startDate;
@@ -30,6 +31,7 @@ class ContentModel {
     required this.contentName,
     required this.contentDescription,
     required this.contentType,
+    required this.contents,
     this.contentThumbnail,
     required this.status,
     required this.startDate,
@@ -44,6 +46,7 @@ class ContentModel {
       contentDescription: json["contentDescription"],
       contentType: ContentTypeFromString(json["contentType"]),
       contentThumbnail: json["contentThumbnail"],
+      contents: json["contents"],
       startDate: DateTime.parse(json["startDate"]).toUtc().toLocal(),
       dateCreated: DateTime.parse(json["dateCreated"]).toUtc().toLocal(),
       status: json["status"].toString().toLowerCase() == 'active' ? true : false,
