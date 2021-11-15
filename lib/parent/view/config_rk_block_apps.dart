@@ -197,7 +197,7 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
                                         if (response.statusCode == 200) {
                                           fAppList = fetchAppList();
                                           setState(() {});
-
+                                          closeOverlay();
                                           showToastSuccess(ctx: context, successText: "Berhasil memblokir aplikasi ${app.appName}");
                                         } else {
                                           closeOverlay();

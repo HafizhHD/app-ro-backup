@@ -7,9 +7,11 @@ import 'package:ruangkeluarga/login/splash_info_1.dart';
 
 class SplashInfo4 extends StatelessWidget {
   final borderRadiusSize = Radius.circular(10);
+  final assetImg = AssetImage('assets/images/Intro4_p.png');
 
   @override
   Widget build(BuildContext context) {
+    precacheImage(assetImg, context);
     return SafeArea(
       child: Material(
         child: Container(
@@ -28,8 +30,8 @@ class SplashInfo4 extends StatelessWidget {
                         color: cOrtuWhite,
                         borderRadius: BorderRadius.all(borderRadiusSize),
                         image: DecorationImage(
-                          image: AssetImage(currentAppIconPath),
-                          fit: BoxFit.contain,
+                          image: assetImg,
+                          fit: BoxFit.cover,
                         )),
                   ),
                 ),
@@ -37,7 +39,8 @@ class SplashInfo4 extends StatelessWidget {
               Container(
                 margin: EdgeInsets.all(10),
                 child: Text(
-                  'melalui konten yang sehat \nmembangun keluarga',
+                  // 'melalui konten yang sehat \nmembangun keluarga',
+                  'Mulailah mengawasi dan mengontrol gadget anak',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20,

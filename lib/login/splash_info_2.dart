@@ -6,7 +6,8 @@ import 'package:ruangkeluarga/login/splash_info_3.dart';
 
 class SplashInfo2 extends StatelessWidget {
   final borderRadiusSize = Radius.circular(10);
-  final assetImg = AssetImage('assets/images/unsplash-parenting.jpg');
+  // final assetImg = AssetImage('assets/images/unsplash-parenting.jpg');
+  final assetImg = AssetImage('assets/images/Intro2_p.png');
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +44,8 @@ class SplashInfo2 extends StatelessWidget {
                     ),
                     SizedBox(height: 20),
                     Text(
-                      'Bimbing mereka ke konten yang bagus \ndan berikan asupan keingintahuan mereka',
+                      // 'Bimbing mereka ke konten yang bagus \ndan berikan asupan keingintahuan mereka',
+                      'Waspadai penggunaan gadget secara \nberlebihan selama pandemi',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 20,
