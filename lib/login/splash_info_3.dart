@@ -6,7 +6,8 @@ import 'package:ruangkeluarga/login/splash_info_4.dart';
 
 class SplashInfo3 extends StatelessWidget {
   final borderRadiusSize = Radius.circular(10);
-  final assetImg = AssetImage('assets/images/unsplash-reward.jpg');
+  // final assetImg = AssetImage('assets/images/unsplash-reward.jpg');
+  final assetImg = AssetImage('assets/images/Intro3_p.png');
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +44,8 @@ class SplashInfo3 extends StatelessWidget {
                     ),
                     SizedBox(height: 20),
                     Text(
-                      'dan memenangkan \nhadiah menarik \nuntuk keluarga Anda',
+                      // 'dan memenangkan \nhadiah menarik \nuntuk keluarga Anda',
+                      ' Kenalilah aplikasi dan konten baik \ndan kurang baik yang beredar \ndi Internet supaya dapat \nmenghindarinya',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 20,

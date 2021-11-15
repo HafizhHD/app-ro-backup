@@ -5,7 +5,8 @@ import 'package:ruangkeluarga/login/splash_info_2.dart';
 
 class SplashInfo1 extends StatelessWidget {
   final borderRadiusSize = Radius.circular(10);
-  final assetImg = AssetImage('assets/images/unsplash-digital-habit.jpg');
+  // final assetImg = AssetImage('assets/images/unsplash-digital-habit.jpg');
+  final assetImg = AssetImage('assets/images/Intro1_p.png');
 
   @override
   Widget build(BuildContext context) {
@@ -35,13 +36,15 @@ class SplashInfo1 extends StatelessWidget {
                               image: DecorationImage(
                                 image: assetImg,
                                 fit: BoxFit.cover,
-                              )),
+                              ),
+                          ),
                         ),
                       ),
                     ),
                     SizedBox(height: 20),
                     Text(
-                      'Bantu keluarga Anda \nmenciptakan kebiasaan digital \nyang sehat',
+                      // 'Bantu keluarga Anda \nmenciptakan kebiasaan digital \nyang sehat',
+                      'Membantu keluarga dalam \nmemberi pola asuh di era \ndigital ini',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 20,

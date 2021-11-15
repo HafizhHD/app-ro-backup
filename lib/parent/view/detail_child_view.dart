@@ -297,17 +297,14 @@ class _DetailChildPageState extends State<DetailChildPage> {
           //         builder: (BuildContext context) => RKConfigBatasPenggunaanPage(title: 'Batas Penggunaan', name: widget.name, email: widget.email)),
           //   ),
           // ),
-          // wKontrolKonfigurasiContent(
-          //   title: 'Blok Aplikasi / Games',
-          //   content: 'Tetapkan jadwal untuk aplikasi atau game tertentu agar anak anda'
-          //       'dapat menggunakanya hanya pada waktu yang dijadwalkan.'
-          //       'Anda juga dapat memblokir sepenuhnya aplikasi atau game apa pun'
-          //       'yang anda anggap berbahaya dan tidak ingin diberikan akses kepada mereka.',
-          //   onTap: () => Navigator.push(
-          //     context,
-          //     MaterialPageRoute<Object>(builder: (BuildContext context) => RKConfigBlockAppsPage(email: widget.email)),
-          //   ),
-          // ),
+          wKontrolKonfigurasiContent(
+            title: 'Blok Aplikasi / Games',
+            content: 'Anda dapat membblokir aplikasi yang ada pada perangkat anak.',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute<Object>(builder: (BuildContext context) => RKConfigBlockAppsPage(email: widget.email)),
+            ),
+          ),
           // wKontrolKonfigurasiContent(
           //   title: 'Set Jadwal Penggunaan',
           //   content: 'Tetapkan jadwal agar anak Anda dapat menggunakan ponsel mereka hanya pada'

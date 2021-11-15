@@ -404,7 +404,7 @@ class ChildController extends GetxController {
 }
 
 void childBackgroundTask() {
-  WidgetsFlutterBinding.ensureInitialized();
+  // WidgetsFlutterBinding.ensureInitialized();
   // final service = FlutterBackgroundService();
   // // final childController = Get.find<ChildController>();
   // service.onDataReceived.listen((event) {
@@ -425,8 +425,8 @@ void childBackgroundTask() {
   //     service.stopBackgroundService();
   //   }
   // });
-  //
-  // // bring to foreground
+
+  // bring to foreground
   // service.setForegroundMode(true);
   // Timer.periodic(Duration(seconds: 5), (timer) async {
   //   if (!(await service.isServiceRunning())) timer.cancel();
