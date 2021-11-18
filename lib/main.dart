@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:native_admob_flutter/native_admob_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:ruangkeluarga/child/child_controller.dart';
@@ -16,6 +17,7 @@ import 'package:ruangkeluarga/login/login.dart';
 import 'package:ruangkeluarga/login/setup_permissions.dart';
 import 'package:ruangkeluarga/login/splash_info.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/parent/view/admob/core_banner_apps.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
@@ -40,6 +42,7 @@ Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: cPrimaryBg, statusBarIconBrightness: Brightness.light));
 
   WidgetsFlutterBinding.ensureInitialized();
+  initAdmob();
   await Firebase.initializeApp();
 
   // Set the background messaging handler early on, as a named top-level function
@@ -71,6 +74,12 @@ Future<void> main() async {
   );
 
   initializeDateFormatting('en_ID', null).then((_) => runApp(MyApp()));
+}
+
+Future<void> initAdmob() async {
+  await MobileAds.initialize(
+    bannerAdUnitId: bannerAdUnitId,
+  );
 }
 
 class MyApp extends StatelessWidget {
