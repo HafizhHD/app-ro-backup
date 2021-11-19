@@ -85,7 +85,7 @@ public class ServiceBackground extends Service implements ScheduleListener {
         if (scheduleSendData == null) {
             scheduleSendData = new ScheduleUtil(this, RC_SEND_DATA).always(true);
             scheduleSendData.always(true);
-            scheduleSendData.run(TimeConverter.convertToSecond(10));
+            scheduleSendData.run(TimeConverter.convertToSecond(60));
         }
     }
 
