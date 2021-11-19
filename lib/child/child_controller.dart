@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:camera/camera.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 // import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -36,6 +37,7 @@ class ChildController extends GetxController {
   late ParentProfile parentProfile;
   List<BlacklistedContact> blackListed = [];
   Rx<Future<bool>> fParentProfile = Future<bool>.value(false).obs;
+  static const EventChannel eventChannel = EventChannel('com.ruangkeluargamobile.sendData');
 
   late Timer locationPeriodic;
   bool isBackgroundServiceOn = false;
@@ -71,9 +73,34 @@ class ChildController extends GetxController {
         fetchContacts();
         // onGetSMS();
         getAppUsageData();
+        startServicePlatform();
         // onGetCallLog(); tutup sementara
       }
     });
+  }
+
+  void startServicePlatform() async{
+    if(Platform.isAndroid){
+      eventChannel.receiveBroadcastStream('startService').listen((event) {
+        print(event);
+        getAppUsageData();
+      }, onError: (event){
+        print(event);
+        stopServicePlatform();
+      });
+    }
+  }
+
+  void stopServicePlatform() async{
+    if(Platform.isAndroid){
+      eventChannel.receiveBroadcastStream('stopService').listen((event) {
+        print(event);
+        startServicePlatform();
+      }, onError: (event){
+        print(event);
+        startServicePlatform();
+      });
+    }
   }
 
   @override

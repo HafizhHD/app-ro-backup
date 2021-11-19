@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -16,6 +17,8 @@ import com.keluargahkbp.R;
 import com.ruangkeluargamobile.listener.ScheduleListener;
 import com.ruangkeluargamobile.schedule.ScheduleUtil;
 import com.ruangkeluargamobile.schedule.TimeConverter;
+
+import io.flutter.plugin.common.EventChannel;
 
 import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
 
@@ -51,6 +54,11 @@ public class ServiceBackground extends Service implements ScheduleListener {
         scheduleSendData();
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return super.onStartCommand(intent, flags, startId);
+    }
+
     public static ServiceBackground getInstance() {
         return instan;
     }
@@ -58,7 +66,7 @@ public class ServiceBackground extends Service implements ScheduleListener {
     @Override
     public boolean onRun(int requestCode) {
         if (requestCode == RC_SEND_DATA) {
-            System.out.print("service running");
+            MainAplication.getInstance().eventSink.success("RUNNING");
         }
         return true;
     }
@@ -93,6 +101,7 @@ public class ServiceBackground extends Service implements ScheduleListener {
         }else{
             scheduleSendData.end();
         }
+        MainAplication.getInstance().eventSink.success("STOPPED");
         stopSelf();
     }
 }
