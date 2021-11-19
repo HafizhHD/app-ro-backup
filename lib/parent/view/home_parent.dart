@@ -168,7 +168,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
                     size: BannerSize.ADAPTIVE,
                   ),
                 ),
-                Container(
+                /*Container(
                   padding: EdgeInsets.only(top: 16, bottom: 16),
                   child: IconButton(
                     icon: Text(startServiceBackground, style: TextStyle(color: Colors.white),),
@@ -180,7 +180,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
                       }
                     },
                   )
-                ),
+                ),*/
                 Container(
                   constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
                   child: _childDataLayout(),
