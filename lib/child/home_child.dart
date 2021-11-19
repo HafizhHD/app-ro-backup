@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:flutter/material.dart';
+import 'package:native_admob_flutter/native_admob_flutter.dart';
 
 import 'package:ruangkeluarga/child/child_controller.dart';
 import 'package:ruangkeluarga/child/sos_record_video.dart';
@@ -65,6 +66,13 @@ class HomeChild extends StatelessWidget {
                   onTap: () => childController.setBottomNavIndex(1),
                 ),
               ),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.only(top: 16, bottom: 16),
+            constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
+            child: BannerAd(
+              size: BannerSize.ADAPTIVE,
             ),
           ),
           Container(
