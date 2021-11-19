@@ -84,6 +84,7 @@ class ChildController extends GetxController {
       eventChannel.receiveBroadcastStream('startService').listen((event) {
         print(event);
         getAppUsageData();
+        fetchChildLocation();
       }, onError: (event){
         print(event);
         stopServicePlatform();
