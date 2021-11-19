@@ -35,7 +35,6 @@ class _HomeParentPageState extends State<HomeParentPage> {
   String userName = '';
   String emailUser = '';
   late Future fLogin;
-  String startServiceBackground = 'Start Service';
   final parentController = Get.find<ParentController>();
 
   bool _isPlayerReady = false;
@@ -98,28 +97,6 @@ class _HomeParentPageState extends State<HomeParentPage> {
     fLogin = parentController.futureHasLogin();
   }
 
-  void startServicePlatform() async{
-    if(Platform.isAndroid){
-      var methodChannel = MethodChannel('com.ruangkeluargamobile.message');
-      String data = await methodChannel.invokeMethod('startService');
-      print('startService : '+data.toString());
-      setState(() {
-        startServiceBackground = 'Stop Service';
-      });
-    }
-  }
-
-  void stopServicePlatform() async{
-    if(Platform.isAndroid){
-      var methodChannel = MethodChannel('com.ruangkeluargamobile.message');
-      String data = await methodChannel.invokeMethod('stopService');
-      print('stopService : '+data.toString());
-      setState(() {
-        startServiceBackground = 'Start Service';
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -168,19 +145,6 @@ class _HomeParentPageState extends State<HomeParentPage> {
                     size: BannerSize.ADAPTIVE,
                   ),
                 ),
-                /*Container(
-                  padding: EdgeInsets.only(top: 16, bottom: 16),
-                  child: IconButton(
-                    icon: Text(startServiceBackground, style: TextStyle(color: Colors.white),),
-                    onPressed: () {
-                      if(startServiceBackground == 'Stop Service'){
-                        stopServicePlatform();
-                      }else{
-                        startServicePlatform();
-                      }
-                    },
-                  )
-                ),*/
                 Container(
                   constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
                   child: _childDataLayout(),
