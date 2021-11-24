@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
+import 'package:ruangkeluarga/global/global.dart';
 
-enum ContentType { video, image, artikel }
 ContentType ContentTypeFromString(String input) {
   if (input.trim().toLowerCase() == 'video') return ContentType.video;
   if (input.trim().toLowerCase() == 'image') return ContentType.image;

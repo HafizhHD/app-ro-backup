@@ -99,6 +99,11 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
     return response;
   }
 
+  Future<Response> unBlockApp(String appID, String appCategory) async {
+    Response response = await MediaRepository().addLimitUsageAndBlockApp(widget.email, appID, appCategory, 0, '');
+    return response;
+  }
+
   void setBinding() async {
     prefs = await SharedPreferences.getInstance();
   }
@@ -193,7 +198,9 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
                                   IconButton(
                                       onPressed: () async {
                                         showLoadingOverlay();
-                                        final response = await blockApp(app.packageId!, app.appCategory);
+                                        final response;
+                                        if (app.blacklist == false) response = await blockApp(app.packageId!, app.appCategory);
+                                        else response = await unBlockApp(app.packageId!, app.appCategory);
                                         if (response.statusCode == 200) {
                                           fAppList = fetchAppList();
                                           setState(() {});

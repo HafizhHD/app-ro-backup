@@ -47,27 +47,27 @@ class HomeChild extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: screenSize.width - 20,
-            constraints: BoxConstraints(maxHeight: 150),
-            margin: const EdgeInsets.all(10.0), //Same as `blurRadius` i guess
-            child: ListView.builder(
-              padding: EdgeInsets.all(5.0),
-              shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              itemCount: 2,
-              itemBuilder: (BuildContext context, int index) => Card(
-                key: Key('HKBPContent#$index'),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: GestureDetector(
-                  child: Image.asset('assets/images/hkbpgo.png', fit: BoxFit.cover),
-                  onTap: () => childController.setBottomNavIndex(1),
-                ),
-              ),
-            ),
-          ),
+          // Container(
+          //   width: screenSize.width - 20,
+          //   constraints: BoxConstraints(maxHeight: 150),
+          //   margin: const EdgeInsets.all(10.0), //Same as `blurRadius` i guess
+          //   child: ListView.builder(
+          //     padding: EdgeInsets.all(5.0),
+          //     shrinkWrap: true,
+          //     scrollDirection: Axis.horizontal,
+          //     itemCount: 2,
+          //     itemBuilder: (BuildContext context, int index) => Card(
+          //       key: Key('HKBPContent#$index'),
+          //       shape: RoundedRectangleBorder(
+          //         borderRadius: BorderRadius.circular(10.0),
+          //       ),
+          //       child: GestureDetector(
+          //         child: Image.asset('assets/images/hkbpgo.png', fit: BoxFit.cover),
+          //         onTap: () => childController.setBottomNavIndex(1),
+          //       ),
+          //     ),
+          //   ),
+          // ),
           Container(
             padding: EdgeInsets.only(top: 16, bottom: 16),
             constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
