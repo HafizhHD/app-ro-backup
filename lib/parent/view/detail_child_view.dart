@@ -42,7 +42,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
   int dataTotalSecond = 0;
   late SharedPreferences prefs;
   String avgData = '0s';
-  var dtx = [0, 0, 0, 0, 0, 0, 0];
+  var dtx = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
   var dty = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
   String dateToday = '00.01';
 
@@ -94,33 +94,33 @@ class _DetailChildPageState extends State<DetailChildPage> {
 
   void onGetUsageDataWeekly() async {
     var outputFormat = DateFormat('yyyy-MM-dd');
-    int usageFirst = 0;
+    double usageFirst = 0;
     var dayFirst = outputFormat.format(findFirstDateOfTheWeek(DateTime.now()));
-    usageFirst = await getDailyUsageStatistik(dayFirst) ~/ 3600;
+    usageFirst = await getDailyUsageStatistik(dayFirst) / 3600;
 
-    int usageSecond = 0;
+    double usageSecond = 0;
     var daySecond = outputFormat.format(findSecondDateOfTheWeek(DateTime.now()));
-    usageSecond = await getDailyUsageStatistik(daySecond) ~/ 3600;
+    usageSecond = await getDailyUsageStatistik(daySecond) / 3600;
 
-    int usageThird = 0;
+    double usageThird = 0;
     var dayThird = outputFormat.format(findThirdDateOfTheWeek(DateTime.now()));
-    usageThird = await getDailyUsageStatistik(dayThird) ~/ 3600;
+    usageThird = await getDailyUsageStatistik(dayThird) / 3600;
 
-    int usageFour = 0;
+    double usageFour = 0;
     var dayFour = outputFormat.format(findFourthDateOfTheWeek(DateTime.now()));
-    usageFour = await getDailyUsageStatistik(dayFour) ~/ 3600;
+    usageFour = await getDailyUsageStatistik(dayFour) / 3600;
 
-    int usageFive = 0;
+    double usageFive = 0;
     var dayFive = outputFormat.format(findFifthDateOfTheWeek(DateTime.now()));
-    usageFive = await getDailyUsageStatistik(dayFive) ~/ 3600;
+    usageFive = await getDailyUsageStatistik(dayFive) / 3600;
 
-    int usageSix = 0;
+    double usageSix = 0;
     var daySix = outputFormat.format(findSixthDateOfTheWeek(DateTime.now()));
-    usageSix = await getDailyUsageStatistik(daySix) ~/ 3600;
+    usageSix = await getDailyUsageStatistik(daySix) / 3600;
 
-    int usageLast = 0;
+    double usageLast = 0;
     var dayLast = outputFormat.format(findLastDateOfTheWeek(DateTime.now()));
-    usageLast = await getDailyUsageStatistik(dayLast) ~/ 3600;
+    usageLast = await getDailyUsageStatistik(dayLast) / 3600;
 
     print('last $usageLast');
 
@@ -128,14 +128,14 @@ class _DetailChildPageState extends State<DetailChildPage> {
     setState(() {});
   }
 
-  Future<int> getDailyUsageStatistik(String tanggal) async {
+  Future<double> getDailyUsageStatistik(String tanggal) async {
     prefs = await SharedPreferences.getInstance();
-    int seconds = 0;
+    double seconds = 0.0;
     final thisDayAppUsage = listAppUsage.where((e) => e.appUsageDate == tanggal);
     if (thisDayAppUsage.length > 0) {
       var data = thisDayAppUsage.first.appUsagesDetail;
       data.forEach((e) {
-        seconds += e.duration;
+        seconds = seconds + e.duration;
       });
     }
     return seconds;
@@ -179,22 +179,22 @@ class _DetailChildPageState extends State<DetailChildPage> {
                   width: MediaQuery.of(context).size.width,
                   child: SingleChildScrollView(
                       child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      wDailyAverageChart(),
-                      Divider(
-                        thickness: 1,
-                        color: cOrtuWhite,
-                      ),
-                      wKontrolInstant(),
-                      Divider(
-                        thickness: 1,
-                        color: cOrtuWhite,
-                      ),
-                      wKontroldanKonfigurasi(),
-                    ],
-                  )),
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          wDailyAverageChart(),
+                          Divider(
+                            thickness: 1,
+                            color: cOrtuWhite,
+                          ),
+                          wKontrolInstant(),
+                          Divider(
+                            thickness: 1,
+                            color: cOrtuWhite,
+                          ),
+                          wKontroldanKonfigurasi(),
+                        ],
+                      )),
                 ),
               ),
             ],
@@ -299,7 +299,10 @@ class _DetailChildPageState extends State<DetailChildPage> {
           // ),
           wKontrolKonfigurasiContent(
             title: 'Blok Aplikasi / Games',
-            content: 'Anda dapat membblokir aplikasi yang ada pada perangkat anak.',
+            content: 'Tetapkan jadwal untuk aplikasi atau game tertentu agar anak anda'
+                'dapat menggunakanya hanya pada waktu yang dijadwalkan.'
+                'Anda juga dapat memblokir sepenuhnya aplikasi atau game apa pun'
+                'yang anda anggap berbahaya dan tidak ingin diberikan akses kepada mereka.',
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute<Object>(builder: (BuildContext context) => RKConfigBlockAppsPage(email: widget.email)),
@@ -492,13 +495,13 @@ class _DetailChildPageState extends State<DetailChildPage> {
             ),
             onPressed: () => Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => DetailChildActivityPage(
-                      name: widget.name,
-                      email: widget.email,
-                      listAppUsageWeekly: listAppUsage,
-                      averageTimeWeekly: avgData,
-                      weeklyChart: _chartDailyAverage(),
-                      lastUpdate: dateToday,
-                    ))),
+                  name: widget.name,
+                  email: widget.email,
+                  listAppUsageWeekly: listAppUsage,
+                  averageTimeWeekly: avgData,
+                  weeklyChart: _chartDailyAverage(),
+                  lastUpdate: dateToday,
+                ))),
           ),
           Container(
             margin: EdgeInsets.only(bottom: 10, left: 15),
@@ -571,7 +574,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
 /// Sample sales data type.
 class DailyAverage {
   final String day;
-  final int average;
+  final double average;
 
   DailyAverage(this.day, this.average);
 }
