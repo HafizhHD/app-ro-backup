@@ -302,7 +302,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
             content: 'Anda dapat membblokir aplikasi yang ada pada perangkat anak.',
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute<Object>(builder: (BuildContext context) => RKConfigBlockAppsPage(email: widget.email)),
+              MaterialPageRoute<Object>(builder: (BuildContext context) => RKConfigBlockAppsPage(email: widget.email, nama: widget.name,)),
             ),
           ),
           // wKontrolKonfigurasiContent(

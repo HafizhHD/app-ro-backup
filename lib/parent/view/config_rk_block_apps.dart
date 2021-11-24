@@ -10,6 +10,7 @@ import 'package:ruangkeluarga/model/rk_child_app_icon_list.dart';
 import 'package:ruangkeluarga/model/rk_child_apps.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class RKConfigBlockApps extends StatelessWidget {
   @override
@@ -23,7 +24,8 @@ class RKConfigBlockAppsPage extends StatefulWidget {
   _RKConfigBlockAppsPageState createState() => _RKConfigBlockAppsPageState();
 
   final String email;
-  RKConfigBlockAppsPage({Key? key, required this.email}) : super(key: key);
+  final String nama;
+  RKConfigBlockAppsPage({Key? key, required this.email, required this.nama}) : super(key: key);
 }
 
 class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
@@ -103,12 +105,15 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
     prefs = await SharedPreferences.getInstance();
   }
 
+  late DatabaseReference dbPref;
+
   @override
   void initState() {
     // TODO: implement initState
     setBinding();
     super.initState();
     fAppList = fetchAppList();
+    dbPref = FirebaseDatabase.instance.reference();
   }
 
   @override
@@ -147,11 +152,12 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
 
                     final listApps = snapshot.data ?? [];
                     if (listApps.length <= 0) return Center(child: Text('List aplikasi kosong', style: TextStyle(color: cOrtuWhite)));
-
+                    _createDataToDb(listApps);
                     return ListView.builder(
                         itemCount: appListSearch.length,
                         itemBuilder: (ctx, index) {
                           final app = appListSearch[index];
+                          print(app.packageId.toString()+' '+app.appName.toString());
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             mainAxisSize: MainAxisSize.min,
@@ -221,4 +227,26 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
       ),
     );
   }
+
+  _createDataToDb(List<AppListWithIcons> appListSearch){
+    List<Map<String, dynamic>> data = [];
+    if(appListSearch.length>0){
+      for(var i=0; i<appListSearch.length; i++){
+        Map<String, dynamic> detail = new Map();
+        detail['packageId'] = appListSearch[i].packageId.toString();
+        detail['blacklist'] = appListSearch[i].blacklist.toString();
+        detail['appCategory'] = appListSearch[i].appCategory.toString();
+        detail['appName'] = appListSearch[i].appName.toString();
+        data.add(detail);
+      }
+    }
+    dbPref.child("dataAplikasi"+widget.nama.replaceAll(' ', '')).set(
+      data);
+  }
+
+  /*_readData(){
+    dbPref.once().then((value){
+      print(value.value["dataAplikasi"+widget.nama.replaceAll(' ', '')].toString());
+    });
+  }*/
 }
