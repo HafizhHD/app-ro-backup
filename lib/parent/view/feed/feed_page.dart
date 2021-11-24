@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_controller.dart';
 import 'package:ruangkeluarga/utils/rk_webview.dart';
+import 'dart:convert';
+import 'dart:typed_data';
 
 class FeedPage extends GetView<FeedController> {
   @override
@@ -73,60 +75,82 @@ class FeedPage extends GetView<FeedController> {
         margin: EdgeInsets.only(top: 5, bottom: 5),
         child: Row(
           children: [
+            data.contentThumbnail != null ? imgContainer(data.contentThumbnail!) : SizedBox(),
             Flexible(
                 flex: 3,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Container(
-                      padding: EdgeInsets.only(bottom: 5),
+                      padding: EdgeInsets.only(bottom: 5, left: 10),
                       child: Text(data.coBrandEmail, style: TextStyle(fontSize: 10, color: textColor)),
                     ),
                     Container(
-                      padding: EdgeInsets.only(bottom: 2),
-                      child: Text(data.contentName, style: TextStyle(fontSize: 20, color: textColor, fontWeight: FontWeight.bold)),
+                      padding: EdgeInsets.only(bottom: 2, left: 10),
+                      child: Text(data.contentName, style: TextStyle(fontSize: 14, color: textColor, fontWeight: FontWeight.bold)),
                     ),
+                    // Container(
+                    //   padding: EdgeInsets.only(bottom: 2),
+                    //   child: Text(data.contentDescription, textAlign: TextAlign.justify, style: TextStyle(color: cOrtuGrey)),
+                    // ),
                     Container(
-                      padding: EdgeInsets.only(bottom: 2),
-                      child: Text(data.contentDescription, textAlign: TextAlign.justify, style: TextStyle(color: cOrtuGrey)),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(bottom: 2),
+                      padding: EdgeInsets.only(bottom: 2, right: 10, left: 10),
                       child: Text('\n${dateFormat_EDMYHM(data.dateCreated)}', style: TextStyle(fontSize: 10, color: textColor)),
                     ),
                   ],
                 )),
-            data.contentThumbnail != null ? imgContainer(data.contentThumbnail!) : SizedBox(),
           ],
         ),
       ),
         onTap: (){
-          if(data.contentType == 'artikel') {
-            showContent(data.contentDescription, data.contentName);
+          if(data.contentType == ContentType.artikel) {
+            String imgData = '';
+            imgData = data.contentThumbnail!;
+            showContent(data.contents, data.contentName, imgData);
           } else {
-            showContent(data.contents, data.contentName);
+            showContent(data.contents, data.contentName, '');
           }
         }
     );
   }
 
   Widget imgContainer(String imgUrl) {
-    return imgUrl.contains('http')
+    var dataImage = imgUrl.split(",");
+    Uint8List _bytesImage;
+    _bytesImage = Base64Decoder().convert(dataImage[1]);
+    Image image = Image.memory(_bytesImage);
+    return imgUrl.contains('data')
         ? ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: 100,
-            ),
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(image: NetworkImage(imgUrl), fit: BoxFit.contain),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-              ),
-            ),
-          )
+      constraints: BoxConstraints(
+        maxWidth: 100,
+      ),
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(image: image.image, fit: BoxFit.cover),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+        ),
+      ),
+    )
         : SizedBox();
+    // return imgUrl.contains('http')
+    //     ? ConstrainedBox(
+    //         constraints: BoxConstraints(
+    //           maxWidth: 100,
+    //         ),
+    //         child: AspectRatio(
+    //           aspectRatio: 1,
+    //           child: Container(
+    //             decoration: BoxDecoration(
+    //               image: DecorationImage(image: NetworkImage(imgUrl), fit: BoxFit.contain),
+    //               borderRadius: BorderRadius.circular(15.0),
+    //             ),
+    //           ),
+    //         ),
+    //       )
+    //     : SizedBox();
   }
 
   Widget roundAddonAvatar({

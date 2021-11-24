@@ -10,9 +10,10 @@ class RKWebViewDialog extends StatefulWidget {
   final String url;
   final String title;
   final String contents;
+  final String image;
 
 
-  RKWebViewDialog({required this.url, required this.title, this.contents = ''});
+  RKWebViewDialog({required this.url, required this.title, this.contents = '', this.image = ''});
 
   @override
   _RKWebViewDialogState createState() => _RKWebViewDialogState();
@@ -48,7 +49,12 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
 
   loadAsset() async {
     if (widget.contents != '') {
-      String fileHtmlContents = "<!DOCTYPE html> <html> <body> " + widget.contents + "</body></html>";
+      String fileHtmlContents = '';
+      String header = '<head> <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"> </head>';
+      if (widget.image != '') fileHtmlContents = "<!DOCTYPE html> <html>" + header + "<body> "
+          '<img src="' + widget.image + '" alt="Red dot" width="100%"/> </p>' +
+          widget.contents + "</body></html>";
+      else fileHtmlContents = "<!DOCTYPE html> <html> <body> " + widget.contents + "</body></html>";
       _webViewController.loadUrl(Uri.dataFromString(
           fileHtmlContents, mimeType: 'text/html',
           encoding: Encoding.getByName('utf-8'))
@@ -87,12 +93,13 @@ void showFAQ() {
   );
 }
 
-void showContent(String contents, title) {
+void showContent(String contents, title, image) {
   Get.dialog(
     RKWebViewDialog(
       url: "",
       title: title,
       contents: contents,
+      image: image,
     ),
     transitionCurve: Curves.decelerate,
   );
