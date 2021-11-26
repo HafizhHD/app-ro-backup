@@ -1,20 +1,12 @@
 package com.ruangkeluargamobile;
 
-import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import io.flutter.embedding.android.FlutterActivity;
-import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugins.GeneratedPluginRegistrant;
 
 public class MainAplication extends FlutterActivity {
     private Intent intentService;
@@ -26,11 +18,6 @@ public class MainAplication extends FlutterActivity {
     public static MainAplication getInstance() {
         return instan;
     }
-
-    /*@Override
-    public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
-        GeneratedPluginRegistrant.registerWith(flutterEngine);
-    }*/
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,6 +58,15 @@ public class MainAplication extends FlutterActivity {
         }else{
             ServiceBackground.getInstance().stopService();
             stopService(intentService);
+        }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if(!hasFocus) {
+            Intent closeDialog = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+            sendBroadcast(closeDialog);
         }
     }
 }

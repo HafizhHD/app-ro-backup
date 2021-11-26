@@ -68,20 +68,19 @@ class ChildController extends GetxController {
       if ((value)) {
         fParentProfile.value = getParentData();
         onMessageListen();
-        fetchChildLocation();
         saveCurrentAppList();
         fetchContacts();
         // onGetSMS();
-        getAppUsageData();
         startServicePlatform();
+        sendData(location);
         // onGetCallLog(); tutup sementara
       }
     });
   }
 
-  void sendData(){
+  void sendData(Location location){
     getAppUsageData();
-    fetchChildLocation();
+    fetchChildLocation(location);
   }
 
   void startServicePlatform() async{
@@ -263,25 +262,30 @@ class ChildController extends GetxController {
     }
   }
 
-  void fetchChildLocation() async {
-    var _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
+  void fetchChildLocation(Location location) async {
+    try{
+      var _serviceEnabled = await location.serviceEnabled();
       if (!_serviceEnabled) {
-        return;
+        _serviceEnabled = await location.requestService();
+        if (!_serviceEnabled) {
+          return;
+        }
       }
-    }
 
-    var _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied || _permissionGranted == PermissionStatus.deniedForever) {
-      _permissionGranted = await location.requestPermission();
+      var _permissionGranted = await location.hasPermission();
       if (_permissionGranted == PermissionStatus.denied || _permissionGranted == PermissionStatus.deniedForever) {
-        return;
+        _permissionGranted = await location.requestPermission();
+        if (_permissionGranted == PermissionStatus.denied || _permissionGranted == PermissionStatus.deniedForever) {
+          return;
+        }
       }
+      await location.changeSettings(interval: 1000);
+    }catch (e, s) {
+      print('err: $e');
+      print('stk: $s');
     }
 
     try {
-      await location.changeSettings(interval: 1000);
       await location.getLocation().then((locData) async {
         await MediaRepository().saveUserLocation(childEmail, locData, DateTime.now().toIso8601String()).then((response) {
           if (response.statusCode == 200) {
