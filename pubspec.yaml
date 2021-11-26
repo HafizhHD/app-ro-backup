@@ -82,7 +82,7 @@ dependencies:
 
   youtube_player_flutter: ^8.0.0
   native_admob_flutter: ^1.5.0
-
+  android_alarm_manager_plus: ^2.0.3
 
 
 dev_dependencies:
