@@ -295,7 +295,7 @@ class ChildController extends GetxController {
           }
         });
       });
-      locationPeriodic = Timer.periodic(Duration(hours: 1), (timer) async {
+      /*locationPeriodic = Timer.periodic(Duration(hours: 1), (timer) async {
         print('timer save location $timer');
         await location.getLocation().then((locData) async {
           await MediaRepository().saveUserLocation(childEmail, locData, DateTime.now().toIso8601String()).then((response) {
@@ -306,7 +306,7 @@ class ChildController extends GetxController {
             }
           });
         });
-      });
+      });*/
     } catch (e, s) {
       print('err: $e');
       print('stk: $s');
