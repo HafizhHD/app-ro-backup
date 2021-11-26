@@ -1,5 +1,6 @@
 package com.ruangkeluargamobile;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -24,19 +25,24 @@ import com.ruangkeluargamobile.schedule.TimeConverter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import id.flutter.flutter_background_service.BackgroundService;
 import io.flutter.plugin.common.EventChannel;
 
 import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
 
-public class ServiceBackground extends Service /*implements ScheduleListener*/ {
+public class ServiceBackground extends Service{
     public static ServiceBackground instan;
+    List<DataAplikasi> listAplikasi = new ArrayList<DataAplikasi>();
+    Timer timer;
 
-    /*private final int RC_SEND_DATA = 1;
-    private ScheduleUtil scheduleSendData;*/
     String CHANNEL_ID = "my_service";
     String CHANNEL_NAME = "Keluarga HKBP";
     String CHANNEL_CONTENT= "Update "+new SimpleDateFormat("MMM, yyyy-dd HH:mm").format(new Date());
@@ -78,10 +84,31 @@ public class ServiceBackground extends Service /*implements ScheduleListener*/ {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-//        scheduleSendDataTimer();
         CHANNEL_CONTENT= "Update "+new SimpleDateFormat("MMM, yyyy-dd HH:mm").format(new Date());
         readDataFirebaseDatabase();
         MainAplication.getInstance().eventSink.success("RUNNING");
+        if(timer != null){
+            timer.cancel();
+        }
+        timer  =  new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if(listAplikasi.size()>0){
+                    final ActivityManager activityManager  =  (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
+                    List<ActivityManager.RunningAppProcessInfo> procInfos = activityManager.getRunningAppProcesses();
+                    for(int i = 0; i<listAplikasi.size(); i++){
+                        if(listAplikasi.get(i).getBlacklist() == "true"){
+                            System.out.println("package : "+listAplikasi.get(i).getPackageId());
+                            for(int k = 0; k < procInfos.size(); k++) {
+                                ArrayList<String> runningPkgs = new ArrayList<String>(Arrays.asList(procInfos.get(k).pkgList));
+                                System.out.println("package : "+runningPkgs.toString());
+                            }
+                        }
+                    }
+                }
+            }
+        }, 20000, 6000);
         return START_STICKY;
     }
 
@@ -89,10 +116,11 @@ public class ServiceBackground extends Service /*implements ScheduleListener*/ {
         new FirebaseDatabaseHelper().readDataFirebase(new DataStatus() {
             @Override
             public void DataLoaded(List<DataAplikasi> aplikasiList, List<String> keys) {
+                listAplikasi = aplikasiList;
                 if(aplikasiList.size()>0){
                     for(DataAplikasi dataAplikasi: aplikasiList){
-//                        System.out.println("package : "+dataAplikasi.getPackageId());
-//                        System.out.println("blacklist : "+dataAplikasi.getBlacklist());
+                        System.out.println("package : "+dataAplikasi.getPackageId());
+                        System.out.println("blacklist : "+dataAplikasi.getBlacklist());
                     }
                 }
             }
@@ -102,34 +130,6 @@ public class ServiceBackground extends Service /*implements ScheduleListener*/ {
     public static ServiceBackground getInstance() {
         return instan;
     }
-    
-    /*@Override
-    public boolean onRun(int requestCode) {
-        if (requestCode == RC_SEND_DATA) {
-            System.out.println("RUNNING");
-            updateNotifikasi("Update "+new SimpleDateFormat("MMM, yyyy-dd HH:mm").format(new Date()));
-            MainAplication.getInstance().eventSink.success("RUNNING");
-        }
-        return true;
-    }
-
-    @Override
-    public void onDone(int requestCode) {
-
-    }
-
-    @Override
-    public void onFail(int requestCode) {
-
-    }
-
-    public void scheduleSendDataTimer() {
-        if (scheduleSendData == null) {
-            scheduleSendData = new ScheduleUtil(this, RC_SEND_DATA).always(true);
-            scheduleSendData.always(true);
-            scheduleSendData.run(TimeConverter.convertToSecond(60));
-        }
-    }*/
 
     @Override
     public void onDestroy() {
@@ -139,10 +139,7 @@ public class ServiceBackground extends Service /*implements ScheduleListener*/ {
     public void stopService(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             stopForeground(false);
-//            scheduleSendData.end();
-        }/*else{
-            scheduleSendData.end();
-        }*/
+        }
         MainAplication.getInstance().eventSink.success("STOPPED");
         stopSelf();
     }
