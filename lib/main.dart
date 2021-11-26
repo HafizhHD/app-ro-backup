@@ -38,7 +38,7 @@ late AndroidNotificationChannel channel;
 /// Initialize the [FlutterLocalNotificationsPlugin] package.
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
-Future<void> main() async {
+void main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: cPrimaryBg, statusBarIconBrightness: Brightness.light));
 
   WidgetsFlutterBinding.ensureInitialized();

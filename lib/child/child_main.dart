@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ruangkeluarga/child/akun/child_akun_page.dart';
@@ -18,14 +21,33 @@ class ChildMain extends StatefulWidget {
 }
 
 class _ChildMainState extends State<ChildMain> {
-  final controller = Get.find<ChildController>();
+  static var controller = Get.find<ChildController>();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    AndroidAlarmManager.initialize();
     controller.setBottomNavIndex(2);
     controller.initData();
+    startPeriodic();
+  }
+
+  static Future<void> startPeriodic() async {
+    await AndroidAlarmManager.oneShot(
+      const Duration(minutes: 10),
+      Random().nextInt(1000000),
+      callback,
+      wakeup: true,
+      exact: true,
+      rescheduleOnReboot: true
+    );
+  }
+
+  static Future<void> callback() async {
+    print('Alarm Is Already'+new DateTime.now().toString());
+    controller.sendData();
+    startPeriodic();
   }
 
   @override

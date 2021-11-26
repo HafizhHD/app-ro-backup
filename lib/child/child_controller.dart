@@ -79,12 +79,15 @@ class ChildController extends GetxController {
     });
   }
 
+  void sendData(){
+    getAppUsageData();
+    fetchChildLocation();
+  }
+
   void startServicePlatform() async{
     if(Platform.isAndroid){
       eventChannel.receiveBroadcastStream('startService').listen((event) {
         print(event);
-        getAppUsageData();
-        fetchChildLocation();
       }, onError: (event){
         print(event);
         stopServicePlatform();
