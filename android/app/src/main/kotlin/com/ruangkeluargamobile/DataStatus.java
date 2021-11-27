@@ -1,6 +1,4 @@
-package com.ruangkeluargamobile.listener;
-
-import com.ruangkeluargamobile.model.DataAplikasi;
+package com.ruangkeluargamobile;
 
 import java.util.List;
 

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#0f1111</color>
+    <color name="text_main_menu">#022222</color>
+    <color name="text_sub_menu">#666666</color>
+    <color name="text_label">#666666</color>
+    <color name="text_value">#980404</color>
+    <color name="text_label_hint">#b0b0b0</color>
+    <color name="text_hint">#ecebeb</color>
+    <color name="text_group_name_portfolio">#0e0e0e</color>
+    <color name="text_product_name_portfolio">#7b7b7b</color>
+    <color name="text_account_number_portfolio">#666666</color>
+    <color name="text_account_name_portfolio">#666666</color>
+    <color name="text_amount_portfolio">#049087</color>
+    <color name="text_title_header">#ffffff</color>
+    <color name="text_title_login">#000000</color>
+    <color name="text_title">#333333</color>
+    <color name="text">#666666</color>
+    <color name="text_blue">#166eb2</color>
+    <color name="text_menu_active">#078f58</color>
+    <color name="text_menu_hover">#1e81e0</color>
+    <color name="separator">#585858</color>
+    <color name="btn_submit">#e6030c</color>
+    <color name="bg_header_left">#06a99a</color>
+    <color name="bg_header_right">#027f7b</color>
+    <color name="bg_portfolio_account">#980404</color>
+    <color name="text_input">#049092</color>
+    <color name="text_input_hint">#919191</color>
+    <color name="text_menu">#f6f4f4</color>
+    <color name="text_list">#686868</color>
+    <color name="titlebackgroundcolor">#3232CD</color>
+    <color name="statusbar">#02918c</color>
+    <color name="tabbar">#e2e2e2</color>
+    <color name="border">#e2e2e2</color>
+    <color name="status_bar1">#166eb4</color>
+    <color name="status_bar2">#24e5f8</color>
+    <color name="transparent">#00000000</color>
+    <color name="bg_edit_transparant">#B3980404</color>
+
+    <color name="greywhite">#f2f2f3</color>r>
+    <color name="greywhite2">#f7f6fb</color>
+    <color name="white_transparent">#80FFFFFF</color>
+    <drawable name="transparent">#00ffffff</drawable>
+
+    <!--OOB-->
+    <color name="colorPrimary">#ffffff</color>
+    <color name="colorPrimaryDark">#ffffff</color>
+    <color name="colorAccent">@color/buttonActive</color>
+    <color name="buttonActive">#922222</color>
+    <color name="buttonInactive">#d1d1d6</color>
+    <color name="paleGrey">#efeff4</color>
+    <color name="steel">#8e8e93</color>
+    <color name="silver">#c8c7cc</color>
+    <color name="answerCall">#2d9222</color>
+    <color name="common_light_gray">#c8c8c8</color>
+    <!-- Toast-->
+    <color name="common_silent_dark_gray">#424242</color>
+    <color name="common_silent_dark_blue">#0e1533</color>
+    <!-- Main colors-->
+    <color name="common_silent_ginger_yellow">#CC9133</color>
+    <color name="common_silent_light_gray">#777777</color>
+    <color name="common_silent_light_warm_gray">#D9D9D9</color>
+    <color name="common_silent_little_dark_gray">#555555</color>
+    <color name="common_silent_light_gray_text">#c7c7c7</color>
+    <color name="common_silent_transparent_ginger_yellow">#80CC9133</color>
+    <color name="pink">#ec96a1</color>
+    <color name="azule_touch">#66ffffff</color>
+    <color name="azure_transparent">#85cfff</color>
+</resources>

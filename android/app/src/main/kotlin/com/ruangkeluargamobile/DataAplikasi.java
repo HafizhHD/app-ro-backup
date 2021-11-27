@@ -1,4 +1,4 @@
-package com.ruangkeluargamobile.model;
+package com.ruangkeluargamobile;
 
 public class DataAplikasi {
     String appCategory;
