@@ -1,51 +1,41 @@
 package com.ruangkeluargamobile;
 
-import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
+import android.app.usage.UsageStats;
+import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.IBinder;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.keluargahkbp.R;
-import com.ruangkeluargamobile.database.FirebaseDatabaseHelper;
-import com.ruangkeluargamobile.listener.DataStatus;
-import com.ruangkeluargamobile.listener.ScheduleListener;
-import com.ruangkeluargamobile.model.DataAplikasi;
-import com.ruangkeluargamobile.schedule.ScheduleUtil;
-import com.ruangkeluargamobile.schedule.TimeConverter;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import id.flutter.flutter_background_service.BackgroundService;
-import io.flutter.plugin.common.EventChannel;
+import java.util.TreeMap;
 
 import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
 
 public class ServiceBackground extends Service{
     public static ServiceBackground instan;
-    List<DataAplikasi> listAplikasi = new ArrayList<DataAplikasi>();
-    Timer timer;
 
     String CHANNEL_ID = "my_service";
     String CHANNEL_NAME = "Keluarga HKBP";
-    String CHANNEL_CONTENT= "Update "+new SimpleDateFormat("MMM, yyyy-dd HH:mm").format(new Date());
+    Timer timer;
+    public static String CHANNEL_CONTENT= "Update "+new SimpleDateFormat("MMM, yyyy-dd HH:mm").format(new Date());
+    public static Boolean killProses = false;
+    public static int HOUR_RANGE = 1000 * 3600 * 24;
 
     @Nullable
     @Override
@@ -63,52 +53,30 @@ public class ServiceBackground extends Service{
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void updateNotifikasi(String content){
-        String packageName = getApplicationContext().getPackageName();
-        Intent i = getPackageManager().getLaunchIntentForPackage(packageName);
-
-        PendingIntent pi = PendingIntent.getActivity(ServiceBackground.this, 1010101, i, PendingIntent.FLAG_CANCEL_CURRENT);
-
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.mipmap.launcher_icon)
-                .setAutoCancel(true)
-                .setOngoing(true)
-                .setContentTitle(CHANNEL_NAME)
-                .setContentText(content)
-                .setContentIntent(pi)
-                .setCategory(Notification.CATEGORY_SERVICE)
-                .setPriority(PRIORITY_MIN);
-
-        startForeground(1010101, mBuilder.build());
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
+                CHANNEL_NAME, NotificationManager.IMPORTANCE_NONE);
+        ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setCategory(Notification.CATEGORY_SERVICE).setSmallIcon(R.mipmap.launcher_icon).setPriority(PRIORITY_MIN).build();
+        startForeground(1010101, notification);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         CHANNEL_CONTENT= "Update "+new SimpleDateFormat("MMM, yyyy-dd HH:mm").format(new Date());
-        readDataFirebaseDatabase();
-        MainAplication.getInstance().eventSink.success("RUNNING");
         if(timer != null){
             timer.cancel();
         }
-        timer  =  new Timer();
+        timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if(listAplikasi.size()>0){
-                    final ActivityManager activityManager  =  (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
-                    List<ActivityManager.RunningAppProcessInfo> procInfos = activityManager.getRunningAppProcesses();
-                    for(int i = 0; i<listAplikasi.size(); i++){
-                        if(listAplikasi.get(i).getBlacklist() == "true"){
-                            System.out.println("package : "+listAplikasi.get(i).getPackageId());
-                            for(int k = 0; k < procInfos.size(); k++) {
-                                ArrayList<String> runningPkgs = new ArrayList<String>(Arrays.asList(procInfos.get(k).pkgList));
-                                System.out.println("package : "+runningPkgs.toString());
-                            }
-                        }
-                    }
-                }
+                ServiceBackground.getInstance().readDataFirebaseDatabase();
             }
-        }, 20000, 6000);
+        }, 5000, 5000);
+        MainAplication.getInstance().eventSink.success("RUNNING");
         return START_STICKY;
     }
 
@@ -116,15 +84,33 @@ public class ServiceBackground extends Service{
         new FirebaseDatabaseHelper().readDataFirebase(new DataStatus() {
             @Override
             public void DataLoaded(List<DataAplikasi> aplikasiList, List<String> keys) {
-                listAplikasi = aplikasiList;
-                if(aplikasiList.size()>0){
-                    for(DataAplikasi dataAplikasi: aplikasiList){
-                        System.out.println("package : "+dataAplikasi.getPackageId());
-                        System.out.println("blacklist : "+dataAplikasi.getBlacklist());
+                try {
+                    if(getForegroundApplication() != null){
+                        String appForeground = getForegroundApplication();
+                        if(!appForeground.equals("com.keluargahkbp")){
+                            if(aplikasiList.size()>0) {
+                                for (int i = 0; i < aplikasiList.size(); i++) {
+                                    if (aplikasiList.get(i).getBlacklist().equals("true") &&
+                                            appForeground.equals(aplikasiList.get(i).getPackageId())) {
+                                        System.out.println("Close app"+aplikasiList.get(i).getPackageId());
+                                        ServiceBackground.getInstance().closeApps();
+                                    }
+                                }
+                            }
+                        }
                     }
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
                 }
             }
         });
+    }
+
+    public void closeApps(){
+        System.out.println("Close app");
+        Intent lockIntent = new Intent(this, LockScreen.class);
+        lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_FROM_BACKGROUND);
+        startActivity(lockIntent);
     }
 
     public static ServiceBackground getInstance() {
@@ -142,5 +128,33 @@ public class ServiceBackground extends Service{
         }
         MainAplication.getInstance().eventSink.success("STOPPED");
         stopSelf();
+    }
+
+    public String getForegroundApplication() throws PackageManager.NameNotFoundException {
+        UsageStatsManager usageStatsManager = (UsageStatsManager)
+                ServiceBackground.getInstance().getSystemService(Context.USAGE_STATS_SERVICE);
+        long currentTime = System.currentTimeMillis();
+        List<UsageStats> usageStats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,
+                currentTime - HOUR_RANGE, currentTime);
+        if(usageStats != null) {
+            TreeMap<Long, UsageStats> sortedMap = new TreeMap<Long, UsageStats>();
+            for(UsageStats usageStat : usageStats) {
+                Long time = usageStat.getLastTimeUsed();
+                sortedMap.put(time, usageStat);
+            }
+            if(!sortedMap.isEmpty()) {
+                Long lastKey = sortedMap.lastKey();
+                UsageStats foregroundAppUsageStats = sortedMap.get(lastKey);
+                if(foregroundAppUsageStats != null) {
+                    String applicationName = ServiceBackground.getInstance().getPackageManager().
+                            getApplicationLabel(ServiceBackground.getInstance().getPackageManager()
+                                    .getApplicationInfo(foregroundAppUsageStats.getPackageName(), 0)).toString();
+                    if(applicationName != null) {
+                        return foregroundAppUsageStats.getPackageName();
+                    }
+                }
+            }
+        }
+        return null;
     }
 }

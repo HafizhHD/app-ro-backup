@@ -3,10 +3,14 @@ package com.ruangkeluargamobile;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import io.flutter.embedding.android.FlutterActivity;
+import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugins.GeneratedPluginRegistrant;
 
 public class MainAplication extends FlutterActivity {
     private Intent intentService;
@@ -17,6 +21,11 @@ public class MainAplication extends FlutterActivity {
 
     public static MainAplication getInstance() {
         return instan;
+    }
+
+    @Override
+    public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
+        GeneratedPluginRegistrant.registerWith(getFlutterEngine());
     }
 
     @Override
@@ -69,4 +78,11 @@ public class MainAplication extends FlutterActivity {
             sendBroadcast(closeDialog);
         }
     }
+
+    /*public void closeApps(){
+        Intent lockIntent = new Intent(ServiceBackground.getInstance(), LockScreen.class);
+        lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(lockIntent);
+        ServiceBackground.getInstance().killProses = true;
+    }*/
 }
