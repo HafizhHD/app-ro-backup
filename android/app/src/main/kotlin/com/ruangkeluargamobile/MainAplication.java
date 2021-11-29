@@ -1,8 +1,10 @@
 package com.ruangkeluargamobile;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,7 +40,8 @@ public class MainAplication extends FlutterActivity {
                     @Override
                     public void onListen(Object arguments, EventChannel.EventSink events) {
                         MainAplication.getInstance().eventSink = events;
-                        if (arguments.equals("startService")){
+                        if (arguments.toString().contains("startService")){
+                            sharePref("NM_DB","dataAplikasi"+arguments.toString().split(" ")[1]);
                             startService();
                         }else if (arguments.equals("stopService")){
                             stopService();
@@ -51,6 +54,18 @@ public class MainAplication extends FlutterActivity {
                     }
                 }
         );
+    }
+
+    private void sharePref(String key, String value){
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor edit = sp.edit();
+        edit.putString(key, value);
+        edit.commit();
+    }
+
+    public String getDataShare(String key){
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        return settings.getString("NM_DB", "dataAplikasi");
     }
 
     private void startService(){
@@ -78,11 +93,4 @@ public class MainAplication extends FlutterActivity {
             sendBroadcast(closeDialog);
         }
     }
-
-    /*public void closeApps(){
-        Intent lockIntent = new Intent(ServiceBackground.getInstance(), LockScreen.class);
-        lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(lockIntent);
-        ServiceBackground.getInstance().killProses = true;
-    }*/
 }

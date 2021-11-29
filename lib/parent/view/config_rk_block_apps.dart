@@ -77,6 +77,8 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
             print('SetData');
             appList = data;
             appListSearch = data;
+            print('id : '+appDevices['_id']);
+            _createDataToDb(data, appDevices['_id']);
             setState(() {});
             return data;
           } catch (e, s) {
@@ -157,12 +159,10 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
 
                     final listApps = snapshot.data ?? [];
                     if (listApps.length <= 0) return Center(child: Text('List aplikasi kosong', style: TextStyle(color: cOrtuWhite)));
-                    _createDataToDb(listApps);
                     return ListView.builder(
                         itemCount: appListSearch.length,
                         itemBuilder: (ctx, index) {
                           final app = appListSearch[index];
-                          print(app.packageId.toString()+' '+app.appName.toString());
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             mainAxisSize: MainAxisSize.min,
@@ -235,7 +235,7 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
     );
   }
 
-  _createDataToDb(List<AppListWithIcons> appListSearch){
+  _createDataToDb(List<AppListWithIcons> appListSearch, String idUsageChild){
     List<Map<String, dynamic>> data = [];
     if(appListSearch.length>0){
       for(var i=0; i<appListSearch.length; i++){
@@ -247,7 +247,7 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
         data.add(detail);
       }
     }
-    dbPref.child("dataAplikasi"+widget.nama.replaceAll(' ', '')).set(
+    dbPref.child("dataAplikasi"+idUsageChild).set(
       data);
   }
 

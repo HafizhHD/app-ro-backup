@@ -51,7 +51,6 @@ class _ChildMainState extends State<ChildMain> {
     ChildController controller1 = new ChildController();
     Location location = new Location();
     controller1.sendData(location);
-    controller1.startServicePlatform();
   }
 
   @override
