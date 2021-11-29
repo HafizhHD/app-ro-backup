@@ -18,7 +18,7 @@ public class FirebaseDatabaseHelper {
 
     public FirebaseDatabaseHelper(){
         mDatabase = FirebaseDatabase.getInstance();
-        mReference = mDatabase.getReference("dataAplikasiFita");
+        mReference = mDatabase.getReference(MainAplication.getInstance().getDataShare("NM_DB"));
     }
 
     public void readDataFirebase(final DataStatus dataStatus){

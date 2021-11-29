@@ -71,7 +71,6 @@ class ChildController extends GetxController {
         saveCurrentAppList();
         fetchContacts();
         // onGetSMS();
-        startServicePlatform();
         sendData(location);
         // onGetCallLog(); tutup sementara
       }
@@ -83,12 +82,12 @@ class ChildController extends GetxController {
     fetchChildLocation(location);
   }
 
-  void startServicePlatform() async{
+  void startServicePlatform(String deviceAppUsage) async{
     if(Platform.isAndroid){
-      eventChannel.receiveBroadcastStream('startService').listen((event) {
-        print(event);
+      eventChannel.receiveBroadcastStream('startService '+deviceAppUsage).listen((event) {
+
       }, onError: (event){
-        print(event);
+
         stopServicePlatform();
       });
     }
@@ -97,11 +96,9 @@ class ChildController extends GetxController {
   void stopServicePlatform() async{
     if(Platform.isAndroid){
       eventChannel.receiveBroadcastStream('stopService').listen((event) {
-        print(event);
-        startServicePlatform();
+
       }, onError: (event){
-        print(event);
-        startServicePlatform();
+
       });
     }
   }
@@ -184,6 +181,7 @@ class ChildController extends GetxController {
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
       if (json['appdevices'].length > 0) {
+        startServicePlatform(json['appdevices'][0]['_id']);
         List appDevices = json['appdevices'][0]['appName'];
         return appDevices.map((e) => ApplicationInstalled.fromJson(e)).toList();
       }

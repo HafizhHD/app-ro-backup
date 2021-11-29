@@ -88,8 +88,10 @@ public class ServiceBackground extends Service{
                     if(getForegroundApplication() != null){
                         String appForeground = getForegroundApplication();
                         if(!appForeground.equals("com.keluargahkbp")){
+                            System.out.println(MainAplication.getInstance().getDataShare("NM_DB")+" , "+aplikasiList.size());
                             if(aplikasiList.size()>0) {
                                 for (int i = 0; i < aplikasiList.size(); i++) {
+                                    System.out.println("PACKAGE : "+aplikasiList.get(i).getBlacklist());
                                     if (aplikasiList.get(i).getBlacklist().equals("true") &&
                                             appForeground.equals(aplikasiList.get(i).getPackageId())) {
                                         System.out.println("Close app"+aplikasiList.get(i).getPackageId());
@@ -107,10 +109,9 @@ public class ServiceBackground extends Service{
     }
 
     public void closeApps(){
-        System.out.println("Close app");
         Intent lockIntent = new Intent(this, LockScreen.class);
-        lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_FROM_BACKGROUND);
-        startActivity(lockIntent);
+        lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        ServiceBackground.getInstance().startActivity(lockIntent);
     }
 
     public static ServiceBackground getInstance() {
