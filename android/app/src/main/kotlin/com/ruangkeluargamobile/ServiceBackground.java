@@ -88,13 +88,10 @@ public class ServiceBackground extends Service{
                     if(getForegroundApplication() != null){
                         String appForeground = getForegroundApplication();
                         if(!appForeground.equals("com.keluargahkbp")){
-                            System.out.println(MainAplication.getInstance().getDataShare("NM_DB")+" , "+aplikasiList.size());
                             if(aplikasiList.size()>0) {
                                 for (int i = 0; i < aplikasiList.size(); i++) {
-                                    System.out.println("PACKAGE : "+aplikasiList.get(i).getBlacklist());
                                     if (aplikasiList.get(i).getBlacklist().equals("true") &&
                                             appForeground.equals(aplikasiList.get(i).getPackageId())) {
-                                        System.out.println("Close app"+aplikasiList.get(i).getPackageId());
                                         ServiceBackground.getInstance().closeApps();
                                     }
                                 }
