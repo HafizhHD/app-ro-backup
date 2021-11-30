@@ -113,6 +113,7 @@ public class ServiceBackground extends Service{
         }
         Intent lockIntent = new Intent(this, LockScreen.class);
         lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        lockIntent.putExtra("APP_NAME", appForeground.getAppName());
         ServiceBackground.getInstance().startActivity(lockIntent);
     }
 
@@ -157,6 +158,7 @@ public class ServiceBackground extends Service{
                     if(applicationName != null) {
                         ModelKillAplikasi modelKillAplikasi = new ModelKillAplikasi();
                         modelKillAplikasi.setPackageId(foregroundAppUsageStats.getPackageName());
+                        modelKillAplikasi.setAppName(applicationName);
                         for (int i = 0; i < runningProcesses.size(); i++) {
                             if (foregroundAppUsageStats.getPackageName().equals(runningProcesses.get(i).processName)) {
                                 modelKillAplikasi.setUuid(runningProcesses.get(i).uid);
