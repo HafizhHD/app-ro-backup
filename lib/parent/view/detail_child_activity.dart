@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'package:http/http.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
@@ -13,6 +14,8 @@ import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
+import 'main/parent_controller.dart';
+
 class DetailChildActivityPage extends StatefulWidget {
   final String name;
   final String email;
@@ -22,7 +25,8 @@ class DetailChildActivityPage extends StatefulWidget {
   final String lastUpdate;
 
   @override
-  _DetailChildActivityPageState createState() => _DetailChildActivityPageState();
+  _DetailChildActivityPageState createState() =>
+      _DetailChildActivityPageState();
 
   DetailChildActivityPage({
     Key? key,
@@ -36,6 +40,7 @@ class DetailChildActivityPage extends StatefulWidget {
 }
 
 class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
+  final parentController = Get.find<ParentController>();
   var inactiveColor = Colors.grey[700];
   var activeColor = Colors.grey[400];
   var types = 'week';
@@ -44,6 +49,10 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
   int usageDatas = 0;
   int usageDataBar = 0;
   late Future<List<Application>> apps;
+
+  late List<AppUsages> listAppUsage;
+  String avgData = '0s';
+
   SharedPreferences? prefs;
   String totalScreenTime = "";
   String avgTime = '0s';
@@ -51,12 +60,63 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
   String totalToday = '0s';
   var dtx = [0, 0, 0, 0, 0, 0, 0];
   var dty = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
-  var dtxDaily = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  var dtyDaily = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
+  var dtxDaily = [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ];
+  var dtyDaily = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+  ];
   int countUsage = 1;
 
   Map<String, AppUsagesDetail> mapWeeklyAppUsage = {};
   Map<String, AppUsagesDetail> mapDailyAppUsage = {};
+  List<dynamic> dailyAppUsage = [];
 
   late List<AppIconList> dataListIconApps;
   Map<String, String> mapAppIcon = {};
@@ -68,10 +128,79 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
     imageUrl = "${prefs!.getString(rkBaseUrlAppIcon)}";
 
     var listIcons = respList['appIcons'];
-    dataListIconApps = List<AppIconList>.from(listIcons.map((model) => AppIconList.fromJson(model)));
+    dataListIconApps = List<AppIconList>.from(
+        listIcons.map((model) => AppIconList.fromJson(model)));
     dataListIconApps.forEach((e) {
       mapAppIcon[e.appId!] = e.appIcon!;
     });
+  }
+
+  void onGetUsageDataDaily() async {
+    double avgDataDaily = 0;
+    DateTime dateTime = DateTime.now();
+    for (int i = 0; i < dtxDaily.length; i++) {
+      var hourly = dateTime.subtract(Duration(
+          hours: dateTime.hour - i,
+          minutes: dateTime.minute,
+          seconds: dateTime.second,
+          milliseconds: dateTime.millisecond));
+      dtxDaily[i] = await getHourlyUsageStatistik(hourly) / 1.0;
+      avgDataDaily += dtxDaily[i];
+      dtxDaily[i] /= 60;
+      print('Ini $i, ${dtxDaily[i]}');
+    }
+    avgData = parentController.setAverageDaily(avgDataDaily ~/ 1.0);
+    setDailyData();
+    setState(() {});
+  }
+
+  Future<int> getHourlyUsageStatistik(DateTime tanggal) async {
+    prefs = await SharedPreferences.getInstance();
+
+    int seconds = 0;
+    print('Ini tanggal: ${tanggal.toLocal().toString()}');
+    listAppUsage.forEach((e) {
+      e.appUsagesDetail.forEach((f) {
+        f.usageHour!.forEach((t) {
+          int secondsPerApp = 0;
+          var lastTimeStamp = DateTime.parse(t['lastTimeStamp']);
+          var startTimeStamp = lastTimeStamp.subtract(
+              Duration(milliseconds: int.parse(t['durationInStamp'])));
+          print('Last time stamp: ' + lastTimeStamp.toLocal().toString());
+          print('First time stamp: ' + startTimeStamp.toLocal().toString());
+          Duration dif1 = lastTimeStamp.difference(tanggal);
+          Duration dif2 = tanggal.difference(startTimeStamp);
+
+          print('Masuk sini! Gils last. Dif1: $dif1, Dif2: $dif2');
+          if (int.parse(t['durationInStamp']) > 0) {
+            if (dif1.inSeconds >= 0) {
+              if (dif1.inSeconds >= 3600) {
+                if (dif2.inSeconds >= 0) {
+                  seconds += 3600;
+                  secondsPerApp += 3600;
+                } else if (-dif2.inSeconds < 3600) {
+                  seconds += 3600 + dif2.inSeconds;
+                  secondsPerApp += 3600 + dif2.inSeconds;
+                }
+              } else {
+                if (dif2.inSeconds < 0) {
+                  seconds += int.parse(t['durationInStamp']) ~/ 1000;
+                  secondsPerApp += int.parse(t['durationInStamp']) ~/ 1000;
+                } else {
+                  seconds += dif1.inSeconds;
+                  secondsPerApp += dif1.inSeconds;
+                }
+              }
+            }
+          }
+          print(
+              'Durasi menit untuk aplikasi ${f.appName}: ${secondsPerApp ~/ 60}');
+          f.duration += secondsPerApp;
+        });
+        print('Durasi per aplikasi: ${f.duration}');
+      });
+    });
+    return seconds;
   }
 
   DateTime findFirstDateOfTheWeek(DateTime dateTime) {
@@ -99,7 +228,8 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
   }
 
   DateTime findLastDateOfTheWeek(DateTime dateTime) {
-    return dateTime.add(Duration(days: DateTime.daysPerWeek - dateTime.weekday));
+    return dateTime
+        .add(Duration(days: DateTime.daysPerWeek - dateTime.weekday));
   }
 
   Future<List<dynamic>> getUsageStatsDaily() async {
@@ -109,33 +239,38 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
       var outputDate = outputFormat.format(DateTime.now());
       List<dynamic> tmpReturn = [];
       List<dynamic> dataList = [];
-      Response response = await MediaRepository().fetchAppUsageFilter(widget.email, outputDate);
+      http.Response response = await MediaRepository()
+          .fetchAppUsageFilter(widget.email, outputDate, isDaily: true);
       if (response.statusCode == 200) {
-        print('isi response filter app usage : ${response.body}');
+        print('isi response filter app usage si Dailynya : ${response.body}');
         var json = jsonDecode(response.body);
         if (json['resultCode'] == "OK") {
           var jsonDataResult = json['appUsages'] as List;
           if (jsonDataResult.length == 0) {
             return [];
           } else {
-            tmpReturn = jsonDataResult[jsonDataResult.length - 1]['appUsages'] as List;
+            tmpReturn =
+            jsonDataResult[jsonDataResult.length - 1]['appUsages'] as List;
             tmpReturn.sort((a, b) {
               var aUsage = a['duration']; //before -> var adate = a.expiry;
               var bUsage = b['duration']; //before -> var bdate = b.expiry;
-              return bUsage.compareTo(aUsage); //to get the order other way just switch `adate & bdate`
+              return bUsage.compareTo(
+                  aUsage); //to get the order other way just switch `adate & bdate`
             });
 
             if (prefs!.getString(rkListAppIcons) != null) {
               var respList = jsonDecode(prefs!.getString(rkListAppIcons)!);
               var listIcons = respList['appIcons'];
-              List<AppIconList> dataListIconApps = List<AppIconList>.from(listIcons.map((model) => AppIconList.fromJson(model)));
+              List<AppIconList> dataListIconApps = List<AppIconList>.from(
+                  listIcons.map((model) => AppIconList.fromJson(model)));
               var imageUrl = "${prefs!.getString(rkBaseUrlAppIcon)}";
               bool flagX = false;
               int indeksX = 0;
               for (int i = 0; i < tmpReturn.length; i++) {
                 if (dataListIconApps.length > 0) {
                   for (int x = 0; x < dataListIconApps.length; x++) {
-                    if (tmpReturn[i]['packageId'] == dataListIconApps[x].appId) {
+                    if (tmpReturn[i]['packageId'] ==
+                        dataListIconApps[x].appId) {
                       indeksX = x;
                       flagX = true;
                       break;
@@ -146,7 +281,8 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                       "packageId": "${tmpReturn[i]['packageId']}",
                       "appName": tmpReturn[i]['appName'],
                       "duration": tmpReturn[i]['duration'],
-                      "icon": "${imageUrl + dataListIconApps[indeksX].appIcon.toString()}"
+                      "icon":
+                      "${imageUrl + dataListIconApps[indeksX].appIcon.toString()}"
                     });
                   } else {
                     dataList.add({
@@ -161,7 +297,8 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               dataList.sort((a, b) {
                 var aUsage = a['duration']; //before -> var adate = a.expiry;
                 var bUsage = b['duration']; //before -> var bdate = b.expiry;
-                return bUsage.compareTo(aUsage); //to get the order other way just switch `adate & bdate`
+                return bUsage.compareTo(
+                    aUsage); //to get the order other way just switch `adate & bdate`
               });
             } else {
               dataList = tmpReturn;
@@ -169,8 +306,10 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
           }
         }
       } else {
-        print('isi response filter app usage : ${response.statusCode}');
+        print(
+            'isi response filter app usage dailynya bruh : ${response.statusCode}');
       }
+      print('Isi dataList: $dataList');
       return dataList;
       // return [];
     } on AppUsageException catch (exception) {
@@ -200,8 +339,34 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
     setState(() {});
   }
 
+  void setDailyData() {
+    listAppUsage.forEach((appInfo) {
+      appInfo.appUsagesDetail.forEach((appDetail) {
+        final temp = mapDailyAppUsage[appDetail.packageId];
+        if (temp != null) {
+          temp.duration += appDetail.duration;
+          mapDailyAppUsage[appDetail.packageId] = temp;
+        } else {
+          mapDailyAppUsage[appDetail.packageId] = AppUsagesDetail(
+            appName: appDetail.appName,
+            packageId: appDetail.packageId,
+            duration: appDetail.duration,
+            appCategory: appDetail.appCategory,
+            iconUrl: mapAppIcon[appDetail.packageId],
+          );
+        }
+      });
+    });
+    setState(() {});
+  }
+
   Future<bool?> dataHasLoad() async {
     if (mapWeeklyAppUsage.length > 0) return true;
+    return null;
+  }
+
+  Future<bool?> dataDailyHasLoad() async {
+    if (mapDailyAppUsage.length > 0) return true;
     return null;
   }
 
@@ -214,7 +379,19 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
 
   void initAsync() async {
     await loadPrefs();
+    listAppUsage = parentController.mapChildActivityDaily[widget.email] ?? [];
+    avgData = parentController.mapChildScreentimeDaily[widget.email] ?? '0s';
+    listAppUsage.forEach((e) {
+      e.appUsagesDetail.forEach((f) {
+        f.duration = 0;
+        f.usageHour!.forEach((g) {
+          print('Ini adalah time untuk ${f.appName}: ${g["durationInStamp"]}');
+        });
+      });
+    });
+    onGetUsageDataDaily();
     await setWeeklyData();
+    //dailyAppUsage = await getUsageStatsDaily();
   }
 
   @override
@@ -263,8 +440,13 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0, bottom: 10.0),
-                child: Text('MOST USED', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: cOrtuWhite)),
+                margin: EdgeInsets.only(
+                    top: 20.0, left: 20.0, right: 20.0, bottom: 10.0),
+                child: Text('MOST USED',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: cOrtuWhite)),
               ),
             ],
           ),
@@ -297,7 +479,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
           Container(
             margin: EdgeInsets.only(left: 10.0),
             child: Text(
-              type == 'week' ? widget.averageTimeWeekly : avgTimeDaily,
+              type == 'week' ? widget.averageTimeWeekly : avgData,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -313,7 +495,9 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
           Container(
             margin: EdgeInsets.only(bottom: 10, left: 15),
             child: Align(
-                alignment: Alignment.centerLeft, child: Text('Update today ${widget.lastUpdate}', style: TextStyle(fontSize: 14, color: cOrtuWhite))),
+                alignment: Alignment.centerLeft,
+                child: Text('Update today ${widget.lastUpdate}',
+                    style: TextStyle(fontSize: 14, color: cOrtuWhite))),
           ),
         ],
       ),
@@ -366,7 +550,20 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
         majorGridLines: MajorGridLines(width: 0),
       ),
       series: _columnData,
-      tooltipBehavior: TooltipBehavior(enable: true, canShowMarker: false, format: 'point.x : point.y', header: ''),
+      tooltipBehavior: TooltipBehavior(
+          enable: true,
+          canShowMarker: false,
+          builder: (dynamic data, dynamic point, dynamic series, int pointIndex,
+              int seriesIndex) {
+            print(
+                '${point.x} : ${point.y ~/ 1}m ${((point.y - (point.y ~/ 1)) * 60) ~/ 1}s');
+            return Container(
+                margin: EdgeInsets.all(5),
+                child: Text(
+                    '${point.x} : ${point.y ~/ 1}m ${((point.y - (point.y ~/ 1)) * 60) ~/ 1}s',
+                    style: TextStyle(color: cOrtuWhite)));
+          },
+          header: ''),
     );
   }
 
@@ -412,20 +609,22 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                 return ListTile(
                   leading: app.iconUrl != null && app.iconUrl != ''
                       ? Container(
-                          margin: EdgeInsets.all(5).copyWith(right: 10),
-                          child: Image.network(
-                            imageUrl + app.iconUrl! ?? '',
-                            height: 50,
-                            fit: BoxFit.contain,
-                          ))
+                      margin: EdgeInsets.all(5).copyWith(right: 10),
+                      child: Image.network(
+                        imageUrl + app.iconUrl! ?? '',
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.contain,
+                      ))
                       : Container(
-                          margin: EdgeInsets.all(5).copyWith(right: 10),
-                          color: Colors.green,
-                          height: 50,
-                          child: Center(
-                            child: Icon(Icons.android),
-                          ),
-                        ),
+                    margin: EdgeInsets.all(5).copyWith(right: 10),
+                    color: Colors.green,
+                    width: 40,
+                    height: 40,
+                    child: Center(
+                      child: Icon(Icons.android),
+                    ),
+                  ),
                   title: Text(app.appName, style: TextStyle(color: cOrtuWhite)),
                   subtitle: Row(
                     children: <Widget>[
@@ -433,7 +632,9 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                         width: (app.duration / appList[0].duration) * 180,
                         height: 5,
                         margin: EdgeInsets.only(right: 10.0),
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Color(0xffFF018786)),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: Color(0xffFF018786)),
                       ),
                       Text(usageData, style: TextStyle(color: cOrtuWhite))
                     ],
@@ -446,14 +647,83 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
   }
 
   Widget onMostDay() {
-    return Container(
-      child: Center(
-        child: Text(
-          'Data Kosong',
-          style: TextStyle(color: cOrtuGrey),
-        ),
-      ),
-    );
+    List<AppUsagesDetail> appList = [];
+    mapDailyAppUsage.forEach((key, appData) {
+      print('usage menit: ${appData.duration}');
+      appList.add(appData);
+    });
+    appList.sort((a, b) => b.duration.compareTo(a.duration));
+    return FutureBuilder(
+        future: dataDailyHasLoad(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return wProgressIndicator();
+          return Container(
+            child: ListView.separated(
+              separatorBuilder: (ctx, idx) => Divider(height: 1),
+              itemCount: appList.length,
+              itemBuilder: (ctx, index) {
+                final app = appList[index];
+                var secs = app.duration;
+                int jam = 0;
+                if (secs >= 3600) {
+                  jam = secs ~/ 3600;
+                  secs = secs - (jam * 3600);
+                }
+                int menit = 0;
+                if (secs >= 60) {
+                  menit = secs ~/ 60;
+                  secs = secs - (menit * 60);
+                }
+                int sec = secs;
+                String usageData = "0s";
+                if (jam == 0) {
+                  if (menit == 0) {
+                    usageData = "${sec.toString()}s";
+                  } else {
+                    usageData = "${menit.toString()}m ${sec.toString()}s";
+                  }
+                } else {
+                  usageData = "${jam.toString()}h ${menit.toString()}m";
+                }
+
+                return ListTile(
+                  leading: app.iconUrl != null && app.iconUrl != ''
+                      ? Container(
+                      margin: EdgeInsets.all(5).copyWith(right: 10),
+                      child: Image.network(
+                        imageUrl + app.iconUrl! ?? '',
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.contain,
+                      ))
+                      : Container(
+                    margin: EdgeInsets.all(5).copyWith(right: 10),
+                    color: Colors.green,
+                    width: 40,
+                    height: 40,
+                    child: Center(
+                      child: Icon(Icons.android),
+                    ),
+                  ),
+                  title: Text(app.appName, style: TextStyle(color: cOrtuWhite)),
+                  subtitle: Row(
+                    children: <Widget>[
+                      Container(
+                        width: (app.duration / appList[0].duration) * 180,
+                        height: 5,
+                        margin: EdgeInsets.only(right: 10.0),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: Color(0xffFF018786)),
+                      ),
+                      Text(usageData, style: TextStyle(color: cOrtuWhite))
+                    ],
+                  ),
+                );
+              },
+            ),
+          );
+        });
   }
 }
 
@@ -467,7 +737,7 @@ class Sales {
 
 class DailyAverage {
   final String day;
-  final int average;
+  final double average;
 
   DailyAverage(this.day, this.average);
 }

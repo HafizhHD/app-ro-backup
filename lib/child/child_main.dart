@@ -36,7 +36,7 @@ class _ChildMainState extends State<ChildMain> {
 
   static Future<void> startPeriodic() async {
     await AndroidAlarmManager.oneShot(
-      const Duration(minutes: 10),
+      const Duration(minutes: 60),
       Random().nextInt(1000000),
       callback,
       wakeup: true,
@@ -49,8 +49,7 @@ class _ChildMainState extends State<ChildMain> {
     print('Alarm Is Already'+new DateTime.now().toString());
     startPeriodic();
     ChildController controller1 = new ChildController();
-    Location location = new Location();
-    controller1.sendData(location);
+    controller1.sendData();
   }
 
   @override

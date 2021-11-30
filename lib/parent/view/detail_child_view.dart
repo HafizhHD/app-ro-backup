@@ -147,6 +147,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
 
     setBindingData();
     parentController.getWeeklyUsageStatistic();
+    parentController.getDailyUsageStatistic();
     listAppUsage = parentController.mapChildActivity[widget.email] ?? [];
     avgData = parentController.mapChildScreentime[widget.email] ?? '0s';
     onGetUsageDataWeekly();

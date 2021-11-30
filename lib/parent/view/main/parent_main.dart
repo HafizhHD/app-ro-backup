@@ -211,18 +211,24 @@ class _ParentMainState extends State<ParentMain> {
               ),
             ),
             SizedBox(width: Get.width / 5), // The dummy child
-            IconWithLabel(
-                defaultIcon: Icons.calendar_today_outlined,
-                activeIcon: Icons.calendar_today,
-                label: 'Jadwal',
-                isSelected: controller.bottomNavIndex == 3,
-                onPressed: () => controller.setBottomNavIndex(3)),
+            // IconWithLabel(
+            //     defaultIcon: Icons.calendar_today_outlined,
+            //     activeIcon: Icons.calendar_today,
+            //     label: 'Jadwal',
+            //     isSelected: controller.bottomNavIndex == 3,
+            //     onPressed: () => controller.setBottomNavIndex(3)),
             IconWithLabel(
                 defaultIcon: Icons.person_outlined,
                 activeIcon: Icons.person,
                 label: 'Akun',
-                isSelected: controller.bottomNavIndex == 4,
+                isSelected: controller.bottomNavIndex == 3,
                 onPressed: () => controller.setBottomNavIndex(4)),
+            IconWithLabel(
+                defaultIcon: Icons.help_outlined,
+                activeIcon: Icons.help,
+                label: 'Bantuan',
+                isSelected: controller.bottomNavIndex == 4,
+                onPressed: () => showFAQ()),
           ],
         ),
       ),

@@ -6,6 +6,7 @@ import 'package:ruangkeluarga/login/login.dart';
 import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:minimize_app/minimize_app.dart';
 
 Future showLoadingOverlay() {
   return Get.dialog(
@@ -99,27 +100,29 @@ MaterialStateProperty<double> globalBtnElevation() {
 }
 
 Future<bool> onWillCloseApp() async {
-  final bool res = await Get.dialog(AlertDialog(
-    title: new Text('Konfirmasi tutup', style: new TextStyle(fontSize: 20.0)),
-    content: new Text('Yakin ingin menutup aplikasi?'),
-    actions: <Widget>[
-      new TextButton(
-        onPressed: () {
-          Get.back(result: false);
-        },
-        child: new Text('Tidak', style: new TextStyle(color: cOrtuBlue)),
-      ),
-      new TextButton(
-        onPressed: () {
-          Get.back(result: true);
-          SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-        },
-        child: new Text('Ya', style: new TextStyle(color: cOrtuBlue)),
-      ),
-    ],
-  ));
-
-  return res;
+  // final bool res = await Get.dialog(AlertDialog(
+  //   title: new Text('Konfirmasi tutup', style: new TextStyle(fontSize: 20.0)),
+  //   content: new Text('Yakin ingin menutup aplikasi?'),
+  //   actions: <Widget>[
+  //     new TextButton(
+  //       onPressed: () {
+  //         Get.back(result: false);
+  //       },
+  //       child: new Text('Tidak', style: new TextStyle(color: cOrtuBlue)),
+  //     ),
+  //     new TextButton(
+  //       onPressed: () {
+  //         Get.back(result: true);
+  //         SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+  //       },
+  //       child: new Text('Ya', style: new TextStyle(color: cOrtuBlue)),
+  //     ),
+  //   ],
+  // ));
+  //
+  // return res;
+  MinimizeApp.minimizeApp();
+  return true;
 }
 
 bool showKeyboard(BuildContext ctx) => MediaQuery.of(ctx).viewInsets.bottom > keyboardHeight;
