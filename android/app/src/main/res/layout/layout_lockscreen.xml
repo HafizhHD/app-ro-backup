@@ -17,7 +17,7 @@
         android:textColor="@color/white_transparent"
         android:text="Aplikasi di blokir"
         android:textStyle="bold"
-        android:textSize="30sp" />
+        android:textSize="25sp" />
 
     <TextView
         android:id="@+id/textDesc"
@@ -25,10 +25,29 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
+        android:text=""
         android:layout_marginTop="20dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:textColor="@color/white_transparent"
         android:textStyle="bold"
         android:textSize="16dp" />
+
+    <Button
+        android:id="@+id/buttonCLose"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginLeft="40dp"
+        android:textStyle="bold"
+        android:background="@drawable/selector_btn_purple_rounded"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:text="Close"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="16dp"
+        />
 </LinearLayout>
