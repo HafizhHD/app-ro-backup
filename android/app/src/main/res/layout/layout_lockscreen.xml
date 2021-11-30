@@ -11,12 +11,24 @@
         android:layout_marginBottom="30dp"
         android:src="@mipmap/launcher_icon"/>
     <TextView
-        android:id="@+id/headerText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:textColor="@color/white_transparent"
-        android:text="Sorry, Aplikasi di blokir"
+        android:text="Aplikasi di blokir"
         android:textStyle="bold"
         android:textSize="30sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:textColor="@color/white_transparent"
+        android:text="Keluarga HKBP melakukan blokir aplikasi [Tiktok] karena saat ini aplikasi tersebut dibatasi oleh Orangtua."
+        android:textStyle="bold"
+        android:textSize="16dp" />
 </LinearLayout>

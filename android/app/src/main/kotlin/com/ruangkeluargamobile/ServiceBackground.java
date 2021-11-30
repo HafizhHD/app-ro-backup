@@ -1,5 +1,6 @@
 package com.ruangkeluargamobile;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -85,14 +86,13 @@ public class ServiceBackground extends Service{
             @Override
             public void DataLoaded(List<DataAplikasi> aplikasiList, List<String> keys) {
                 try {
-                    if(getForegroundApplication() != null){
-                        String appForeground = getForegroundApplication();
-                        if(!appForeground.equals("com.keluargahkbp")){
+                    ModelKillAplikasi appForeground = getForegroundApplication();
+                    if(appForeground != null){
+                        if(!appForeground.getPackageId().equals("com.keluargahkbp")){
                             if(aplikasiList.size()>0) {
                                 for (int i = 0; i < aplikasiList.size(); i++) {
-                                    if (aplikasiList.get(i).getBlacklist().equals("true") &&
-                                            appForeground.equals(aplikasiList.get(i).getPackageId())) {
-                                        ServiceBackground.getInstance().closeApps();
+                                    if (aplikasiList.get(i).getBlacklist().equals("true") && appForeground.getPackageId().equals(aplikasiList.get(i).getPackageId())) {
+                                        ServiceBackground.getInstance().closeApps(appForeground);
                                     }
                                 }
                             }
@@ -105,7 +105,12 @@ public class ServiceBackground extends Service{
         });
     }
 
-    public void closeApps(){
+    public void closeApps(ModelKillAplikasi appForeground){
+        try {
+            android.os.Process.killProcess(appForeground.getUuid());
+            android.os.Process.killProcess(appForeground.getPid());
+        }catch (Exception e){
+        }
         Intent lockIntent = new Intent(this, LockScreen.class);
         lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         ServiceBackground.getInstance().startActivity(lockIntent);
@@ -128,12 +133,14 @@ public class ServiceBackground extends Service{
         stopSelf();
     }
 
-    public String getForegroundApplication() throws PackageManager.NameNotFoundException {
+    public ModelKillAplikasi getForegroundApplication() throws PackageManager.NameNotFoundException {
         UsageStatsManager usageStatsManager = (UsageStatsManager)
                 ServiceBackground.getInstance().getSystemService(Context.USAGE_STATS_SERVICE);
         long currentTime = System.currentTimeMillis();
         List<UsageStats> usageStats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,
                 currentTime - HOUR_RANGE, currentTime);
+        ActivityManager am = (ActivityManager) ServiceBackground.getInstance().getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> runningProcesses = am.getRunningAppProcesses();
         if(usageStats != null) {
             TreeMap<Long, UsageStats> sortedMap = new TreeMap<Long, UsageStats>();
             for(UsageStats usageStat : usageStats) {
@@ -148,7 +155,15 @@ public class ServiceBackground extends Service{
                             getApplicationLabel(ServiceBackground.getInstance().getPackageManager()
                                     .getApplicationInfo(foregroundAppUsageStats.getPackageName(), 0)).toString();
                     if(applicationName != null) {
-                        return foregroundAppUsageStats.getPackageName();
+                        ModelKillAplikasi modelKillAplikasi = new ModelKillAplikasi();
+                        modelKillAplikasi.setPackageId(foregroundAppUsageStats.getPackageName());
+                        for (int i = 0; i < runningProcesses.size(); i++) {
+                            if (foregroundAppUsageStats.getPackageName().equals(runningProcesses.get(i).processName)) {
+                                modelKillAplikasi.setUuid(runningProcesses.get(i).uid);
+                                modelKillAplikasi.setPid(runningProcesses.get(i).pid);
+                            }
+                        }
+                        return modelKillAplikasi;
                     }
                 }
             }
