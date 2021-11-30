@@ -26,6 +26,8 @@ import 'package:ruangkeluarga/plugin_device_app.dart';
 import 'package:ruangkeluarga/utils/app_usage.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:usage_stats/usage_stats.dart';
 
 late List<CameraDescription> cameras;
 
@@ -53,6 +55,7 @@ class ChildController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
+    // UsageStats.grantUsagePermission();
     cameras = await availableCameras();
   }
 
@@ -71,15 +74,19 @@ class ChildController extends GetxController {
         saveCurrentAppList();
         fetchContacts();
         // onGetSMS();
-        sendData(location);
+        sendData();
         // onGetCallLog(); tutup sementara
       }
     });
   }
 
-  void sendData(Location location){
-    getAppUsageData();
-    fetchChildLocation(location);
+  void sendData() async {
+    await getChildData();
+    if (childEmail != '') {
+      getAppUsageData();
+      // fetchChildLocation(location);
+      getCurrentLocation();
+    }
   }
 
   void startServicePlatform(String deviceAppUsage) async{
@@ -92,6 +99,36 @@ class ChildController extends GetxController {
       });
     }
   }
+
+void getCurrentLocation() async {
+    try {
+      print("akses lokasi....");
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+        print("tidak boleh akses lokasi");
+      }
+      else {
+        Position currentPosition = await Geolocator.getCurrentPosition();
+        print("Longitude" + currentPosition.longitude.toString());
+        print("latitudee" + currentPosition.latitude.toString());
+
+        try {
+          await MediaRepository().saveUserLocationx(childEmail, currentPosition, DateTime.now().toIso8601String()).then((response) {
+            if (response.statusCode == 200) {
+              print('isi response save location Current: ${response.body}');
+            } else {
+              print('isi response save location Current: ${response.statusCode}');
+            }
+          });
+        } catch (e, s) {
+          print('err: $e');
+          print('stk: $s');
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+}
 
   void stopServicePlatform() async{
     if(Platform.isAndroid){
@@ -200,7 +237,7 @@ class ChildController extends GetxController {
   void saveCurrentAppList() async {
     final listAppServer = await getListAppServer();
     final listAppIcon = await getAppIconList();
-    final listAppLocal = await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: false, onlyAppsWithLaunchIntent: false);
+    final listAppLocal = await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: true, onlyAppsWithLaunchIntent: true);
     print ("listAppLocal::::");
     print (listAppLocal);
     int ada = 0;
@@ -232,6 +269,7 @@ class ChildController extends GetxController {
             cat == 'undefined' ? 'other' : cat,
           );
         }
+        ada = 0;
       } catch (e, s) {
         print('err: $e');
         print('stk: $s');
@@ -312,6 +350,7 @@ class ChildController extends GetxController {
   }
 
   Future fetchContacts() async {
+    try {
     // var permission = await FlutterContacts.requestPermission();
     // if (permission) {
       final kontak = await FlutterContacts.getContacts(withProperties: true, withPhoto: true);
@@ -332,6 +371,10 @@ class ChildController extends GetxController {
         print('isi response save contact : ${response.statusCode}');
       }
     // }
+    }catch (e, s) {
+      print('err: $e');
+      print('stk: $s');
+    }
   }
 
   void onGetSMS() async {
@@ -384,34 +427,57 @@ class ChildController extends GetxController {
   }
 
   void getAppUsageData() async {
-    final DateTime endDate = new DateTime.now();
-    final DateTime startDate = endDate.subtract(Duration(hours: DateTime.now().hour, minutes: DateTime.now().minute, seconds: DateTime.now().second));
-    final List<AppUsageInfo> infoList = await AppUsage.getAppUsage(startDate, endDate);
-    final listAppLocal = await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: false, onlyAppsWithLaunchIntent: false);
+    try {
+      final DateTime endDate = new DateTime.now();
+      final DateTime startDate = endDate.subtract(Duration(hours: DateTime.now().hour, minutes: DateTime.now().minute, seconds: DateTime.now().second));
+      final List<AppUsageInfo> infoList = await AppUsage.getAppUsage(startDate, endDate);
+      final List<UsageInfo> infoList2 =
+      await UsageStats.queryUsageStats(startDate, endDate);
+      final listAppLocal = await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: true, onlyAppsWithLaunchIntent: true);
 
-    List<dynamic> usageDataList = [];
-    infoList.forEach((app) {
-      final hasData = listAppLocal.where((e) => e.packageName == app.packageName).toList();
-      if (hasData.length > 0) {
-        final appName = hasData.first.appName;
-        final cat = hasData.first.category.toString().split('.')[1];
-        var temp = {
-          'count': 0,
-          'appName': appName,
-          'packageId': app.packageName,
-          'duration': app.usage.inSeconds,
-          'appCategory': cat == 'undefined' ? 'other' : cat,
-        };
-        usageDataList.add(temp);
+      List<dynamic> usageDataList = [];
+      infoList.forEach((app) {
+        final hasData = listAppLocal.where((e) => e.packageName == app.packageName).toList();
+        if ((hasData.length > 0)&&(app.packageName != "com.keluargahkbp")) {
+          final appName = hasData.first.appName;
+          final cat = hasData.first.category.toString().split('.')[1];
+          List<dynamic> usageHour = [];
+          infoList2.forEach((val) {
+            // print(
+            //     'Nama pekej: ${val.packageName}, stamp pertama: ${DateTime.fromMillisecondsSinceEpoch(int.parse(val.firstTimeStamp!))}, stamp terakhir: ${DateTime.fromMillisecondsSinceEpoch(int.parse(val.lastTimeStamp!))}');
+            // print(
+            //     'Terakhir dipake: ${DateTime.fromMillisecondsSinceEpoch(int.parse(val.lastTimeUsed!))}, durasi: ${DateTime.fromMillisecondsSinceEpoch(int.parse(val.totalTimeInForeground!))}');
+            if (val.packageName! == app.packageName) {
+              var usageStamp = {
+                'durationInStamp': val.totalTimeInForeground!,
+                'lastTimeStamp':
+                "${DateTime.fromMillisecondsSinceEpoch(int.parse(val.lastTimeUsed!))}"
+              };
+              usageHour.add(usageStamp);
+            }
+          });
+          var temp = {
+            'count': 0,
+            'appName': appName,
+            'packageId': app.packageName,
+            'duration': app.usage.inSeconds,
+            'appCategory': cat == 'undefined' ? 'other' : cat,
+            'usageHour': usageHour
+          };
+          usageDataList.add(temp);
+        }
+      });
+
+      Response response = await MediaRepository().saveChildUsage(childEmail, usageDataList);
+      if (response.statusCode == 200) {
+        print('isi response save app usage : ${response.body}');
+      } else {
+        print('isi response save app usage : ${response.statusCode}');
       }
-    });
-
-    Response response = await MediaRepository().saveChildUsage(childEmail, usageDataList);
-    if (response.statusCode == 200) {
-      print('isi response save app usage : ${response.body}');
-    } else {
-      print('isi response save app usage : ${response.statusCode}');
+    } catch (e) {
+      print(e);
     }
+
   }
 
   Future sentPanicSOS(XFile recording) async {

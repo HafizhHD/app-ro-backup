@@ -28,6 +28,7 @@ class AppUsagesDetail {
   String packageId;
   int duration;
   String appCategory;
+  List<dynamic>? usageHour;
   String? iconUrl;
 
   AppUsagesDetail({
@@ -35,6 +36,7 @@ class AppUsagesDetail {
     required this.packageId,
     required this.duration,
     required this.appCategory,
+    this.usageHour,
     this.iconUrl,
   });
 
@@ -44,6 +46,7 @@ class AppUsagesDetail {
       packageId: json['packageId'],
       duration: json['duration'],
       appCategory: json['appCategory'],
+      usageHour: json['usageHour'] ?? []
     );
   }
 }

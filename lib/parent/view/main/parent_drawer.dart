@@ -79,13 +79,13 @@ class ParentDrawer extends StatelessWidget {
                     Navigator.pop(context);
                   },
                 ),
-                ListTile(
-                  title: Text('Statistik Penggunaan'),
-                  leading: Icon(Icons.show_chart, color: Colors.black),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
+                // ListTile(
+                //   title: Text('Statistik Penggunaan'),
+                //   leading: Icon(Icons.show_chart, color: Colors.black),
+                //   onTap: () {
+                //     Navigator.pop(context);
+                //   },
+                // ),
                 // ListTile(
                 //   title: Text('Addon'),
                 //   leading: Icon(Icons.cloud_download_outlined, color: Colors.black),

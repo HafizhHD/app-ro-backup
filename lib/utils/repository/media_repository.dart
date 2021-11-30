@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter_geocoder/geocoder.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:location/location.dart';
@@ -212,6 +213,30 @@ class MediaRepository {
   }
 
   Future<Response> saveUserLocation(String email, LocationData location, String dates) async {
+    final coordinates = new Coordinates(location.latitude, location.longitude);
+    var addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
+    var url = _rkService.baseUrl + '/user/timeLineAdd';
+    var place = "";
+    if (addresses[0].thoroughfare != null) {
+      place = addresses[0].thoroughfare!;
+    } else {
+      place = addresses[0].addressLine!;
+    }
+    Map<String, dynamic> json = {
+      "emailUser": "$email",
+      "location": {
+        "place": "$place",
+        "type": "Point",
+        "coordinates": ["${location.latitude}", "${location.longitude}"]
+      },
+      "dateTimeHistory": "$dates"
+    };
+    print('param save user location : $json');
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> saveUserLocationx(String email, Position location, String dates) async {
     final coordinates = new Coordinates(location.latitude, location.longitude);
     var addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
     var url = _rkService.baseUrl + '/user/timeLineAdd';

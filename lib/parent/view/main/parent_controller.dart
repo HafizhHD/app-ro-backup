@@ -36,8 +36,8 @@ class ParentController extends GetxController {
   List<GerejaHKBP> listGereja = [];
 
   ///Child Activity Detail
-  Map<String, List<AppUsages>> mapChildActivity = {};
-  Map<String, String> mapChildScreentime = {};
+  Map<String, List<AppUsages>> mapChildActivity = {}, mapChildActivityDaily = {};
+  Map<String, String> mapChildScreentime = {}, mapChildScreentimeDaily = {};
 
   ///Getter & Setter
   int get bottomNavIndex => _bottomNavIndex.value;
@@ -76,6 +76,7 @@ class ParentController extends GetxController {
     final prefs = await SharedPreferences.getInstance();
     userName = prefs.getString(rkUserName) ?? '';
     emailUser = prefs.getString(rkEmailUser) ?? '';
+    if (emailUser != '') await getParentChildData();
     update();
   }
 
@@ -132,6 +133,7 @@ class ParentController extends GetxController {
           final childsData = parentProfile.children ?? [];
           getInboxNotif();
           getWeeklyUsageStatistic();
+          getDailyUsageStatistic();
           if (childsData.length > 0) {
             await prefs.setString(rkUserID, parentProfile.id);
             await prefs.setString(rkUserType, parentProfile.userType);
@@ -247,6 +249,23 @@ class ParentController extends GetxController {
 
   DateTime findLastDateOfTheWeek(DateTime dateTime) {
     return dateTime.add(Duration(days: DateTime.daysPerWeek - dateTime.weekday));
+
+  }
+
+  DateTime findFirstHourOfTheDay(DateTime dateTime) {
+    return dateTime.subtract(Duration(
+        hours: dateTime.hour,
+        minutes: dateTime.minute,
+        seconds: dateTime.second,
+        milliseconds: dateTime.millisecond));
+  }
+
+  DateTime findLastHourOfTheDay(DateTime dateTime) {
+    return dateTime.add(Duration(
+        hours: 23 - dateTime.hour,
+        minutes: 59 - dateTime.minute,
+        seconds: 59 - dateTime.second,
+        milliseconds: 999 - dateTime.millisecond));
   }
 
   Future getWeeklyUsageStatistic() async {
@@ -273,6 +292,55 @@ class ParentController extends GetxController {
             });
           }
           mapChildScreentime[child.email!] = setAverageDaily(seconds);
+          update();
+        }
+      });
+    }
+  }
+
+  Future getDailyUsageStatistic() async {
+    //var outputFormat = DateFormat('yyyy-MM-ddTHH:mm:ss.SSS');
+    var outputFormat = DateFormat('yyyy-MM-dd');
+    print('Ini tgl sekarang: ${outputFormat.format(DateTime.now())}');
+    var startDate = outputFormat.format(findFirstHourOfTheDay(DateTime.now()));
+    var endDate = outputFormat.format(findLastHourOfTheDay(DateTime.now()));
+    print('Ini start date: $startDate, end date: $endDate');
+
+    if (parentProfile.children != null) {
+      parentProfile.children!.forEach((child) async {
+        Response response = await MediaRepository()
+            .fetchAppUsageFilterRange(child.email!, startDate, endDate);
+        if (response.statusCode == 200) {
+          int seconds = 0;
+          print('isi response filter app usage punya Daily : ${response.body}');
+          var json = jsonDecode(response.body);
+          if (json['resultCode'] == "OK") {
+            var jsonDataResult = json['appUsages'] as List;
+            final listAppUsage =
+            jsonDataResult.map((e) => AppUsages.fromJson(e)).toList();
+            mapChildActivityDaily[child.email!] = listAppUsage;
+            listAppUsage.forEach((appUsage) {
+              appUsage.appUsagesDetail.forEach((e) {
+                e.usageHour!.forEach((h) {
+                  var startTimeStamp = DateTime.parse(h['lastTimeStamp'])
+                      .subtract(Duration(
+                      milliseconds: int.parse(h['durationInStamp'])));
+                  Duration dur = DateTime.parse(h['lastTimeStamp'])
+                      .difference(findFirstHourOfTheDay(DateTime.now()));
+                  Duration durStart = startTimeStamp
+                      .difference(findFirstHourOfTheDay(DateTime.now()));
+                  print('dur: $dur, dur2: $durStart');
+                  if (durStart.inSeconds < 0) if (dur.inSeconds >= 0)
+                    seconds += dur.inMilliseconds;
+                  else
+                    seconds += int.parse(h['durationInStamp']);
+                });
+              });
+            });
+          }
+          seconds ~/= 1000;
+          print('total durationnya: $seconds detik');
+          mapChildScreentimeDaily[child.email!] = setAverageDaily(seconds);
           update();
         }
       });

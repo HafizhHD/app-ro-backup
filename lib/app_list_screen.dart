@@ -7,8 +7,8 @@ class AppsListScreen extends StatefulWidget {
 }
 
 class _AppsListScreenState extends State<AppsListScreen> {
-  bool _showSystemApps = false;
-  bool _onlyLaunchableApps = false;
+  bool _showSystemApps = true;
+  bool _onlyLaunchableApps = true;
 
   @override
   Widget build(BuildContext context) {
@@ -56,8 +56,8 @@ class _AppsListScreenContent extends StatelessWidget {
 
   const _AppsListScreenContent(
       {Key? key,
-        this.includeSystemApps: false,
-        this.onlyAppsWithLaunchIntent: false})
+        this.includeSystemApps: true,
+        this.onlyAppsWithLaunchIntent: true})
       : super(key: key);
 
   @override
