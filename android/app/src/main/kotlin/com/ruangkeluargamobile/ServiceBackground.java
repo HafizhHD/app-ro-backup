@@ -123,6 +123,7 @@ public class ServiceBackground extends Service{
 
     @Override
     public void onDestroy() {
+        stopService();
         super.onDestroy();
     }
 

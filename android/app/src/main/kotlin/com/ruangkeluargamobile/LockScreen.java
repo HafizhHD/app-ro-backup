@@ -30,9 +30,6 @@ public class LockScreen extends Activity {
         buttonCLose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LockScreen.this, MainAplication.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
                 finish();
             }
         });
@@ -41,11 +38,6 @@ public class LockScreen extends Activity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        ServiceBackground.getInstance().killProses = false;
-        Intent intent = new Intent(LockScreen.this, MainAplication.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
     }
 
     @Override
