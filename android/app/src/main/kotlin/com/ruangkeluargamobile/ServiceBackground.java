@@ -123,12 +123,6 @@ public class ServiceBackground extends Service{
         return instan;
     }
 
-    @Override
-    public void onDestroy() {
-        stopService();
-        super.onDestroy();
-    }
-
     public void stopService(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             stopForeground(false);

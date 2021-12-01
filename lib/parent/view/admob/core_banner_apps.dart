@@ -12,7 +12,8 @@ String get bannerAdUnitId {
   /// Always test with test ads
   if (kDebugMode)
     return MobileAds.bannerAdTestUnitId;
-  else return 'ca-app-pub-1517358707245875/6750470596';
+  //ca-app-pub-1517358707245875~4566120379
+  else return 'ca-app-pub-1517358707245875/1801846925';
 }
 
 String get interstitialAdUnitId {

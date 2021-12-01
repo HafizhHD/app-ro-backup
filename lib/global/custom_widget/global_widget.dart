@@ -122,7 +122,7 @@ Future<bool> onWillCloseApp() async {
   //
   // return res;
   MinimizeApp.minimizeApp();
-  return true;
+  return false;
 }
 
 bool showKeyboard(BuildContext ctx) => MediaQuery.of(ctx).viewInsets.bottom > keyboardHeight;

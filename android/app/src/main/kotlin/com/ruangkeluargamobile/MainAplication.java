@@ -87,9 +87,13 @@ public class MainAplication extends FlutterActivity {
             intentService = new Intent(MainAplication.this, ServiceBackground.class);
         }
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            ServiceBackground.getInstance().stopService();
+            if(ServiceBackground.getInstance() != null){
+                ServiceBackground.getInstance().stopService();
+            }
         }else{
-            ServiceBackground.getInstance().stopService();
+            if(ServiceBackground.getInstance() != null){
+                ServiceBackground.getInstance().stopService();
+            }
             stopService(intentService);
         }
     }
