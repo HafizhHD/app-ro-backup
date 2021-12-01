@@ -14,7 +14,6 @@ import java.util.List;
 public class FirebaseDatabaseHelper {
     private FirebaseDatabase mDatabase;
     private DatabaseReference mReference;
-    private List<DataAplikasi> aplikasiList = new ArrayList<>();
 
     public FirebaseDatabaseHelper(){
         mDatabase = FirebaseDatabase.getInstance();
@@ -25,12 +24,16 @@ public class FirebaseDatabaseHelper {
         mReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                aplikasiList.clear();
+                List<DataAplikasi> aplikasiList = new ArrayList<>();
                 List<String> keys = new ArrayList<>();
-                for(DataSnapshot dataSnapshot: snapshot.getChildren()){
-                    keys.add(dataSnapshot.getKey());
-                    DataAplikasi dataAplikasi = dataSnapshot.getValue(DataAplikasi.class);
-                    aplikasiList.add(dataAplikasi);
+                if(snapshot != null){
+                    if(snapshot.getChildren() != null){
+                        for(DataSnapshot dataSnapshot: snapshot.getChildren()){
+                            keys.add(dataSnapshot.getKey());
+                            DataAplikasi dataAplikasi = dataSnapshot.getValue(DataAplikasi.class);
+                            aplikasiList.add(dataAplikasi);
+                        }
+                    }
                 }
                 dataStatus.DataLoaded(aplikasiList, keys);
             }
