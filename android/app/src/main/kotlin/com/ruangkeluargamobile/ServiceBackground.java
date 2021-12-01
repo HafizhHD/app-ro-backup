@@ -89,17 +89,19 @@ public class ServiceBackground extends Service{
                     ModelKillAplikasi appForeground = getForegroundApplication();
                     if(appForeground != null){
                         if(!appForeground.getPackageId().equals("com.keluargahkbp")){
-                            if(aplikasiList.size()>0) {
-                                for (int i = 0; i < aplikasiList.size(); i++) {
-                                    if (aplikasiList.get(i).getBlacklist().equals("true") && appForeground.getPackageId().equals(aplikasiList.get(i).getPackageId())) {
-                                        ServiceBackground.getInstance().closeApps(appForeground);
+                            if(aplikasiList != null){
+                                if(aplikasiList.size()>0) {
+                                    for (int i = 0; i < aplikasiList.size(); i++) {
+                                        if (aplikasiList.get(i).getBlacklist().equals("true") &&
+                                                appForeground.getPackageId().equals(aplikasiList.get(i).getPackageId())) {
+                                            ServiceBackground.getInstance().closeApps(appForeground);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                } catch (PackageManager.NameNotFoundException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
                 }
             }
         });
@@ -130,6 +132,9 @@ public class ServiceBackground extends Service{
     public void stopService(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             stopForeground(false);
+        }
+        if(timer != null){
+            timer.cancel();
         }
         MainAplication.getInstance().eventSink.success("STOPPED");
         stopSelf();
