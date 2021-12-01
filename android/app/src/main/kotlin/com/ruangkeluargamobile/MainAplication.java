@@ -76,7 +76,16 @@ public class MainAplication extends FlutterActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        stopService();
+        super.onDestroy();
+    }
+
     private void stopService(){
+        if(intentService == null){
+            intentService = new Intent(MainAplication.this, ServiceBackground.class);
+        }
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             ServiceBackground.getInstance().stopService();
         }else{
