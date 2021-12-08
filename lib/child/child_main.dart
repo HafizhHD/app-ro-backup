@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:location/location.dart';
@@ -9,8 +8,11 @@ import 'package:ruangkeluarga/child/child_controller.dart';
 import 'package:ruangkeluarga/child/child_drawer.dart';
 import 'package:ruangkeluarga/child/home_child.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_page.dart';
 import 'package:ruangkeluarga/parent/view/jadwal/jadwal_page.dart';
+import 'package:ruangkeluarga/utils/background_service_new.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ChildMain extends StatefulWidget {
   final String childName;
@@ -28,16 +30,17 @@ class _ChildMainState extends State<ChildMain> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    AndroidAlarmManager.initialize();
+    BackgroundServiceNew.initialize();
     controller.setBottomNavIndex(2);
     controller.initData();
+    startServicePlatform();
     startPeriodic();
   }
 
   static Future<void> startPeriodic() async {
-    await AndroidAlarmManager.oneShot(
+    await BackgroundServiceNew.oneShot(
       const Duration(minutes: 60),
-      Random().nextInt(1000000),
+      100,
       callback,
       wakeup: true,
       exact: true,
