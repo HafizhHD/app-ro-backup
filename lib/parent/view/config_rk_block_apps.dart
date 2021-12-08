@@ -69,6 +69,7 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
                 "packageId": "${dataAppsInstalled[i].packageId}",
                 "blacklist": dataAppsInstalled[i].blacklist,
                 "appCategory": dataAppsInstalled[i].appCategory,
+                "limit": (dataAppsInstalled[i].limit != null)?dataAppsInstalled[i].limit.toString():'0',
                 "appIcons": appIcon.length > 0 ? "${imageUrl + appIcon.first.appIcon.toString()}" : '',
               });
             }
@@ -244,6 +245,7 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
         detail['blacklist'] = appListSearch[i].blacklist.toString();
         detail['appCategory'] = appListSearch[i].appCategory.toString();
         detail['appName'] = appListSearch[i].appName.toString();
+        detail['limit'] = (appListSearch[i].limit != null)?appListSearch[i].limit.toString():'0';
         data.add(detail);
       }
     }

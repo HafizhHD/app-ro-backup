@@ -96,6 +96,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
               "packageId": "${dataAppsInstalled[i].packageId}",
               "blacklist": dataAppsInstalled[i].blacklist,
               "appCategory": dataAppsInstalled[i].appCategory,
+              "limit": (dataAppsInstalled[i].limit != null)?dataAppsInstalled[i].limit.toString():'0',
               "appIcons": appIcon.length > 0 ? "${imageUrl + appIcon.first.appIcon.toString()}" : '',
             });
           }

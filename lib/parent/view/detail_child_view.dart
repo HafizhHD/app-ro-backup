@@ -661,6 +661,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                 "packageId": "${dataAppsInstalled[i].packageId}",
                 "blacklist": dataAppsInstalled[i].blacklist,
                 "appCategory": dataAppsInstalled[i].appCategory,
+                "limit": (dataAppsInstalled[i].limit != null)?dataAppsInstalled[i].limit.toString():'0',
                 "appIcons": appIcon.length > 0 ? "${imageUrl + appIcon.first.appIcon.toString()}" : '',
               });
             }
@@ -742,6 +743,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
           detail['packageId'] = detailAplikasiChild[i].packageId.toString();
           detail['appCategory'] = detailAplikasiChild[i].appCategory.toString();
           detail['appName'] = detailAplikasiChild[i].appName.toString();
+          detail['limit'] = (detailAplikasiChild[i].limit != null)?detailAplikasiChild[i].limit.toString():'0';
           if(_switchLevel == ModeAsuh.level3){
             if(detailAplikasiChild[i].appCategory.toLowerCase() == 'game' || detailAplikasiChild[i].appCategory.toLowerCase() == 'social'){
               detail['blacklist'] = 'true';

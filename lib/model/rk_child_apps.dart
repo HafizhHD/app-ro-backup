@@ -3,8 +3,9 @@ class ApplicationInstalled {
   final String? packageId;
   final bool? blacklist;
   final String appCategory;
+  final String? limit;
 
-  ApplicationInstalled({this.appName, this.packageId, required this.appCategory, this.blacklist});
+  ApplicationInstalled({this.appName, this.packageId, required this.appCategory, this.blacklist, this.limit});
 
   factory ApplicationInstalled.fromJson(Map<String, dynamic> json) {
     return ApplicationInstalled(
@@ -12,6 +13,7 @@ class ApplicationInstalled {
       packageId: json['packageId'] as String?,
       blacklist: json['blacklist'].toString().toLowerCase() == 'true' ? true : false,
       appCategory: json['appCategory'],
+      limit: (json['limit'] != null)?json['limit'].toString():"0",
     );
   }
 
@@ -21,6 +23,7 @@ class ApplicationInstalled {
       "packageId": packageId,
       "blacklist": blacklist.toString(),
       "appCategory": appCategory,
+      "limit": limit,
     };
   }
 }
