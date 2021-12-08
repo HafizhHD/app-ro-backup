@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
@@ -10,6 +11,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/model/rk_app_list_with_icon.dart';
+import 'package:ruangkeluarga/model/rk_child_app_icon_list.dart';
+import 'package:ruangkeluarga/model/rk_child_apps.dart';
 import 'package:ruangkeluarga/parent/view/config_rk_access_internet.dart';
 import 'package:ruangkeluarga/parent/view/config_rk_batas_penggunaan.dart';
 import 'package:ruangkeluarga/parent/view/config_rk_block_apps.dart';
@@ -49,8 +53,10 @@ class _DetailChildPageState extends State<DetailChildPage> {
   // List<charts.Series> seriesList = [];
   bool _switchLockScreen = false;
   bool _switchModeAsuh = false;
+  bool _loadingGetData = false;
   ModeAsuh _switchLevel = ModeAsuh.level1;
   late List<AppUsages> listAppUsage;
+  late List<AppListWithIcons> detailAplikasiChild = [];
 
   void setBindingData() async {
     prefs = await SharedPreferences.getInstance();
@@ -60,7 +66,12 @@ class _DetailChildPageState extends State<DetailChildPage> {
     if (widget.toLocation) {
       WidgetsFlutterBinding.ensureInitialized();
       Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => RKConfigLocationPage(title: 'Penelurusan Lokasi', email: widget.email, name: widget.name)));
+          .push(MaterialPageRoute(builder: (context) => RKConfigLocationPage(title: 'Penelurusan Lokasi', email: widget.email, name: widget.name))).then((value){
+            setState(() {
+              _loadingGetData = true;
+            });
+            getModeAsuh();
+      });
     }
   }
 
@@ -144,6 +155,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
   @override
   void initState() {
     super.initState();
+    getModeAsuh();
 
     setBindingData();
     parentController.getWeeklyUsageStatistic();
@@ -263,7 +275,12 @@ class _DetailChildPageState extends State<DetailChildPage> {
                 'mereka dulu dan dimana mereka saat ini kapan saja.',
             onTap: () => {
               Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => RKConfigLocationPage(title: 'Penelurusan Lokasi', email: widget.email, name: widget.name)))
+                  MaterialPageRoute(builder: (context) => RKConfigLocationPage(title: 'Penelurusan Lokasi', email: widget.email, name: widget.name))).then((value){
+                setState(() {
+                  _loadingGetData = true;
+                });
+                    getModeAsuh();
+              })
             },
           ),
           wKontrolKonfigurasiContent(
@@ -274,7 +291,12 @@ class _DetailChildPageState extends State<DetailChildPage> {
                 'pemberitahuan bila ada kontak yang dibuat dengan orang yang tidak diinginkan.',
             onTap: () => {
               Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => ConfigRKContactPage(title: 'Daftar Kontak', name: widget.name, email: widget.email)))
+                  .push(MaterialPageRoute(builder: (context) => ConfigRKContactPage(title: 'Daftar Kontak', name: widget.name, email: widget.email))).then((value) {
+                setState(() {
+                  _loadingGetData = true;
+                });
+                getModeAsuh();
+              })
             },
           ),
           wKontrolKonfigurasiContent(
@@ -284,7 +306,12 @@ class _DetailChildPageState extends State<DetailChildPage> {
                 'Anda memblokir situs web, gambar dan video dari kategori tertentu yang'
                 'Anda pilih. Anda juga dapat melihat riwayat internet dan bookmark mereka.',
             onTap: () => Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => RKConfigAccessInternetPage(title: 'Akses Internet', name: widget.name))),
+                .push(MaterialPageRoute(builder: (context) => RKConfigAccessInternetPage(title: 'Akses Internet', name: widget.name))).then((value){
+              setState(() {
+                _loadingGetData = true;
+              });
+              getModeAsuh();
+            }),
           ),
           wKontrolKonfigurasiContent(
             title: 'Batas Penggunaan',
@@ -296,7 +323,12 @@ class _DetailChildPageState extends State<DetailChildPage> {
               context,
               MaterialPageRoute<Object>(
                   builder: (BuildContext context) => RKConfigBatasPenggunaanPage(title: 'Batas Penggunaan', name: widget.name, email: widget.email)),
-            ),
+            ).then((value) {
+              setState(() {
+                _loadingGetData = true;
+              });
+              getModeAsuh();
+            }),
           ),
           wKontrolKonfigurasiContent(
             title: 'Blok Aplikasi / Games',
@@ -307,7 +339,12 @@ class _DetailChildPageState extends State<DetailChildPage> {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute<Object>(builder: (BuildContext context) => RKConfigBlockAppsPage(email: widget.email, nama: widget.name,)),
-            ),
+            ).then((value) {
+              setState(() {
+                _loadingGetData = true;
+              });
+              getModeAsuh();
+            }),
           ),
           // wKontrolKonfigurasiContent(
           //   title: 'Set Jadwal Penggunaan',
@@ -372,10 +409,17 @@ class _DetailChildPageState extends State<DetailChildPage> {
                   child: CupertinoSwitch(
                     activeColor: cOrtuBlue,
                     value: _switchModeAsuh,
-                    onChanged: (value) {
+                    onChanged: (value) async {
+                      prefs = await SharedPreferences.getInstance();
                       setState(() {
+                        _loadingGetData = true;
                         _switchModeAsuh = value;
+                        if(!_switchModeAsuh){
+                          prefs.setInt("LVL_MODE"+widget.name.toUpperCase(), 1);
+                        }
+                        prefs.setBool("MODE_ASUH"+widget.name.toUpperCase(), _switchModeAsuh);
                         if (value) _switchLevel = ModeAsuh.level1;
+                        updateDatatoFirebase();
                       });
                     },
                   ),
@@ -395,7 +439,10 @@ class _DetailChildPageState extends State<DetailChildPage> {
                       activeColor: cOrtuBlue,
                       onChanged: (ModeAsuh? value) {
                         setState(() {
+                          _loadingGetData = true;
                           _switchLevel = ModeAsuh.level1;
+                          prefs.setInt("LVL_MODE"+widget.name.toUpperCase(), 1);
+                          updateDatatoFirebase();
                         });
                       },
                     ),
@@ -416,7 +463,10 @@ class _DetailChildPageState extends State<DetailChildPage> {
                       groupValue: _switchLevel,
                       onChanged: (ModeAsuh? value) {
                         setState(() {
+                          _loadingGetData = true;
                           _switchLevel = ModeAsuh.level2;
+                          prefs.setInt("LVL_MODE"+widget.name.toUpperCase(), 2);
+                          updateDatatoFirebase();
                         });
                       },
                     ),
@@ -437,7 +487,10 @@ class _DetailChildPageState extends State<DetailChildPage> {
                       groupValue: _switchLevel,
                       onChanged: (ModeAsuh? value) {
                         setState(() {
+                          _loadingGetData = true;
                           _switchLevel = ModeAsuh.level3;
+                          prefs.setInt("LVL_MODE"+widget.name.toUpperCase(), 3);
+                          updateDatatoFirebase();
                         });
                       },
                     ),
@@ -502,7 +555,12 @@ class _DetailChildPageState extends State<DetailChildPage> {
                   averageTimeWeekly: avgData,
                   weeklyChart: _chartDailyAverage(),
                   lastUpdate: dateToday,
-                ))),
+                ))).then((value) {
+              setState(() {
+                _loadingGetData = true;
+              });
+              getModeAsuh();
+            }),
           ),
           Container(
             margin: EdgeInsets.only(bottom: 10, left: 15),
@@ -569,6 +627,138 @@ class _DetailChildPageState extends State<DetailChildPage> {
         ],
       ),
     );
+  }
+
+  Future<List<AppListWithIcons>> fetchAppList() async {
+    prefs = await SharedPreferences.getInstance();
+
+    var response = await MediaRepository().fetchAppList(widget.email);
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body);
+      if (json['resultCode'] == 'OK') {
+        if (json['appdevices'].length > 0) {
+          try {
+            var appDevices = json['appdevices'][0];
+            List<dynamic> tmpData = appDevices['appName'];
+            prefs.setString("ID_CHILD_USAGE", appDevices['_id']);
+            List<dynamic> dataList = [];
+
+            List<ApplicationInstalled> dataAppsInstalled =
+            List<ApplicationInstalled>.from(tmpData.map((model) => ApplicationInstalled.fromJson(model)));
+            var imageUrl = "${prefs.getString(rkBaseUrlAppIcon)}";
+
+            List<AppIconList> dataListIconApps = [];
+            if (prefs.getString(rkListAppIcons) != null) {
+              var respList = jsonDecode(prefs.getString(rkListAppIcons)!);
+              var listIcons = respList['appIcons'];
+              dataListIconApps = List<AppIconList>.from(listIcons.map((model) => AppIconList.fromJson(model)));
+            }
+
+            for (int i = 0; i < dataAppsInstalled.length; i++) {
+              final appIcon = dataListIconApps.where((e) => e.appId == dataAppsInstalled[i].packageId).toList();
+              dataList.add({
+                "appName": "${dataAppsInstalled[i].appName}",
+                "packageId": "${dataAppsInstalled[i].packageId}",
+                "blacklist": dataAppsInstalled[i].blacklist,
+                "appCategory": dataAppsInstalled[i].appCategory,
+                "appIcons": appIcon.length > 0 ? "${imageUrl + appIcon.first.appIcon.toString()}" : '',
+              });
+            }
+            List<AppListWithIcons> data = List<AppListWithIcons>.from(dataList.map((model) => AppListWithIcons.fromJson(model)));
+            data.sort((a, b) => a.appName!.compareTo(b.appName!));
+            setState(() {
+              detailAplikasiChild = data;
+            });
+            return data;
+          } catch (e, s) {
+            print(e);
+            print(s);
+            return [];
+          }
+        } else {
+          return [];
+        }
+      } else {
+        return [];
+      }
+    } else {
+      return [];
+    }
+  }
+
+  void getModeAsuh() {
+    if(_loadingGetData) {
+      showLoadingOverlay();
+    }
+    fetchAppList().then((value) async {
+      prefs = await SharedPreferences.getInstance();
+      var modeAsuh = await prefs.getBool("MODE_ASUH"+widget.name.toUpperCase());
+      var levelAsuh = await prefs.getInt("LVL_MODE"+widget.name.toUpperCase());
+      if(modeAsuh == null){
+        await prefs.setBool("MODE_ASUH"+widget.name.toUpperCase(), false);
+        await prefs.setInt("LVL_MODE"+widget.name.toUpperCase(), 1);
+        setState(() {
+          modeAsuh = false;
+          levelAsuh = 1;
+        });
+      }
+      setState(() {
+        _switchModeAsuh = modeAsuh!;
+        if(!modeAsuh!){
+          _switchLevel = ModeAsuh.level1;
+          updateDatatoFirebase();
+        }else{
+          if(levelAsuh != null){
+            if(levelAsuh == 1){
+              _switchLevel = ModeAsuh.level1;
+            }else if(levelAsuh == 2){
+              _switchLevel = ModeAsuh.level2;
+            }else {
+              _switchLevel = ModeAsuh.level3;
+            }
+            updateDatatoFirebase();
+          }
+        }
+      });
+      if(_loadingGetData) {
+        closeOverlay();
+      }
+    }).onError((error, stackTrace) {
+      if(_loadingGetData) {
+        closeOverlay();
+      }
+    });
+  }
+
+  Future<void> updateDatatoFirebase() async {
+    DatabaseReference dbPref = FirebaseDatabase.instance.reference();
+    List<Map<String, dynamic>> data = [];
+    var id_child_usage = await prefs.getString('ID_CHILD_USAGE');
+    print("Kategory : "+id_child_usage.toString());
+    if(id_child_usage != null){
+      if(detailAplikasiChild.length>0){
+        for(int i=0; i<detailAplikasiChild.length; i++){
+          Map<String, dynamic> detail = new Map();
+          detail['packageId'] = detailAplikasiChild[i].packageId.toString();
+          detail['appCategory'] = detailAplikasiChild[i].appCategory.toString();
+          detail['appName'] = detailAplikasiChild[i].appName.toString();
+          if(_switchLevel == ModeAsuh.level3){
+            if(detailAplikasiChild[i].appCategory.toLowerCase() == 'game' || detailAplikasiChild[i].appCategory.toLowerCase() == 'social'){
+              detail['blacklist'] = 'true';
+            }
+          }else if(_switchLevel == ModeAsuh.level2){
+            if(detailAplikasiChild[i].appCategory.toLowerCase() == 'game'){
+              detail['blacklist'] = 'true';
+            }
+          }else{
+            detail['blacklist'] = 'false';
+          }
+          data.add(detail);
+        }
+        dbPref.child("dataAplikasi"+id_child_usage.toString()).set(
+            data);
+      }
+    }
   }
 }
 
