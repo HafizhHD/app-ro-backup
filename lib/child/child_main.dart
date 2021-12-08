@@ -47,14 +47,13 @@ class _ChildMainState extends State<ChildMain> {
       callback,
       wakeup: true,
       exact: true,
-      rescheduleOnReboot: true,
-      allowWhileIdle: true
+      rescheduleOnReboot: true
     );
   }
 
   static Future<void> callback() async {
     print('Alarm Is Already'+new DateTime.now().toString());
-    // startPeriodic();
+    startPeriodic();
     ChildController controller1 = new ChildController();
     controller1.sendData();
   }
