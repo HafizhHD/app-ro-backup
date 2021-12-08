@@ -76,7 +76,7 @@ class ParentController extends GetxController {
     final prefs = await SharedPreferences.getInstance();
     userName = prefs.getString(rkUserName) ?? '';
     emailUser = prefs.getString(rkEmailUser) ?? '';
-    if (emailUser != '') await getParentChildData();
+    // if (emailUser != '') await getParentChildData();
     update();
   }
 
@@ -309,7 +309,7 @@ class ParentController extends GetxController {
     if (parentProfile.children != null) {
       parentProfile.children!.forEach((child) async {
         Response response = await MediaRepository()
-            .fetchAppUsageFilterRange(child.email!, startDate, endDate);
+            .fetchAppUsageFilterRange(child.email!, startDate, endDate, isDaily: true);
         if (response.statusCode == 200) {
           int seconds = 0;
           print('isi response filter app usage punya Daily : ${response.body}');

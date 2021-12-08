@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -70,9 +72,15 @@ void callbackTest() async {
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: cPrimaryBg, statusBarIconBrightness: Brightness.light));
 
-  WidgetsFlutterBinding.ensureInitialized();
+  await runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp();
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+  }, (error, stackTrace) {
+    FirebaseCrashlytics.instance.recordError(error, stackTrace);
+  });
+  // WidgetsFlutterBinding.ensureInitialized();
   initAdmob();
-  await Firebase.initializeApp();
   IsolateNameServer.registerPortWithName(
     port.sendPort,
     isolateName,
@@ -105,7 +113,6 @@ void main() async {
     badge: true,
     sound: true,
   );
-
   initializeDateFormatting('en_ID', null).then((_) => runApp(MyApp()));
 }
 
@@ -142,7 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Get.put(ChildController());
     Get.put(ParentController());
     Get.put(RKServiceController());
-    Get.put(FeedController());
+    // Get.put(FeedController());
   }
 
   @override
@@ -188,6 +195,7 @@ class _MyHomePageState extends State<MyHomePage> {
               );
             }
           }
+          Get.put(FeedController());
         } else {
           Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SplashInfo()));
         }

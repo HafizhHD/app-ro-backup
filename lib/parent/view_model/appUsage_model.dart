@@ -46,7 +46,8 @@ class AppUsagesDetail {
       packageId: json['packageId'],
       duration: json['duration'],
       appCategory: json['appCategory'],
-      usageHour: json['usageHour'] ?? []
+      usageHour: json['usageHour'] ?? [],
+      iconUrl: ''
     );
   }
 }

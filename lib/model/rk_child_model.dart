@@ -7,6 +7,10 @@ class Child {
   final int? childNumber;
   final String? studyLevel;
   final String? imgPhoto;
+  final String? phone;
+  final String? address;
+  final DateTime? birdDate;
+
 
   Child({
     required this.id,
@@ -17,9 +21,13 @@ class Child {
     this.childNumber,
     this.studyLevel,
     this.imgPhoto,
+    this.phone,
+    this.address,
+    this.birdDate
   });
 
   factory Child.fromJson(Map<String, dynamic> json) {
+    final bdate = json['birdDate'];
     return Child(
       id: json['_id'] ?? '',
       name: json['name'] as String?,
@@ -29,6 +37,9 @@ class Child {
       childNumber: json['childNumber'] as int?,
       studyLevel: json['StudyLevel'] as String?,
       imgPhoto: json['imagePhoto'],
+      phone: json['phoneNumber'] as String?,
+      address: json['address'] as String?,
+      birdDate: bdate != null && bdate != '' ? DateTime.parse(bdate).toUtc().toLocal() : null
     );
   }
 }

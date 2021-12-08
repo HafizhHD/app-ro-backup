@@ -221,14 +221,18 @@ class _ParentMainState extends State<ParentMain> {
                 defaultIcon: Icons.person_outlined,
                 activeIcon: Icons.person,
                 label: 'Akun',
-                isSelected: controller.bottomNavIndex == 3,
+                isSelected: controller.bottomNavIndex == 4,
                 onPressed: () => controller.setBottomNavIndex(4)),
             IconWithLabel(
                 defaultIcon: Icons.help_outlined,
                 activeIcon: Icons.help,
                 label: 'Bantuan',
-                isSelected: controller.bottomNavIndex == 4,
-                onPressed: () => showFAQ()),
+                isSelected: controller.bottomNavIndex == 5,
+                onPressed: () => {
+                  showFAQ(),
+                  controller.setBottomNavIndex(5)
+                }),
+                // onPressed: () => showFAQ()),
           ],
         ),
       ),

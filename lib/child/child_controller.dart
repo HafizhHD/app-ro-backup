@@ -30,6 +30,7 @@ import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:usage_stats/usage_stats.dart';
+import 'package:geolocator_platform_interface/src/enums/location_accuracy.dart' as a;
 
 late List<CameraDescription> cameras;
 
@@ -44,8 +45,6 @@ class ChildController extends GetxController {
 
   late Timer locationPeriodic;
   bool isBackgroundServiceOn = false;
-
-  Location location = new Location();
 
   int get bottomNavIndex => _bottomNavIndex.value;
   void setBottomNavIndex(int index) {
@@ -82,7 +81,9 @@ class ChildController extends GetxController {
   }
 
   void sendData() async {
-    await getChildData();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    childEmail = prefs.getString(rkEmailUser)?? '';
+    // await getChildData();
     if (childEmail != '') {
       getAppUsageData();
       // fetchChildLocation(location);
@@ -100,7 +101,7 @@ void getCurrentLocation() async {
       else {
         Position currentPosition = await Geolocator.getCurrentPosition();
         print("Longitude" + currentPosition.longitude.toString());
-        print("latitudee" + currentPosition.latitude.toString());
+        print("latitude" + currentPosition.latitude.toString());
 
         try {
           await MediaRepository().saveUserLocationx(childEmail, currentPosition, DateTime.now().toIso8601String()).then((response) {
@@ -242,7 +243,7 @@ void getCurrentLocation() async {
         if (localApp.category != null) {
           cat = localApp.category.toString().split('.').last;
         }
-        for (var n = 0; n < listAppIcon["appIcons"].length; n++) {
+        for (var n = 0; n < listAppIcon["appIcons"].length && ada == 0; n++) {
           final appIcon = listAppIcon["appIcons"][n];
           if (appIcon["appId"].toString() == localApp.packageName.toString()) {
             ada = 1;
@@ -250,6 +251,9 @@ void getCurrentLocation() async {
           }
         }
         if (ada == 0) {
+          print('Ini adalah ${localApp.appName.toString()}');
+          if (localApp is ApplicationWithIcon)
+            print('Ini iconnya: ${base64Encode(localApp.icon)}');
           await MediaRepository().saveIconApp(
             childEmail,
             localApp.appName,
@@ -283,62 +287,63 @@ void getCurrentLocation() async {
 
     Response response = await MediaRepository().saveAppList(childEmail, listAppsOK);
     if (response.statusCode == 200) {
-      print('save appList ${response.body}');
+      // print('save appList ${response.body}');
+      print('save appList ok');
     } else {
       print('gagal simpan appList ${response.statusCode}');
     }
   }
 
-  void fetchChildLocation(Location location) async {
-    try{
-      var _serviceEnabled = await location.serviceEnabled();
-      if (!_serviceEnabled) {
-        _serviceEnabled = await location.requestService();
-        if (!_serviceEnabled) {
-          return;
-        }
-      }
-
-      var _permissionGranted = await location.hasPermission();
-      if (_permissionGranted == PermissionStatus.denied || _permissionGranted == PermissionStatus.deniedForever) {
-        _permissionGranted = await location.requestPermission();
-        if (_permissionGranted == PermissionStatus.denied || _permissionGranted == PermissionStatus.deniedForever) {
-          return;
-        }
-      }
-      await location.changeSettings(interval: 1000);
-    }catch (e, s) {
-      print('err: $e');
-      print('stk: $s');
-    }
-
-    try {
-      await location.getLocation().then((locData) async {
-        await MediaRepository().saveUserLocation(childEmail, locData, DateTime.now().toIso8601String()).then((response) {
-          if (response.statusCode == 200) {
-            print('isi response save location Current: ${response.body}');
-          } else {
-            print('isi response save location Current: ${response.statusCode}');
-          }
-        });
-      });
-      /*locationPeriodic = Timer.periodic(Duration(hours: 1), (timer) async {
-        print('timer save location $timer');
-        await location.getLocation().then((locData) async {
-          await MediaRepository().saveUserLocation(childEmail, locData, DateTime.now().toIso8601String()).then((response) {
-            if (response.statusCode == 200) {
-              print('isi response save location : ${response.body}');
-            } else {
-              print('isi response save location : ${response.statusCode}');
-            }
-          });
-        });
-      });*/
-    } catch (e, s) {
-      print('err: $e');
-      print('stk: $s');
-    }
-  }
+  // void fetchChildLocation(Location location) async {
+  //   try{
+  //     var _serviceEnabled = await location.serviceEnabled();
+  //     if (!_serviceEnabled) {
+  //       _serviceEnabled = await location.requestService();
+  //       if (!_serviceEnabled) {
+  //         return;
+  //       }
+  //     }
+  //
+  //     var _permissionGranted = await location.hasPermission();
+  //     if (_permissionGranted == PermissionStatus.denied || _permissionGranted == PermissionStatus.deniedForever) {
+  //       _permissionGranted = await location.requestPermission();
+  //       if (_permissionGranted == PermissionStatus.denied || _permissionGranted == PermissionStatus.deniedForever) {
+  //         return;
+  //       }
+  //     }
+  //     await location.changeSettings(interval: 1000);
+  //   }catch (e, s) {
+  //     print('err: $e');
+  //     print('stk: $s');
+  //   }
+  //
+  //   try {
+  //     await location.getLocation().then((locData) async {
+  //       await MediaRepository().saveUserLocation(childEmail, locData, DateTime.now().toIso8601String()).then((response) {
+  //         if (response.statusCode == 200) {
+  //           print('isi response save location Current: ${response.body}');
+  //         } else {
+  //           print('isi response save location Current: ${response.statusCode}');
+  //         }
+  //       });
+  //     });
+  //     /*locationPeriodic = Timer.periodic(Duration(hours: 1), (timer) async {
+  //       print('timer save location $timer');
+  //       await location.getLocation().then((locData) async {
+  //         await MediaRepository().saveUserLocation(childEmail, locData, DateTime.now().toIso8601String()).then((response) {
+  //           if (response.statusCode == 200) {
+  //             print('isi response save location : ${response.body}');
+  //           } else {
+  //             print('isi response save location : ${response.statusCode}');
+  //           }
+  //         });
+  //       });
+  //     });*/
+  //   } catch (e, s) {
+  //     print('err: $e');
+  //     print('stk: $s');
+  //   }
+  // }
 
   Future fetchContacts() async {
     try {
@@ -465,13 +470,15 @@ void getCurrentLocation() async {
       } else {
         print('isi response save app usage : ${response.statusCode}');
       }
-    } catch (e) {
-      print(e);
+    }catch (e, s) {
+      print('err: $e');
+      print('stk: $s');
     }
 
   }
 
   Future sentPanicSOS(XFile recording) async {
+    Location location = new Location();
     print('File Size: ${getFileSize(await recording.length())}');
     final recordAsBytes = await recording.readAsBytes();
     final locData = await location.getLocation();
