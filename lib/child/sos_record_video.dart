@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:get/get.dart';
-import 'package:location/location.dart';
 import 'package:ruangkeluarga/child/child_controller.dart';
 import 'package:ruangkeluarga/child/home_child.dart';
 import 'package:ruangkeluarga/global/custom_widget/global_widget.dart';
