@@ -1,8 +1,9 @@
+import 'dart:isolate';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:location/location.dart';
 import 'package:ruangkeluarga/child/akun/child_akun_page.dart';
 import 'package:ruangkeluarga/child/child_controller.dart';
 import 'package:ruangkeluarga/child/child_drawer.dart';
@@ -13,6 +14,8 @@ import 'package:ruangkeluarga/parent/view/feed/feed_page.dart';
 import 'package:ruangkeluarga/parent/view/jadwal/jadwal_page.dart';
 import 'package:ruangkeluarga/utils/background_service_new.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../main.dart';
 
 class ChildMain extends StatefulWidget {
   final String childName;
@@ -44,13 +47,14 @@ class _ChildMainState extends State<ChildMain> {
       callback,
       wakeup: true,
       exact: true,
-      rescheduleOnReboot: true
+      rescheduleOnReboot: true,
+      allowWhileIdle: true
     );
   }
 
   static Future<void> callback() async {
     print('Alarm Is Already'+new DateTime.now().toString());
-    startPeriodic();
+    // startPeriodic();
     ChildController controller1 = new ChildController();
     controller1.sendData();
   }

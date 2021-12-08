@@ -232,6 +232,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
         .add(Duration(days: DateTime.daysPerWeek - dateTime.weekday));
   }
 
+  // tidak dipake
   Future<List<dynamic>> getUsageStatsDaily() async {
     try {
       prefs = await SharedPreferences.getInstance();

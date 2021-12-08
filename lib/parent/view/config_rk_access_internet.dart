@@ -66,7 +66,7 @@ class _RKConfigAccessInternetPageState extends State<RKConfigAccessInternetPage>
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        'Mengontrol Kata Kunci Yang Tepat Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqu',
+                        'Membatasi konten-konten yang tidak sesuai dengan norma.',
                         style: TextStyle(color: cOrtuWhite),
                       ),
                     ),

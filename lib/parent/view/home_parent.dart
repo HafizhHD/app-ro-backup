@@ -281,7 +281,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
                           onPressed: () async {
                             final res = await Navigator.push(
                               context,
-                              MaterialPageRoute<Object>(builder: (BuildContext context) => SetupInviteChildPage()),
+                              MaterialPageRoute<Object>(builder: (BuildContext context) => SetupInviteChildPage(address: parentController.parentProfile.address!)),
                             );
                             print('Add Child Response: $res');
                             if (res.toString().toLowerCase() == 'addchild') parentController.getParentChildData();
@@ -391,7 +391,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                 onPressed: () async {
                   final res = await Navigator.push(
                     context,
-                    MaterialPageRoute<Object>(builder: (BuildContext context) => SetupInviteChildPage()),
+                    MaterialPageRoute<Object>(builder: (BuildContext context) => SetupInviteChildPage(address: '')),
                   );
                   print('Add Child Response: $res');
                   if (res.toString().toLowerCase() == 'addchild') onAddChild();

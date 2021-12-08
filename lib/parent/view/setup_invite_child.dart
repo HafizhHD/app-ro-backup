@@ -15,6 +15,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 enum StatusStudyLevel { SD, SMP, SMA }
 
 class SetupInviteChildPage extends StatefulWidget {
+  final String? address;
+
+const SetupInviteChildPage({Key? key, this.address}) : super(key: key);
   @override
   _SetupInviteChildPageState createState() => _SetupInviteChildPageState();
 }
@@ -30,6 +33,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
   StatusStudyLevel? _statusLevel = StatusStudyLevel.SD;
   String emailUser = '';
   String nameUser = '';
+  String cAddress = '';
   late FToast fToast;
   String birthDateString = '';
   DateTime birthDate = DateTime.now().subtract(Duration(days: 365 * 5));
@@ -58,6 +62,8 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
       1,
       1,
       _imageBytes != null ? "data:image/png;base64,${base64Encode(_imageBytes)}" : "",
+      birthDate.toIso8601String(),
+      cAddress,
     );
     print('isi response invite : ${response.body}');
     if (response.statusCode == 200) {
@@ -146,6 +152,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
     final screenSize = MediaQuery.of(context).size;
     final borderRadiusSize = Radius.circular(10);
 
+    cAddress = widget.address!;
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -206,7 +213,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                           data: Theme.of(context).copyWith(splashColor: Colors.transparent),
                           child: TextFormField(
                             validator: (val) {
-                              if (val == '') return 'Mohon engkapi nama anak';
+                              if (val == '') return 'Mohon lengkapi nama anak';
                               return null;
                             },
                             autovalidateMode: AutovalidateMode.onUserInteraction,
