@@ -60,7 +60,7 @@ void startServicePlatform() async{
 }
 
 void callbackTest() async {
-  print('Alarm Is Already'+new DateTime.now().toString());
+  print('Alarm Is Block App'+new DateTime.now().toString());
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var deviceAppUsageAplikasi = await prefs.getString("deviceAppUsageAplikasi");
   if(deviceAppUsageAplikasi != null && deviceAppUsageAplikasi.isNotEmpty) {
