@@ -91,44 +91,34 @@ class ChildController extends GetxController {
     }
   }
 
-void getCurrentLocation() async {
-    try {
-      print("akses lokasi....");
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
-        print("tidak boleh akses lokasi");
-      }
-      else {
-        Position currentPosition = await Geolocator.getCurrentPosition();
-        print("Longitude" + currentPosition.longitude.toString());
-        print("latitude" + currentPosition.latitude.toString());
-
-        try {
-          await MediaRepository().saveUserLocationx(childEmail, currentPosition, DateTime.now().toIso8601String()).then((response) {
-            if (response.statusCode == 200) {
-              print('isi response save location Current: ${response.body}');
-            } else {
-              print('isi response save location Current: ${response.statusCode}');
-            }
-          });
-        } catch (e, s) {
-          print('err: $e');
-          print('stk: $s');
+  void getCurrentLocation() async {
+      try {
+        print("akses lokasi....");
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+          print("tidak boleh akses lokasi");
         }
+        else {
+          Position currentPosition = await Geolocator.getCurrentPosition();
+          print("Longitude" + currentPosition.longitude.toString());
+          print("latitude" + currentPosition.latitude.toString());
+
+          try {
+            await MediaRepository().saveUserLocationx(childEmail, currentPosition, DateTime.now().toIso8601String()).then((response) {
+              if (response.statusCode == 200) {
+                print('isi response save location Current: ${response.body}');
+              } else {
+                print('isi response save location Current: ${response.statusCode}');
+              }
+            });
+          } catch (e, s) {
+            print('err: $e');
+            print('stk: $s');
+          }
+        }
+      } catch (e) {
+        print(e);
       }
-    } catch (e) {
-      print(e);
-    }
-}
-
-  void stopServicePlatform() async{
-    if(Platform.isAndroid){
-      /*eventChannel.receiveBroadcastStream('stopService').listen((event) {
-
-      }, onError: (event){
-
-      });*/
-    }
   }
 
   @override
