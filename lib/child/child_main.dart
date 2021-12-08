@@ -1,9 +1,10 @@
+import 'dart:isolate';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:location/location.dart';
 import 'package:ruangkeluarga/child/akun/child_akun_page.dart';
 import 'package:ruangkeluarga/child/child_controller.dart';
 import 'package:ruangkeluarga/child/child_drawer.dart';
@@ -11,6 +12,8 @@ import 'package:ruangkeluarga/child/home_child.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_page.dart';
 import 'package:ruangkeluarga/parent/view/jadwal/jadwal_page.dart';
+
+import '../main.dart';
 
 class ChildMain extends StatefulWidget {
   final String childName;
@@ -35,19 +38,27 @@ class _ChildMainState extends State<ChildMain> {
   }
 
   static Future<void> startPeriodic() async {
-    await AndroidAlarmManager.oneShot(
-      const Duration(minutes: 60),
-      Random().nextInt(1000000),
-      callback,
-      wakeup: true,
+    int alarmId =12;
+    await AndroidAlarmManager.periodic(
+      const Duration(minutes: 3),
+      alarmId, callback, wakeup: true,
       exact: true,
-      rescheduleOnReboot: true
-    );
+      rescheduleOnReboot: true,
+      allowWhileIdle: true);
+    // await AndroidAlarmManager.oneShot(
+    //   const Duration(minutes: 3),
+    //   Random().nextInt(1000000),
+    //   callback,
+    //   wakeup: true,
+    //   exact: true,
+    //   rescheduleOnReboot: true,
+    //   allowWhileIdle: true,
+    // );
   }
 
   static Future<void> callback() async {
     print('Alarm Is Already'+new DateTime.now().toString());
-    startPeriodic();
+    // startPeriodic();
     ChildController controller1 = new ChildController();
     controller1.sendData();
   }

@@ -405,6 +405,10 @@ class _AkunEditPageState extends State<AkunEditPage> {
                         ),
                         onPressed: cName.text != '' || cPhoneNumber.text != '' || cGereja.text != ''
                             ? () async {
+                                if (cName.text == '') {
+                                  showToastSuccess(
+                                      ctx: context, successText: 'Silahkan isi Nama');
+                                }
                                 showLoadingOverlay();
                                 print('widget.isParent ${widget.isParent}');
                                 if (widget.isParent) {

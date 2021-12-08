@@ -50,7 +50,7 @@ class MediaRepository {
   Future<Response> getParentChildData(String userID) async {
     var url = _rkService.baseUrl + '/user/view';
     Map<String, String> json = {
-      "userId": "$userID",
+      "userId": "$userID", "appName": "keluarga hkbp",
     };
     print('param get parent child data : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
@@ -87,8 +87,17 @@ class MediaRepository {
     return response;
   }
 
-  Future<Response> inviteChild(String email, String childEmail, String nohp, String childName, int childAge, String childStudyLevel,
-      int childOfNumber, int childNumber, String imgByte) async {
+  Future<Response> inviteChild(String email,
+      String childEmail,
+      String nohp,
+      String childName,
+      int childAge,
+      String childStudyLevel,
+      int childOfNumber,
+      int childNumber,
+      String imgByte,
+      String birthDate,
+      String address) async {
     var url = _rkService.baseUrl + '/user/invite';
     Map<String, dynamic> json = {
       "emailUser": "$email",
@@ -98,12 +107,15 @@ class MediaRepository {
       "childAge": childAge,
       "childStudyLevel": "$childStudyLevel",
       "childOfNumber": childOfNumber,
-      "childNumber": childNumber
+      "childNumber": childNumber,
+      "birdDate": "$birthDate",
+      "address": "$address"
     };
     if (imgByte != "") json["imagePhoto"] = imgByte;
 
     print('param register parent : $json');
-    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url),
+        headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
@@ -196,7 +208,7 @@ class MediaRepository {
   Future<Response> saveAppList(String email, List<ApplicationInstalled> appName) async {
     var url = _rkService.baseUrl + '/user/appDeviceAdd';
     Map<String, dynamic> json = {"emailUser": "$email", "appName": appName.map((e) => e.toJson()).toList()};
-    print('param save appList : $json');
+    // print('param save appList : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
@@ -212,39 +224,47 @@ class MediaRepository {
     return response;
   }
 
-  Future<Response> saveUserLocation(String email, LocationData location, String dates) async {
-    final coordinates = new Coordinates(location.latitude, location.longitude);
-    var addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
-    var url = _rkService.baseUrl + '/user/timeLineAdd';
-    var place = "";
-    if (addresses[0].thoroughfare != null) {
-      place = addresses[0].thoroughfare!;
-    } else {
-      place = addresses[0].addressLine!;
-    }
-    Map<String, dynamic> json = {
-      "emailUser": "$email",
-      "location": {
-        "place": "$place",
-        "type": "Point",
-        "coordinates": ["${location.latitude}", "${location.longitude}"]
-      },
-      "dateTimeHistory": "$dates"
-    };
-    print('param save user location : $json');
-    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
-    return response;
-  }
+  // Future<Response> saveUserLocation(String email, LocationData location, String dates) async {
+  //   final coordinates = new Coordinates(location.latitude, location.longitude);
+  //   var addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
+  //   var url = _rkService.baseUrl + '/user/timeLineAdd';
+  //   var place = "";
+  //   if (addresses[0].thoroughfare != null) {
+  //     place = addresses[0].thoroughfare!;
+  //   } else {
+  //     place = addresses[0].addressLine!;
+  //   }
+  //   Map<String, dynamic> json = {
+  //     "emailUser": "$email",
+  //     "location": {
+  //       "place": "$place",
+  //       "type": "Point",
+  //       "coordinates": ["${location.latitude}", "${location.longitude}"]
+  //     },
+  //     "dateTimeHistory": "$dates"
+  //   };
+  //   print('param save user location : $json');
+  //   Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+  //   return response;
+  // }
 
   Future<Response> saveUserLocationx(String email, Position location, String dates) async {
     final coordinates = new Coordinates(location.latitude, location.longitude);
-    var addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
+    var addresses = [];
+    try {
+      addresses = await Geocoder.local.findAddressesFromCoordinates(
+          coordinates);
+    } finally {
+
+    }
     var url = _rkService.baseUrl + '/user/timeLineAdd';
     var place = "";
-    if (addresses[0].thoroughfare != null) {
-      place = addresses[0].thoroughfare!;
-    } else {
-      place = addresses[0].addressLine!;
+    if (addresses.length > 0) {
+      if (addresses[0].thoroughfare != null) {
+        place = addresses[0].thoroughfare!;
+      } else {
+        place = addresses[0].addressLine!;
+      }
     }
     Map<String, dynamic> json = {
       "emailUser": "$email",
@@ -500,7 +520,7 @@ class MediaRepository {
         "status": 'active'
       }
     };
-    print('param app usage filter : $json');
+    print('param content filter : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     // Response response = await post(Uri.parse(url), headers: noAuthHeaders);
     return response;

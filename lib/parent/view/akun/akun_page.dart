@@ -20,7 +20,11 @@ class AkunPage extends StatelessWidget {
           final namaGereja = parentData.namaGereja;
           GerejaHKBP? selectedGereja;
           if (namaGereja != null && namaGereja.isNotEmpty && namaGereja != '') {
-            selectedGereja = ctrl.listGereja.where((e) => e.displayName.trim().toLowerCase() == namaGereja.trim().toLowerCase()).first;
+            selectedGereja = ctrl.listGereja
+                .where((e) =>
+            e.displayName.trim().toLowerCase() ==
+                namaGereja.trim().toLowerCase())
+                .first;
           }
 
           return Container(
@@ -49,12 +53,18 @@ class AkunPage extends StatelessWidget {
                       itemCount: children.length,
                       itemBuilder: (ctx, idx) {
                         final childData = children[idx];
+                        print('Nama: ${childData.name}');
+                        print('Telepon: ${childData.phone}');
+                        print('Alamat: ${childData.address}');
+                        print('Tgl. Lahir: ${childData.birdDate.toString()}');
                         return profileContainer(
-                          imgUrl: childData.imgPhoto,
-                          name: childData.name ?? 'Nama Anak',
-                          email: childData.email ?? 'email@anak.com',
-                          id: childData.id
-                          // phone: ,
+                            imgUrl: childData.imgPhoto,
+                            name: childData.name ?? 'Nama Anak',
+                            email: childData.email ?? 'email@anak.com',
+                            id: childData.id,
+                            phone: childData.phone ?? '',
+                            alamat: childData.address ?? '',
+                            birthDate: childData.birdDate
                         );
                       },
                     ),
