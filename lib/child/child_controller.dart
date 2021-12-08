@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:camera/camera.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +19,7 @@ import 'package:ruangkeluarga/child/child_model.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/global/global_formatter.dart';
 import 'package:ruangkeluarga/main.dart';
+import 'package:ruangkeluarga/model/content_aplikasi_data_usage.dart';
 // import 'package:ruangkeluarga/model/rk_callLog_model.dart';
 import 'package:ruangkeluarga/model/rk_child_apps.dart';
 import 'package:ruangkeluarga/model/rk_child_contact.dart';
@@ -39,7 +41,6 @@ class ChildController extends GetxController {
   late ParentProfile parentProfile;
   List<BlacklistedContact> blackListed = [];
   Rx<Future<bool>> fParentProfile = Future<bool>.value(false).obs;
-  static const EventChannel eventChannel = EventChannel('com.ruangkeluargamobile.sendData');
 
   late Timer locationPeriodic;
   bool isBackgroundServiceOn = false;
@@ -89,17 +90,6 @@ class ChildController extends GetxController {
     }
   }
 
-  void startServicePlatform(String deviceAppUsage) async{
-    if(Platform.isAndroid){
-      eventChannel.receiveBroadcastStream('startService '+deviceAppUsage).listen((event) {
-
-      }, onError: (event){
-
-        stopServicePlatform();
-      });
-    }
-  }
-
 void getCurrentLocation() async {
     try {
       print("akses lokasi....");
@@ -132,11 +122,11 @@ void getCurrentLocation() async {
 
   void stopServicePlatform() async{
     if(Platform.isAndroid){
-      eventChannel.receiveBroadcastStream('stopService').listen((event) {
+      /*eventChannel.receiveBroadcastStream('stopService').listen((event) {
 
       }, onError: (event){
 
-      });
+      });*/
     }
   }
 
@@ -218,7 +208,8 @@ void getCurrentLocation() async {
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
       if (json['appdevices'].length > 0) {
-        startServicePlatform(json['appdevices'][0]['_id']);
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString("deviceAppUsageAplikasi", json['appdevices'][0]['_id']);
         List appDevices = json['appdevices'][0]['appName'];
         return appDevices.map((e) => ApplicationInstalled.fromJson(e)).toList();
       }

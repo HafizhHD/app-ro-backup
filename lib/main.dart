@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:isolate';
+import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -22,6 +24,7 @@ import 'package:ruangkeluarga/parent/view/feed/feed_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 import 'package:ruangkeluarga/parent/view_model/vm_content_rk.dart';
+import 'package:ruangkeluarga/utils/background_service_new.dart';
 import 'package:ruangkeluarga/utils/base_service/service_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,12 +41,42 @@ late AndroidNotificationChannel channel;
 /// Initialize the [FlutterLocalNotificationsPlugin] package.
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
+/// The name associated with the UI isolate's [SendPort].
+const String isolateName = 'isolate';
+
+/// A port used to communicate from a background isolate to the UI isolate.
+final ReceivePort port = ReceivePort();
+void startServicePlatform() async{
+  await BackgroundServiceNew.oneShot(
+      const Duration(seconds: 1),
+      10000,
+      callbackTest,
+      wakeup: true,
+      exact: true,
+      rescheduleOnReboot: true
+  );
+}
+
+void callbackTest() async {
+  print('Alarm Is Already'+new DateTime.now().toString());
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var deviceAppUsageAplikasi = await prefs.getString("deviceAppUsageAplikasi");
+  if(deviceAppUsageAplikasi != null && deviceAppUsageAplikasi.isNotEmpty) {
+    await BackgroundServiceNew.cekAppLaunch(deviceAppUsageAplikasi);
+  }
+  startServicePlatform();
+}
+
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: cPrimaryBg, statusBarIconBrightness: Brightness.light));
 
   WidgetsFlutterBinding.ensureInitialized();
   initAdmob();
   await Firebase.initializeApp();
+  IsolateNameServer.registerPortWithName(
+    port.sendPort,
+    isolateName,
+  );
 
   // Set the background messaging handler early on, as a named top-level function
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
