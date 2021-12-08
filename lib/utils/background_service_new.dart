@@ -327,12 +327,14 @@ class BackgroundServiceNew {
   static Future<void> cekAppLaunch(String deviceAppUsage) async {
     DatabaseReference dbPref = FirebaseDatabase.instance.reference().child("dataAplikasi"+deviceAppUsage.toString());
     dbPref.once().then((DataSnapshot snapshot) async {
-      List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(snapshot.value.map((x) => AplikasiDataUsage.fromJson(x)));
-      List<AplikasiDataUsage> dataTrue = values.where((element) => element.blacklist == 'true').toList();
-      if(dataTrue != null && dataTrue.length>0){
-        ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
-        if(Platform.isAndroid) {
-          _channel.invokeMethod('startServiceCheckApp', listAplikasiDataUsage.toJson());
+      if(snapshot.value != null){
+        List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(snapshot.value.map((x) => AplikasiDataUsage.fromJson(x)));
+        List<AplikasiDataUsage> dataTrue = values.where((element) => element.blacklist == 'true').toList();
+        if(dataTrue != null && dataTrue.length>0){
+          ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
+          if(Platform.isAndroid) {
+            _channel.invokeMethod('startServiceCheckApp', listAplikasiDataUsage.toJson());
+          }
         }
       }
     });
