@@ -473,4 +473,21 @@ public class AlarmService extends JobIntentService {
     SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
     return settings.getBoolean("APP_NAME", false);
   }
+
+  public static void blockAppAndPackageNow(Context context, ModelKillAplikasi appForeground){
+    ActivityManager am = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+    System.out.println("CLOSE : "+appForeground.getAppName());
+    Intent intent = new Intent(Intent.ACTION_MAIN);
+    intent.addCategory(Intent.CATEGORY_HOME);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    context.startActivity(intent);
+    am.killBackgroundProcesses(appForeground.getPackageId());
+    if(appForeground.getBlacklist().equals("true")){
+      Toast.makeText(context, "Keluarga HKBP melakukan blokir aplikasi "+appForeground.getAppName()+
+              " karena saat ini aplikasi tersebut dibatasi oleh Orangtua.", Toast.LENGTH_LONG).show();
+    }else{
+      Toast.makeText(context, "Keluarga HKBP melakukan blokir aplikasi "+appForeground.getAppName()+
+              " karena sudah melebihi batas waktu yang ditentukan oleh OrangTua.", Toast.LENGTH_LONG).show();
+    }
+  }
 }

@@ -32,6 +32,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
+import static com.ruangkeluargamobile.AlarmService.blockAppAndPackageNow;
 import static com.ruangkeluargamobile.AlarmService.closeApps;
 import static com.ruangkeluargamobile.AlarmService.getForegroundApplication;
 
@@ -140,6 +141,16 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
                             }
                         }
                     }
+                    result.success(true);
+                    break;
+                case "blockAppAndPackageNow":
+                    JSONObject blockAppAndPackageNow = (JSONObject) arguments;
+                    ModelKillAplikasi modelKillAplikasi = new ModelKillAplikasi();
+                    modelKillAplikasi.setAppName(blockAppAndPackageNow.getString("appName"));
+                    modelKillAplikasi.setPackageId(blockAppAndPackageNow.getString("packageId"));
+                    modelKillAplikasi.setTimePenggunaan(blockAppAndPackageNow.getString("limit"));
+                    modelKillAplikasi.setBlacklist(blockAppAndPackageNow.getString("blacklist"));
+                    blockAppAndPackageNow(context, modelKillAplikasi);
                     result.success(true);
                     break;
                 default:

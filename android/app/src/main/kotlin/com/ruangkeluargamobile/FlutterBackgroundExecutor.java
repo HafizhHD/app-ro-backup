@@ -31,6 +31,7 @@ import io.flutter.view.FlutterMain;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.ruangkeluargamobile.AlarmService.blockAppAndPackageNow;
 import static com.ruangkeluargamobile.AlarmService.closeApps;
 import static com.ruangkeluargamobile.AlarmService.getForegroundApplication;
 
@@ -138,6 +139,15 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
             }
           }
         }
+        result.success(true);
+      } else  if (method.equals("blockAppAndPackageNow")) {
+        JSONObject checkAppLoad = (JSONObject) arguments;
+        ModelKillAplikasi modelKillAplikasi = new ModelKillAplikasi();
+        modelKillAplikasi.setAppName(checkAppLoad.getString("appName"));
+        modelKillAplikasi.setPackageId(checkAppLoad.getString("packageId"));
+        modelKillAplikasi.setTimePenggunaan(checkAppLoad.getString("limit"));
+        modelKillAplikasi.setBlacklist(checkAppLoad.getString("blacklist"));
+        blockAppAndPackageNow(context, modelKillAplikasi);
         result.success(true);
       } else {
         result.notImplemented();
