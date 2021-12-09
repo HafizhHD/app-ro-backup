@@ -519,9 +519,6 @@ class _DetailChildPageState extends State<DetailChildPage> {
                 builder: (context) => DetailChildActivityPage(
                   name: widget.name,
                   email: widget.email,
-                  listAppUsageWeekly: listAppUsage,
-                  averageTimeWeekly: avgData,
-                  weeklyChart: _chartDailyAverage(),
                   lastUpdate: dateToday,
                 ))).then((value) {
               setState(() {
