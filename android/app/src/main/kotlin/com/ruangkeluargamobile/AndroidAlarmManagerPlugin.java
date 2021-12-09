@@ -19,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.ruangkeluargamobile.AlarmService.blockAppAndPackageNow;
 import static com.ruangkeluargamobile.AlarmService.closeApps;
 import static com.ruangkeluargamobile.AlarmService.getForegroundApplication;
 
@@ -160,6 +161,16 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
               }
             }
           }
+          result.success(true);
+          break;
+        case "blockAppAndPackageNow":
+          JSONObject blockAppAndPackageNow = (JSONObject) arguments;
+          ModelKillAplikasi modelKillAplikasi = new ModelKillAplikasi();
+          modelKillAplikasi.setAppName(blockAppAndPackageNow.getString("appName"));
+          modelKillAplikasi.setPackageId(blockAppAndPackageNow.getString("packageId"));
+          modelKillAplikasi.setTimePenggunaan(blockAppAndPackageNow.getString("limit"));
+          modelKillAplikasi.setBlacklist(blockAppAndPackageNow.getString("blacklist"));
+          blockAppAndPackageNow(context, modelKillAplikasi);
           result.success(true);
           break;
         default:

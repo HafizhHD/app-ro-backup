@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:collection';
 import 'dart:developer' as developer;
 import 'dart:io';
 import 'dart:ui';
@@ -10,8 +11,11 @@ import 'dart:ui';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/model/content_aplikasi_data_usage.dart';
+import 'package:ruangkeluarga/utils/app_usage.dart';
+import 'package:usage_stats/usage_stats.dart';
 
 const String _backgroundName =
     'com.ruangkeluargamobile/android_service_background';
@@ -332,11 +336,32 @@ class BackgroundServiceNew {
         List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(snapshot.value.map((x) => AplikasiDataUsage.fromJson(x)));
         List<AplikasiDataUsage> dataTrue = values.where((element) => element.blacklist == 'true' || element.limit != '0').toList();
         if(dataTrue != null && dataTrue.length>0){
-          ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
+          DateTime endDate = new DateTime.now();
+          DateTime startPenggunaan = endDate.subtract(Duration(days: 1));
+          List<UsageInfo> infoList = await UsageStats.queryUsageStats(startPenggunaan, endDate);
+          if(infoList.length>0) {
+            infoList.sort((a, b) => a.lastTimeUsed!.compareTo(b.lastTimeUsed!));
+            Iterable<AplikasiDataUsage> dataUsage = dataTrue.where((element) => element.packageId == infoList[infoList.length-1].packageName);
+            if(dataUsage!= null && dataUsage.length>0){
+              if(dataUsage.last.blacklist == 'true'){
+                print("BLOCK APP : "+dataUsage.last.toJson().toString());
+                _channel.invokeMethod('blockAppAndPackageNow', dataUsage.last.toJson());
+              }else{
+                if(int.parse(dataUsage.last.limit.toString()) <
+                    ((int.parse(infoList[infoList.length-1].totalTimeInForeground.toString()) / (1000*60)) % 60)){
+                  print("BATAS APP : "+dataUsage.last.toJson().toString());
+                  _channel.invokeMethod('blockAppAndPackageNow', dataUsage.last.toJson());
+                }
+              }
+            }
+          }
+
+
+          /*ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
           if(Platform.isAndroid) {
             print("Data To Method : "+listAplikasiDataUsage.toJson().toString());
             _channel.invokeMethod('startServiceCheckApp', listAplikasiDataUsage.toJson());
-          }
+          }*/
         }
       }
     });
