@@ -42,7 +42,7 @@ class _ChildMainState extends State<ChildMain> {
 
   static Future<void> startPeriodic() async {
     await BackgroundServiceNew.oneShot(
-      const Duration(minutes: 3),
+      const Duration(minutes: 60),
       100,
       callback,
       wakeup: true,
@@ -52,7 +52,6 @@ class _ChildMainState extends State<ChildMain> {
   }
 
   static Future<void> callback() async {
-    print('Alarm Is Already to send data'+new DateTime.now().toString());
     startPeriodic();
     ChildController controller1 = new ChildController();
     controller1.sendData();

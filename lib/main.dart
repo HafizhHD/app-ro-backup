@@ -50,7 +50,7 @@ const String isolateName = 'isolate';
 final ReceivePort port = ReceivePort();
 void startServicePlatform() async{
   await BackgroundServiceNew.oneShot(
-      const Duration(seconds: 1),
+      const Duration(milliseconds: 1),
       10000,
       callbackTest,
       wakeup: true,
@@ -60,7 +60,6 @@ void startServicePlatform() async{
 }
 
 void callbackTest() async {
-  print('Alarm Is Block App'+new DateTime.now().toString());
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var deviceAppUsageAplikasi = await prefs.getString("deviceAppUsageAplikasi");
   if(deviceAppUsageAplikasi != null && deviceAppUsageAplikasi.isNotEmpty) {
