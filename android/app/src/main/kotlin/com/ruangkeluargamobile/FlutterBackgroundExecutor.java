@@ -126,6 +126,14 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
                         if(jsonObject.has("blacklist")){
                           if(jsonObject.getString("blacklist").equals("true")){
                             closeApps(context, appForeground);
+                          }else {
+                            if(jsonObject.has("limit") && appForeground.getTimePenggunaan() != null){
+                              System.out.println("TIME FOREGROUND : "+jsonObject.getString("limit" ));
+                              System.out.println("TIME FOREGROUND : "+String.valueOf(appForeground.getTimePenggunaan()));
+                              if(Double.parseDouble(jsonObject.getString("limit" )) < Double.parseDouble(appForeground.getTimePenggunaan())){
+                                closeApps(context, appForeground);
+                              }
+                            }
                           }
                         }
                       }
