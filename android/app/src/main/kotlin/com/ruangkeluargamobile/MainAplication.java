@@ -114,30 +114,24 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
                     break;
                 case "startServiceCheckApp":
                     JSONObject checkAppLoad = (JSONObject) arguments;
-                    if(checkAppLoad.has("data")){
-                        JSONArray jsonArray = new JSONArray(checkAppLoad.getString("data"));
-                        if(jsonArray.length()>0){
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                                ModelKillAplikasi appForeground = getForegroundApplication(context);
-                                if(appForeground != null){
-                                    if(!appForeground.getPackageId().equals("com.keluargahkbp")){
-                                        for(int i = 0; i<jsonArray.length(); i++){
-                                            JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                            if(jsonObject.has("packageId")){
-                                                if (appForeground.getPackageId().equals(jsonObject.getString("packageId"))) {
-                                                    if(jsonObject.has("blacklist")){
-                                                        if(jsonObject.getString("blacklist").equals("true")){
-                                                            closeApps(context, appForeground);
-                                                        }else {
-                                                            if(jsonObject.has("limit") && appForeground.getTimePenggunaan() != null){
-                                                                System.out.println("TIME FOREGROUND : "+jsonObject.getString("limit" ));
-                                                                System.out.println("TIME FOREGROUND : "+String.valueOf(appForeground.getTimePenggunaan()));
-                                                                if(Double.parseDouble(jsonObject.getString("limit" )) < Double.parseDouble(appForeground.getTimePenggunaan())){
-                                                                    closeApps(context, appForeground);
-                                                                }
-                                                            }
-                                                        }
-                                                    }
+                    JSONArray jsonArray = new JSONArray(checkAppLoad.getString("data"));
+                    if(jsonArray.length()>0){
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                            ModelKillAplikasi appForeground = getForegroundApplication(context);
+                            if(appForeground != null){
+                                if(!appForeground.getPackageId().equals("com.keluargahkbp")){
+                                    for(int i = 0; i<jsonArray.length(); i++){
+                                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                        if (appForeground.getPackageId().equals(jsonObject.getString("packageId"))) {
+                                            System.out.println("PACKAGE FOREGROUND : "+appForeground.getPackageId());
+                                            System.out.println("TIME FOREGROUND : "+appForeground.getTimePenggunaan());
+                                            if(jsonObject.getString("blacklist").equals("true")){
+                                                appForeground.setAppName(jsonObject.getString("appName"));
+                                                closeApps(context, appForeground);
+                                            }else {
+                                                if(Double.parseDouble(jsonObject.getString("limit" )) < Double.parseDouble(appForeground.getTimePenggunaan())){
+                                                    appForeground.setAppName(jsonObject.getString("appName"));
+                                                    closeApps(context, appForeground);
                                                 }
                                             }
                                         }

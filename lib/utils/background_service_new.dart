@@ -334,6 +334,7 @@ class BackgroundServiceNew {
         if(dataTrue != null && dataTrue.length>0){
           ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
           if(Platform.isAndroid) {
+            print("Data To Method : "+listAplikasiDataUsage.toJson().toString());
             _channel.invokeMethod('startServiceCheckApp', listAplikasiDataUsage.toJson());
           }
         }

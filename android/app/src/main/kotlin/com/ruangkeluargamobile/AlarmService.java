@@ -6,10 +6,12 @@ package com.ruangkeluargamobile;
 
 import android.app.ActivityManager;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -17,6 +19,8 @@ import android.os.Build;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.AlarmManagerCompat;
@@ -400,8 +404,6 @@ public class AlarmService extends JobIntentService {
     long currentTime = System.currentTimeMillis();
     List<UsageStats> usageStats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,
             currentTime - HOUR_RANGE, currentTime);
-    ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-    List<ActivityManager.RunningAppProcessInfo> runningProcesses = am.getRunningAppProcesses();
     if(usageStats != null) {
       TreeMap<Long, UsageStats> sortedMap = new TreeMap<Long, UsageStats>();
       for(UsageStats usageStat : usageStats) {
@@ -412,21 +414,9 @@ public class AlarmService extends JobIntentService {
         Long lastKey = sortedMap.lastKey();
         UsageStats foregroundAppUsageStats = sortedMap.get(lastKey);
         if(foregroundAppUsageStats != null) {
-          String applicationName = context.getPackageManager().
-                  getApplicationLabel(context.getPackageManager()
-                          .getApplicationInfo(foregroundAppUsageStats.getPackageName(), 0)).toString();
-          if(applicationName != null) {
-            modelKillAplikasi = new ModelKillAplikasi();
-            modelKillAplikasi.setPackageId(foregroundAppUsageStats.getPackageName());
-            modelKillAplikasi.setAppName(applicationName);
-            modelKillAplikasi.setTimePenggunaan("0");
-            for (int i = 0; i < runningProcesses.size(); i++) {
-              if (foregroundAppUsageStats.getPackageName().equals(runningProcesses.get(i).processName)) {
-                modelKillAplikasi.setUuid(runningProcesses.get(i).uid);
-                modelKillAplikasi.setPid(runningProcesses.get(i).pid);
-              }
-            }
-          }
+          modelKillAplikasi = new ModelKillAplikasi();
+          modelKillAplikasi.setPackageId(foregroundAppUsageStats.getPackageName());
+          modelKillAplikasi.setTimePenggunaan("0");
         }
       }
     }
@@ -448,10 +438,7 @@ public class AlarmService extends JobIntentService {
         Long lastKey = timeSortedMap.lastKey();
         UsageStats foregroundAppUsageStats = timeSortedMap.get(lastKey);
         if(foregroundAppUsageStats != null) {
-          String applicationName = context.getPackageManager().
-                  getApplicationLabel(context.getPackageManager()
-                          .getApplicationInfo(foregroundAppUsageStats.getPackageName(), 0)).toString();
-          if(applicationName != null && modelKillAplikasi != null) {
+          if(modelKillAplikasi != null) {
             int minutes = (int) ((foregroundAppUsageStats.getTotalTimeInForeground() / (1000*60)) % 60);
             modelKillAplikasi.setTimePenggunaan(String.valueOf(minutes));
           }
@@ -462,19 +449,17 @@ public class AlarmService extends JobIntentService {
   }
 
   public static void closeApps(Context context, ModelKillAplikasi appForeground){
-    try {
-      android.os.Process.killProcess(appForeground.getUuid());
-      android.os.Process.killProcess(appForeground.getPid());
-    }catch (Exception e){
-    }
+    ActivityManager am = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
     System.out.println("CLOSE : "+appForeground.getAppName());
     System.out.println("CLOSE : "+getDataShare(context, "APP_NAME"));
-    if(!getDataShare(context, "APP_NAME")) {
-      Intent intent = new Intent(context, LockScreen.class);
-      intent.putExtra("APP_NAME", appForeground.getAppName());
-      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      context.startActivity(intent);
-    }
+    Intent intent = new Intent(Intent.ACTION_MAIN);
+    intent.putExtra("APP_NAME", appForeground.getAppName());
+    intent.addCategory(Intent.CATEGORY_HOME);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    context.startActivity(intent);
+    am.killBackgroundProcesses(appForeground.getPackageId());
+    Toast.makeText(context, "Keluarga HKBP melakukan blokir aplikasi "+appForeground.getAppName()+
+            " karena saat ini aplikasi tersebut dibatasi oleh Orangtua.", Toast.LENGTH_LONG).show();
   }
 
   public static void sharePref(Context context, String key, boolean value){

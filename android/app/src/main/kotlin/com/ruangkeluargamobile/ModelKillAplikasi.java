@@ -1,8 +1,6 @@
 package com.ruangkeluargamobile;
 
 public class ModelKillAplikasi {
-    int Uuid;
-    int pid;
     String packageId;
     String appName;
     String timePenggunaan;
@@ -10,20 +8,10 @@ public class ModelKillAplikasi {
     public ModelKillAplikasi() {
     }
 
-    public ModelKillAplikasi(int uuid, int pid, String packageId, String appName, String timePenggunaan) {
-        Uuid = uuid;
-        this.pid = pid;
+    public ModelKillAplikasi(String packageId, String appName, String timePenggunaan) {
         this.packageId = packageId;
         this.appName = appName;
         this.timePenggunaan = timePenggunaan;
-    }
-
-    public int getUuid() {
-        return Uuid;
-    }
-
-    public void setUuid(int uuid) {
-        Uuid = uuid;
     }
 
     public String getPackageId() {
@@ -32,14 +20,6 @@ public class ModelKillAplikasi {
 
     public void setPackageId(String packageId) {
         this.packageId = packageId;
-    }
-
-    public int getPid() {
-        return pid;
-    }
-
-    public void setPid(int pid) {
-        this.pid = pid;
     }
 
     public String getAppName() {
