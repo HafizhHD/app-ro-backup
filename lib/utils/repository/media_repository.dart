@@ -224,6 +224,34 @@ class MediaRepository {
     return response;
   }
 
+  Future<Response> fetchListModeAsuh(String email) async {
+    var url = _rkService.baseUrl + '/user/modeAsuhSettingFilter';
+    Map<String, dynamic> json = {
+      "emailUser": "$email"
+    };
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> filterModeAsuh(String email) async {
+    var url = _rkService.baseUrl + '/user/childModeAsuhView';
+    Map<String, dynamic> json = {
+      "emailUser": "$email"
+    };
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> updateModeAsuh(String email, String modeAsuhName) async {
+    var url = _rkService.baseUrl + '/user/childModeAsuhAdd';
+    Map<String, dynamic> json = {
+      "emailUser": "$email",
+      "modeAsuhName": "$modeAsuhName"
+    };
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
   // Future<Response> saveUserLocation(String email, LocationData location, String dates) async {
   //   final coordinates = new Coordinates(location.latitude, location.longitude);
   //   var addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
