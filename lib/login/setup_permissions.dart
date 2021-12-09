@@ -31,6 +31,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
   bool _storage = false;
   // bool _smsPermission = false;
   bool _contactPermission = false;
+  bool _systemAlertWindow = false;
 
   final _waitDelay = 400;
 
@@ -67,6 +68,8 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
     _cameraPermission = (await Permission.camera.status).isGranted;
     _audioPermission = (await Permission.microphone.status).isGranted;
     _storage = (await Permission.manageExternalStorage.status).isGranted;
+    _systemAlertWindow = (await Permission.systemAlertWindow.status).isGranted;
+
     setState(() {});
   }
 
@@ -301,6 +304,39 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   }
                 }
                 _storage = _permissionStatus.isGranted;
+                setState(() {});
+              },
+              contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
+            ),
+            SizedBox(height: 10),
+            SwitchListTile.adaptive(
+              tileColor: cOrtuGrey,
+              title: Text('Window Alert'),
+              subtitle: Text('Kami membutuhkan akses window alert untuk memberikan informasi apliaski yang dibatasi orang tua'),
+              value: _systemAlertWindow,
+              onChanged: (val) async {
+                var _permissionStatus = await Permission.systemAlertWindow.status;
+                if (_permissionStatus.isDenied) {
+                  final s = Stopwatch()..start();
+                  _permissionStatus = await Permission.systemAlertWindow.request();
+                  s.stop();
+                  if (s.elapsedMilliseconds < _waitDelay && _permissionStatus.isPermanentlyDenied) {
+                    await Get.dialog(AlertDialog(
+                      title: Text('Akses ditolak'),
+                      content: Text('Akses untuk akses window alert telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
+                      actions: [
+                        TextButton(
+                            onPressed: () async {
+                              final res = await openAppSettings();
+                              if (res) Get.back();
+                            },
+                            child: Text('Buka Setting'))
+                      ],
+                    ));
+                  }
+                }_systemAlertWindow = _permissionStatus.isGranted;
+
                 setState(() {});
               },
               contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
