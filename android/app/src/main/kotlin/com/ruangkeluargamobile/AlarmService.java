@@ -21,6 +21,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.AlarmManagerCompat;
 import androidx.core.app.JobIntentService;
+
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -392,6 +394,7 @@ public class AlarmService extends JobIntentService {
 
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
   public static  ModelKillAplikasi getForegroundApplication(Context context) throws PackageManager.NameNotFoundException {
+    ModelKillAplikasi modelKillAplikasi = null;
     UsageStatsManager usageStatsManager = (UsageStatsManager)
             context.getSystemService(Context.USAGE_STATS_SERVICE);
     long currentTime = System.currentTimeMillis();
@@ -413,21 +416,49 @@ public class AlarmService extends JobIntentService {
                   getApplicationLabel(context.getPackageManager()
                           .getApplicationInfo(foregroundAppUsageStats.getPackageName(), 0)).toString();
           if(applicationName != null) {
-            ModelKillAplikasi modelKillAplikasi = new ModelKillAplikasi();
+            modelKillAplikasi = new ModelKillAplikasi();
             modelKillAplikasi.setPackageId(foregroundAppUsageStats.getPackageName());
             modelKillAplikasi.setAppName(applicationName);
+            modelKillAplikasi.setTimePenggunaan("0");
             for (int i = 0; i < runningProcesses.size(); i++) {
               if (foregroundAppUsageStats.getPackageName().equals(runningProcesses.get(i).processName)) {
                 modelKillAplikasi.setUuid(runningProcesses.get(i).uid);
                 modelKillAplikasi.setPid(runningProcesses.get(i).pid);
               }
             }
-            return modelKillAplikasi;
           }
         }
       }
     }
-    return null;
+
+    //cek data aplikasi time
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.MINUTE, 0);
+    calendar.add(Calendar.HOUR, 0);
+    calendar.add(Calendar.SECOND, 0);
+    List<UsageStats> timeUsage = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,
+            calendar.getTimeInMillis() - HOUR_RANGE, currentTime);
+    if(timeUsage!=null){
+      TreeMap<Long, UsageStats> timeSortedMap = new TreeMap<Long, UsageStats>();
+      for(UsageStats usageStat : timeUsage) {
+        Long time = usageStat.getLastTimeUsed();
+        timeSortedMap.put(time, usageStat);
+      }
+      if(!timeSortedMap.isEmpty()) {
+        Long lastKey = timeSortedMap.lastKey();
+        UsageStats foregroundAppUsageStats = timeSortedMap.get(lastKey);
+        if(foregroundAppUsageStats != null) {
+          String applicationName = context.getPackageManager().
+                  getApplicationLabel(context.getPackageManager()
+                          .getApplicationInfo(foregroundAppUsageStats.getPackageName(), 0)).toString();
+          if(applicationName != null && modelKillAplikasi != null) {
+            int minutes = (int) ((foregroundAppUsageStats.getTotalTimeInForeground() / (1000*60)) % 60);
+            modelKillAplikasi.setTimePenggunaan(String.valueOf(minutes));
+          }
+        }
+      }
+    }
+    return modelKillAplikasi;
   }
 
   public static void closeApps(Context context, ModelKillAplikasi appForeground){
