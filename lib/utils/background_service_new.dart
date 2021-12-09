@@ -330,12 +330,10 @@ class BackgroundServiceNew {
     dbPref.once().then((DataSnapshot snapshot) async {
       if(snapshot.value != null){
         List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(snapshot.value.map((x) => AplikasiDataUsage.fromJson(x)));
-        // List<AplikasiDataUsage> dataTrue = values.where((element) => element.blacklist == 'true' || element.limit != '0').toList();
-        List<AplikasiDataUsage> dataTrue = values.where((element) => element.blacklist == 'true').toList();
+        List<AplikasiDataUsage> dataTrue = values.where((element) => element.blacklist == 'true' || element.limit != '0').toList();
         if(dataTrue != null && dataTrue.length>0){
           ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
           if(Platform.isAndroid) {
-            print("Data : "+listAplikasiDataUsage.toJson().toString());
             _channel.invokeMethod('startServiceCheckApp', listAplikasiDataUsage.toJson());
           }
         }

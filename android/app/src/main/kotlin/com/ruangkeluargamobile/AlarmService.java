@@ -441,7 +441,7 @@ public class AlarmService extends JobIntentService {
     if(!getDataShare(context, "APP_NAME")) {
       Intent intent = new Intent(context, LockScreen.class);
       intent.putExtra("APP_NAME", appForeground.getAppName());
-      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       context.startActivity(intent);
     }
   }

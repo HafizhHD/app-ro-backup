@@ -38,7 +38,7 @@ class DetailChildPage extends StatefulWidget {
   DetailChildPage({Key? key, required this.title, required this.name, required this.email, this.toLocation = false}) : super(key: key);
 }
 
-enum ModeAsuh { level1, level2, level3 }
+// enum ModeAsuh { level1, level2, level3 }
 
 class _DetailChildPageState extends State<DetailChildPage> {
   final parentController = Get.find<ParentController>();
@@ -55,7 +55,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
   bool _switchModeAsuh = false;
   bool _loadingGetData = false;
   bool _loadingFeatchData = false;
-  ModeAsuh _switchLevel = ModeAsuh.level1;
+  int _switchLevel = 0;
   late List<AppUsages> listAppUsage;
   late List<AppListWithIcons> detailAplikasiChild = [];
   late List<dynamic> dataModeAsuh = [];
@@ -425,7 +425,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                                 prefs.setInt("LVL_MODE"+widget.name.toUpperCase(), 0);
                               }*/
                               // prefs.setBool("MODE_ASUH"+widget.name.toUpperCase(), _switchModeAsuh);
-                              if (value) _switchLevel = ModeAsuh.level1;
+                              if (value) _switchLevel = 0;
                               updateDatatoFirebase(0);
                             });
                           },
@@ -442,21 +442,15 @@ class _DetailChildPageState extends State<DetailChildPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: dataModeAsuh.map((e) {
-                            ModeAsuh _switch = ModeAsuh.level1;
+                            int _switch = 0;
                             int index = dataModeAsuh.indexOf(e);
-                            if(index == 0){
-                              _switch = ModeAsuh.level1;
-                            }else if(index == 1){
-                              _switch = ModeAsuh.level2;
-                            }else{
-                              _switch = ModeAsuh.level3;
-                            }
+                            _switch = index;
                             return modeAsuhLevelTile(
-                              leading: Radio<ModeAsuh>(
+                              leading: Radio<int>(
                                 value: _switch,
                                 groupValue: _switchLevel,
                                 activeColor: cOrtuBlue,
-                                onChanged: (ModeAsuh? value) {
+                                onChanged: (int? value) {
                                   setState(() {
                                     _loadingGetData = true;
                                     _switchLevel = _switch;
@@ -610,6 +604,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
       if (json['resultCode'] == 'OK') {
+        print("response aplikasi list : "+json.toString());
         if (json['appdevices'].length > 0) {
           try {
             var appDevices = json['appdevices'][0];
@@ -665,7 +660,6 @@ class _DetailChildPageState extends State<DetailChildPage> {
     var response = await MediaRepository().fetchListModeAsuh(widget.email);
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
-      print("response list mode asuh"+json.toString());
       if (json['resultCode'] == 'OK') {
         if (json['modeAsuh'].length > 0) {
           return json['modeAsuh'];
@@ -684,7 +678,6 @@ class _DetailChildPageState extends State<DetailChildPage> {
     var response = await MediaRepository().filterModeAsuh(widget.email);
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
-      print('response filter : '+json.toString());
       if (json['resultCode'] == 'OK') {
         if (json['childModeAsuhs'].length > 0) {
           return json['childModeAsuhs'];
@@ -703,7 +696,6 @@ class _DetailChildPageState extends State<DetailChildPage> {
     var response = await MediaRepository().updateModeAsuh(widget.email, modeAsuhName);
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
-      print("response list mode asuh"+json.toString());
       if (json['resultCode'] == 'OK') {
         return true;
       } else {
@@ -730,15 +722,9 @@ class _DetailChildPageState extends State<DetailChildPage> {
                   var data = dataModeAsuh.where((element) =>
                   element['modeAsuhName'].toString().toLowerCase() == value2['modeAsuhName'].toString().toLowerCase()).first;
                   if(data != null){
-                    if(dataModeAsuh.indexOf(data) == 0){
-                      _switchLevel = ModeAsuh.level1;
-                    }else if(dataModeAsuh.indexOf(data) == 1){
-                      _switchLevel = ModeAsuh.level2;
-                    }else{
-                      _switchLevel = ModeAsuh.level3;
-                    }
+                    _switchLevel = dataModeAsuh.indexOf(data);
                   }else{
-                    _switchLevel = ModeAsuh.level1;
+                    _switchLevel = 0;
                   }
                 });
                 if(_loadingGetData) {
@@ -754,7 +740,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                 setState(() {
                   dataModeAsuh = value1;
                   _switchModeAsuh = false;
-                  _switchLevel = ModeAsuh.level1;
+                  _switchLevel = 0;
                 });
                 if(_loadingGetData) {
                   closeOverlay();
@@ -770,7 +756,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
               setState(() {
                 dataModeAsuh = value1;
                 _switchModeAsuh = false;
-                _switchLevel = ModeAsuh.level1;
+                _switchLevel = 0;
               });
               if(_loadingGetData) {
                 closeOverlay();
@@ -818,7 +804,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                 detail['appCategory'] = detailAplikasiChild[i].appCategory.toString();
                 detail['appName'] = detailAplikasiChild[i].appName.toString();
                 detail['limit'] = (detailAplikasiChild[i].limit != null)?detailAplikasiChild[i].limit.toString():'0';
-                detail['blacklist'] = detailAplikasiChild[i].blacklist.toString();
+                detail['blacklist'] = 'false';
                 if(dataModeAsuh[index]['appCategoryBlocked'] != null){
                   List<dynamic> appKategory = dataModeAsuh[index]['appCategoryBlocked'];
                   if(appKategory!=null && appKategory.length>0){
@@ -834,8 +820,10 @@ class _DetailChildPageState extends State<DetailChildPage> {
               dbPref.child("dataAplikasi"+id_child_usage.toString()).set(
                   data);
             }
+            closeOverlay();
+          }else{
+            closeOverlay();
           }
-          closeOverlay();
         }).onError((error, stackTrace) {
           closeOverlay();
         });

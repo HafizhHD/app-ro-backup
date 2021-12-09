@@ -123,7 +123,11 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     if(jsonObject.has("packageId")){
                       if (appForeground.getPackageId().equals(jsonObject.getString("packageId"))) {
-                        closeApps(context, appForeground);
+                        if(jsonObject.has("blacklist")){
+                          if(jsonObject.getString("blacklist").equals("true")){
+                            closeApps(context, appForeground);
+                          }
+                        }
                       }
                     }
                   }
