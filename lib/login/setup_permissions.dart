@@ -62,7 +62,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
   }
 
   void initAsync() async {
-    _locationPermission = (await Permission.location.status).isGranted;
+    _locationPermission = (await Permission.locationAlways.status).isGranted;
     _contactPermission = (await Permission.contacts.status).isGranted;
     _cameraPermission = (await Permission.camera.status).isGranted;
     _audioPermission = (await Permission.microphone.status).isGranted;
@@ -392,10 +392,10 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                       'Dengan kondisi lokasi sudah aktif, maka secara berkala aplikasi akan melakukan pengumpulan lokasi pada perangkat anak sehingga orang tua dapat mengetahui informasi lokasi anak mereka melalui aplikasi keluarga HKBP di perangkat orangtua.'),
               value: _locationPermission,
               onChanged: (val) async {
-                var _permissionStatus = await Permission.location.status;
+                var _permissionStatus = await Permission.locationAlways.status;
                 if (_permissionStatus.isDenied) {
                   final s = Stopwatch()..start();
-                  _permissionStatus = await Permission.location.request();
+                  _permissionStatus = await Permission.locationAlways.request();
                   s.stop();
                   if (s.elapsedMilliseconds < _waitDelay && _permissionStatus.isPermanentlyDenied) {
                     await Get.dialog(AlertDialog(
@@ -410,7 +410,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                             child: Text('Buka Setting'))
                       ],
                     ));
-                    _permissionStatus = await Permission.location.status;
+                    _permissionStatus = await Permission.locationAlways.status;
                   }
                 }
                 _locationPermission = _permissionStatus.isGranted;

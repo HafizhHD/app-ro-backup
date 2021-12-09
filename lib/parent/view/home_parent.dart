@@ -49,7 +49,8 @@ class _HomeParentPageState extends State<HomeParentPage> {
     try {
       DateTime endDate = new DateTime.now();
       DateTime startDate = endDate.subtract(Duration(hours: 1));
-      List<AppUsageInfo> infoList = await AppUsage.getAppUsage(startDate, endDate);
+      List<AppUsageInfo> infoList =
+          await AppUsage.getAppUsage(startDate, endDate);
       setState(() {
         _infos = infoList;
         log('list info $infoList');
@@ -65,8 +66,10 @@ class _HomeParentPageState extends State<HomeParentPage> {
 
   void getListApps() async {
     try {
-      List<Application> appData =
-          await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: true, onlyAppsWithLaunchIntent: true);
+      List<Application> appData = await DeviceApps.getInstalledApplications(
+          includeAppIcons: true,
+          includeSystemApps: true,
+          onlyAppsWithLaunchIntent: true);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       itemsApp = appData;
       prefs.setString("appsLists", json.encode(itemsApp));
@@ -104,7 +107,8 @@ class _HomeParentPageState extends State<HomeParentPage> {
     return FutureBuilder(
         future: fLogin,
         builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) return wProgressIndicator();
+          if (snapshot.connectionState != ConnectionState.done)
+            return wProgressIndicator();
           return SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -139,14 +143,9 @@ class _HomeParentPageState extends State<HomeParentPage> {
                 //   ),
                 // ),
                 Container(
-                  padding: EdgeInsets.only(top: 16, bottom: 16),
-                  constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
-                  child: BannerAd(
-                    size: BannerSize.ADAPTIVE,
-                  ),
-                ),
-                Container(
-                  constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
+                  constraints: BoxConstraints(
+                      maxHeight: screenSize.height / 3,
+                      maxWidth: screenSize.width),
                   child: _childDataLayout(),
                 ),
                 // Flexible(
@@ -178,7 +177,8 @@ class _HomeParentPageState extends State<HomeParentPage> {
         });
   }
 
-  Widget _coBrandContent(String imagePath, String title, String content, Function onTap, double screenHeight) {
+  Widget _coBrandContent(String imagePath, String title, String content,
+      Function onTap, double screenHeight) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15.0),
@@ -204,7 +204,8 @@ class _HomeParentPageState extends State<HomeParentPage> {
                 children: [
                   Text(
                     '$title',
-                    style: TextStyle(fontWeight: FontWeight.bold, color: cOrtuWhite),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: cOrtuWhite),
                   ),
                   Text(
                     '$content',
@@ -233,8 +234,13 @@ class _HomeParentPageState extends State<HomeParentPage> {
 
               if (childsList.length == 0) {
                 return Container(
-                  margin: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0), //Same as `blurRadius` i guess
-                  constraints: BoxConstraints(maxHeight: 300, maxWidth: MediaQuery.of(context).size.width - 20),
+                  margin: const EdgeInsets.only(
+                      left: 10.0,
+                      right: 10.0,
+                      bottom: 10.0), //Same as `blurRadius` i guess
+                  constraints: BoxConstraints(
+                      maxHeight: 300,
+                      maxWidth: MediaQuery.of(context).size.width - 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10.0),
                     color: cOrtuGrey,
@@ -245,7 +251,8 @@ class _HomeParentPageState extends State<HomeParentPage> {
                     children: [
                       Text(
                         'Buat Akun untuk Anak Anda',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 25),
                         textAlign: TextAlign.center,
                       ),
                       Container(
@@ -259,16 +266,24 @@ class _HomeParentPageState extends State<HomeParentPage> {
                         padding: EdgeInsets.only(top: 10, left: 20, right: 20),
                         child: ElevatedButton(
                           style: ButtonStyle(
-                            shape: MaterialStateProperty.all((RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))),
-                            backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                            shape: MaterialStateProperty.all(
+                                (RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)))),
+                            backgroundColor:
+                                MaterialStateProperty.resolveWith<Color>(
                               (Set<MaterialState> states) {
-                                if (states.contains(MaterialState.disabled)) return cDisabled;
+                                if (states.contains(MaterialState.disabled))
+                                  return cDisabled;
                                 return cOrtuBlue;
                               },
                             ),
-                            elevation: MaterialStateProperty.resolveWith((states) {
-                              if (states.contains(MaterialState.disabled) || states.contains(MaterialState.pressed)) return 0;
-                              if (states.contains(MaterialState.hovered)) return 6;
+                            elevation:
+                                MaterialStateProperty.resolveWith((states) {
+                              if (states.contains(MaterialState.disabled) ||
+                                  states.contains(MaterialState.pressed))
+                                return 0;
+                              if (states.contains(MaterialState.hovered))
+                                return 6;
                               return 4;
                             }),
                           ),
@@ -281,10 +296,15 @@ class _HomeParentPageState extends State<HomeParentPage> {
                           onPressed: () async {
                             final res = await Navigator.push(
                               context,
-                              MaterialPageRoute<Object>(builder: (BuildContext context) => SetupInviteChildPage(address: parentController.parentProfile.address!)),
+                              MaterialPageRoute<Object>(
+                                  builder: (BuildContext context) =>
+                                      SetupInviteChildPage(
+                                          address: parentController
+                                              .parentProfile.address!)),
                             );
                             print('Add Child Response: $res');
-                            if (res.toString().toLowerCase() == 'addchild') parentController.getParentChildData();
+                            if (res.toString().toLowerCase() == 'addchild')
+                              parentController.getParentChildData();
                           },
                         ),
                       ),
@@ -307,7 +327,8 @@ class _HomeParentPageState extends State<HomeParentPage> {
                     scrollDirection: Axis.horizontal, //Keluarga HKBP kebawah
                     itemCount: childsList.length,
                     itemBuilder: (BuildContext context, int index) {
-                      parentController.setModeAsuh(childsList[index].childOfNumber ?? 0, 1);
+                      parentController.setModeAsuh(
+                          childsList[index].childOfNumber ?? 0, 1);
                       final screenSize = MediaQuery.of(context).size;
                       final thisChild = childsList[index];
                       return Container(
@@ -331,13 +352,17 @@ class ChildCardWithBottomSheet extends StatelessWidget {
   final Child childData;
   final SharedPreferences prefs;
   final Function() onAddChild;
-  ChildCardWithBottomSheet({required this.childData, required this.prefs, required this.onAddChild});
+
+  final parentController = Get.find<ParentController>();
+  ChildCardWithBottomSheet(
+      {required this.childData, required this.prefs, required this.onAddChild});
 
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final double paddingValue = 8;
-    final bool hasPhoto = childData.imgPhoto != null && childData.imgPhoto != '';
+    final bool hasPhoto =
+        childData.imgPhoto != null && childData.imgPhoto != '';
 
     return Container(
       margin: EdgeInsets.all(paddingValue),
@@ -355,13 +380,15 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                     child: Image.network(
                       childData.imgPhoto!,
                       fit: BoxFit.cover,
-                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent? loadingProgress) {
                         if (loadingProgress == null) return child;
                         return Center(
                           child: CircularProgressIndicator(
                             color: cOrtuOrange,
                             value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
                                 : null,
                           ),
                         );
@@ -391,7 +418,9 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                 onPressed: () async {
                   final res = await Navigator.push(
                     context,
-                    MaterialPageRoute<Object>(builder: (BuildContext context) => SetupInviteChildPage(address: '')),
+                    MaterialPageRoute<Object>(
+                        builder: (BuildContext context) => SetupInviteChildPage(
+                            address: parentController.parentProfile.address!)),
                   );
                   print('Add Child Response: $res');
                   if (res.toString().toLowerCase() == 'addchild') onAddChild();
@@ -403,10 +432,11 @@ class ChildCardWithBottomSheet extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             child: DraggableScrollableSheet(
               expand: false,
-              initialChildSize: 0.2,
-              minChildSize: 0.2,
+              initialChildSize: 0.6,
+              minChildSize: 0.6,
               maxChildSize: 0.60,
-              builder: (BuildContext context, ScrollController scrollController) {
+              builder:
+                  (BuildContext context, ScrollController scrollController) {
                 return Container(
                   padding: EdgeInsets.all(5),
                   decoration: BoxDecoration(
@@ -415,20 +445,24 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                   ),
                   width: screenSize.width,
                   child: NotificationListener(
-                    onNotification: (OverscrollIndicatorNotification overscroll) {
+                    onNotification:
+                        (OverscrollIndicatorNotification overscroll) {
                       overscroll.disallowGlow();
                       return true;
                     },
                     child: Column(
                       children: [
-                        Center(
-                          child: Container(
-                            margin: EdgeInsets.only(top: 5),
-                            width: screenSize.width / 6,
-                            height: 5,
-                            decoration: BoxDecoration(color: cOrtuGrey, borderRadius: BorderRadius.all(Radius.circular(15))),
-                          ),
-                        ),
+                        // Center(
+                        //   child: Container(
+                        //     margin: EdgeInsets.only(top: 5),
+                        //     width: screenSize.width / 6,
+                        //     height: 5,
+                        //     decoration: BoxDecoration(
+                        //         color: cOrtuGrey,
+                        //         borderRadius:
+                        //             BorderRadius.all(Radius.circular(15))),
+                        //   ),
+                        // ),
                         Flexible(
                           child: SingleChildScrollView(
                             controller: scrollController,
@@ -437,21 +471,29 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 Container(
-                                  margin: EdgeInsets.only(left: 10.0, right: 10),
+                                  margin: EdgeInsets.only(
+                                      top: 5, left: 10.0, right: 10),
                                   child: Text(
                                     '${childData.name}',
-                                    style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ),
                                 Container(
-                                  margin: EdgeInsets.only(left: 10, top: 5, bottom: 5, right: 10),
+                                  margin: EdgeInsets.only(
+                                      left: 10, top: 5, bottom: 5, right: 10),
                                   child: GetBuilder<ParentController>(
                                     builder: (ctrl) {
-                                      final thisScreenTime = ctrl.mapChildScreentime[childData.email];
+                                      final thisScreenTime = ctrl
+                                          .mapChildScreentime[childData.email];
                                       return Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          contentTime('Screen Time', thisScreenTime ?? '00:00'),
+                                          contentTime('Screen Time',
+                                              thisScreenTime ?? '00:00'),
                                           contentTime('Gaming', '00:00'),
                                           contentTime('Social Media', '00:00'),
                                         ],
@@ -461,7 +503,8 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                 ),
                                 Container(
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       // GetBuilder<ParentController>(builder: (ctrl) {
                                       //   return Row(
@@ -496,13 +539,18 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                       IconButton(
                                         iconSize: 35,
                                         onPressed: () {
-                                          Navigator.of(context).push(MaterialPageRoute(
-                                              builder: (context) => DetailChildPage(
-                                                    title: 'Kontrol dan Konfigurasi',
-                                                    name: '${childData.name}',
-                                                    email: '${childData.email}',
-                                                    toLocation: true,
-                                                  )));
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      DetailChildPage(
+                                                        title:
+                                                            'Kontrol dan Konfigurasi',
+                                                        name:
+                                                            '${childData.name}',
+                                                        email:
+                                                            '${childData.email}',
+                                                        toLocation: true,
+                                                      )));
                                         },
                                         icon: Icon(
                                           Icons.location_on_outlined,
@@ -520,12 +568,17 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                       IconButton(
                                         iconSize: 35,
                                         onPressed: () {
-                                          Navigator.of(context).push(MaterialPageRoute(
-                                              builder: (context) => DetailChildPage(
-                                                    title: 'Kontrol dan Konfigurasi',
-                                                    name: '${childData.name}',
-                                                    email: '${childData.email}',
-                                                  )));
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      DetailChildPage(
+                                                        title:
+                                                            'Kontrol dan Konfigurasi',
+                                                        name:
+                                                            '${childData.name}',
+                                                        email:
+                                                            '${childData.email}',
+                                                      )));
                                         },
                                         icon: Icon(
                                           Icons.settings,
@@ -566,7 +619,8 @@ class ChildCardWithBottomSheet extends StatelessWidget {
           ),
           Text(
             '$timeValue',
-            style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),
           ),
         ],
       ),

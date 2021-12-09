@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:get/get.dart';
+import 'package:location/location.dart';
 import 'package:ruangkeluarga/child/child_controller.dart';
 import 'package:ruangkeluarga/child/home_child.dart';
 import 'package:ruangkeluarga/global/custom_widget/global_widget.dart';
@@ -16,7 +17,7 @@ class CameraApp extends StatefulWidget {
 
 class _CameraAppState extends State<CameraApp> {
   late CameraController controller;
-  int cancelSOSCountDown = 5;
+  int cancelSOSCountDown = 0;
   int startSOSCountDown = 0;
   int recordingDuration = 10;
   late Timer cancelSOSTimer;
@@ -101,7 +102,8 @@ class _CameraAppState extends State<CameraApp> {
                       borderRadius: BorderRadius.circular(15.0),
                       child: CameraPreview(
                         controller,
-                        child: cancelSOSCountDown > 0 && startSOSCountDown < recordingDuration
+                        child: cancelSOSCountDown > 0 &&
+                                startSOSCountDown < recordingDuration
                             ? null
                             : Align(
                                 alignment: Alignment.topRight,
@@ -118,34 +120,96 @@ class _CameraAppState extends State<CameraApp> {
                 ),
               ),
               Container(
-                padding: EdgeInsets.only(left: 10, right: 10),
+                height: 50,
                 margin: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: cancelSOSCountDown > 0 ? Colors.red : cPrimaryBg,
-                  borderRadius: BorderRadius.all(Radius.circular(50)),
-                ),
-                child: Container(
-                  height: 50,
-                  margin: EdgeInsets.all(10),
-                  child: roElevatedButton(
-                    cColor: Colors.white,
-                    radius: 50,
-                    text: Text(
-                      cancelSOSCountDown > 0 ? 'Batalkan SOS ($cancelSOSCountDown)' : 'Merekam SOS ($startSOSCountDown)',
-                      style: TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    onPress: cancelSOSCountDown > 0
-                        ? () async {
-                            // showLoadingOverlay();
-                            // await controller.stopVideoRecording();
-                            // closeOverlay();
-                            // controller.dispose();
-                            Navigator.pop(context);
-                          }
-                        : null,
+                child: roElevatedButton(
+                  cColor: Colors.white,
+                  radius: 50,
+                  text: Text(
+                    cancelSOSCountDown > 0
+                        ? 'Batalkan SOS ($cancelSOSCountDown)'
+                        : 'Merekam SOS ($startSOSCountDown)',
+                    style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
                   ),
+                  onPress: cancelSOSCountDown > 0
+                      ? () async {
+                          // showLoadingOverlay();
+                          // await controller.stopVideoRecording();
+                          // closeOverlay();
+                          // controller.dispose();
+                          Navigator.pop(context);
+                        }
+                      : null,
                 ),
-              ),
+              )
+              // Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              //   Container(
+              //     padding: EdgeInsets.only(left: 10, right: 10),
+              //     margin: EdgeInsets.all(10),
+              //     decoration: BoxDecoration(
+              //       color: cancelSOSCountDown > 0 ? Colors.red : cPrimaryBg,
+              //       borderRadius: BorderRadius.all(Radius.circular(50)),
+              //     ),
+              //     child: Container(
+              //       height: 50,
+              //       margin: EdgeInsets.all(10),
+              //       child: roElevatedButton(
+              //         cColor: Colors.white,
+              //         radius: 50,
+              //         text: Text(
+              //           cancelSOSCountDown > 0
+              //               ? 'Batalkan SOS ($cancelSOSCountDown)'
+              //               : 'Merekam SOS ($startSOSCountDown)',
+              //           style: TextStyle(
+              //               color: Colors.red,
+              //               fontSize: 18,
+              //               fontWeight: FontWeight.bold),
+              //         ),
+              //         onPress: cancelSOSCountDown > 0
+              //             ? () async {
+              //                 // showLoadingOverlay();
+              //                 // await controller.stopVideoRecording();
+              //                 // closeOverlay();
+              //                 // controller.dispose();
+              //                 Navigator.pop(context);
+              //               }
+              //             : null,
+              //       ),
+              //     ),
+              //   ),
+              //   // Container(
+              //   //   padding: EdgeInsets.all(2),
+              //   //   margin: EdgeInsets.all(10),
+              //   //   decoration: BoxDecoration(
+              //   //     color: Colors.red,
+              //   //     borderRadius: BorderRadius.all(Radius.circular(50)),
+              //   //   ),
+              //   //   child: Container(
+              //   //     height: 50,
+              //   //     margin: EdgeInsets.all(10),
+              //   //     child: roElevatedButton(
+              //   //         cColor: Colors.white,
+              //   //         radius: 50,
+              //   //         text: Text(
+              //   //           'Batalkan SOS',
+              //   //           style: TextStyle(
+              //   //               color: Colors.red,
+              //   //               fontSize: 18,
+              //   //               fontWeight: FontWeight.bold),
+              //   //         ),
+              //   //         onPress: () async {
+              //   //           // showLoadingOverlay();
+              //   //           // await controller.stopVideoRecording();
+              //   //           // closeOverlay();
+              //   //           // controller.dispose();
+              //   //           Navigator.pop(context);
+              //   //         }),
+              //   //   ),
+              //   // )
+              // ]),
             ],
           ),
         ),

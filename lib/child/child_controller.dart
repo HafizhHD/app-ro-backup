@@ -86,7 +86,7 @@ class ChildController extends GetxController {
     // await getChildData();
     if (childEmail != '') {
       getAppUsageData();
-      // fetchChildLocation(location);
+      // fetchChildLocation();
       getCurrentLocation();
     }
   }
@@ -284,8 +284,10 @@ class ChildController extends GetxController {
     }
   }
 
-  // void fetchChildLocation(Location location) async {
-  //   try{
+  // void fetchChildLocation() async {
+  //   try {
+  //     Location location = new Location();
+  //     await location.enableBackgroundMode(enable: true);
   //     var _serviceEnabled = await location.serviceEnabled();
   //     if (!_serviceEnabled) {
   //       _serviceEnabled = await location.requestService();
@@ -302,12 +304,6 @@ class ChildController extends GetxController {
   //       }
   //     }
   //     await location.changeSettings(interval: 1000);
-  //   }catch (e, s) {
-  //     print('err: $e');
-  //     print('stk: $s');
-  //   }
-  //
-  //   try {
   //     await location.getLocation().then((locData) async {
   //       await MediaRepository().saveUserLocation(childEmail, locData, DateTime.now().toIso8601String()).then((response) {
   //         if (response.statusCode == 200) {
@@ -317,18 +313,6 @@ class ChildController extends GetxController {
   //         }
   //       });
   //     });
-  //     /*locationPeriodic = Timer.periodic(Duration(hours: 1), (timer) async {
-  //       print('timer save location $timer');
-  //       await location.getLocation().then((locData) async {
-  //         await MediaRepository().saveUserLocation(childEmail, locData, DateTime.now().toIso8601String()).then((response) {
-  //           if (response.statusCode == 200) {
-  //             print('isi response save location : ${response.body}');
-  //           } else {
-  //             print('isi response save location : ${response.statusCode}');
-  //           }
-  //         });
-  //       });
-  //     });*/
   //   } catch (e, s) {
   //     print('err: $e');
   //     print('stk: $s');
