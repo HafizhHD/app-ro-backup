@@ -54,9 +54,11 @@ class _DetailChildPageState extends State<DetailChildPage> {
   bool _switchLockScreen = false;
   bool _switchModeAsuh = false;
   bool _loadingGetData = false;
+  bool _loadingFeatchData = false;
   ModeAsuh _switchLevel = ModeAsuh.level1;
   late List<AppUsages> listAppUsage;
   late List<AppListWithIcons> detailAplikasiChild = [];
+  late List<dynamic> dataModeAsuh = [];
 
   void setBindingData() async {
     prefs = await SharedPreferences.getInstance();
@@ -394,119 +396,91 @@ class _DetailChildPageState extends State<DetailChildPage> {
               ],
             ),
           ),
-          Container(
-            margin: EdgeInsets.all(10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          (dataModeAsuh.length<=0)?wProgressIndicator():Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  child: Text(
-                    'Mode Asuh',
-                    style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                  margin: EdgeInsets.all(10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        child: Text(
+                          'Mode Asuh',
+                          style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                        ),
+                      ),
+                      Container(
+                        child: CupertinoSwitch(
+                          activeColor: cOrtuBlue,
+                          value: _switchModeAsuh,
+                          onChanged: (value) async {
+                            prefs = await SharedPreferences.getInstance();
+                            setState(() {
+                              _loadingGetData = true;
+                              _switchModeAsuh = value;
+                              /*if(!_switchModeAsuh){
+                                prefs.setInt("LVL_MODE"+widget.name.toUpperCase(), 0);
+                              }*/
+                              // prefs.setBool("MODE_ASUH"+widget.name.toUpperCase(), _switchModeAsuh);
+                              if (value) _switchLevel = ModeAsuh.level1;
+                              updateDatatoFirebase(0);
+                            });
+                          },
+                        ),
+                      )
+                    ],
                   ),
                 ),
-                Container(
-                  child: CupertinoSwitch(
-                    activeColor: cOrtuBlue,
-                    value: _switchModeAsuh,
-                    onChanged: (value) async {
-                      prefs = await SharedPreferences.getInstance();
-                      setState(() {
-                        _loadingGetData = true;
-                        _switchModeAsuh = value;
-                        if(!_switchModeAsuh){
-                          prefs.setInt("LVL_MODE"+widget.name.toUpperCase(), 1);
-                        }
-                        prefs.setBool("MODE_ASUH"+widget.name.toUpperCase(), _switchModeAsuh);
-                        if (value) _switchLevel = ModeAsuh.level1;
-                        updateDatatoFirebase();
-                      });
-                    },
+                if (_switchModeAsuh)
+                  Theme(
+                    data: ThemeData.dark(),
+                    child: Container(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: dataModeAsuh.map((e) {
+                            ModeAsuh _switch = ModeAsuh.level1;
+                            int index = dataModeAsuh.indexOf(e);
+                            if(index == 0){
+                              _switch = ModeAsuh.level1;
+                            }else if(index == 1){
+                              _switch = ModeAsuh.level2;
+                            }else{
+                              _switch = ModeAsuh.level3;
+                            }
+                            return modeAsuhLevelTile(
+                              leading: Radio<ModeAsuh>(
+                                value: _switch,
+                                groupValue: _switchLevel,
+                                activeColor: cOrtuBlue,
+                                onChanged: (ModeAsuh? value) {
+                                  setState(() {
+                                    _loadingGetData = true;
+                                    _switchLevel = _switch;
+                                    // prefs.setInt("LVL_MODE"+widget.name.toUpperCase(), dataModeAsuh.indexOf(e));
+                                    updateDatatoFirebase(dataModeAsuh.indexOf(e));
+                                  });
+                                },
+                              ),
+                              title: Text(
+                                (e['modeAsuhLable']!= null)?e['modeAsuhLable']:'',
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _switchLevel == _switch ? cOrtuBlue : cOrtuWhite),
+                              ),
+                              subtitle: Text(
+                                (e['description']!=null)?e['description']:'',
+                                textAlign: TextAlign.justify,
+                                style: TextStyle(color: _switchLevel == _switch ? cOrtuBlue : cOrtuWhite),
+                              ),
+                            );
+                          }).toList()),
+                    ),
                   ),
-                )
               ],
             ),
           ),
-          if (_switchModeAsuh)
-            Theme(
-              data: ThemeData.dark(),
-              child: Container(
-                child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  modeAsuhLevelTile(
-                    leading: Radio<ModeAsuh>(
-                      value: ModeAsuh.level1,
-                      groupValue: _switchLevel,
-                      activeColor: cOrtuBlue,
-                      onChanged: (ModeAsuh? value) {
-                        setState(() {
-                          _loadingGetData = true;
-                          _switchLevel = ModeAsuh.level1;
-                          prefs.setInt("LVL_MODE"+widget.name.toUpperCase(), 1);
-                          updateDatatoFirebase();
-                        });
-                      },
-                    ),
-                    title: Text(
-                      'Normal',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _switchLevel == ModeAsuh.level1 ? cOrtuBlue : cOrtuWhite),
-                    ),
-                    subtitle: Text(
-                      'Memperbolehkan anak membuka aplikasi game dan sosial media',
-                      textAlign: TextAlign.justify,
-                      style: TextStyle(color: _switchLevel == ModeAsuh.level1 ? cOrtuBlue : cOrtuWhite),
-                    ),
-                  ),
-                  modeAsuhLevelTile(
-                    leading: Radio<ModeAsuh>(
-                      value: ModeAsuh.level2,
-                      activeColor: cOrtuBlue,
-                      groupValue: _switchLevel,
-                      onChanged: (ModeAsuh? value) {
-                        setState(() {
-                          _loadingGetData = true;
-                          _switchLevel = ModeAsuh.level2;
-                          prefs.setInt("LVL_MODE"+widget.name.toUpperCase(), 2);
-                          updateDatatoFirebase();
-                        });
-                      },
-                    ),
-                    title: Text(
-                      'Belajar',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _switchLevel == ModeAsuh.level2 ? cOrtuBlue : cOrtuWhite),
-                    ),
-                    subtitle: Text(
-                      'Memblokir semua aplikasi game',
-                      textAlign: TextAlign.justify,
-                      style: TextStyle(color: _switchLevel == ModeAsuh.level2 ? cOrtuBlue : cOrtuWhite),
-                    ),
-                  ),
-                  modeAsuhLevelTile(
-                    leading: Radio<ModeAsuh>(
-                      value: ModeAsuh.level3,
-                      activeColor: cOrtuBlue,
-                      groupValue: _switchLevel,
-                      onChanged: (ModeAsuh? value) {
-                        setState(() {
-                          _loadingGetData = true;
-                          _switchLevel = ModeAsuh.level3;
-                          prefs.setInt("LVL_MODE"+widget.name.toUpperCase(), 3);
-                          updateDatatoFirebase();
-                        });
-                      },
-                    ),
-                    title: Text(
-                      'Diawasi',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _switchLevel == ModeAsuh.level3 ? cOrtuBlue : cOrtuWhite),
-                    ),
-                    subtitle: Text(
-                      'memblokir semua aplikasi game dan sosial media',
-                      textAlign: TextAlign.justify,
-                      style: TextStyle(color: _switchLevel == ModeAsuh.level3 ? cOrtuBlue : cOrtuWhite),
-                    ),
-                  ),
-                ]),
-              ),
-            ),
         ],
       ),
     );
@@ -687,42 +661,135 @@ class _DetailChildPageState extends State<DetailChildPage> {
     }
   }
 
+  Future<List<dynamic>> fetchListModeAsuhh() async {
+    var response = await MediaRepository().fetchListModeAsuh(widget.email);
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body);
+      print("response list mode asuh"+json.toString());
+      if (json['resultCode'] == 'OK') {
+        if (json['modeAsuh'].length > 0) {
+          return json['modeAsuh'];
+        } else {
+          return [];
+        }
+      } else {
+        return [];
+      }
+    } else {
+      return [];
+    }
+  }
+
+  Future<dynamic> filterModeAsuhh() async {
+    var response = await MediaRepository().filterModeAsuh(widget.email);
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body);
+      print('response filter : '+json.toString());
+      if (json['resultCode'] == 'OK') {
+        if (json['childModeAsuhs'].length > 0) {
+          return json['childModeAsuhs'];
+        } else {
+          return [];
+        }
+      } else {
+        return [];
+      }
+    } else {
+      return [];
+    }
+  }
+
+  Future<bool> updateModeAsuhh(String modeAsuhName) async {
+    var response = await MediaRepository().updateModeAsuh(widget.email, modeAsuhName);
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body);
+      print("response list mode asuh"+json.toString());
+      if (json['resultCode'] == 'OK') {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
   void getModeAsuh() {
     if(_loadingGetData) {
       showLoadingOverlay();
     }
-    fetchAppList().then((value) async {
-      prefs = await SharedPreferences.getInstance();
-      var modeAsuh = await prefs.getBool("MODE_ASUH"+widget.name.toUpperCase());
-      var levelAsuh = await prefs.getInt("LVL_MODE"+widget.name.toUpperCase());
-      if(modeAsuh == null){
-        await prefs.setBool("MODE_ASUH"+widget.name.toUpperCase(), false);
-        await prefs.setInt("LVL_MODE"+widget.name.toUpperCase(), 1);
-        setState(() {
-          modeAsuh = false;
-          levelAsuh = 1;
-        });
-      }
-      setState(() {
-        _switchModeAsuh = modeAsuh!;
-        if(!modeAsuh!){
-          _switchLevel = ModeAsuh.level1;
-          updateDatatoFirebase();
-        }else{
-          if(levelAsuh != null){
-            if(levelAsuh == 1){
-              _switchLevel = ModeAsuh.level1;
-            }else if(levelAsuh == 2){
-              _switchLevel = ModeAsuh.level2;
-            }else {
-              _switchLevel = ModeAsuh.level3;
+    fetchListModeAsuhh().then((value1){
+      if(value1 != null && value1.length>0){
+        filterModeAsuhh().then((value2){
+          if(value2 != null){
+            if(value2['modeAsuh']!=null && value2['modeAsuhName']!=null && value2['modeAsuh'].toString().toUpperCase() == 'ON' && value2['modeAsuhName'].toString().isNotEmpty){
+              fetchAppList().then((value) async {
+                setState(() {
+                  dataModeAsuh = value1;
+                  _switchModeAsuh = true;
+                  var data = dataModeAsuh.where((element) =>
+                  element['modeAsuhName'].toString().toLowerCase() == value2['modeAsuhName'].toString().toLowerCase()).first;
+                  if(data != null){
+                    if(dataModeAsuh.indexOf(data) == 0){
+                      _switchLevel = ModeAsuh.level1;
+                    }else if(dataModeAsuh.indexOf(data) == 1){
+                      _switchLevel = ModeAsuh.level2;
+                    }else{
+                      _switchLevel = ModeAsuh.level3;
+                    }
+                  }else{
+                    _switchLevel = ModeAsuh.level1;
+                  }
+                });
+                if(_loadingGetData) {
+                  closeOverlay();
+                }
+              }).onError((error, stackTrace) {
+                if(_loadingGetData) {
+                  closeOverlay();
+                }
+              });
+            }else{
+              fetchAppList().then((value) async {
+                setState(() {
+                  dataModeAsuh = value1;
+                  _switchModeAsuh = false;
+                  _switchLevel = ModeAsuh.level1;
+                });
+                if(_loadingGetData) {
+                  closeOverlay();
+                }
+              }).onError((error, stackTrace) {
+                if(_loadingGetData) {
+                  closeOverlay();
+                }
+              });
             }
-            updateDatatoFirebase();
+          }else{
+            fetchAppList().then((value) async {
+              setState(() {
+                dataModeAsuh = value1;
+                _switchModeAsuh = false;
+                _switchLevel = ModeAsuh.level1;
+              });
+              if(_loadingGetData) {
+                closeOverlay();
+              }
+            }).onError((error, stackTrace) {
+              if(_loadingGetData) {
+                closeOverlay();
+              }
+            });
           }
+        }).onError((error, stackTrace) {
+          if(_loadingGetData) {
+            closeOverlay();
+          }
+        });
+      }else{
+        if(_loadingGetData) {
+          closeOverlay();
         }
-      });
-      if(_loadingGetData) {
-        closeOverlay();
       }
     }).onError((error, stackTrace) {
       if(_loadingGetData) {
@@ -731,34 +798,47 @@ class _DetailChildPageState extends State<DetailChildPage> {
     });
   }
 
-  Future<void> updateDatatoFirebase() async {
+  Future<void> updateDatatoFirebase(int index) async {
+    showLoadingOverlay();
     DatabaseReference dbPref = FirebaseDatabase.instance.reference();
     List<Map<String, dynamic>> data = [];
     var id_child_usage = await prefs.getString('ID_CHILD_USAGE');
-    print("Kategory : "+id_child_usage.toString());
     if(id_child_usage != null){
-      if(detailAplikasiChild.length>0){
-        for(int i=0; i<detailAplikasiChild.length; i++){
-          Map<String, dynamic> detail = new Map();
-          detail['packageId'] = detailAplikasiChild[i].packageId.toString();
-          detail['appCategory'] = detailAplikasiChild[i].appCategory.toString();
-          detail['appName'] = detailAplikasiChild[i].appName.toString();
-          detail['limit'] = (detailAplikasiChild[i].limit != null)?detailAplikasiChild[i].limit.toString():'0';
-          if(_switchLevel == ModeAsuh.level3){
-            if(detailAplikasiChild[i].appCategory.toLowerCase() == 'game' || detailAplikasiChild[i].appCategory.toLowerCase() == 'social'){
-              detail['blacklist'] = 'true';
-            }
-          }else if(_switchLevel == ModeAsuh.level2){
-            if(detailAplikasiChild[i].appCategory.toLowerCase() == 'game'){
-              detail['blacklist'] = 'true';
-            }
-          }else{
-            detail['blacklist'] = 'false';
-          }
-          data.add(detail);
+      if(dataModeAsuh.length>0){
+        String namaModeAsuh = '';
+        if(_switchModeAsuh){
+          namaModeAsuh = dataModeAsuh[index]['modeAsuhName'];
         }
-        dbPref.child("dataAplikasi"+id_child_usage.toString()).set(
-            data);
+        updateModeAsuhh(namaModeAsuh).then((value){
+          if(value){
+            if(detailAplikasiChild.length>0){
+              for(int i=0; i<detailAplikasiChild.length; i++){
+                Map<String, dynamic> detail = new Map();
+                detail['packageId'] = detailAplikasiChild[i].packageId.toString();
+                detail['appCategory'] = detailAplikasiChild[i].appCategory.toString();
+                detail['appName'] = detailAplikasiChild[i].appName.toString();
+                detail['limit'] = (detailAplikasiChild[i].limit != null)?detailAplikasiChild[i].limit.toString():'0';
+                detail['blacklist'] = detailAplikasiChild[i].blacklist.toString();
+                if(dataModeAsuh[index]['appCategoryBlocked'] != null){
+                  List<dynamic> appKategory = dataModeAsuh[index]['appCategoryBlocked'];
+                  if(appKategory!=null && appKategory.length>0){
+                    for(var j=0; j<appKategory.length; j++){
+                      if(detailAplikasiChild[i].appCategory.toLowerCase() == appKategory[j].toString().toLowerCase()){
+                        detail['blacklist'] = 'true';
+                      }
+                    }
+                  }
+                }
+                data.add(detail);
+              }
+              dbPref.child("dataAplikasi"+id_child_usage.toString()).set(
+                  data);
+            }
+          }
+          closeOverlay();
+        }).onError((error, stackTrace) {
+          closeOverlay();
+        });
       }
     }
   }
