@@ -13,7 +13,7 @@ import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_page.dart';
 import 'package:ruangkeluarga/parent/view/jadwal/jadwal_page.dart';
 import 'package:ruangkeluarga/utils/background_service_new.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:system_alert_window/system_alert_window.dart';
 
 import '../main.dart';
 
@@ -28,6 +28,7 @@ class ChildMain extends StatefulWidget {
 
 class _ChildMainState extends State<ChildMain> {
   final controller = Get.find<ChildController>();
+  SystemWindowPrefMode prefMode = SystemWindowPrefMode.OVERLAY;
 
   @override
   void initState() {
@@ -38,6 +39,11 @@ class _ChildMainState extends State<ChildMain> {
     controller.initData();
     startServicePlatform();
     startPeriodic();
+    _requestPermissions();
+  }
+
+  Future<void> _requestPermissions() async {
+    await SystemAlertWindow.requestPermissions(prefMode: prefMode);
   }
 
   static Future<void> startPeriodic() async {
