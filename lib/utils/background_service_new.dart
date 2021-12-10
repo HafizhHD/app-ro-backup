@@ -350,8 +350,10 @@ class BackgroundServiceNew {
           if(infoList.length>0) {
             infoList.sort((a, b) => a.lastTimeUsed!.compareTo(b.lastTimeUsed!));
             for(var i=0; i<infoList.length; i++){
-              if(infoList[i].packageName == infoList[infoList.length-1].packageName) {
-                print("DATA APLIKASI CURRENT : " + infoList[i].packageName.toString());
+              for(var j = 0; j<dataTrue.length; j++){
+                if(dataTrue[j].packageId == infoList[infoList.length-1].packageName) {
+                  print("DATA APLIKASI CURRENT : " + infoList[i].packageName.toString());
+                }
               }
             }
             List<AplikasiDataUsage> dataUsage = dataTrue.where((element) => element.packageId == infoList[infoList.length-1].packageName).toList();
