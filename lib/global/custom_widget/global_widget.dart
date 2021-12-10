@@ -5,6 +5,7 @@ import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/login/login.dart';
 import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
+import 'package:ruangkeluarga/utils/background_service_new.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:minimize_app/minimize_app.dart';
 
@@ -139,6 +140,8 @@ void logUserOut() {
         ),
         TextButton(
           onPressed: () async {
+            await BackgroundServiceNew.cancel(100);
+            await BackgroundServiceNew.cancel(10000);
             showLoadingOverlay();
             SharedPreferences prefs = await SharedPreferences.getInstance();
             await prefs.clear();
