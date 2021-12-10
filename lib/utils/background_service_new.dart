@@ -17,7 +17,6 @@ import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/model/content_aplikasi_data_usage.dart';
 import 'package:ruangkeluarga/utils/app_usage.dart';
 import 'package:usage_stats/usage_stats.dart';
-import 'package:system_alert_window/system_alert_window.dart';
 
 const String _backgroundName =
     'com.ruangkeluargamobile/android_service_background';
@@ -341,7 +340,12 @@ class BackgroundServiceNew {
         List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(snapshot.value.map((x) => AplikasiDataUsage.fromJson(x)));
         List<AplikasiDataUsage> dataTrue = values.where((element) => element.blacklist == 'true' || element.limit != '0').toList();
         if(dataTrue != null && dataTrue.length>0){
-          DateTime endDate = new DateTime.now();
+          ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
+          if(Platform.isAndroid) {
+            print("Data To Method : "+listAplikasiDataUsage.toJson().toString());
+            _channel.invokeMethod('startServiceCheckApp', listAplikasiDataUsage.toJson());
+          }
+          /*DateTime endDate = new DateTime.now();
           DateTime startPenggunaan = endDate.subtract(Duration(hours: DateTime.now().hour, minutes: DateTime.now().minute, seconds: DateTime.now().second));
           List<UsageInfo> infoList = await UsageStats.queryUsageStats(startPenggunaan, endDate);
           if(infoList.length>0) {
@@ -367,13 +371,9 @@ class BackgroundServiceNew {
                 _channel.invokeMethod('startServiceCheckApp', listAplikasiDataUsage.toJson());
               }
             }
-          }else {
-            ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
-            if(Platform.isAndroid) {
-              print("Data To Method : "+listAplikasiDataUsage.toJson().toString());
-              _channel.invokeMethod('startServiceCheckApp', listAplikasiDataUsage.toJson());
-            }
-          }
+          }else {*/
+
+          /*}*/
         }
       }
     });
