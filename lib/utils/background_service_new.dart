@@ -349,11 +349,13 @@ class BackgroundServiceNew {
           List<UsageInfo> infoList = await UsageStats.queryUsageStats(startPenggunaan, endDate);
           if(infoList.length>0) {
             infoList.sort((a, b) => a.lastTimeUsed!.compareTo(b.lastTimeUsed!));
+            for(var i=0; i<infoList.length; i++){
+              if(infoList[i].packageName == infoList[infoList.length-1].packageName) {
+                print("DATA APLIKASI CURRENT : " + infoList[i].packageName.toString());
+              }
+            }
             List<AplikasiDataUsage> dataUsage = dataTrue.where((element) => element.packageId == infoList[infoList.length-1].packageName).toList();
             if(dataUsage!= null && dataUsage.length>0){
-              for(var i=0; i<dataUsage.length; i++){
-                print("DATA APLIKASI CURRENT : "+dataUsage[i].toJson().toString());
-              }
               if(dataUsage.last.blacklist == 'true'){
                 print("BLOCK APP : "+dataUsage.last.toJson().toString());
                 _channel.invokeMethod('blockAppAndPackageNow', dataUsage.last.toJson());
