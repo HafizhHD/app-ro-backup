@@ -29,6 +29,7 @@ import 'package:ruangkeluarga/parent/view_model/vm_content_rk.dart';
 import 'package:ruangkeluarga/utils/background_service_new.dart';
 import 'package:ruangkeluarga/utils/base_service/service_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:system_alert_window/system_alert_window.dart';
 
 import 'global/global.dart';
 
@@ -66,6 +67,22 @@ void callbackTest() async {
     await BackgroundServiceNew.cekAppLaunch(deviceAppUsageAplikasi);
   }
   startServicePlatform();
+}
+
+void callBackAlert(String tag) {
+  print(tag);
+  switch (tag) {
+    case "simple_button":
+    case "updated_simple_button":
+      SystemAlertWindow.closeSystemWindow(prefMode: SystemWindowPrefMode.OVERLAY);
+      break;
+    case "focus_button":
+      print("Focus button has been called");
+      SystemAlertWindow.closeSystemWindow(prefMode: SystemWindowPrefMode.OVERLAY);
+      break;
+    default:
+      print("OnClick event of $tag");
+  }
 }
 
 void main() async {
