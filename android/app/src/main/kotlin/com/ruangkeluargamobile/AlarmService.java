@@ -461,8 +461,13 @@ public class AlarmService extends JobIntentService {
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     context.startActivity(intent);
     am.killBackgroundProcesses(appForeground.getPackageId());
-    Toast.makeText(context, "Keluarga HKBP melakukan blokir aplikasi "+appForeground.getAppName()+
-            " karena saat ini aplikasi tersebut dibatasi oleh Orangtua.", Toast.LENGTH_LONG).show();
+    if(appForeground.getBlacklist().equals("true")){
+      Toast.makeText(context, "Keluarga HKBP melakukan blokir aplikasi "+appForeground.getAppName()+
+              " karena saat ini aplikasi tersebut dibatasi oleh Orangtua.", Toast.LENGTH_LONG).show();
+    }else{
+      Toast.makeText(context, "Keluarga HKBP melakukan blokir aplikasi "+appForeground.getAppName()+
+              " karena sudah melebihi batas waktu yang ditentukan oleh OrangTua.", Toast.LENGTH_LONG).show();
+    }
   }
 
   public static void sharePref(Context context, String key, boolean value){
