@@ -76,9 +76,9 @@ class BackgroundServiceNew {
       'com.ruangkeluargamobile/android_service_background';
   static const MethodChannel _channel =
   MethodChannel(_channelName, JSONMethodCodec());
-  static bool _isShowingWindow = false;
+  /*static bool _isShowingWindow = false;
   static bool _isUpdatedWindow = false;
-  static SystemWindowPrefMode prefMode = SystemWindowPrefMode.OVERLAY;
+  static SystemWindowPrefMode prefMode = SystemWindowPrefMode.OVERLAY;*/
 
   // Function used to get the current time. It's [DateTime.now] by default.
   // ignore: prefer_function_declarations_over_variables
@@ -341,55 +341,43 @@ class BackgroundServiceNew {
         List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(snapshot.value.map((x) => AplikasiDataUsage.fromJson(x)));
         List<AplikasiDataUsage> dataTrue = values.where((element) => element.blacklist == 'true' || element.limit != '0').toList();
         if(dataTrue != null && dataTrue.length>0){
-          for(var i=0; i<dataTrue.length; i++){
-            print("DATA APLIKASI USAGE : "+dataTrue[i].toJson().toString());
-          }
           DateTime endDate = new DateTime.now();
           DateTime startPenggunaan = endDate.subtract(Duration(days: 1));
           List<UsageInfo> infoList = await UsageStats.queryUsageStats(startPenggunaan, endDate);
           if(infoList.length>0) {
             infoList.sort((a, b) => a.lastTimeUsed!.compareTo(b.lastTimeUsed!));
-            for(var i=0; i<infoList.length; i++){
-              for(var j = 0; j<dataTrue.length; j++){
-                if(dataTrue[j].packageId == infoList[infoList.length-1].packageName) {
-                  print("DATA APLIKASI CURRENT : " + infoList[i].packageName.toString());
-                }
-              }
-            }
             List<AplikasiDataUsage> dataUsage = dataTrue.where((element) => element.packageId == infoList[infoList.length-1].packageName).toList();
             if(dataUsage!= null && dataUsage.length>0){
               if(dataUsage.last.blacklist == 'true'){
                 print("BLOCK APP : "+dataUsage.last.toJson().toString());
                 _channel.invokeMethod('blockAppAndPackageNow', dataUsage.last.toJson());
-                /*SystemAlertWindow.registerOnClickListener(callBackAlert);
-                _showOverlayWindow();*/
-
-                // SystemAlertWindow.closeSystemWindow(prefMode: prefMode);
               }else{
                 if(int.parse(dataUsage.last.limit.toString()) <
                     ((int.parse(infoList[infoList.length-1].totalTimeInForeground.toString()) / (1000*60)) % 60)){
                   print("BATAS APP : "+dataUsage.last.toJson().toString());
                   _channel.invokeMethod('blockAppAndPackageNow', dataUsage.last.toJson());
-                  /*SystemAlertWindow.registerOnClickListener(callBackAlert);
-                  _showOverlayWindow();*/
-                  // SystemAlertWindow.closeSystemWindow(prefMode: prefMode);
                 }
               }
+            }else {
+              ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
+              if(Platform.isAndroid) {
+                print("Data To Method : "+listAplikasiDataUsage.toJson().toString());
+                _channel.invokeMethod('startServiceCheckApp', listAplikasiDataUsage.toJson());
+              }
+            }
+          }else {
+            ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
+            if(Platform.isAndroid) {
+              print("Data To Method : "+listAplikasiDataUsage.toJson().toString());
+              _channel.invokeMethod('startServiceCheckApp', listAplikasiDataUsage.toJson());
             }
           }
-
-
-          /*ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
-          if(Platform.isAndroid) {
-            print("Data To Method : "+listAplikasiDataUsage.toJson().toString());
-            _channel.invokeMethod('startServiceCheckApp', listAplikasiDataUsage.toJson());
-          }*/
         }
       }
     });
   }
 
-  static void _showOverlayWindow() {
+  /*static void _showOverlayWindow() {
     if (!_isShowingWindow) {
       SystemWindowHeader header = SystemWindowHeader(
           title: SystemWindowText(text: "Incoming Call", fontSize: 10, textColor: Colors.black45),
@@ -554,5 +542,5 @@ class BackgroundServiceNew {
       _isUpdatedWindow = false;
       SystemAlertWindow.closeSystemWindow(prefMode: prefMode);
     }
-  }
+  }*/
 }

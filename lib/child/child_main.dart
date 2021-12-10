@@ -39,12 +39,12 @@ class _ChildMainState extends State<ChildMain> {
     controller.initData();
     startServicePlatform();
     startPeriodic();
-    _requestPermissions();
+    // _requestPermissions();
   }
 
-  Future<void> _requestPermissions() async {
+  /*Future<void> _requestPermissions() async {
     await SystemAlertWindow.requestPermissions(prefMode: prefMode);
-  }
+  }*/
 
   static Future<void> startPeriodic() async {
     await BackgroundServiceNew.oneShot(

@@ -69,7 +69,7 @@ void callbackTest() async {
   startServicePlatform();
 }
 
-void callBackAlert(String tag) {
+/*void callBackAlert(String tag) {
   print(tag);
   switch (tag) {
     case "simple_button":
@@ -83,7 +83,7 @@ void callBackAlert(String tag) {
     default:
       print("OnClick event of $tag");
   }
-}
+}*/
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: cPrimaryBg, statusBarIconBrightness: Brightness.light));
