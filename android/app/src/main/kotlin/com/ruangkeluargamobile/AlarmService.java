@@ -416,13 +416,18 @@ public class AlarmService extends JobIntentService {
         if(foregroundAppUsageStats != null) {
           modelKillAplikasi = new ModelKillAplikasi();
           modelKillAplikasi.setPackageId(foregroundAppUsageStats.getPackageName());
-          modelKillAplikasi.setTimePenggunaan("0");
+          int minutes = (int) ((foregroundAppUsageStats.getTotalTimeInForeground() / (1000*60)) % 60);
+          modelKillAplikasi.setTimePenggunaan(String.valueOf(minutes));
         }
       }
     }
+    return modelKillAplikasi;
+  }
 
-    //cek data aplikasi time
-    Calendar calendar = Calendar.getInstance();
+
+//          int minutes = (int) ((foregroundAppUsageStats.getTotalTimeInForeground() / (1000*60)) % 60);
+  //cek data aplikasi time
+    /*Calendar calendar = Calendar.getInstance();
     calendar.add(Calendar.MINUTE, 0);
     calendar.add(Calendar.HOUR, 0);
     calendar.add(Calendar.SECOND, 0);
@@ -444,9 +449,7 @@ public class AlarmService extends JobIntentService {
           }
         }
       }
-    }
-    return modelKillAplikasi;
-  }
+    }*/
 
   public static void closeApps(Context context, ModelKillAplikasi appForeground){
     ActivityManager am = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
