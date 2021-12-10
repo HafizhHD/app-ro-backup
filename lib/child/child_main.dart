@@ -13,7 +13,6 @@ import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_page.dart';
 import 'package:ruangkeluarga/parent/view/jadwal/jadwal_page.dart';
 import 'package:ruangkeluarga/utils/background_service_new.dart';
-import 'package:system_alert_window/system_alert_window.dart';
 
 import '../main.dart';
 
@@ -28,7 +27,6 @@ class ChildMain extends StatefulWidget {
 
 class _ChildMainState extends State<ChildMain> {
   final controller = Get.find<ChildController>();
-  SystemWindowPrefMode prefMode = SystemWindowPrefMode.OVERLAY;
 
   @override
   void initState() {

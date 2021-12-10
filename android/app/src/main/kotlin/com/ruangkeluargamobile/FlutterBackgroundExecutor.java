@@ -119,6 +119,8 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
             ModelKillAplikasi appForeground = getForegroundApplication(context);
             if(appForeground != null){
               if(!appForeground.getPackageId().equals("com.keluargahkbp")){
+                System.out.println("APLIKASI CURRENT : "+appForeground.getPackageId());
+                System.out.println("PENGGUNAAN : "+appForeground.getTimePenggunaan());
                 for(int i = 0; i<jsonArray.length(); i++){
                   JSONObject jsonObject = jsonArray.getJSONObject(i);
                   if (appForeground.getPackageId().equals(jsonObject.getString("packageId"))) {

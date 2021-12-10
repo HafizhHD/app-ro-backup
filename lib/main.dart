@@ -29,7 +29,6 @@ import 'package:ruangkeluarga/parent/view_model/vm_content_rk.dart';
 import 'package:ruangkeluarga/utils/background_service_new.dart';
 import 'package:ruangkeluarga/utils/base_service/service_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:system_alert_window/system_alert_window.dart';
 
 import 'global/global.dart';
 
