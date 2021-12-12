@@ -251,8 +251,10 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                               final response = await MediaRepository().scheduleRemove(schedule.id!);
                                               if (response.statusCode == 200) {
                                                 await fetchListSchedule();
+                                                closeOverlay();
                                                 showToastSuccess(ctx: context, successText: 'Berhasil Menghapus Jadwal Penggunaan!');
                                               } else {
+                                                closeOverlay();
                                                 showToastFailed(ctx: context, failedText: 'Gagal Menghapus Jadwal Penggunaan!');
                                               }
                                             },

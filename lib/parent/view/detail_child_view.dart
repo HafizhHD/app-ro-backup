@@ -348,15 +348,21 @@ class _DetailChildPageState extends State<DetailChildPage> {
               getModeAsuh();
             }),
           ),
-          // wKontrolKonfigurasiContent(
-          //   title: 'Set Jadwal Penggunaan',
-          //   content: 'Tetapkan jadwal agar anak Anda dapat menggunakan ponsel mereka hanya pada'
-          //       'waktu tertentu dan memblokir akses selama waktu makan malam atau saat'
-          //       'waktunya tidur. Anda juga dapat langsung memblokir akses ke ponsel'
-          //       'mereka dengan fitur kunci layar.',
-          //   onTap: () => Navigator.of(context).push(
-          //       MaterialPageRoute(builder: (context) => RKConfigLimitDevicePage(title: 'Jadwal Penggunaan', name: widget.name, email: widget.email))),
-          // ),
+          wKontrolKonfigurasiContent(
+            title: 'Set Jadwal Penggunaan',
+            content: 'Tetapkan jadwal agar anak Anda dapat menggunakan ponsel mereka hanya pada'
+                'waktu tertentu dan memblokir akses selama waktu makan malam atau saat'
+                'waktunya tidur. Anda juga dapat langsung memblokir akses ke ponsel'
+                'mereka dengan fitur kunci layar.',
+            onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => RKConfigLimitDevicePage(title: 'Jadwal Penggunaan', name: widget.name, email: widget.email)))
+                .then((value) {
+              setState(() {
+                _loadingGetData = true;
+              });
+              getModeAsuh();
+            }),
+          ),
         ],
       ),
     );
