@@ -10,7 +10,6 @@ import 'package:ruangkeluarga/model/rk_child_app_icon_list.dart';
 import 'package:ruangkeluarga/model/rk_child_apps.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 class RKConfigBlockApps extends StatelessWidget {
   @override
@@ -79,7 +78,6 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
             appList = data;
             appListSearch = data;
             print('id : '+appDevices['_id']);
-            _createDataToDb(data, appDevices['_id']);
             setState(() {});
             return data;
           } catch (e, s) {
@@ -113,15 +111,12 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
     prefs = await SharedPreferences.getInstance();
   }
 
-  late DatabaseReference dbPref;
-
   @override
   void initState() {
     // TODO: implement initState
     setBinding();
     super.initState();
     fAppList = fetchAppList();
-    dbPref = FirebaseDatabase.instance.reference();
   }
 
   @override
@@ -234,23 +229,6 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
         ),
       ),
     );
-  }
-
-  _createDataToDb(List<AppListWithIcons> appListSearch, String idUsageChild){
-    List<Map<String, dynamic>> data = [];
-    if(appListSearch.length>0){
-      for(var i=0; i<appListSearch.length; i++){
-        Map<String, dynamic> detail = new Map();
-        detail['packageId'] = appListSearch[i].packageId.toString();
-        detail['blacklist'] = appListSearch[i].blacklist.toString();
-        detail['appCategory'] = appListSearch[i].appCategory.toString();
-        detail['appName'] = appListSearch[i].appName.toString();
-        detail['limit'] = (appListSearch[i].limit != null)?appListSearch[i].limit.toString():'0';
-        data.add(detail);
-      }
-    }
-    dbPref.child("dataAplikasi"+idUsageChild).set(
-      data);
   }
 
   /*_readData(){

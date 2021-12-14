@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -106,7 +105,6 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
           print('SetData');
           appList = data;
           appListSearch = data;
-          _createDataToDb(data, appDevices['_id']);
           setState(() {});
 
           return data;
@@ -371,23 +369,5 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                 ],
               ));
         });
-  }
-
-  _createDataToDb(List<AppListWithIcons> appListSearch, String idUsageChild){
-    DatabaseReference dbPref = FirebaseDatabase.instance.reference();
-    List<Map<String, dynamic>> data = [];
-    if(appListSearch.length>0){
-      for(var i=0; i<appListSearch.length; i++){
-        Map<String, dynamic> detail = new Map();
-        detail['packageId'] = appListSearch[i].packageId.toString();
-        detail['blacklist'] = appListSearch[i].blacklist.toString();
-        detail['appCategory'] = appListSearch[i].appCategory.toString();
-        detail['appName'] = appListSearch[i].appName.toString();
-        detail['limit'] = (appListSearch[i].limit != null)?appListSearch[i].limit.toString():'0';
-        data.add(detail);
-      }
-    }
-    dbPref.child("dataAplikasi"+idUsageChild).set(
-        data);
   }
 }

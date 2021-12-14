@@ -35,6 +35,16 @@ import 'global/global.dart';
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print('Handling a background message ${message.messageId}');
+  ChildController controller1 = new ChildController();
+  if(message.data!=null && message.data['body'] != null){
+    if(message.data['body'].toString().toLowerCase()=='update data block app'){
+      controller1.fetchAppList();
+    }
+  }else if (message.notification != null && message.notification!.body != null) {
+    if(message.notification!.body.toString().toLowerCase()=='update data block app'){
+      controller1.fetchAppList();
+    }
+  }
 }
 
 /// Create a [AndroidNotificationChannel] for heads up notifications
@@ -60,11 +70,7 @@ void startServicePlatform() async{
 }
 
 void callbackTest() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  var deviceAppUsageAplikasi = await prefs.getString("deviceAppUsageAplikasi");
-  if(deviceAppUsageAplikasi != null && deviceAppUsageAplikasi.isNotEmpty) {
-    await BackgroundServiceNew.cekAppLaunch(deviceAppUsageAplikasi);
-  }
+  await BackgroundServiceNew.cekAppLaunch();
   startServicePlatform();
 }
 

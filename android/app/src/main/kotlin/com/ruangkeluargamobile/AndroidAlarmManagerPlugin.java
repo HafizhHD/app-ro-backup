@@ -4,6 +4,8 @@
 
 package com.ruangkeluargamobile;
 
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.Log;
@@ -175,6 +177,22 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
           modelKillAplikasi.setTimePenggunaan(blockAppAndPackageNow.getString("limit"));
           modelKillAplikasi.setBlacklist(blockAppAndPackageNow.getString("blacklist"));
           blockAppAndPackageNow(context, modelKillAplikasi);
+          result.success(true);
+          break;
+        case "lockDeviceChils":
+          JSONObject dataLock = (JSONObject) arguments;
+          DevicePolicyManager deviceManger = (DevicePolicyManager) context.getSystemService(
+                  Context.DEVICE_POLICY_SERVICE);
+          ComponentName compName = new ComponentName(context, MyAdmin.class);
+          boolean active = deviceManger.isAdminActive(compName);
+          System.out.println("isAdminActive : "+String.valueOf(active));
+          if (active) {
+            System.out.println("LOCK : true");
+            deviceManger.lockNow();
+          }else{
+            System.out.println("LOCK : false");
+            deviceManger.lockNow();
+          }
           result.success(true);
           break;
         default:

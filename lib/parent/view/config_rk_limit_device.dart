@@ -154,8 +154,8 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                   builder: (context, AsyncSnapshot<List<DeviceUsageSchedules>> snapshot) {
                     if (!snapshot.hasData) return wProgressIndicator();
 
-                    final listSchedule = snapshot.data ?? [];
-                    if (listSchedule.length <= 0) return Center(child: Text('List jadwal kosong', style: TextStyle(color: cOrtuWhite)));
+                    /*final listSchedule = snapshot.data ?? [];
+                    if (listSchedule.length <= 0) return Center(child: Text('List jadwal kosong', style: TextStyle(color: cOrtuWhite)));*/
 
                     return ListView.builder(
                         itemCount: searchlistSchedule.length,
@@ -228,8 +228,10 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                               final response = await MediaRepository().scheduleUpdateStatus(status ? '' : 'Aktif', schedule.id!);
                                               if (response.statusCode == 200) {
                                                 await fetchListSchedule();
+                                                closeOverlay();
                                                 showToastSuccess(ctx: context, successText: 'Berhasil Ubah Status Jadwal Penggunaan!');
                                               } else {
+                                                closeOverlay();
                                                 showToastFailed(ctx: context, failedText: 'Gagal Ubah Status Jadwal Penggunaan!');
                                               }
                                             },
@@ -452,20 +454,20 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                             if (hasData) {
                               final response = await onUpdateSchedule('aktif', data.id!);
                               if (response.statusCode == 200) {
-                                await fetchListSchedule();
                                 closeOverlay();
                                 closeOverlay();
                                 showToastSuccess(ctx: context, successText: 'Berhasil Ubah Jadwal Penggunaan!');
+                                await fetchListSchedule();
                               } else {
                                 showToastFailed(ctx: context, failedText: 'Gagal Ubah Jadwal Penggunaan!');
                               }
                             } else {
                               final response = await onSaveSchedule('aktif');
                               if (response.statusCode == 200) {
-                                await fetchListSchedule();
                                 closeOverlay();
                                 closeOverlay();
                                 showToastSuccess(ctx: context, successText: 'Berhasil Tambah Jadwal Penggunaan!');
+                                await fetchListSchedule();
                               } else {
                                 showToastFailed(ctx: context, failedText: 'Gagal Tambah Jadwal Penggunaan!');
                               }

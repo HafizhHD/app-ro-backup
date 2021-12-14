@@ -4,7 +4,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:camera/camera.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,15 +19,19 @@ import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/global/global_formatter.dart';
 import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/model/content_aplikasi_data_usage.dart';
+import 'package:ruangkeluarga/model/rk_child_app_icon_list.dart';
 // import 'package:ruangkeluarga/model/rk_callLog_model.dart';
 import 'package:ruangkeluarga/model/rk_child_apps.dart';
 import 'package:ruangkeluarga/model/rk_child_contact.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
 import 'package:ruangkeluarga/utils/app_usage.dart';
+import 'package:ruangkeluarga/utils/database/aplikasiDb.dart';
+import 'package:ruangkeluarga/utils/database/databasehelper.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:sqflite/sqlite_api.dart';
 import 'package:usage_stats/usage_stats.dart';
 import 'package:geolocator_platform_interface/src/enums/location_accuracy.dart' as a;
 
@@ -74,6 +77,7 @@ class ChildController extends GetxController {
         saveCurrentAppList();
         fetchContacts();
         // onGetSMS();
+        fetchAppList();
         sendData();
         // onGetCallLog(); tutup sementara
       }
@@ -128,11 +132,16 @@ class ChildController extends GetxController {
   }
 
   void onMessageListen() {
+    FirebaseMessaging.instance.getToken().then((fcmToken) {
+      print("FCM TOKEN : "+fcmToken!);
+    });
     FirebaseMessaging.instance.getInitialMessage().then((value) => {
           if (value != null) {print('remote message ${value.data}')}
         });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print("MESSAGE NOTIF : "+message.data.toString());
+      print("MESSAGE NOTIF : "+message.notification!.title.toString());
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
       if (notification != null) {
@@ -147,6 +156,15 @@ class ChildController extends GetxController {
                   icon: 'launch_background',
                   styleInformation: BigTextStyleInformation(notification.body.toString())),
             ));
+      }
+      if(message.data!=null && message.data['body'] != null){
+        if(message.data['body'].toString().toLowerCase()=='update data block app'){
+          fetchAppList();
+        }
+      }else if (notification != null && notification.title != null) {
+        if(notification.body.toString().toLowerCase()=='update data block app'){
+          fetchAppList();
+        }
       }
     });
   }
@@ -471,6 +489,63 @@ class ChildController extends GetxController {
     const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
     var i = (log(bytes) / log(1024)).floor();
     return ((bytes / pow(1024, i)).toStringAsFixed(2)) + ' ' + suffixes[i];
+  }
+
+  Future<void> fetchAppList() async {
+    String email = '';
+    if(childEmail!=null && childEmail.isNotEmpty ){
+      fetchDataApp(childEmail);
+    }else {
+      if(await AplikasiDB.instance.checkDataAplikasi()){
+        var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
+        if(dataAplikasiDb !=null && dataAplikasiDb!['email'] != null){
+          fetchDataApp(dataAplikasiDb!['email']);
+        }
+      }
+    }
+  }
+
+  void fetchDataApp(String email) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    Response response = await MediaRepository().fetchAppList(email);
+    if (response.statusCode == 200) {
+      print('isi response fetch appList : ${response.body}');
+      var json = jsonDecode(response.body);
+      if (json['resultCode'] == 'OK') {
+        if (json['appdevices'].length > 0) {
+          try {
+            var appDevices = json['appdevices'][0];
+            List<dynamic> tmpData = appDevices['appName'];
+            List<Map<String, dynamic>> dataList = [];
+
+            List<ApplicationInstalled> dataAppsInstalled =
+            List<ApplicationInstalled>.from(tmpData.map((model) => ApplicationInstalled.fromJson(model)));
+
+            for (int i = 0; i < dataAppsInstalled.length; i++) {
+              Map<String, dynamic> dataAplikasi = {
+                "appName": "${dataAppsInstalled[i].appName}",
+                "packageId": "${dataAppsInstalled[i].packageId}",
+                "blacklist": dataAppsInstalled[i].blacklist,
+                "appCategory": dataAppsInstalled[i].appCategory,
+                "limit": (dataAppsInstalled[i].limit != null)?dataAppsInstalled[i].limit.toString():'0',
+              };
+              dataList.add(dataAplikasi);
+            }
+            if(await AplikasiDB.instance.checkDataAplikasi()){
+              AplikasiDB.instance.deleteAllData();
+            }
+            Map<String, dynamic> dataAplikasi = new Map();
+            dataAplikasi['idUsage'] = appDevices['_id'];
+            dataAplikasi['email'] = childEmail;
+            dataAplikasi['dataAplikasi'] = jsonEncode(dataList);
+            AplikasiDB.instance.insertData(dataAplikasi);
+          } catch (e, s) {
+            print(e);
+            print(s);
+          }
+        }
+      }
+    }
   }
 }
 
