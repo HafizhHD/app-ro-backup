@@ -1,5 +1,6 @@
 package com.ruangkeluargamobile;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.admin.DevicePolicyManager;
@@ -41,9 +42,17 @@ import static com.ruangkeluargamobile.AlarmService.getForegroundApplication;
 public class MainAplication extends FlutterActivity implements MethodChannel.MethodCallHandler {
     public static int HOUR_RANGE = 1000 * 3600 * 24;
 
+    public static MainAplication instan;
     private Context context;
     private final Object initializationLock = new Object();
     private MethodChannel alarmManagerPluginChannel;
+    ComponentName compName;
+    DevicePolicyManager deviceManger;
+    public static MethodChannel.Result resultPremission;
+
+    public static MainAplication getInstance(){
+        return instan;
+    }
 
     @Override
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
@@ -53,6 +62,7 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        instan = this;
         context = this;
         synchronized (initializationLock) {
             if (alarmManagerPluginChannel != null) {
@@ -161,19 +171,13 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
                     break;
                 case "lockDeviceChils":
                     JSONObject dataLock = (JSONObject) arguments;
-                    DevicePolicyManager deviceManger = (DevicePolicyManager) context.getSystemService(
-                            Context.DEVICE_POLICY_SERVICE);
-                    ComponentName compName = new ComponentName(context, MyAdmin.class);
-                    boolean active = deviceManger.isAdminActive(compName);
-                    System.out.println("isAdminActive : "+String.valueOf(active));
-                    if (active) {
-                        System.out.println("LOCK : true");
-                        deviceManger.lockNow();
-                    }else{
-                        System.out.println("LOCK : false");
-                        deviceManger.lockNow();
-                    }
+                    MainAplication.getInstance().lockApp();
                     result.success(true);
+                    break;
+                case "permissionLockApp":
+                    MainAplication.getInstance().resultPremission = result;
+                    JSONObject permissionLock = (JSONObject) arguments;
+                    MainAplication.getInstance().permissionLockApp();
                     break;
                 default:
                     result.notImplemented();
@@ -185,6 +189,44 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
             result.error("error", "AlarmManager error: " + e.getMessage(), null);
         }catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void lockApp(){
+        compName = new ComponentName(MainAplication.getInstance(), MyAdmin.class);
+        deviceManger = (DevicePolicyManager)
+                getSystemService(Context.DEVICE_POLICY_SERVICE);
+        Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, compName);
+        intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "You should enable the app!");
+        startActivityForResult(intent, 1111);
+    }
+
+    public void permissionLockApp(){
+        compName = new ComponentName(MainAplication.getInstance(), MyAdmin.class);
+        deviceManger = (DevicePolicyManager)
+                getSystemService(Context.DEVICE_POLICY_SERVICE);
+        Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, compName);
+        intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "You should enable the app!");
+        startActivityForResult(intent, 11111111);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case 1111:
+                if (resultCode == Activity.RESULT_OK) {
+                    deviceManger.lockNow();
+                }
+            case 11111111:
+                if (resultCode == Activity.RESULT_OK) {
+                    MainAplication.getInstance().resultPremission.success(true);
+                }else{
+                    MainAplication.getInstance().resultPremission.success(false);
+                }
+                return;
         }
     }
 }

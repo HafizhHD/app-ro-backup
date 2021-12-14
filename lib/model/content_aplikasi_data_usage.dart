@@ -14,9 +14,9 @@ class ListAplikasiDataUsage {
 class AplikasiDataUsage {
   final String? appCategory;
   final String? appName;
-  final String? blacklist;
+  String? blacklist;
   final String? packageId;
-  final String? limit;
+  String? limit;
   final String? date;
 
   AplikasiDataUsage(

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:app_usage/app_usage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import 'package:permission_handler/permission_handler.dart';
@@ -25,6 +26,7 @@ class SetupPermissionPage extends StatefulWidget {
 
 class _SetupPermissionPageState extends State<SetupPermissionPage> {
   bool _serviceAppUsage = false;
+  bool _kunciLayar = false;
   bool _locationPermission = false;
   bool _cameraPermission = false;
   bool _audioPermission = false;
@@ -131,7 +133,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                     borderRadius: new BorderRadius.circular(15.0),
                   ),
                   onPressed: () async {
-                    if (_locationPermission && _contactPermission && _serviceAppUsage && _cameraPermission && _audioPermission) {
+                    if (_locationPermission && _contactPermission && _serviceAppUsage && _cameraPermission && _audioPermission && _kunciLayar) {
                       if (widget.userType == 'child') {
                         Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(
@@ -396,6 +398,25 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   } on AppUsageException catch (exception) {
                     print(exception);
                   }
+                }
+              },
+              contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
+            ),
+            SizedBox(height: 10),
+            SwitchListTile.adaptive(
+              tileColor: cOrtuGrey,
+              title: Text('Kunci Layar'),
+              subtitle: Text('Kami membutuhkan akses kunci layar pada perangkat anak untuk memonitoring penggunaan aplikasi/game anak.'),
+              value: _kunciLayar,
+              onChanged: (val) async {
+                MethodChannel channel= new MethodChannel('com.ruangkeluargamobile/android_service_background', JSONMethodCodec());
+                bool? response = await channel.invokeMethod<bool>('permissionLockApp', {'data':'data'});
+                print('response : '+response.toString());
+                if(response!){
+                  setState(() {
+                    _kunciLayar = true;
+                  });
                 }
               },
               contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),

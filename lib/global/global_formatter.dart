@@ -145,6 +145,68 @@ String now_ddMMMMyyyy() {
   return formatter.format(now);
 }
 
+String day_EEEE(String day){
+  switch (day) {
+    case "Sunday":
+      return "Minggu";
+      break;
+    case "Monday":
+      return "Senin";
+      break;
+    case "Tuesday":
+      return "Selasa";
+      break;
+    case "Wednesday":
+      return "Rabu";
+      break;
+    case "Thursday":
+      return "Kamis";
+      break;
+    case "Friday":
+      return "Jumat";
+      break;
+    case "Saturday":
+      return "Sabtu";
+      break;
+    default:
+      return "";
+  }
+}
+
+String hari_EEEE(String day){
+  switch (day) {
+    case "Minggu":
+      return "Sunday";
+      break;
+    case "Senin":
+      return "Monday";
+      break;
+    case "Selasa":
+      return "Tuesday";
+      break;
+    case "Rabu":
+      return "Wednesday";
+      break;
+    case "Kamis":
+      return "Thursday";
+      break;
+    case "Jumat":
+      return "Friday";
+      break;
+    case "Sabtu":
+      return "Saturday";
+      break;
+    default:
+      return "";
+  }
+}
+
+String dateFormat_EEEE() {
+  var now = DateTime.now();
+  final formatter = new DateFormat("EEEE");
+  return day_EEEE(formatter.format(now));
+}
+
 String now_ddMMMyyyy({String separator = ' '}) {
   var now = DateTime.now();
   final DateFormat formatter = DateFormat('dd${separator}MMM${separator}yyyy');

@@ -158,25 +158,12 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
         result.success(true);
       } else if (method.equals("lockDeviceChils")) {
         JSONObject dataLock = (JSONObject) arguments;
-        DevicePolicyManager deviceManger = (DevicePolicyManager) context.getSystemService(
-                Context.DEVICE_POLICY_SERVICE);
-        ComponentName compName = new ComponentName(context, MyAdmin.class);
-        boolean active = deviceManger.isAdminActive(compName);
-        System.out.println("isAdminActive : "+String.valueOf(active));
-        if (active) {
-          System.out.println("LOCK : true");
-          deviceManger.lockNow();
-        }else{
-          System.out.println("LOCK : false");
-          Intent intent = new Intent(DevicePolicyManager
-                  .ACTION_ADD_DEVICE_ADMIN);
-          intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-                  compName);
-          intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                  "Additional text explaining why this needs to be added.");
-          context.startActivity(intent);
-        }
+        MainAplication.getInstance().lockApp();
         result.success(true);
+      }else if (method.equals("permissionLockApp")) {
+        MainAplication.getInstance().resultPremission = result;
+        JSONObject permissionLock = (JSONObject) arguments;
+        MainAplication.getInstance().permissionLockApp();
       } else {
         result.notImplemented();
       }

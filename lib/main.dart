@@ -36,13 +36,17 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print('Handling a background message ${message.messageId}');
   ChildController controller1 = new ChildController();
-  if(message.data!=null && message.data['body'] != null){
+  if(message.data != null && message.data['body'] != null){
     if(message.data['body'].toString().toLowerCase()=='update data block app'){
-      controller1.fetchAppList();
-    }
-  }else if (message.notification != null && message.notification!.body != null) {
-    if(message.notification!.body.toString().toLowerCase()=='update data block app'){
-      controller1.fetchAppList();
+      if(message.data['content'] != null) {
+        controller1.fetchAppList(message.data['content']);
+      }
+    }else if(message.data['body'].toString().toLowerCase()=='mode asuh'){
+      if(message.data['content'] != null) {
+        controller1.featAppModeAsuh(message.data['content']);
+      }
+    }else if(message.data['body'].toString().toLowerCase()=='update lock screen'){
+      controller1.featLockScreen();
     }
   }
 }

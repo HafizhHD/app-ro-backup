@@ -28,7 +28,7 @@ class AplikasiDB{
     return null;
   }
 
-  Future<Map<String, dynamic>?> queryRowsAplikasi() async {
+  Future<Map<String, dynamic>?> updateRowAplikasi() async {
     Database db = await instance.database;
     var result = await db.query(DatabaseHelper.tableAplikasi, limit: 1);
     if(result.length>0){
