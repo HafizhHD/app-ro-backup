@@ -181,19 +181,13 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
           break;
         case "lockDeviceChils":
           JSONObject dataLock = (JSONObject) arguments;
-          DevicePolicyManager deviceManger = (DevicePolicyManager) context.getSystemService(
-                  Context.DEVICE_POLICY_SERVICE);
-          ComponentName compName = new ComponentName(context, MyAdmin.class);
-          boolean active = deviceManger.isAdminActive(compName);
-          System.out.println("isAdminActive : "+String.valueOf(active));
-          if (active) {
-            System.out.println("LOCK : true");
-            deviceManger.lockNow();
-          }else{
-            System.out.println("LOCK : false");
-            deviceManger.lockNow();
-          }
+          MainAplication.getInstance().lockApp();
           result.success(true);
+          break;
+        case "permissionLockApp":
+          MainAplication.getInstance().resultPremission = result;
+          JSONObject permissionLock = (JSONObject) arguments;
+          MainAplication.getInstance().permissionLockApp();
           break;
         default:
           result.notImplemented();

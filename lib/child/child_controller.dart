@@ -23,6 +23,7 @@ import 'package:ruangkeluarga/model/rk_child_app_icon_list.dart';
 // import 'package:ruangkeluarga/model/rk_callLog_model.dart';
 import 'package:ruangkeluarga/model/rk_child_apps.dart';
 import 'package:ruangkeluarga/model/rk_child_contact.dart';
+import 'package:ruangkeluarga/model/rk_schedule_model.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
 import 'package:ruangkeluarga/utils/app_usage.dart';
@@ -77,7 +78,7 @@ class ChildController extends GetxController {
         saveCurrentAppList();
         fetchContacts();
         // onGetSMS();
-        fetchAppList();
+        fetchDataApp();
         sendData();
         // onGetCallLog(); tutup sementara
       }
@@ -140,30 +141,34 @@ class ChildController extends GetxController {
         });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("MESSAGE NOTIF : "+message.data.toString());
-      print("MESSAGE NOTIF : "+message.notification!.title.toString());
+      print("MESSAGE : "+message.data.toString());
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
-      if (notification != null) {
-        flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
-            NotificationDetails(
-              android: AndroidNotificationDetails(channel.id, channel.name, channel.description,
-                  // TODO add a proper drawable resource to android, for now using
-                  //      one that already exists in example app.
-                  icon: 'launch_background',
-                  styleInformation: BigTextStyleInformation(notification.body.toString())),
-            ));
-      }
-      if(message.data!=null && message.data['body'] != null){
+      if(message.data != null && message.data['body'] != null){
         if(message.data['body'].toString().toLowerCase()=='update data block app'){
-          fetchAppList();
-        }
-      }else if (notification != null && notification.title != null) {
-        if(notification.body.toString().toLowerCase()=='update data block app'){
-          fetchAppList();
+          if(message.data['content'] != null) {
+            fetchAppList(message.data['content']);
+          }
+        }else if(message.data['body'].toString().toLowerCase()=='mode asuh'){
+          if(message.data['content'] != null) {
+            featAppModeAsuh(message.data['content']);
+          }
+        }else if(message.data['body'].toString().toLowerCase()=='update lock screen'){
+          featLockScreen();
+        }else{
+          flutterLocalNotificationsPlugin.show(
+              notification.hashCode,
+              message.data['title'],
+              message.data['body'],
+              NotificationDetails(
+                android: AndroidNotificationDetails(
+                    channel.id, channel.name, channel.description,
+                    // TODO add a proper drawable resource to android, for now using
+                    //      one that already exists in example app.
+                    icon: 'launch_background',
+                    styleInformation: BigTextStyleInformation(
+                        message.data['body'].toString())),
+              ));
         }
       }
     });
@@ -491,23 +496,124 @@ class ChildController extends GetxController {
     return ((bytes / pow(1024, i)).toStringAsFixed(2)) + ' ' + suffixes[i];
   }
 
-  Future<void> fetchAppList() async {
-    String email = '';
-    if(childEmail!=null && childEmail.isNotEmpty ){
-      fetchDataApp(childEmail);
-    }else {
-      if(await AplikasiDB.instance.checkDataAplikasi()){
-        var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
-        if(dataAplikasiDb !=null && dataAplikasiDb!['email'] != null){
-          fetchDataApp(dataAplikasiDb!['email']);
+  void featLockScreen() async{
+    try{
+      var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
+      if (dataAplikasiDb != null) {
+        Response response = await MediaRepository().fetchUserSchedule(dataAplikasiDb['email']);
+        print('isi response fetch deviceUsageSchedules : ${response.body}');
+        if (response.statusCode == 200) {
+          var json = jsonDecode(response.body);
+          Map<String, dynamic> dataAplikasi = new Map();
+          dataAplikasi['idUsage'] = dataAplikasiDb['_id'];
+          dataAplikasi['email'] = dataAplikasiDb['email'];
+          dataAplikasi['dataAplikasi'] = dataAplikasiDb['dataAplikasi'];
+          dataAplikasi['kunciLayar'] = jsonEncode(json['deviceUsageSchedules']);
+          AplikasiDB.instance.deleteAllData();
+          AplikasiDB.instance.insertData(dataAplikasi);
         }
       }
+    }catch(e){
+      print(e);
     }
   }
 
-  void fetchDataApp(String email) async{
+  void featAppModeAsuh(String listDataApp) async{
+    try{
+      var dataNotif = jsonDecode(listDataApp);
+      var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
+      if (dataAplikasiDb != null) {
+        List<Map<String, dynamic>> listDataAplikasi = [];
+        List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(jsonDecode(dataAplikasiDb['dataAplikasi']).map((x) => AplikasiDataUsage.fromJson(x)));
+        if(values.length>0){
+          for(var i=0; i<values.length; i++){
+            if(dataNotif['appCategoryBlocked'] != null){
+              List<dynamic> kategoryMode = dataNotif['appCategoryBlocked'];
+              if(kategoryMode.length>0){
+                for(var j=0; j<kategoryMode.length; j++){
+                  if(values[i].appCategory.toString().toLowerCase() == kategoryMode[j].toLowerCase()){
+                    values[i].blacklist = 'true';
+                    values[i].limit = '0';
+                    listDataAplikasi.add(values[i].toJson());
+                  }else{
+                    values[i].blacklist = 'false';
+                    values[i].limit = '0';
+                    listDataAplikasi.add(values[i].toJson());
+                  }
+                }
+              }else{
+                values[i].blacklist = 'false';
+                values[i].limit = '0';
+                listDataAplikasi.add(values[i].toJson());
+              }
+            }else{
+              values[i].blacklist = 'false';
+              values[i].limit = '0';
+              listDataAplikasi.add(values[i].toJson());
+            }
+          }
+        }
+        Map<String, dynamic> dataAplikasi = new Map();
+        dataAplikasi['idUsage'] = dataNotif['_id'];
+        dataAplikasi['email'] = dataNotif['emailUser'];
+        dataAplikasi['dataAplikasi'] = jsonEncode(listDataAplikasi);
+        dataAplikasi['kunciLayar'] = dataAplikasiDb['kunciLayar'];
+        AplikasiDB.instance.deleteAllData();
+        AplikasiDB.instance.insertData(dataAplikasi);
+      }
+    }catch(e){
+
+    }
+  }
+
+  void fetchAppList(String listDataApp) async {
+    var dataNotif = jsonDecode(listDataApp);
+    var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
+    if (dataAplikasiDb != null && dataAplikasiDb['dataAplikasi'] != null) {
+      List<Map<String, dynamic>> listDataAplikasi = [];
+      List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(jsonDecode(dataAplikasiDb['dataAplikasi']).map((x) => AplikasiDataUsage.fromJson(x)));
+      if(values.length>0){
+        for(var i=0; i<values.length; i++){
+          if(values[i].packageId == dataNotif['packageId']){
+            values[i].blacklist = (dataNotif['blacklist'] != null)?dataNotif['blacklist'].toString():'false';
+            values[i].limit = (dataNotif['limit'] != null)?dataNotif['limit'].toString():'0';
+            listDataAplikasi.add(values[i].toJson());
+          }else{
+            listDataAplikasi.add(values[i].toJson());
+          }
+        }
+      }
+      Map<String, dynamic> dataAplikasi = new Map();
+      dataAplikasi['idUsage'] = dataNotif['_id'];
+      dataAplikasi['email'] = dataNotif['emailUser'];
+      dataAplikasi['dataAplikasi'] = jsonEncode(listDataAplikasi);
+      dataAplikasi['kunciLayar'] = dataAplikasiDb['kunciLayar'];
+      AplikasiDB.instance.deleteAllData();
+      AplikasiDB.instance.insertData(dataAplikasi);
+    }else{
+      AplikasiDataUsage dataUsage = new AplikasiDataUsage(
+        limit: dataNotif['limit'].toString(),
+        appCategory: dataNotif['appCategory'].toString(),
+        appName: dataNotif['appName'].toString(),
+        blacklist: dataNotif['blacklist'].toString(),
+        packageId: dataNotif['packageId'].toString(),
+        date: now_ddMMMMyyyy()
+      );
+      List<Map<String, dynamic>> listDataAplikasi = [];
+      listDataAplikasi.add(dataUsage.toJson());
+      Map<String, dynamic> dataAplikasi = new Map();
+      dataAplikasi['idUsage'] = dataNotif['_id'];
+      dataAplikasi['email'] = dataNotif['emailUser'];
+      dataAplikasi['dataAplikasi'] = jsonEncode(listDataAplikasi);
+      dataAplikasi['kunciLayar'] = '';
+      AplikasiDB.instance.deleteAllData();
+      AplikasiDB.instance.insertData(dataAplikasi);
+    }
+  }
+
+  void fetchDataApp() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    Response response = await MediaRepository().fetchAppList(email);
+    Response response = await MediaRepository().fetchAppList(childEmail);
     if (response.statusCode == 200) {
       print('isi response fetch appList : ${response.body}');
       var json = jsonDecode(response.body);
@@ -531,14 +637,24 @@ class ChildController extends GetxController {
               };
               dataList.add(dataAplikasi);
             }
-            if(await AplikasiDB.instance.checkDataAplikasi()){
+            var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
+            if (dataAplikasiDb != null) {
               AplikasiDB.instance.deleteAllData();
+              Map<String, dynamic> dataAplikasi = new Map();
+              dataAplikasi['idUsage'] = appDevices['_id'];
+              dataAplikasi['email'] = childEmail;
+              dataAplikasi['dataAplikasi'] = jsonEncode(dataList);
+              dataAplikasi['kunciLayar'] = dataAplikasiDb['kunciLayar'];
+              AplikasiDB.instance.insertData(dataAplikasi);
+            }else{
+              Map<String, dynamic> dataAplikasi = new Map();
+              dataAplikasi['idUsage'] = appDevices['_id'];
+              dataAplikasi['email'] = childEmail;
+              dataAplikasi['dataAplikasi'] = jsonEncode(dataList);
+              dataAplikasi['kunciLayar'] = '';
+              AplikasiDB.instance.insertData(dataAplikasi);
             }
-            Map<String, dynamic> dataAplikasi = new Map();
-            dataAplikasi['idUsage'] = appDevices['_id'];
-            dataAplikasi['email'] = childEmail;
-            dataAplikasi['dataAplikasi'] = jsonEncode(dataList);
-            AplikasiDB.instance.insertData(dataAplikasi);
+            featLockScreen();
           } catch (e, s) {
             print(e);
             print(s);

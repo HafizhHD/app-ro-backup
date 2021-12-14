@@ -397,7 +397,6 @@ class _DetailChildPageState extends State<DetailChildPage> {
                       setState(() {
                         _switchLockScreen = value;
                       });
-                      // new MethodChannel('com.ruangkeluargamobile/android_service_background', JSONMethodCodec()).invokeMethod('lockDeviceChils', {'data':'data'});
                     },
                   ),
                 )
