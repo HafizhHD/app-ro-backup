@@ -4,6 +4,9 @@
 
 package com.ruangkeluargamobile;
 
+import android.app.ActivityManager;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -152,6 +155,27 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
         modelKillAplikasi.setTimePenggunaan(checkAppLoad.getString("limit"));
         modelKillAplikasi.setBlacklist(checkAppLoad.getString("blacklist"));
         blockAppAndPackageNow(context, modelKillAplikasi);
+        result.success(true);
+      } else if (method.equals("lockDeviceChils")) {
+        JSONObject dataLock = (JSONObject) arguments;
+        DevicePolicyManager deviceManger = (DevicePolicyManager) context.getSystemService(
+                Context.DEVICE_POLICY_SERVICE);
+        ComponentName compName = new ComponentName(context, MyAdmin.class);
+        boolean active = deviceManger.isAdminActive(compName);
+        System.out.println("isAdminActive : "+String.valueOf(active));
+        if (active) {
+          System.out.println("LOCK : true");
+          deviceManger.lockNow();
+        }else{
+          System.out.println("LOCK : false");
+          Intent intent = new Intent(DevicePolicyManager
+                  .ACTION_ADD_DEVICE_ADMIN);
+          intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN,
+                  compName);
+          intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+                  "Additional text explaining why this needs to be added.");
+          context.startActivity(intent);
+        }
         result.success(true);
       } else {
         result.notImplemented();

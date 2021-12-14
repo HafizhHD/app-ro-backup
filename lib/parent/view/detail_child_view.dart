@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
@@ -26,6 +26,7 @@ import 'package:ruangkeluarga/parent/view_model/appUsage_model.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:flutter_screen_lock/flutter_screen_lock.dart';
 
 class DetailChildPage extends StatefulWidget {
   @override
@@ -396,6 +397,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                       setState(() {
                         _switchLockScreen = value;
                       });
+                      // new MethodChannel('com.ruangkeluargamobile/android_service_background', JSONMethodCodec()).invokeMethod('lockDeviceChils', {'data':'data'});
                     },
                   ),
                 )
@@ -789,7 +791,6 @@ class _DetailChildPageState extends State<DetailChildPage> {
 
   Future<void> updateDatatoFirebase(int index) async {
     showLoadingOverlay();
-    DatabaseReference dbPref = FirebaseDatabase.instance.reference();
     List<Map<String, dynamic>> data = [];
     var id_child_usage = await prefs.getString('ID_CHILD_USAGE');
     if(id_child_usage != null){
@@ -799,34 +800,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
           namaModeAsuh = dataModeAsuh[index]['modeAsuhName'];
         }
         updateModeAsuhh(namaModeAsuh).then((value){
-          if(value){
-            if(detailAplikasiChild.length>0){
-              for(int i=0; i<detailAplikasiChild.length; i++){
-                Map<String, dynamic> detail = new Map();
-                detail['packageId'] = detailAplikasiChild[i].packageId.toString();
-                detail['appCategory'] = detailAplikasiChild[i].appCategory.toString();
-                detail['appName'] = detailAplikasiChild[i].appName.toString();
-                detail['limit'] = (detailAplikasiChild[i].limit != null)?detailAplikasiChild[i].limit.toString():'0';
-                detail['blacklist'] = 'false';
-                if(dataModeAsuh[index]['appCategoryBlocked'] != null){
-                  List<dynamic> appKategory = dataModeAsuh[index]['appCategoryBlocked'];
-                  if(appKategory!=null && appKategory.length>0){
-                    for(var j=0; j<appKategory.length; j++){
-                      if(detailAplikasiChild[i].appCategory.toLowerCase() == appKategory[j].toString().toLowerCase()){
-                        detail['blacklist'] = 'true';
-                      }
-                    }
-                  }
-                }
-                data.add(detail);
-              }
-              dbPref.child("dataAplikasi"+id_child_usage.toString()).set(
-                  data);
-            }
-            closeOverlay();
-          }else{
-            closeOverlay();
-          }
+          closeOverlay();
         }).onError((error, stackTrace) {
           closeOverlay();
         });

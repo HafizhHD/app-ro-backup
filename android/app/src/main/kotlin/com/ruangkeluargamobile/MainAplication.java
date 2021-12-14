@@ -2,8 +2,10 @@ package com.ruangkeluargamobile;
 
 import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.admin.DevicePolicyManager;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -155,6 +157,22 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
                     modelKillAplikasi.setTimePenggunaan(blockAppAndPackageNow.getString("limit"));
                     modelKillAplikasi.setBlacklist(blockAppAndPackageNow.getString("blacklist"));
                     blockAppAndPackageNow(context, modelKillAplikasi);
+                    result.success(true);
+                    break;
+                case "lockDeviceChils":
+                    JSONObject dataLock = (JSONObject) arguments;
+                    DevicePolicyManager deviceManger = (DevicePolicyManager) context.getSystemService(
+                            Context.DEVICE_POLICY_SERVICE);
+                    ComponentName compName = new ComponentName(context, MyAdmin.class);
+                    boolean active = deviceManger.isAdminActive(compName);
+                    System.out.println("isAdminActive : "+String.valueOf(active));
+                    if (active) {
+                        System.out.println("LOCK : true");
+                        deviceManger.lockNow();
+                    }else{
+                        System.out.println("LOCK : false");
+                        deviceManger.lockNow();
+                    }
                     result.success(true);
                     break;
                 default:

@@ -30,11 +30,11 @@ class AplikasiDataUsage {
 
   factory AplikasiDataUsage.fromJson(Map<dynamic, dynamic> json) {
     return AplikasiDataUsage(
-      appCategory: json['appCategory'] as String?,
-      appName: json['appName'] as String?,
-      blacklist: json['blacklist'] as String?,
-      packageId: json['packageId'] as String?,
-      limit: ((json['limit'] != null)? json['limit']:'0') as String?,
+      appCategory: json['appCategory'].toString(),
+      appName: json['appName'].toString(),
+      blacklist: json['blacklist'].toString(),
+      packageId: json['packageId'].toString(),
+      limit: ((json['limit'] != null)? json['limit']:'0').toString(),
       date: now_ddMMMMyyyy(),
     );
   }

@@ -4,11 +4,11 @@
 
 import 'dart:async';
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -16,6 +16,7 @@ import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/model/content_aplikasi_data_usage.dart';
 import 'package:ruangkeluarga/utils/app_usage.dart';
+import 'package:ruangkeluarga/utils/database/aplikasiDb.dart';
 import 'package:usage_stats/usage_stats.dart';
 
 const String _backgroundName =
@@ -333,49 +334,24 @@ class BackgroundServiceNew {
     return (r == null) ? false : r;
   }
 
-  static Future<void> cekAppLaunch(String deviceAppUsage) async {
-    DatabaseReference dbPref = FirebaseDatabase.instance.reference().child("dataAplikasi"+deviceAppUsage.toString());
-    dbPref.once().then((DataSnapshot snapshot) async {
-      if(snapshot.value != null){
-        List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(snapshot.value.map((x) => AplikasiDataUsage.fromJson(x)));
-        List<AplikasiDataUsage> dataTrue = values.where((element) => element.blacklist == 'true' || element.limit != '0').toList();
-        if(dataTrue != null && dataTrue.length>0){
-          ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
-          if(Platform.isAndroid) {
-            print("Data To Method : "+listAplikasiDataUsage.toJson().toString());
-            _channel.invokeMethod('startServiceCheckApp', listAplikasiDataUsage.toJson());
-          }
-          /*DateTime endDate = new DateTime.now();
-          DateTime startPenggunaan = endDate.subtract(Duration(hours: DateTime.now().hour, minutes: DateTime.now().minute, seconds: DateTime.now().second));
-          List<UsageInfo> infoList = await UsageStats.queryUsageStats(startPenggunaan, endDate);
-          if(infoList.length>0) {
-            infoList.sort((a, b) => int.parse(a.lastTimeUsed!).compareTo(int.parse(b.lastTimeUsed!)));
-            print("DATA APLIKASI "+infoList[infoList.length-1].packageName.toString());
-            List<AplikasiDataUsage> dataUsage = dataTrue.where((element) => element.packageId == infoList[infoList.length-1].packageName).toList();
-            if(dataUsage!= null && dataUsage.length>0){
-              if(dataUsage.last.blacklist == 'true'){
-                print("BLOCK APP : "+dataUsage.last.toJson().toString());
-                _channel.invokeMethod('blockAppAndPackageNow', dataUsage.last.toJson());
-              }else{
-                double timeUsage = ((int.parse(infoList[infoList.length-1].totalTimeInForeground.toString()) / (1000*60)) % 60) as double;
-                print("TIME : "+timeUsage.toString());
-                if(int.parse(dataUsage.last.limit.toString()) < timeUsage){
-                  print("BATAS APP : "+dataUsage.last.toJson().toString());
-                  _channel.invokeMethod('blockAppAndPackageNow', dataUsage.last.toJson());
-                }
-              }
-            }else {
-              ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
-              if(Platform.isAndroid) {
-                print("Data To Method : "+listAplikasiDataUsage.toJson().toString());
-                _channel.invokeMethod('startServiceCheckApp', listAplikasiDataUsage.toJson());
-              }
+  static Future<void> cekAppLaunch() async {
+    try{
+      if(await AplikasiDB.instance.checkDataAplikasi()) {
+        var dataAplikasiDb = await AplikasiDB.instance.queryRowsAplikasi();
+        if (dataAplikasiDb != null && dataAplikasiDb['dataAplikasi'] != null) {
+          List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(jsonDecode(dataAplikasiDb['dataAplikasi']).map((x) => AplikasiDataUsage.fromJson(x)));
+          List<AplikasiDataUsage> dataTrue = values.where((element) => element.blacklist == 'true' || element.limit != '0').toList();
+          if (dataTrue != null && dataTrue.length > 0) {
+            ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
+            if (Platform.isAndroid) {
+              print("Data To Method : " + listAplikasiDataUsage.toJson().toString());
+              _channel.invokeMethod('startServiceCheckApp', listAplikasiDataUsage.toJson());
             }
-          }else {*/
-
-          /*}*/
+          }
         }
       }
-    });
+    }catch(e){
+      print(e);
+    }
   }
 }
