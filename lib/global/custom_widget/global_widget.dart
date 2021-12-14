@@ -140,8 +140,6 @@ void logUserOut() {
         ),
         TextButton(
           onPressed: () async {
-            await BackgroundServiceNew.cancel(100);
-            await BackgroundServiceNew.cancel(10000);
             showLoadingOverlay();
             SharedPreferences prefs = await SharedPreferences.getInstance();
             await prefs.clear();
