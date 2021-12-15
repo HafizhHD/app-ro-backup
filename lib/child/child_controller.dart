@@ -75,10 +75,10 @@ class ChildController extends GetxController {
       if ((value)) {
         fParentProfile.value = getParentData();
         onMessageListen();
+        fetchDataApp();
         saveCurrentAppList();
         fetchContacts();
         // onGetSMS();
-        fetchDataApp();
         sendData();
         // onGetCallLog(); tutup sementara
       }

@@ -339,6 +339,7 @@ class BackgroundServiceNew {
     try{
       if(await AplikasiDB.instance.checkDataAplikasi()) {
         var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
+        print("dataAplikasiDb : "+dataAplikasiDb.toString());
         if (dataAplikasiDb != null) {
           if(dataAplikasiDb['modekunciLayar'] != null && dataAplikasiDb['modekunciLayar'] == 'true'){
             print(dataAplikasiDb['modekunciLayar']);
