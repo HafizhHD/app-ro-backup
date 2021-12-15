@@ -170,6 +170,7 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
                     result.success(true);
                     break;
                 case "lockDeviceChils":
+                    MainAplication.getInstance().resultPremission = result;
                     JSONObject dataLock = (JSONObject) arguments;
                     MainAplication.getInstance().lockApp();
                     result.success(true);
@@ -219,6 +220,7 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
             case 1111:
                 if (resultCode == Activity.RESULT_OK) {
                     deviceManger.lockNow();
+                    MainAplication.getInstance().resultPremission.success(true);
                 }
             case 11111111:
                 if (resultCode == Activity.RESULT_OK) {

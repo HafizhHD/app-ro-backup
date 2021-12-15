@@ -157,6 +157,7 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
         blockAppAndPackageNow(context, modelKillAplikasi);
         result.success(true);
       } else if (method.equals("lockDeviceChils")) {
+        MainAplication.getInstance().resultPremission = result;
         JSONObject dataLock = (JSONObject) arguments;
         MainAplication.getInstance().lockApp();
         result.success(true);

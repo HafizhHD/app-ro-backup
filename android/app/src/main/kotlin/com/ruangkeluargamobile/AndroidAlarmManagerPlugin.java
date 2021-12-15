@@ -180,6 +180,7 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
           result.success(true);
           break;
         case "lockDeviceChils":
+          MainAplication.getInstance().resultPremission = result;
           JSONObject dataLock = (JSONObject) arguments;
           MainAplication.getInstance().lockApp();
           result.success(true);
