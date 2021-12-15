@@ -341,6 +341,7 @@ class BackgroundServiceNew {
         var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
         print("dataAplikasiDb : "+dataAplikasiDb.toString());
         if (dataAplikasiDb != null) {
+          //jika lock membahayakan hidde source dibawah ini sampai if selanjutnya
           if(dataAplikasiDb['modekunciLayar'] != null && dataAplikasiDb['modekunciLayar'] == 'true'){
             print(dataAplikasiDb['modekunciLayar']);
             new MethodChannel('com.ruangkeluargamobile/android_service_background', JSONMethodCodec()).invokeMethod('lockDeviceChils', {'data':'data'});
