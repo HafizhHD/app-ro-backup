@@ -157,6 +157,10 @@ class ChildController extends GetxController {
           if(message.data['content'] != null) {
             var dataNotif = jsonDecode(message.data['content']);
             if(dataNotif['lockstatus']!=null){
+              //jika lock membahayakan aktifkan source dibawah ini dan hidden source dibawahnya
+              /*if(dataNotif['lockstatus'].toString() == 'true'){
+                new MethodChannel('com.ruangkeluargamobile/android_service_background', JSONMethodCodec()).invokeMethod('lockDeviceChils', {'data':'data'});
+              }*/
               featStatusLockScreen(dataNotif['lockstatus'].toString());
             }
           }else{
