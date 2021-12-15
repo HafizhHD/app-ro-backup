@@ -154,7 +154,14 @@ class ChildController extends GetxController {
             featAppModeAsuh(message.data['content']);
           }
         }else if(message.data['body'].toString().toLowerCase()=='update lock screen'){
-          featLockScreen();
+          if(message.data['content'] != null) {
+            var dataNotif = jsonDecode(message.data['content']);
+            if(dataNotif['lockstatus']!=null){
+              featStatusLockScreen(dataNotif['lockstatus'].toString());
+            }
+          }else{
+            featLockScreen();
+          }
         }else{
           flutterLocalNotificationsPlugin.show(
               notification.hashCode,
@@ -509,8 +516,52 @@ class ChildController extends GetxController {
           dataAplikasi['email'] = dataAplikasiDb['email'];
           dataAplikasi['dataAplikasi'] = dataAplikasiDb['dataAplikasi'];
           dataAplikasi['kunciLayar'] = jsonEncode(json['deviceUsageSchedules']);
+          dataAplikasi['modekunciLayar'] = dataAplikasiDb['modekunciLayar'];
           AplikasiDB.instance.deleteAllData();
           AplikasiDB.instance.insertData(dataAplikasi);
+          String lockStatus = '';
+          featStatusLockScreen(lockStatus);
+        }
+      }
+    }catch(e){
+      print(e);
+    }
+  }
+
+  void featStatusLockScreen(String lockStatus) async{
+    try{
+      var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
+      if(lockStatus != null && lockStatus.isNotEmpty){
+        if (dataAplikasiDb != null) {
+          Map<String, dynamic> dataAplikasi = new Map();
+          dataAplikasi['idUsage'] = dataAplikasiDb['_id'];
+          dataAplikasi['email'] = dataAplikasiDb['email'];
+          dataAplikasi['dataAplikasi'] = dataAplikasiDb['dataAplikasi'];
+          dataAplikasi['kunciLayar'] = dataAplikasiDb['kunciLayar'];
+          dataAplikasi['modekunciLayar'] = lockStatus;
+          AplikasiDB.instance.deleteAllData();
+          AplikasiDB.instance.insertData(dataAplikasi);
+        }
+      }else{
+        if (dataAplikasiDb != null) {
+          Response response = await MediaRepository().fetchModeLock(dataAplikasiDb['email']);
+          print('isi response fetch featStatusLockScreen : ${response.body}');
+          if (response.statusCode == 200) {
+            var json = jsonDecode(response.body);
+            if(json['resultData'] != null){
+              var result = json['resultData'];
+              if(result['lockStatus'] != null){
+                Map<String, dynamic> dataAplikasi = new Map();
+                dataAplikasi['idUsage'] = dataAplikasiDb['_id'];
+                dataAplikasi['email'] = dataAplikasiDb['email'];
+                dataAplikasi['dataAplikasi'] = dataAplikasiDb['dataAplikasi'];
+                dataAplikasi['kunciLayar'] = dataAplikasiDb['kunciLayar'];
+                dataAplikasi['modekunciLayar'] = result['lockStatus'].toString();
+                AplikasiDB.instance.deleteAllData();
+                AplikasiDB.instance.insertData(dataAplikasi);
+              }
+            }
+          }
         }
       }
     }catch(e){
@@ -558,6 +609,7 @@ class ChildController extends GetxController {
         dataAplikasi['email'] = dataNotif['emailUser'];
         dataAplikasi['dataAplikasi'] = jsonEncode(listDataAplikasi);
         dataAplikasi['kunciLayar'] = dataAplikasiDb['kunciLayar'];
+        dataAplikasi['modekunciLayar'] = dataAplikasiDb['modekunciLayar'];
         AplikasiDB.instance.deleteAllData();
         AplikasiDB.instance.insertData(dataAplikasi);
       }
@@ -588,6 +640,7 @@ class ChildController extends GetxController {
       dataAplikasi['email'] = dataNotif['emailUser'];
       dataAplikasi['dataAplikasi'] = jsonEncode(listDataAplikasi);
       dataAplikasi['kunciLayar'] = dataAplikasiDb['kunciLayar'];
+      dataAplikasi['modekunciLayar'] = dataAplikasiDb['modekunciLayar'];
       AplikasiDB.instance.deleteAllData();
       AplikasiDB.instance.insertData(dataAplikasi);
     }else{
@@ -606,6 +659,7 @@ class ChildController extends GetxController {
       dataAplikasi['email'] = dataNotif['emailUser'];
       dataAplikasi['dataAplikasi'] = jsonEncode(listDataAplikasi);
       dataAplikasi['kunciLayar'] = '';
+      dataAplikasi['modekunciLayar'] = '';
       AplikasiDB.instance.deleteAllData();
       AplikasiDB.instance.insertData(dataAplikasi);
     }
@@ -645,6 +699,7 @@ class ChildController extends GetxController {
               dataAplikasi['email'] = childEmail;
               dataAplikasi['dataAplikasi'] = jsonEncode(dataList);
               dataAplikasi['kunciLayar'] = dataAplikasiDb['kunciLayar'];
+              dataAplikasi['modekunciLayar'] = (dataAplikasiDb['modekunciLayar'] != null)?dataAplikasiDb['modekunciLayar']:'';
               AplikasiDB.instance.insertData(dataAplikasi);
             }else{
               Map<String, dynamic> dataAplikasi = new Map();
@@ -652,6 +707,7 @@ class ChildController extends GetxController {
               dataAplikasi['email'] = childEmail;
               dataAplikasi['dataAplikasi'] = jsonEncode(dataList);
               dataAplikasi['kunciLayar'] = '';
+              dataAplikasi['modekunciLayar'] = '';
               AplikasiDB.instance.insertData(dataAplikasi);
             }
             featLockScreen();

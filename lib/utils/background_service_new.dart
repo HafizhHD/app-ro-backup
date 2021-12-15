@@ -340,7 +340,10 @@ class BackgroundServiceNew {
       if(await AplikasiDB.instance.checkDataAplikasi()) {
         var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
         if (dataAplikasiDb != null) {
-          if(dataAplikasiDb['kunciLayar'] != null) {
+          if(dataAplikasiDb['modekunciLayar'] != null && dataAplikasiDb['modekunciLayar'] == 'true'){
+            print(dataAplikasiDb['modekunciLayar']);
+            new MethodChannel('com.ruangkeluargamobile/android_service_background', JSONMethodCodec()).invokeMethod('lockDeviceChils', {'data':'data'});
+          }else if(dataAplikasiDb['kunciLayar'] != null) {
             List<dynamic> res = jsonDecode(dataAplikasiDb['kunciLayar']).map((e) => e).toList();
             if(res.length>0){
               bool cekScheduleLayar = false;

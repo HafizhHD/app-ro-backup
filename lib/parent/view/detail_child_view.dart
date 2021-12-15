@@ -53,6 +53,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
 
   // List<charts.Series> seriesList = [];
   bool _switchLockScreen = false;
+  bool _loadingLockScreen = false;
   bool _switchModeAsuh = false;
   bool _loadingGetData = false;
   bool _loadingFeatchData = false;
@@ -158,6 +159,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
   @override
   void initState() {
     super.initState();
+    fetchModeLock();
     getModeAsuh();
 
     setBindingData();
@@ -378,7 +380,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
             margin: EdgeInsets.all(10.0),
             child: Text('Kontrol Instant', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: cOrtuWhite)),
           ),
-          Container(
+          (_loadingLockScreen)?Container(
             margin: EdgeInsets.all(10.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -394,15 +396,13 @@ class _DetailChildPageState extends State<DetailChildPage> {
                     activeColor: cOrtuBlue,
                     value: _switchLockScreen,
                     onChanged: (value) {
-                      setState(() {
-                        _switchLockScreen = value;
-                      });
+                      fetchUpdateModeLock(!_switchLockScreen);
                     },
                   ),
                 )
               ],
             ),
-          ),
+          ):wProgressIndicator(),
           (dataModeAsuh.length<=0)?wProgressIndicator():Container(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -675,6 +675,75 @@ class _DetailChildPageState extends State<DetailChildPage> {
       }
     } else {
       return [];
+    }
+  }
+
+  Future<void> fetchModeLock() async {
+    var response = await MediaRepository().fetchModeLock(widget.email);
+    print('isi response fetchModeLock : ${response.body}');
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body);
+      if (json['resultCode'] == 'OK') {
+        if(json['resultData'] != null){
+          var result = json['resultData'];
+          if(result['lockStatus'] != null){
+            setState(() {
+              _switchLockScreen = result['lockStatus'];
+              _loadingLockScreen = true;
+            });
+          }else{
+            setState(() {
+              _loadingLockScreen = true;
+            });
+          }
+        }else{
+          setState(() {
+            _loadingLockScreen = true;
+          });
+        }
+      }else{
+        setState(() {
+          _loadingLockScreen = true;
+        });
+      }
+    }else{
+      setState(() {
+        _loadingLockScreen = true;
+      });
+    }
+  }
+
+  Future<void> fetchUpdateModeLock(bool lockStatus) async {
+    showLoadingOverlay();
+    var response = await MediaRepository().fetchUpdateModeLock(widget.email, lockStatus);
+    print('isi response fetchUpdateModeLock : ${response.body}');
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body);
+      if (json['resultCode'] == 'OK') {
+        if(json['resultData'] != null){
+          var result = json['resultData'];
+          print('lockStatus : ${result['lockStatus']}');
+          if(result['lockStatus'] != null){
+            setState(() {
+              _switchLockScreen = result['lockStatus'];
+            });
+            closeOverlay();
+            showToastSuccess(ctx: context, successText: 'Perubahan mode kunci layar berhasil!');
+          }else{
+            closeOverlay();
+            showToastFailed(ctx: context, failedText: 'Perubahan mode kunci layar gagal!');
+          }
+        }else{
+          closeOverlay();
+          showToastFailed(ctx: context, failedText: 'Perubahan mode kunci layar gagal!');
+        }
+      }else{
+        closeOverlay();
+        showToastFailed(ctx: context, failedText: 'Perubahan mode kunci layar gagal!');
+      }
+    }else{
+      closeOverlay();
+      showToastFailed(ctx: context, failedText: 'Perubahan mode kunci layar gagal!');
     }
   }
 

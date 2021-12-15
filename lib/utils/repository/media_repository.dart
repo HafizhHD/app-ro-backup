@@ -233,6 +233,26 @@ class MediaRepository {
     return response;
   }
 
+  Future<Response> fetchModeLock(String email) async {
+    var url = _rkService.baseUrl + '/user/deviceLockScreenView';
+    Map<String, dynamic> json = {
+      "emailUser": "$email"
+    };
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> fetchUpdateModeLock(String email, bool lockStatus) async {
+    var url = _rkService.baseUrl + '/user/deviceLockScreenUpdate';
+    Map<String, dynamic> json = {
+      "emailUser": "$email",
+      "lockStatus": lockStatus
+    };
+    print('request : ${json}');
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
   Future<Response> filterModeAsuh(String email) async {
     var url = _rkService.baseUrl + '/user/childModeAsuhView';
     Map<String, dynamic> json = {

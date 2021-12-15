@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
@@ -46,7 +47,14 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         controller1.featAppModeAsuh(message.data['content']);
       }
     }else if(message.data['body'].toString().toLowerCase()=='update lock screen'){
-      controller1.featLockScreen();
+      if(message.data['content'] != null) {
+        var dataNotif = jsonDecode(message.data['content']);
+        if(dataNotif['lockstatus']!=null){
+          controller1.featStatusLockScreen(dataNotif['lockstatus'].toString());
+        }
+      }else{
+        controller1.featLockScreen();
+      }
     }
   }
 }

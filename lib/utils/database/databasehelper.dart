@@ -6,7 +6,7 @@ import 'package:path/path.dart';
 
 class DatabaseHelper{
   static final _dbname = 'ruangkeluarga.db';
-  static final _dbversion = 12;
+  static final _dbversion = 13;
   static final tableAplikasi = 'AplikasiData';
 
   DatabaseHelper._privateConstructor();
@@ -33,12 +33,16 @@ class DatabaseHelper{
             email TEXT,
             idUsage TEXT,
             dataAplikasi TEXT,
-            kunciLayar TEXT
+            kunciLayar TEXT,
+            modekunciLayar TEXT
           )
           ''');
         }, onUpgrade: (Database db, int currentVersion, int newVersion) async {
-          if (currentVersion > 10) {
+          if (currentVersion > 10 && currentVersion < 12) {
             ['''ALTER TABLE $tableAplikasi ADD COLUMN kunciLayar TEXT''',].forEach((script) async => await db.execute(script));
+          }
+          if (currentVersion > 12) {
+            ['''ALTER TABLE $tableAplikasi ADD COLUMN modekunciLayar TEXT''',].forEach((script) async => await db.execute(script));
           }
         });
   }
