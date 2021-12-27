@@ -11,7 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 ///CONSTANT
 const keyboardHeight = 150;
-const appName = "Keluarga HKBP";
+const appName = "Ruang ORTU";
 
 final String isPrefLogin = "isPrefLogin";
 final String rkUserID = "rkUserID";
@@ -27,15 +27,15 @@ final String rkBaseUrlAppIcon = "rkBaseUrlAppIcon";
 
 const AppIconPathRO = 'assets/images/ruangortu-icon.png';
 const AppIconPathRO_x4 = 'assets/images/ruangortu-icon_4.png';
-const AppIconPathHKBP = 'assets/images/hkbp/logo-keluargahkbp.png';
-const currentAppIconPath = AppIconPathHKBP;
+const AppIconPathORTU = 'assets/images/ortu/logo-ruangortu.png';
+const currentAppIconPath = AppIconPathORTU;
 
 const ApkDownloadURL = 'https://drive.google.com/drive/folders/1U5V9ZbUel3O0kNBw96O4TY0m7TrLnTwe?usp=sharing';
-const ApkDownloadURL_HKBP = 'https://play.google.com/store/apps/details?id=com.keluargahkbp';
+const ApkDownloadURL_ORTU = 'https://play.google.com/store/apps/details?id=com.ruangortu';
 
-final urlPP = 'https://keluargahkbp.com/toc/privacy_policy_bahasa.html';
-final urlTOC = 'https://keluargahkbp.com/toc/toc_bahasa.html';
-final urlFAQ = 'https://keluargahkbp.com/toc/faq_bahasa.html';
+final urlPP = 'https://ruangortu.id/toc/privacy_policy_bahasa.html';
+final urlTOC = 'https://ruangortu.id/toc/toc_bahasa.html';
+final urlFAQ = 'https://ruangortu.id/toc/faq_bahasa.html';
 enum ContentType { video, image, artikel }
 
 Future<bool> childNeedPermission() async {

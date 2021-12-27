@@ -9,8 +9,6 @@ import 'package:http/http.dart';
 import 'package:ruangkeluarga/global/custom_widget/photo_image_picker.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
-import 'package:ruangkeluarga/parent/view/setup_profile_parent.dart';
-import 'package:ruangkeluarga/parent/view_model/gereja_hkbp_model.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 
 class AkunEditPage extends StatefulWidget {
@@ -22,7 +20,6 @@ class AkunEditPage extends StatefulWidget {
   bool isParent;
   GenderCharacter? parentGender;
   DateTime? birthDate;
-  GerejaHKBP? selectedGereja;
   String? imgUrl;
 
   AkunEditPage({
@@ -34,7 +31,6 @@ class AkunEditPage extends StatefulWidget {
     required this.isParent,
     this.parentGender = GenderCharacter.Ayah,
     this.birthDate,
-    this.selectedGereja,
     this.imgUrl,
   });
 
@@ -45,7 +41,6 @@ class AkunEditPage extends StatefulWidget {
 class _AkunEditPageState extends State<AkunEditPage> {
   TextEditingController cName = TextEditingController();
   TextEditingController cEmail = TextEditingController();
-  TextEditingController cGereja = TextEditingController();
   TextEditingController cPhoneNumber = TextEditingController();
   TextEditingController cAlamat = TextEditingController();
   String birthDateString = '';
@@ -58,7 +53,6 @@ class _AkunEditPageState extends State<AkunEditPage> {
     cEmail.text = widget.email;
     cPhoneNumber.text = widget.phoneNum ?? '';
     cAlamat.text = widget.alamat ?? '';
-    cGereja.text = widget.selectedGereja != null ? widget.selectedGereja!.displayName : '';
     if (widget.birthDate != null) birthDateString = dateTimeTo_ddMMMMyyyy(widget.birthDate!);
   }
 
@@ -194,44 +188,6 @@ class _AkunEditPageState extends State<AkunEditPage> {
                           ),
                         ),
                       ),
-                      if (widget.isParent)
-                        Container(
-                          child: TextField(
-                            onTap: () async {
-                              print('SELECT GEREJA');
-                              final selected = await selectGerejaHKBP(Get.find<ParentController>().listGereja);
-                              if (selected != null) {
-                                widget.selectedGereja = selected;
-                                cGereja.text = selected.displayName;
-                                setState(() {});
-                              }
-                            },
-                            textAlignVertical: TextAlignVertical.center,
-                            style: TextStyle(fontSize: 14.0, color: Colors.black),
-                            readOnly: true,
-                            minLines: 1,
-                            maxLines: 3,
-                            controller: cGereja,
-                            decoration: InputDecoration(
-                              suffixIcon: Icon(
-                                Icons.arrow_drop_down_rounded,
-                                color: cPrimaryBg,
-                              ),
-                              filled: true,
-                              fillColor: cOrtuWhite,
-                              hintText: 'Pilih Gereja',
-                              contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: cOrtuWhite),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: cOrtuWhite),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          ),
-                        ),
                       Container(
                         margin: const EdgeInsets.only(top: 10.0, bottom: 10),
                         width: MediaQuery.of(context).size.width,
@@ -403,7 +359,7 @@ class _AkunEditPageState extends State<AkunEditPage> {
                         shape: new RoundedRectangleBorder(
                           borderRadius: new BorderRadius.circular(15.0),
                         ),
-                        onPressed: cName.text != '' || cPhoneNumber.text != '' || cGereja.text != ''
+                        onPressed: cName.text != '' || cPhoneNumber.text != ''
                             ? () async {
                                 if (cName.text == '') {
                                   showToastSuccess(
@@ -460,7 +416,6 @@ class _AkunEditPageState extends State<AkunEditPage> {
     };
     if (_imageBytes != null) editedValue["imagePhoto"] = "data:image/png;base64,${base64Encode(_imageBytes)}";
     if (widget.birthDate != null) editedValue["birdDate"] = widget.birthDate?.toIso8601String();
-    if (widget.selectedGereja != null) editedValue["namaHkbp"] = widget.selectedGereja!.displayName;
 
     return await MediaRepository().editUser(widget.id, editedValue);
   }

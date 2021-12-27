@@ -137,6 +137,14 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
   }
 
   Future<void> onGetUsageDataDaily() async {
+    listAppUsage.forEach((e) {
+      e.appUsagesDetail.forEach((f) {
+        f.duration = 0;
+        // f.usageHour!.forEach((g) {
+        //   print('Ini adalah time untuk ${f.appName}: ${g["durationInStamp"]}');
+        // });
+      });
+    });
     double avgDataDaily = 0;
     DateTime dateTime = DateTime.now();
     for (int i = 0; i < dtxDaily.length; i++) {
@@ -164,6 +172,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
     setState(() {
       listAppUsage.forEach((e) {
         e.appUsagesDetail.forEach((f) {
+          int totalSecsPerApp = 0;
           f.usageHour!.forEach((t) {
             int secondsPerApp = 0;
             var lastTimeStamp = DateTime.parse(t['lastTimeStamp']);
@@ -179,32 +188,34 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               if (dif1.inSeconds >= 0) {
                 if (dif1.inSeconds >= 3600) {
                   if (dif2.inSeconds >= 0) {
-                    seconds += 3600;
-                    secondsPerApp += 3600;
+                    seconds += 3600000;
+                    secondsPerApp += 3600000;
                   } else if (-dif2.inSeconds < 3600) {
-                    seconds += 3600 + dif2.inSeconds;
-                    secondsPerApp += 3600 + dif2.inSeconds;
+                    seconds += 3600000 + dif2.inMilliseconds;
+                    secondsPerApp += 3600000 + dif2.inMilliseconds;
                   }
                 } else {
                   if (dif2.inSeconds < 0) {
-                    seconds += int.parse(t['durationInStamp']) ~/ 1000;
-                    secondsPerApp += int.parse(t['durationInStamp']) ~/ 1000;
+                    seconds += int.parse(t['durationInStamp']);
+                    secondsPerApp += int.parse(t['durationInStamp']);
                   } else {
-                    seconds += dif1.inSeconds;
-                    secondsPerApp += dif1.inSeconds;
+                    seconds += dif1.inMilliseconds;
+                    secondsPerApp += dif1.inMilliseconds;
                   }
                 }
               }
             }
             print(
                 'Durasi menit untuk aplikasi ${f.appName}: ${secondsPerApp ~/ 60}');
-            f.duration += secondsPerApp;
+            totalSecsPerApp += secondsPerApp;
           });
+          print('Total seccs per app ${f.appName}: $totalSecsPerApp');
+          f.duration += totalSecsPerApp ~/ 1000;
           print('Durasi per aplikasi: ${f.duration}');
         });
       });
     });
-    return seconds;
+    return seconds ~/ 1000;
   }
 
   DateTime findFirstDateOfTheWeek(DateTime dateTime) {
@@ -296,7 +307,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
         seconds += e.duration;
       });
     }
-    return seconds;
+    return seconds~/1000;
   }
 
   //Ga Dipake
@@ -389,6 +400,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
   Future setWeeklyData() async {
     setState(() {
       //print(widget.weeklyChart.toString());
+      mapWeeklyAppUsage = {};
       listAppUsageWeekly.forEach((appInfo) {
         appInfo.appUsagesDetail.forEach((appDetail) {
           final temp = mapWeeklyAppUsage[appDetail.packageId];
@@ -407,11 +419,11 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
         });
       });
     });
-    setState(() {});
   }
 
   Future setDailyData() async {
     setState(() {
+      mapDailyAppUsage = {};
       listAppUsage.forEach((appInfo) {
         appInfo.appUsagesDetail.forEach((appDetail) {
           final temp = mapDailyAppUsage[appDetail.packageId];
@@ -430,7 +442,6 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
         });
       });
     });
-    setState(() {});
   }
 
   Future<bool?> dataHasLoad() async {
@@ -765,7 +776,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               itemCount: appList.length,
               itemBuilder: (ctx, index) {
                 final app = appList[index];
-                var secs = app.duration;
+                var secs = app.duration ~/ 1000;
                 int jam = 0;
                 if (secs >= 3600) {
                   jam = secs ~/ 3600;
@@ -788,12 +799,13 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                   usageData = "${jam.toString()}h ${menit.toString()}m";
                 }
 
+                String iconUrl =  app.iconUrl! ?? '';
                 return ListTile(
                   leading: app.iconUrl != null && app.iconUrl != ''
                       ? Container(
                           margin: EdgeInsets.all(5).copyWith(right: 10),
                           child: Image.network(
-                            imageUrl + app.iconUrl! ?? '',
+                            imageUrl + iconUrl,
                             width: 40,
                             height: 40,
                             fit: BoxFit.contain,
@@ -868,12 +880,13 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                   usageData = "${jam.toString()}h ${menit.toString()}m";
                 }
 
+                String iconUrl = app.iconUrl! ?? '';
                 return ListTile(
                   leading: app.iconUrl != null && app.iconUrl != ''
                       ? Container(
                           margin: EdgeInsets.all(5).copyWith(right: 10),
                           child: Image.network(
-                            imageUrl + app.iconUrl! ?? '',
+                            imageUrl + iconUrl,
                             width: 40,
                             height: 40,
                             fit: BoxFit.contain,

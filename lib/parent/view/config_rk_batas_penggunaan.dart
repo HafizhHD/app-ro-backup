@@ -324,6 +324,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                                         flistUsage = getData();
                                         fListApps = fetchAppList();
                                         closeOverlay();
+                                        closeOverlay();
                                         showToastSuccess(ctx: context, successText: 'Berhasil Reset Batas Penggunaan!');
                                       } else {
                                         closeOverlay();
@@ -350,6 +351,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                               if (body['resultCode'] == "OK") {
                                 flistUsage = getData();
                                 fListApps = fetchAppList();
+                                closeOverlay();
                                 closeOverlay();
                                 showToastSuccess(ctx: context, successText: 'Berhasil Ubah Batas Penggunaan!');
                               } else {

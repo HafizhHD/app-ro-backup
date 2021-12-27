@@ -7,7 +7,6 @@ import 'package:camera/camera.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
@@ -26,19 +25,16 @@ import 'package:ruangkeluarga/model/rk_child_contact.dart';
 import 'package:ruangkeluarga/model/rk_schedule_model.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
-import 'package:ruangkeluarga/utils/app_usage.dart';
 import 'package:ruangkeluarga/utils/database/aplikasiDb.dart';
-import 'package:ruangkeluarga/utils/database/databasehelper.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:sqflite/sqlite_api.dart';
 import 'package:usage_stats/usage_stats.dart';
-import 'package:geolocator_platform_interface/src/enums/location_accuracy.dart' as a;
 
 late List<CameraDescription> cameras;
 
 class ChildController extends GetxController {
+  MethodChannel platform = MethodChannel('ruangortu.com/appUsage', JSONMethodCodec());
   var _bottomNavIndex = 2.obs;
   var childID = '';
   var childEmail = '';
@@ -64,12 +60,6 @@ class ChildController extends GetxController {
   }
 
   void initData() async {
-    // if (!isBackgroundServiceOn) {
-    //   isBackgroundServiceOn = true;
-    //   print('START BACKGROUND SERVICE');
-    //   FlutterBackgroundService.initialize(childBackgroundTask);
-    // }
-
     //var permission = await childNeedPermission();
     await getChildData().then((value) {
       if ((value)) {
@@ -158,10 +148,10 @@ class ChildController extends GetxController {
             var dataNotif = jsonDecode(message.data['content']);
             if(dataNotif['lockstatus']!=null){
               //jika lock membahayakan aktifkan source dibawah ini dan hidden source dibawahnya
-              /*if(dataNotif['lockstatus'].toString() == 'true'){
+              if(dataNotif['lockstatus'].toString() == 'true'){
                 new MethodChannel('com.ruangkeluargamobile/android_service_background', JSONMethodCodec()).invokeMethod('lockDeviceChils', {'data':'data'});
-              }*/
-              featStatusLockScreen(dataNotif['lockstatus'].toString());
+              }
+              // featStatusLockScreen(dataNotif['lockstatus'].toString());
             }
           }else{
             featLockScreen();
@@ -270,6 +260,7 @@ class ChildController extends GetxController {
         for (var n = 0; n < listAppIcon["appIcons"].length && ada == 0; n++) {
           final appIcon = listAppIcon["appIcons"][n];
           if (appIcon["appId"].toString() == localApp.packageName.toString()) {
+            print('${localApp.appName.toString()} iconnya ada!');
             ada = 1;
             break;
           }
@@ -300,12 +291,14 @@ class ChildController extends GetxController {
       final cat = localApp.category.toString().split('.')[1];
       final onServerApp = listAppServer.where((serverApp) => serverApp.packageId == localApp.packageName).toList();
       final isBlacklist = onServerApp.length > 0 ? onServerApp.first.blacklist : false;
+      final limit = onServerApp.length > 0 ? onServerApp.first.limit : 0;
 
       return ApplicationInstalled(
         appName: localApp.appName,
         packageId: localApp.packageName,
         blacklist: isBlacklist,
         appCategory: cat == 'undefined' ? 'other' : cat,
+        limit: limit,
       );
     }).toList();
 
@@ -430,41 +423,169 @@ class ChildController extends GetxController {
     // }
   }
 
+  Future<Map<String, int>> getDurationAppForeground() async{
+    final DateTime endDate = new DateTime.now();
+    final DateTime startDate = endDate.subtract(Duration(hours: DateTime.now().hour, minutes: DateTime.now().minute, seconds: DateTime.now().second));
+    final List<EventUsageInfo> infoList = await UsageStats.queryEvents(startDate, endDate);
+    Map<String, List<List<int>>> infoList3 = {};
+    String packageName = "";
+    infoList.forEach((e) {
+      int eventType = int.parse(e.eventType!);
+      int eventTime = int.parse(e.timeStamp!);
+      if (eventType == 1) packageName = e.packageName!;
+      var array = [eventType, eventTime];
+      if (infoList3.containsKey(e.packageName)) {
+        infoList3[e.packageName]!.add(array);
+      } else {
+        List<List<int>> eventPair = [];
+        eventPair.add(array);
+        infoList3[e.packageName!] = eventPair;
+      }
+    });
+    int duration = 0;
+    int startTime = -1;
+    infoList3.forEach((app, e) {
+      print(app);
+      if (app == packageName) {
+        e.asMap().forEach((i, val) {
+          if (val[0] == 2) {
+            if (i == 0) {
+              duration += val[1] - startDate.millisecondsSinceEpoch as int;
+              startTime = -1;
+            } else {
+              duration += val[1] - startTime as int;
+              startTime = -1;
+            }
+          } else if (val[0] == 1) {
+            if (i == e.length - 1) {
+              duration += DateTime.now().millisecondsSinceEpoch - val[1] as int;
+              startTime = -1;
+            } else
+              startTime = val[1];
+          }
+        });
+      }
+    });
+    Map<String, int> data = {};
+    data[packageName] = duration;
+    return(data);
+  }
+
   void getAppUsageData() async {
     try {
       final DateTime endDate = new DateTime.now();
       final DateTime startDate = endDate.subtract(Duration(hours: DateTime.now().hour, minutes: DateTime.now().minute, seconds: DateTime.now().second));
-      final List<AppUsageInfo> infoList = await AppUsage.getAppUsage(startDate, endDate);
-      final List<UsageInfo> infoList2 =
-      await UsageStats.queryUsageStats(startDate, endDate);
-      final listAppLocal = await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: true, onlyAppsWithLaunchIntent: true);
+      // final DateTime startDate = DateTime(endDate.year, endDate.month, endDate.day, 0, 0, 0);
+      final listAppLocal = await DeviceApps.getInstalledApplications(
+          includeAppIcons: true,
+          includeSystemApps: true,
+          onlyAppsWithLaunchIntent: true);
+      final List<EventUsageInfo> infoList = await UsageStats.queryEvents(startDate, endDate);
 
       List<dynamic> usageDataList = [];
-      infoList.forEach((app) {
-        final hasData = listAppLocal.where((e) => e.packageName == app.packageName).toList();
-        if ((hasData.length > 0)&&(app.packageName != "com.keluargahkbp")) {
+      // final List<UsageInfo> infoList2 = await UsageStats.queryUsageStats(startDate, endDate);
+      // infoList.forEach((app) {
+      //   final hasData = listAppLocal.where((e) => e.packageName == app.packageName).toList();
+      //   if ((hasData.length > 0)&&(app.packageName != "com.ruangortu")) {
+      //     final appName = hasData.first.appName;
+      //     final cat = hasData.first.category.toString().split('.')[1];
+      //     List<dynamic> usageHour = [];
+      //     infoList2.forEach((val) {
+      //       // print(
+      //       //     'Nama pekej: ${val.packageName}, stamp pertama: ${DateTime.fromMillisecondsSinceEpoch(int.parse(val.firstTimeStamp!))}, stamp terakhir: ${DateTime.fromMillisecondsSinceEpoch(int.parse(val.lastTimeStamp!))}');
+      //       // print(
+      //       //     'Terakhir dipake: ${DateTime.fromMillisecondsSinceEpoch(int.parse(val.lastTimeUsed!))}, durasi: ${DateTime.fromMillisecondsSinceEpoch(int.parse(val.totalTimeInForeground!))}');
+      //       if (val.packageName! == app.packageName) {
+      //         var usageStamp = {
+      //           'durationInStamp': val.totalTimeInForeground!,
+      //           'lastTimeStamp':
+      //           "${DateTime.fromMillisecondsSinceEpoch(int.parse(val.lastTimeUsed!))}"
+      //         };
+      //         usageHour.add(usageStamp);
+      //       }
+      //     });
+      //     var temp = {
+      //       'count': 0,
+      //       'appName': appName,
+      //       'packageId': app.packageName,
+      //       'duration': app.usage.inSeconds,
+      //       'appCategory': cat == 'undefined' ? 'other' : cat,
+      //       'usageHour': usageHour
+      //     };
+      //     usageDataList.add(temp);
+      //   }
+      // });
+
+      Map<String, List<List<int>>> infoList3 = {};
+      infoList.forEach((e) {
+        int eventType = int.parse(e.eventType!);
+        int eventTime = int.parse(e.timeStamp!);
+        var array = [eventType, eventTime];
+        if (infoList3.containsKey(e.packageName)) {
+          infoList3[e.packageName]!.add(array);
+        } else {
+          List<List<int>> eventPair = [];
+          eventPair.add(array);
+          infoList3[e.packageName!] = eventPair;
+        }
+      });
+      infoList3.forEach((app, e) {
+        print(app);
+        final hasData = listAppLocal.where((e) => e.packageName == app).toList();
+
+        if (hasData.length > 0) {
           final appName = hasData.first.appName;
           final cat = hasData.first.category.toString().split('.')[1];
+          // print('Ini nama: ${hasData.first.appName}, category aplikasi: $cat');
           List<dynamic> usageHour = [];
-          infoList2.forEach((val) {
+          int startTime = -1;
+          int duration = 0;
+          e.asMap().forEach((i, val) {
             // print(
             //     'Nama pekej: ${val.packageName}, stamp pertama: ${DateTime.fromMillisecondsSinceEpoch(int.parse(val.firstTimeStamp!))}, stamp terakhir: ${DateTime.fromMillisecondsSinceEpoch(int.parse(val.lastTimeStamp!))}');
             // print(
             //     'Terakhir dipake: ${DateTime.fromMillisecondsSinceEpoch(int.parse(val.lastTimeUsed!))}, durasi: ${DateTime.fromMillisecondsSinceEpoch(int.parse(val.totalTimeInForeground!))}');
-            if (val.packageName! == app.packageName) {
-              var usageStamp = {
-                'durationInStamp': val.totalTimeInForeground!,
-                'lastTimeStamp':
-                "${DateTime.fromMillisecondsSinceEpoch(int.parse(val.lastTimeUsed!))}"
-              };
-              usageHour.add(usageStamp);
+            if (val[0] == 2) {
+              if (i == 0) {
+                duration += val[1] - startDate.millisecondsSinceEpoch as int;
+                var usageStamp = {
+                  'durationInStamp':
+                  '${val[1] - startDate.millisecondsSinceEpoch}',
+                  'lastTimeStamp':
+                  "${DateTime.fromMillisecondsSinceEpoch(val[1])}"
+                };
+                usageHour.add(usageStamp);
+                startTime = -1;
+              } else {
+                duration += val[1] - startTime as int;
+                var usageStamp = {
+                  'durationInStamp': '${val[1] - startTime}',
+                  'lastTimeStamp':
+                  "${DateTime.fromMillisecondsSinceEpoch(val[1])}"
+                };
+                usageHour.add(usageStamp);
+                startTime = -1;
+              }
+            } else if (val[0] == 1) {
+              if (i == e.length - 1) {
+                duration +=
+                    DateTime.now().millisecondsSinceEpoch - val[1] as int;
+                var usageStamp = {
+                  'durationInStamp':
+                  '${DateTime.now().millisecondsSinceEpoch - val[1]}',
+                  'lastTimeStamp': "${DateTime.now()}"
+                };
+                usageHour.add(usageStamp);
+                startTime = -1;
+              } else
+                startTime = val[1];
             }
           });
           var temp = {
             'count': 0,
             'appName': appName,
-            'packageId': app.packageName,
-            'duration': app.usage.inSeconds,
+            'packageId': app,
+            'duration': duration,
             'appCategory': cat == 'undefined' ? 'other' : cat,
             'usageHour': usageHour
           };
@@ -474,7 +595,8 @@ class ChildController extends GetxController {
 
       Response response = await MediaRepository().saveChildUsage(childEmail, usageDataList);
       if (response.statusCode == 200) {
-        print('isi response save app usage : ${response.body}');
+        // print('isi response save app usage : ${response.body}');
+        print('isi response save app usage : 200');
       } else {
         print('isi response save app usage : ${response.statusCode}');
       }
@@ -512,7 +634,7 @@ class ChildController extends GetxController {
       var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
       if (dataAplikasiDb != null) {
         Response response = await MediaRepository().fetchUserSchedule(dataAplikasiDb['email']);
-        print('isi response fetch deviceUsageSchedules : ${response.body}');
+        // print('isi response fetch deviceUsageSchedules : ${response.body}');
         if (response.statusCode == 200) {
           var json = jsonDecode(response.body);
           Map<String, dynamic> dataAplikasi = new Map();
@@ -670,54 +792,74 @@ class ChildController extends GetxController {
   }
 
   void fetchDataApp() async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    Response response = await MediaRepository().fetchAppList(childEmail);
-    if (response.statusCode == 200) {
-      print('isi response fetch appList : ${response.body}');
-      var json = jsonDecode(response.body);
-      if (json['resultCode'] == 'OK') {
-        if (json['appdevices'].length > 0) {
-          try {
-            var appDevices = json['appdevices'][0];
-            List<dynamic> tmpData = appDevices['appName'];
-            List<Map<String, dynamic>> dataList = [];
+    if(childEmail!=null && childEmail.isNotEmpty){
+      childEmail = childEmail;
+    }else{
+      var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
+      if(dataAplikasiDb!= null){
+        if(dataAplikasiDb['email']!=null && dataAplikasiDb['email'] != '') {
+          childEmail = dataAplikasiDb['email'];
+        }
+      }
+    }
+    if(childEmail!=null && childEmail.isNotEmpty) {
+      print('EMAIL : ' + childEmail);
+      Response response = await MediaRepository().fetchAppList(childEmail);
+      if (response.statusCode == 200) {
+        print('isi response fetch appList : ${response.body}');
+        var json = jsonDecode(response.body);
+        if (json['resultCode'] == 'OK') {
+          if (json['appdevices'].length > 0) {
+            try {
+              var appDevices = json['appdevices'][0];
+              List<dynamic> tmpData = appDevices['appName'];
+              List<Map<String, dynamic>> dataList = [];
 
-            List<ApplicationInstalled> dataAppsInstalled =
-            List<ApplicationInstalled>.from(tmpData.map((model) => ApplicationInstalled.fromJson(model)));
+              List<ApplicationInstalled> dataAppsInstalled =
+              List<ApplicationInstalled>.from(
+                  tmpData.map((model) => ApplicationInstalled.fromJson(model)));
 
-            for (int i = 0; i < dataAppsInstalled.length; i++) {
-              Map<String, dynamic> dataAplikasi = {
-                "appName": "${dataAppsInstalled[i].appName}",
-                "packageId": "${dataAppsInstalled[i].packageId}",
-                "blacklist": dataAppsInstalled[i].blacklist,
-                "appCategory": dataAppsInstalled[i].appCategory,
-                "limit": (dataAppsInstalled[i].limit != null)?dataAppsInstalled[i].limit.toString():'0',
-              };
-              dataList.add(dataAplikasi);
+              for (int i = 0; i < dataAppsInstalled.length; i++) {
+                Map<String, dynamic> dataAplikasi = {
+                  "appName": "${dataAppsInstalled[i].appName}",
+                  "packageId": "${dataAppsInstalled[i].packageId}",
+                  "blacklist": dataAppsInstalled[i].blacklist,
+                  "appCategory": dataAppsInstalled[i].appCategory,
+                  "limit": (dataAppsInstalled[i].limit != null)
+                      ? dataAppsInstalled[i].limit.toString()
+                      : '0',
+                };
+                dataList.add(dataAplikasi);
+              }
+              var dataAplikasiDb = await AplikasiDB.instance
+                  .queryAllRowsAplikasi();
+              if (dataAplikasiDb != null) {
+                AplikasiDB.instance.deleteAllData();
+                Map<String, dynamic> dataAplikasi = new Map();
+                dataAplikasi['idUsage'] = dataAplikasiDb['idUsage'];
+                dataAplikasi['email'] = childEmail;
+                dataAplikasi['dataAplikasi'] = jsonEncode(dataList);
+                dataAplikasi['kunciLayar'] = dataAplikasiDb['kunciLayar'];
+                dataAplikasi['modekunciLayar'] =
+                (dataAplikasiDb['modekunciLayar'] != null)
+                    ? dataAplikasiDb['modekunciLayar']
+                    : '';
+                AplikasiDB.instance.deleteAllData();
+                AplikasiDB.instance.insertData(dataAplikasi);
+              } else {
+                Map<String, dynamic> dataAplikasi = new Map();
+                dataAplikasi['idUsage'] = appDevices['_id'];
+                dataAplikasi['email'] = childEmail;
+                dataAplikasi['dataAplikasi'] = jsonEncode(dataList);
+                dataAplikasi['kunciLayar'] = '';
+                dataAplikasi['modekunciLayar'] = '';
+                AplikasiDB.instance.insertData(dataAplikasi);
+              }
+              featLockScreen();
+            } catch (e, s) {
+              print(e);
+              print(s);
             }
-            var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
-            if (dataAplikasiDb != null) {
-              AplikasiDB.instance.deleteAllData();
-              Map<String, dynamic> dataAplikasi = new Map();
-              dataAplikasi['idUsage'] = appDevices['_id'];
-              dataAplikasi['email'] = childEmail;
-              dataAplikasi['dataAplikasi'] = jsonEncode(dataList);
-              dataAplikasi['kunciLayar'] = dataAplikasiDb['kunciLayar'];
-              dataAplikasi['modekunciLayar'] = (dataAplikasiDb['modekunciLayar'] != null)?dataAplikasiDb['modekunciLayar']:'';
-              AplikasiDB.instance.insertData(dataAplikasi);
-            }else{
-              Map<String, dynamic> dataAplikasi = new Map();
-              dataAplikasi['idUsage'] = appDevices['_id'];
-              dataAplikasi['email'] = childEmail;
-              dataAplikasi['dataAplikasi'] = jsonEncode(dataList);
-              dataAplikasi['kunciLayar'] = '';
-              dataAplikasi['modekunciLayar'] = '';
-              AplikasiDB.instance.insertData(dataAplikasi);
-            }
-            featLockScreen();
-          } catch (e, s) {
-            print(e);
-            print(s);
           }
         }
       }
@@ -725,43 +867,3 @@ class ChildController extends GetxController {
   }
 }
 
-void childBackgroundTask() {
-  // WidgetsFlutterBinding.ensureInitialized();
-  // final service = FlutterBackgroundService();
-  // // final childController = Get.find<ChildController>();
-  // service.onDataReceived.listen((event) {
-  //   service.sendData(
-  //     {"got_event": event},
-  //   );
-  //
-  //   if (event!["action"] == "setAsForeground") {
-  //     service.setForegroundMode(true);
-  //     return;
-  //   }
-  //
-  //   if (event["action"] == "setAsBackground") {
-  //     service.setForegroundMode(false);
-  //   }
-  //
-  //   if (event["action"] == "stopService") {
-  //     service.stopBackgroundService();
-  //   }
-  // });
-
-  // bring to foreground
-  // service.setForegroundMode(true);
-  // Timer.periodic(Duration(seconds: 5), (timer) async {
-  //   if (!(await service.isServiceRunning())) timer.cancel();
-  //   await Location().getLocation().then((locData) async {
-  //     service.setNotificationInfo(
-  //       title: "Keluarga HBKP Service",
-  //       content: "Updated at ${DateTime.now()}",
-  //       // content: "Updated at ${DateTime.now()} \n Location:[${locData.latitude}, ${locData.longitude}]",
-  //     );
-  //   });
-  //
-  //   service.sendData(
-  //     {"current_date": DateTime.now().toIso8601String()},
-  //   );
-  // });
-}

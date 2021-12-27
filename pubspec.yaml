@@ -3,12 +3,12 @@ description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none' # Remgoogle_mobile_ads: ^1.0.1ove this line if you wish to publish to pub.dev
 
 # flutter.versionName=0.0.31-alpha
 # flutter.versionCode=220000310A
 # versionCode: minSDK + major 00 + minor 62+ patch 01 +testing 0 + Alpha / Beta / Release
-version: 0.0.45+220000371B
+version: 0.0.48+220000377B
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -85,6 +85,7 @@ dependencies:
 
   youtube_player_flutter: ^8.0.0
   native_admob_flutter: ^1.5.0
+
 #  android_alarm_manager_plus: ^2.0.3
   firebase_crashlytics: ^2.4.0
   flutter_screen_lock: ^5.0.2
@@ -100,33 +101,28 @@ dev_dependencies:
   flutter_launcher_icons:
   flutter_native_splash:
   change_app_package_name: ^1.0.0
-  #flutter pub run change_app_package_name:main com.keluargahkbp
+  #flutter pub run change_app_package_name:main com.ruangortu
 
 flutter_icons:
   android: 'launcher_icon'
   ios: true
-  # image_path: "assets/images/hkbp/logo-keluargahkbp.png"
-  image_path_ios: "assets/images/hkbp/ic_launcher.png"
-  image_path_android: "assets/images/hkbp/ic_launcher.png"
-  adaptive_icon_background: 'assets/images/hkbp/ic_launcher_adaptive_back.png'
-  adaptive_icon_foreground: 'assets/images/hkbp/ic_launcher_adaptive_fore.png'
+  image_path: "assets/images/ortu/logo-ruangortu.png"
+#  image_path_ios: "assets/images/ortu/ic_launcher.png"
+#  image_path_android: "assets/images/ortu/ic_launcher.png"
+#  adaptive_icon_background: 'assets/images/ortu/ic_launcher_adaptive_back.png'
+#  adaptive_icon_foreground: 'assets/images/ortu/ic_launcher_adaptive_fore.png'
 # flutter pub run flutter_launcher_icons:main
 
 flutter_native_splash:
   color: '#333333'
-  image: 'assets/images/hkbp/logo-keluargahkbp.png'
+  image: 'assets/images/ortu/logo-ruangortu.png'
   android: true
   ios: true
 # flutter pub run flutter_native_splash:create
-
-## generate SHA fingerprint android:
-## keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
 
 
 flutter:
   uses-material-design: true
   assets:
     - assets/images/
-    - assets/images/hkbp/
-flutter_intl:
-  enabled: true
+    - assets/images/ortu/

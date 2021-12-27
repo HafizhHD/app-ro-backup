@@ -300,7 +300,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
                                   builder: (BuildContext context) =>
                                       SetupInviteChildPage(
                                           address: parentController
-                                              .parentProfile.address!)),
+                                              .parentProfile.address!, userType: "child")),
                             );
                             print('Add Child Response: $res');
                             if (res.toString().toLowerCase() == 'addchild')
@@ -324,7 +324,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
                 return ListView.builder(
                     // physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    scrollDirection: Axis.horizontal, //Keluarga HKBP kebawah
+                    scrollDirection: Axis.horizontal, //Ruang ORTU kebawah
                     itemCount: childsList.length,
                     itemBuilder: (BuildContext context, int index) {
                       parentController.setModeAsuh(
@@ -420,7 +420,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                     context,
                     MaterialPageRoute<Object>(
                         builder: (BuildContext context) => SetupInviteChildPage(
-                            address: parentController.parentProfile.address!)),
+                            address: parentController.parentProfile.address!, userType: "Child")),
                   );
                   print('Add Child Response: $res');
                   if (res.toString().toLowerCase() == 'addchild') onAddChild();
@@ -488,14 +488,16 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                     builder: (ctrl) {
                                       final thisScreenTime = ctrl
                                           .mapChildScreentime[childData.email];
+                                      final thisSTGaming = ctrl.mapChildScreentimeGaming[childData.email];
+                                      final thisSTSocial = ctrl.mapChildScreentimeSocial[childData.email];
                                       return Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           contentTime('Screen Time',
                                               thisScreenTime ?? '00:00'),
-                                          contentTime('Gaming', '00:00'),
-                                          contentTime('Social Media', '00:00'),
+                                          contentTime('Gaming', thisSTGaming ?? '00:00'),
+                                          contentTime('Social Media', thisSTSocial ?? '00:00'),
                                         ],
                                       );
                                     },

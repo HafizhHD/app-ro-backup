@@ -69,12 +69,12 @@ class ChildAkunPage extends StatelessWidget {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => logUserOut(),
-        label: Text('Sign Out'),
-        backgroundColor: cOrtuOrange,
-        foregroundColor: cPrimaryBg,
-      ),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   onPressed: () => logUserOut(),
+      //   label: Text('Sign Out'),
+      //   backgroundColor: cOrtuOrange,
+      //   foregroundColor: cPrimaryBg,
+      // ),
     );
   }
 

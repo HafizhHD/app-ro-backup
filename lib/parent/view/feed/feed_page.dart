@@ -106,9 +106,11 @@ class FeedPage extends GetView<FeedController> {
           if(data.contentType == ContentType.artikel) {
             String imgData = '';
             imgData = data.contentThumbnail!;
-            showContent(data.contents, data.contentName, imgData);
+            showContent(data.contents, data.contentName, imgData, '', data.contentSource);
+          } else if (data.contentType == ContentType.video) {
+            showContent(data.contents, data.contentName, '', data.contentDescription, data.contentSource);
           } else {
-            showContent(data.contents, data.contentName, '');
+            showContent(data.contents, data.contentName, '', '', data.contentSource);
           }
         }
     );

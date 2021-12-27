@@ -3,7 +3,7 @@ class ApplicationInstalled {
   final String? packageId;
   final bool? blacklist;
   final String appCategory;
-  final String? limit;
+  final int? limit;
 
   ApplicationInstalled({this.appName, this.packageId, required this.appCategory, this.blacklist, this.limit});
 
@@ -13,7 +13,7 @@ class ApplicationInstalled {
       packageId: json['packageId'] as String?,
       blacklist: json['blacklist'].toString().toLowerCase() == 'true' ? true : false,
       appCategory: json['appCategory'],
-      limit: (json['limit'] != null)?json['limit'].toString():"0",
+      limit: (json['limit'] != null)?json['limit'] : 0,
     );
   }
 

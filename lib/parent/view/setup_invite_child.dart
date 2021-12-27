@@ -13,11 +13,13 @@ import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum StatusStudyLevel { SD, SMP, SMA }
+enum userTypes { Parent, Child}
 
 class SetupInviteChildPage extends StatefulWidget {
   final String? address;
+  final String? userType;
 
-  const SetupInviteChildPage({Key? key, this.address}) : super(key: key);
+  const SetupInviteChildPage({Key? key, this.address, this.userType}) : super(key: key);
   @override
   _SetupInviteChildPageState createState() => _SetupInviteChildPageState();
 }
@@ -34,6 +36,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
   String emailUser = '';
   String nameUser = '';
   String cAddress = '';
+  userTypes? userType = userTypes.Parent;
   late FToast fToast;
   String birthDateString = '';
   DateTime birthDate = DateTime.now().subtract(Duration(days: 365 * 5));
@@ -49,6 +52,8 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
   void onInviteChild() async {
     showLoadingOverlay();
     String status = "SD";
+    String userTypeString = 'parent';
+    if(userType.toString() == "userTypes.Child") userTypeString = 'child';
     await prefs.setString("rkChildName", cChildName.text);
     final Uint8List? _imageBytes =
         _selectedImage != null ? _selectedImage!.readAsBytesSync() : null;
@@ -65,7 +70,8 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
           ? "data:image/png;base64,${base64Encode(_imageBytes)}"
           : "",
       birthDate.toIso8601String(),
-      cAddress
+      cAddress,
+      userTypeString,
     ];
     Response response = await MediaRepository().inviteChild(
         emailUser,
@@ -80,7 +86,8 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
             ? "data:image/png;base64,${base64Encode(_imageBytes)}"
             : "",
         birthDate.toIso8601String(),
-        cAddress);
+        cAddress,
+        userTypeString);
     print('isi response invite : ${response.body}');
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
@@ -188,7 +195,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text('Buat Profile Anak'),
+          title: Text('Buat Profile'),
           leading: SizedBox(),
           actions: [
             IconButton(
@@ -248,19 +255,63 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                         ),
                       ),
                       Container(
+                        margin: EdgeInsets.only(top: 15.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(right: 20.0),
+                              child: Row(
+                                children: [
+                                  Radio(
+                                    value: userTypes.Parent,
+                                    groupValue: userType,
+                                    activeColor: Colors.white,
+                                    onChanged: (userTypes? value) {
+                                      setState(() {
+                                        userType = value;
+                                      });
+                                    },
+                                  ),
+                                  Text('Parent', style: TextStyle(color: Colors.white, fontSize: 16)),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(right: 20.0),
+                              child: Row(
+                                children: [
+                                  Radio(
+                                    value: userTypes.Child,
+                                    groupValue: userType,
+                                    activeColor: Colors.white,
+                                    onChanged: (userTypes? value) {
+                                      setState(() {
+                                        userType = value;
+                                      });
+                                    },
+                                  ),
+                                  Text('Child', style: TextStyle(color: Colors.white, fontSize: 16)),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
                         margin: const EdgeInsets.only(top: 30.0, bottom: 10),
                         child: Theme(
                           data: Theme.of(context)
                               .copyWith(splashColor: Colors.transparent),
                           child: TextFormField(
                             validator: (val) {
-                              if (val == '') return 'Mohon lengkapi nama anak';
+                              if (val == '') return 'Mohon lengkapi nama';
                               return null;
                             },
                             autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
+                            AutovalidateMode.onUserInteraction,
                             style:
-                                TextStyle(fontSize: 16.0, color: Colors.black),
+                            TextStyle(fontSize: 16.0, color: Colors.black),
                             keyboardType: TextInputType.text,
                             minLines: 1,
                             maxLines: 1,
@@ -269,7 +320,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                               errorStyle: TextStyle(color: cOrtuOrange),
                               filled: true,
                               fillColor: Colors.white,
-                              hintText: 'Nama Lengkap Anak',
+                              hintText: 'Nama Lengkap',
                               contentPadding: const EdgeInsets.only(
                                   left: 14.0, bottom: 8.0, top: 8.0),
                               focusedBorder: OutlineInputBorder(
@@ -292,15 +343,15 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                           child: TextFormField(
                             validator: (val) {
                               if (val == '')
-                                return 'Mohon lengkapi akun email anak.';
+                                return 'Mohon lengkapi akun email.';
                               else if (val != null && !isEmail(val))
                                 return 'Mohon gunakan format email yang benar.';
                               return null;
                             },
                             autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
+                            AutovalidateMode.onUserInteraction,
                             style:
-                                TextStyle(fontSize: 16.0, color: Colors.black),
+                            TextStyle(fontSize: 16.0, color: Colors.black),
                             keyboardType: TextInputType.emailAddress,
                             minLines: 1,
                             maxLines: 1,
@@ -309,7 +360,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                               errorStyle: TextStyle(color: cOrtuOrange),
                               filled: true,
                               fillColor: Colors.white,
-                              hintText: 'Email Anak',
+                              hintText: 'Email',
                               contentPadding: const EdgeInsets.only(
                                   left: 14.0, bottom: 8.0, top: 8.0),
                               focusedBorder: OutlineInputBorder(
@@ -468,7 +519,9 @@ class InviteChildQR extends StatelessWidget {
         oAllData[7],
         oAllData[8],
         oAllData[9],
-        oAllData[10]);
+        oAllData[10],
+        oAllData[11],
+    );
     print('isi response invite : ${response.body}');
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
@@ -501,7 +554,7 @@ class InviteChildQR extends StatelessWidget {
             children: [
               SizedBox(height: 20),
               Text(
-                'Di Ponsel Anak Anda \n',
+                'Di Ponsel\n',
                 style: TextStyle(fontSize: 35, color: cOrtuWhite),
                 textAlign: TextAlign.center,
               ),
@@ -521,7 +574,7 @@ class InviteChildQR extends StatelessWidget {
                     padding: EdgeInsets.all(10),
                     child: Align(
                         alignment: Alignment.center,
-                        child: QrImage(data: ApkDownloadURL_HKBP)),
+                        child: QrImage(data: ApkDownloadURL_ORTU)),
                   ),
                 ),
               ),

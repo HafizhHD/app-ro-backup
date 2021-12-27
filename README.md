@@ -1,10 +1,10 @@
-# Keluarga HKBP
+# Ruang ORTU
 Create key.properties
 ```bash
-storePassword=KeluargaHKBP
-keyPassword=KeluargaHKBP
-keyAlias=key
-storeFile=key.jks
+storePassword=RuangOrtu!
+keyPassword=RuangOrtu!
+keyAlias=key_ortu
+storeFile=keystore_ruangortu.jks
 ```
 
 Agar Dapat Login menggunakan Google, Tambahkan SHA1 ke Firebase

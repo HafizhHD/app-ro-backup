@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.keluargahkbp">
+    package="com.ruangortu">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -28,7 +28,7 @@
 
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="Keluarga HKBP"
+        android:label="Ruang ORTU"
         android:icon="@mipmap/launcher_icon"
         android:usesCleartextTraffic="true"
         android:allowBackup="false">
@@ -41,13 +41,17 @@
            android:name="com.google.android.geo.API_KEY"
            android:value="AIzaSyDfPHGqeUoiWZsitREYLRrQp3N7MiHiJMA" />
 
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="high_importance_channel" />
+
         <activity
             android:name="com.ruangkeluargamobile.MainAplication"
             android:launchMode="singleTop"
             android:theme="@style/NoActionBarTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
-            android:exported="true"
+            android:usesCleartextTraffic="true"
             android:windowSoftInputMode="adjustResize">
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
@@ -73,7 +77,7 @@
         </activity>
         <activity android:name="com.ruangkeluargamobile.LockScreen"
             android:configChanges="orientation|keyboardHidden"
-            android:label="Keluarga HKBP.."
+            android:label="Ruang ORTU.."
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBarTheme" >
             <meta-data
@@ -107,7 +111,7 @@
 
         <receiver
             android:name="com.ruangkeluargamobile.MyAdmin"
-            android:label="Keluarga HKBP.."
+            android:label="Ruang ORTU.."
             android:permission="android.permission.BIND_DEVICE_ADMIN">
             <meta-data
                 android:name="android.app.device_admin"

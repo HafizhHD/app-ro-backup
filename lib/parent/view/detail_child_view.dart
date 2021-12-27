@@ -26,7 +26,6 @@ import 'package:ruangkeluarga/parent/view_model/appUsage_model.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:flutter_screen_lock/flutter_screen_lock.dart';
 
 class DetailChildPage extends StatefulWidget {
   @override
@@ -36,7 +35,13 @@ class DetailChildPage extends StatefulWidget {
   final String email;
   final bool toLocation;
 
-  DetailChildPage({Key? key, required this.title, required this.name, required this.email, this.toLocation = false}) : super(key: key);
+  DetailChildPage(
+      {Key? key,
+      required this.title,
+      required this.name,
+      required this.email,
+      this.toLocation = false})
+      : super(key: key);
 }
 
 // enum ModeAsuh { level1, level2, level3 }
@@ -104,7 +109,8 @@ class _DetailChildPageState extends State<DetailChildPage> {
   }
 
   DateTime findLastDateOfTheWeek(DateTime dateTime) {
-    return dateTime.add(Duration(days: DateTime.daysPerWeek - dateTime.weekday));
+    return dateTime
+        .add(Duration(days: DateTime.daysPerWeek - dateTime.weekday));
   }
 
   void onGetUsageDataWeekly() async {
@@ -114,7 +120,8 @@ class _DetailChildPageState extends State<DetailChildPage> {
     usageFirst = await getDailyUsageStatistik(dayFirst) / 3600;
 
     double usageSecond = 0;
-    var daySecond = outputFormat.format(findSecondDateOfTheWeek(DateTime.now()));
+    var daySecond =
+        outputFormat.format(findSecondDateOfTheWeek(DateTime.now()));
     usageSecond = await getDailyUsageStatistik(daySecond) / 3600;
 
     double usageThird = 0;
@@ -137,23 +144,36 @@ class _DetailChildPageState extends State<DetailChildPage> {
     var dayLast = outputFormat.format(findLastDateOfTheWeek(DateTime.now()));
     usageLast = await getDailyUsageStatistik(dayLast) / 3600;
 
-    print('last $usageLast');
+    print('first $usageFirst');
 
-    dtx = [usageFirst, usageSecond, usageThird, usageFour, usageFive, usageSix, usageLast];
+    dtx = [
+      usageFirst,
+      usageSecond,
+      usageThird,
+      usageFour,
+      usageFive,
+      usageSix,
+      usageLast
+    ];
     setState(() {});
   }
 
-  Future<double> getDailyUsageStatistik(String tanggal) async {
+  Future<int> getDailyUsageStatistik(String tanggal) async {
     prefs = await SharedPreferences.getInstance();
-    double seconds = 0.0;
-    final thisDayAppUsage = listAppUsage.where((e) => e.appUsageDate == tanggal);
+    int seconds = 0;
+    final thisDayAppUsage =
+        listAppUsage.where((e) => e.appUsageDate == tanggal);
     if (thisDayAppUsage.length > 0) {
       var data = thisDayAppUsage.first.appUsagesDetail;
+      print('inilah a');
+      print(thisDayAppUsage.first.appUsageDate);
       data.forEach((e) {
-        seconds = seconds + e.duration;
+        print('inilah b');
+        print(e.duration);
+        seconds += e.duration;
       });
     }
-    return seconds;
+    return seconds ~/ 1000;
   }
 
   @override
@@ -197,22 +217,22 @@ class _DetailChildPageState extends State<DetailChildPage> {
                   width: MediaQuery.of(context).size.width,
                   child: SingleChildScrollView(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          wDailyAverageChart(),
-                          Divider(
-                            thickness: 1,
-                            color: cOrtuWhite,
-                          ),
-                          wKontrolInstant(),
-                          Divider(
-                            thickness: 1,
-                            color: cOrtuWhite,
-                          ),
-                          wKontroldanKonfigurasi(),
-                        ],
-                      )),
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      wDailyAverageChart(),
+                      Divider(
+                        thickness: 1,
+                        color: cOrtuWhite,
+                      ),
+                      wKontrolInstant(),
+                      Divider(
+                        thickness: 1,
+                        color: cOrtuWhite,
+                      ),
+                      wKontroldanKonfigurasi(),
+                    ],
+                  )),
                 ),
               ),
             ],
@@ -232,13 +252,17 @@ class _DetailChildPageState extends State<DetailChildPage> {
       child: Column(
         children: [
           Container(
-            margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 20.0, bottom: 10.0),
+            margin: EdgeInsets.only(
+                top: 10.0, left: 10.0, right: 20.0, bottom: 10.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   '$title',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: cOrtuWhite),
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: cOrtuWhite),
                 ),
                 Transform(
                   alignment: Alignment.center,
@@ -270,17 +294,25 @@ class _DetailChildPageState extends State<DetailChildPage> {
         children: [
           Container(
             margin: EdgeInsets.all(10.0),
-            child: Text('Kontrol dan Konfigurasi', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: cOrtuWhite)),
+            child: Text('Kontrol dan Konfigurasi',
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: cOrtuWhite)),
           ),
           wKontrolKonfigurasiContent(
             title: 'Lokasi',
-            content: 'Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka'
+            content:
+                'Dengan Geofencing, Anda dapat mengatur peringatan ketika mereka'
                 'memasuki atau meninggalkan lokasi tertentu. Anda juga dapat melihat lokasi'
                 'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana'
                 'mereka dulu dan dimana mereka saat ini kapan saja.',
             onTap: () => {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => RKConfigLocationPage(title: 'Penelurusan Lokasi', email: widget.email, name: widget.name))).then((value){
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => RKConfigLocationPage(
+                      title: 'Penelurusan Lokasi',
+                      email: widget.email,
+                      name: widget.name))).then((value){
                 setState(() {
                   _loadingGetData = true;
                 });
@@ -290,7 +322,8 @@ class _DetailChildPageState extends State<DetailChildPage> {
           ),
           wKontrolKonfigurasiContent(
             title: 'Kontak',
-            content: 'Anda dapat melihat daftar kontak anak-anak Anda, catatan panggilan'
+            content:
+                'Anda dapat melihat daftar kontak anak-anak Anda, catatan panggilan'
                 'dan pesan SMS untuk mengetahui siapa yang telah mereka hubungi.'
                 'Anda juga dapat mengatur kontak dalam daftar hitam untuk mendapatkan'
                 'pemberitahuan bila ada kontak yang dibuat dengan orang yang tidak diinginkan.',
@@ -378,7 +411,11 @@ class _DetailChildPageState extends State<DetailChildPage> {
         children: [
           Container(
             margin: EdgeInsets.all(10.0),
-            child: Text('Kontrol Instant', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: cOrtuWhite)),
+            child: Text('Kontrol Instant',
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: cOrtuWhite)),
           ),
           (_loadingLockScreen)?Container(
             margin: EdgeInsets.all(10.0),
@@ -536,7 +573,10 @@ class _DetailChildPageState extends State<DetailChildPage> {
           ),
           Container(
             margin: EdgeInsets.only(bottom: 10, left: 15),
-            child: Align(alignment: Alignment.centerLeft, child: Text('Update today $dateToday', style: TextStyle(fontSize: 14, color: cOrtuWhite))),
+            child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text('Update today $dateToday',
+                    style: TextStyle(fontSize: 14, color: cOrtuWhite))),
           ),
         ],
       ),
@@ -572,7 +612,20 @@ class _DetailChildPageState extends State<DetailChildPage> {
         majorGridLines: MajorGridLines(width: 0),
       ),
       series: _columnData,
-      tooltipBehavior: TooltipBehavior(enable: true, canShowMarker: false, format: 'point.x : point.y', header: ''),
+      tooltipBehavior: TooltipBehavior(
+          enable: true,
+          canShowMarker: false,
+          builder: (dynamic data, dynamic point, dynamic series, int pointIndex,
+              int seriesIndex) {
+            print(
+                '${point.x} : ${point.y ~/ 1}h ${((point.y - (point.y ~/ 1)) * 60) ~/ 1}m');
+            return Container(
+                margin: EdgeInsets.all(5),
+                child: Text(
+                    '${point.x} : ${point.y ~/ 1}h ${((point.y - (point.y ~/ 1)) * 60) ~/ 1}m',
+                    style: TextStyle(color: cOrtuWhite)));
+          },
+          header: ''),
     );
   }
 
@@ -591,7 +644,8 @@ class _DetailChildPageState extends State<DetailChildPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(padding: EdgeInsets.only(top: 15, bottom: 5), child: title),
+                Container(
+                    padding: EdgeInsets.only(top: 15, bottom: 5), child: title),
                 subtitle,
               ],
             ),
