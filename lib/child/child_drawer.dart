@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ruangkeluarga/child/child_controller.dart';
-import 'package:ruangkeluarga/global/custom_widget/global_widget.dart';
 import 'package:ruangkeluarga/global/global.dart';
-import 'package:ruangkeluarga/login/login.dart';
-import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/utils/base_service/service_controller.dart';
 import 'package:ruangkeluarga/utils/rk_webview.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ChildDrawer extends StatelessWidget {
   final String childName;
@@ -91,7 +87,8 @@ class ChildDrawer extends StatelessWidget {
                   title: Text('FAQ'),
                   leading: Icon(Icons.help, color: Colors.black),
                   onTap: () {
-                    Navigator.pop(context);
+                    showFAQ();
+                    // Navigator.pop(context);
                   },
                 ),
                 ListTile(
@@ -101,36 +98,36 @@ class ChildDrawer extends StatelessWidget {
                     showPrivacyPolicy();
                   },
                 ),
-                ListTile(
-                    title: Text('Keluar'),
-                    leading: Icon(Icons.exit_to_app_outlined, color: Colors.black),
-                    onTap: () => showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                              title: const Text('Konfirmasi'),
-                              content: const Text('Apakah anda yakin ingin keluar aplikasi ?'),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, 'Cancel'),
-                                  child: const Text('Cancel', style: TextStyle(color: cOrtuBlue)),
-                                ),
-                                TextButton(
-                                  onPressed: () async {
-                                    showLoadingOverlay();
-                                    SharedPreferences prefs = await SharedPreferences.getInstance();
-                                    await prefs.clear();
-                                    await signOutGoogle();
-                                    closeOverlay();
-                                    Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(builder: (builder) => MyHomePage()),
-                                      (route) => false,
-                                    );
-                                  },
-                                  child: const Text('OK', style: TextStyle(color: cOrtuBlue)),
-                                ),
-                              ],
-                            ))),
+                // ListTile(
+                //     title: Text('Keluar'),
+                //     leading: Icon(Icons.exit_to_app_outlined, color: Colors.black),
+                //     onTap: () => showDialog<String>(
+                //         context: context,
+                //         builder: (BuildContext context) => AlertDialog(
+                //               title: const Text('Konfirmasi'),
+                //               content: const Text('Apakah anda yakin ingin keluar aplikasi ?'),
+                //               actions: <Widget>[
+                //                 TextButton(
+                //                   onPressed: () => Navigator.pop(context, 'Cancel'),
+                //                   child: const Text('Cancel', style: TextStyle(color: cOrtuBlue)),
+                //                 ),
+                //                 TextButton(
+                //                   onPressed: () async {
+                //                     showLoadingOverlay();
+                //                     SharedPreferences prefs = await SharedPreferences.getInstance();
+                //                     await prefs.clear();
+                //                     await signOutGoogle();
+                //                     closeOverlay();
+                //                     Navigator.pushAndRemoveUntil(
+                //                       context,
+                //                       MaterialPageRoute(builder: (builder) => MyHomePage()),
+                //                       (route) => false,
+                //                     );
+                //                   },
+                //                   child: const Text('OK', style: TextStyle(color: cOrtuBlue)),
+                //                 ),
+                //               ],
+                //             ))),
               ],
             ),
           ),

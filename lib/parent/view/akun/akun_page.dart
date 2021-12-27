@@ -3,8 +3,6 @@ import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/akun/akun_edit.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
-import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
-import 'package:ruangkeluarga/parent/view_model/gereja_hkbp_model.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 
 class AkunPage extends StatelessWidget {
@@ -16,16 +14,6 @@ class AkunPage extends StatelessWidget {
         builder: (ctrl) {
           final parentData = ctrl.parentProfile;
           final children = parentData.children ?? [];
-
-          final namaGereja = parentData.namaGereja;
-          GerejaHKBP? selectedGereja;
-          if (namaGereja != null && namaGereja.isNotEmpty && namaGereja != '') {
-            selectedGereja = ctrl.listGereja
-                .where((e) =>
-            e.displayName.trim().toLowerCase() ==
-                namaGereja.trim().toLowerCase())
-                .first;
-          }
 
           return Container(
             // color: ,
@@ -44,7 +32,6 @@ class AkunPage extends StatelessWidget {
                       phone: parentData.phone,
                       alamat: parentData.address,
                       birthDate: parentData.birdDate,
-                      namaGereja: selectedGereja,
                       isParent: parentData.parentStatus.toEnumString()),
                   Flexible(
                     child: ListView.builder(
@@ -92,7 +79,6 @@ class AkunPage extends StatelessWidget {
     required String id,
     String? phone,
     DateTime? birthDate,
-    GerejaHKBP? namaGereja,
     String? alamat,
   }) {
     return Dismissible(
@@ -123,7 +109,6 @@ class AkunPage extends StatelessWidget {
                 isParent: boolParent,
                 imgUrl: imgUrl,
                 birthDate: birthDate,
-                selectedGereja: namaGereja,
                 parentGender: boolParent ? genderCharFromString(isParent) : null,
               ),
             );

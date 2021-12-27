@@ -27,6 +27,8 @@ import org.json.JSONObject;
 
 import java.util.List;
 import java.util.TreeMap;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
@@ -38,6 +40,7 @@ import io.flutter.plugins.GeneratedPluginRegistrant;
 import static com.ruangkeluargamobile.AlarmService.blockAppAndPackageNow;
 import static com.ruangkeluargamobile.AlarmService.closeApps;
 import static com.ruangkeluargamobile.AlarmService.getForegroundApplication;
+import com.ruangkeluargamobile.Stats;
 
 public class MainAplication extends FlutterActivity implements MethodChannel.MethodCallHandler {
     public static int HOUR_RANGE = 1000 * 3600 * 24;
@@ -50,6 +53,12 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
     DevicePolicyManager deviceManger;
     public static MethodChannel.Result resultPremission;
 
+    private static String APP_STAT_CHANNEL = "keluargahkbp.com/appUsage";
+    private MethodChannel usageStatChannel;
+    private UsageStatsManager usageStat;
+    private Context thisContext;
+    private Activity thisActivity;
+
     public static MainAplication getInstance(){
         return instan;
     }
@@ -57,6 +66,8 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
     @Override
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
         GeneratedPluginRegistrant.registerWith(getFlutterEngine());
+
+
     }
 
     @Override
@@ -64,7 +75,13 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
         super.onCreate(savedInstanceState);
         instan = this;
         context = this;
+        thisContext = this;
         synchronized (initializationLock) {
+            if (usageStatChannel == null) {
+                usageStatChannel = new MethodChannel(getFlutterEngine().getDartExecutor(),
+                        APP_STAT_CHANNEL, JSONMethodCodec.INSTANCE);
+                usageStatChannel.setMethodCallHandler(this);
+            }
             if (alarmManagerPluginChannel != null) {
                 return;
             }
@@ -74,6 +91,7 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
                             "com.ruangkeluargamobile/android_service_background",
                             JSONMethodCodec.INSTANCE);
             alarmManagerPluginChannel.setMethodCallHandler(this);
+
         }
     }
 
@@ -91,6 +109,7 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
         String method = call.method;
         Object arguments = call.arguments;
         try {
+            System.out.println(method);
             switch (method) {
                 case "AlarmService.start":
                     // This message is sent when the Dart side of this plugin is told to initialize.
@@ -126,26 +145,45 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
                     result.success(true);
                     break;
                 case "startServiceCheckApp":
+                    System.out.println("startServiceCheckApp");
                     JSONObject checkAppLoad = (JSONObject) arguments;
                     JSONArray jsonArray = new JSONArray(checkAppLoad.getString("data"));
+                    Double duration = 0.0;
                     if(jsonArray.length()>0){
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                             ModelKillAplikasi appForeground = getForegroundApplication(context);
-                            if(appForeground != null){
-                                if(!appForeground.getPackageId().equals("com.keluargahkbp")){
-                                    System.out.println("APLIKASI CURRENT : "+appForeground.getPackageId());
-                                    System.out.println("PENGGUNAAN : "+appForeground.getTimePenggunaan());
+                            String currentAppId = "";
+                            if (checkAppLoad.has("currentApp") && !checkAppLoad.isNull("currentApp")) {
+                                JSONObject currentApp = checkAppLoad.getJSONObject("currentApp");
+                                Iterator<?> keys = currentApp.keys();
+                                while( keys.hasNext() ) {
+                                    String key = (String) keys.next();
+                                    currentAppId = key;
+                                    duration = currentApp.getDouble(currentAppId) / 60000;
+                                }
+                            }
+                            // if(appForeground != null){
+                            if (currentAppId != "") {
+                                System.out.println("APLIKASI CURRENT : "+ currentAppId);
+                                System.out.println("PENGGUNAAN : "+ duration.toString());
+                                // if(!appForeground.getPackageId().equals("com.keluargahkbp")){
+                                if(currentAppId != "com.keluargahkbp"){
                                     for(int i = 0; i<jsonArray.length(); i++){
                                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                        if (appForeground.getPackageId().equals(jsonObject.getString("packageId"))) {
-                                            System.out.println("PACKAGE FOREGROUND : "+appForeground.getPackageId());
-                                            System.out.println("TIME FOREGROUND : "+appForeground.getTimePenggunaan());
+                                        System.out.println("cek dengan app:" + jsonObject.getString("packageId"));
+                                        // if (appForeground.getPackageId().equals(jsonObject.getString("packageId"))) {
+                                        if (currentAppId.equals(jsonObject.getString("packageId"))) {
+                                            System.out.println("PACKAGE FOREGROUND : "+ currentAppId);
+                                            System.out.println("TIME FOREGROUND : "+ duration.toString());
                                             if(jsonObject.getString("blacklist").equals("true")){
+                                                appForeground.setPackageId(currentAppId);
                                                 appForeground.setAppName(jsonObject.getString("appName"));
                                                 appForeground.setBlacklist(jsonObject.getString("blacklist"));
                                                 closeApps(context, appForeground);
                                             }else {
-                                                if(Double.parseDouble(jsonObject.getString("limit" )) < Double.parseDouble(appForeground.getTimePenggunaan())){
+                                                if(Double.parseDouble(jsonObject.getString("limit" )) < duration){
+                                                    // if(Double.parseDouble(jsonObject.getString("limit" )) < Double.parseDouble(appForeground.getTimePenggunaan())){
+                                                    appForeground.setPackageId(currentAppId);
                                                     appForeground.setAppName(jsonObject.getString("appName"));
                                                     appForeground.setBlacklist(jsonObject.getString("blacklist"));
                                                     closeApps(context, appForeground);
@@ -170,11 +208,12 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
                     result.success(true);
                     break;
                 case "lockDeviceChils":
-                    MainAplication.getInstance().resultPremission = result;
-                    JSONObject dataLock = (JSONObject) arguments;
-                    DevicePolicyManager deviceManger = (DevicePolicyManager)
-                            context.getSystemService(Context.DEVICE_POLICY_SERVICE);
-                    deviceManger.lockNow();
+                    try {
+                        JSONObject dataLock = (JSONObject) arguments;
+                        DevicePolicyManager deviceManger = (DevicePolicyManager)
+                                context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+                        deviceManger.lockNow();
+                    }catch (Exception e){}
                     result.success(true);
                     break;
                 case "permissionLockApp":
@@ -182,16 +221,23 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
                     JSONObject permissionLock = (JSONObject) arguments;
                     MainAplication.getInstance().permissionLockApp();
                     break;
+                case "getAppUsageInfo":
+//                    HashMap<String, Object> map = (HashMap<String, Object>) arguments;
+//                    Log.i("MyTag", "map = " + map); // {os=Android}
+
+                    JSONObject args = (JSONObject) arguments;
+                    long start = args.getLong("start");
+                    long end = args.getLong("end");
+                    result.success(Stats.getUsageEvents(thisContext, start, end));
+                    break;
                 default:
                     result.notImplemented();
                     break;
             }
-        } catch (JSONException e) {
-            result.error("error", "JSON error: " + e.getMessage(), null);
-        } catch (PluginRegistrantException e) {
-            result.error("error", "AlarmManager error: " + e.getMessage(), null);
-        }catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+        } catch (PluginRegistrantException | JSONException e) {
+            result.success(true);
+        } catch (Exception e){
+            result.success(true);
         }
     }
 
@@ -202,7 +248,7 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
         Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
         intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, compName);
         intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "You should enable the app!");
-        startActivityForResult(intent, 1111);
+        startActivityForResult(intent, 2222);
     }
 
     public void permissionLockApp(){
@@ -212,19 +258,28 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
         Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
         intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, compName);
         intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "You should enable the app!");
-        startActivityForResult(intent, 11111111);
+        startActivityForResult(intent, 22222222);
+    }
+
+    public boolean handlePermissions() {
+        /// If stats are not available, show the permission screen to give access to them
+        if (!Stats.checkIfStatsAreAvailable(thisContext)) {
+            return false;
+//            val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+//            this.thisActivity.startActivity(intent);
+        } else return false;
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case 1111:
+            case 2222:
                 if (resultCode == Activity.RESULT_OK) {
                     deviceManger.lockNow();
                     MainAplication.getInstance().resultPremission.success(true);
                 }
-            case 11111111:
+            case 22222222:
                 if (resultCode == Activity.RESULT_OK) {
                     MainAplication.getInstance().resultPremission.success(true);
                 }else{

@@ -9,6 +9,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.Log;
+import java.util.Iterator;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.JSONMethodCodec;
@@ -136,29 +137,49 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
           result.success(true);
           break;
         case "startServiceCheckApp":
-          JSONObject checkAppLoad = (JSONObject) arguments;
-          JSONArray jsonArray = new JSONArray(checkAppLoad.getString("data"));
-          if(jsonArray.length()>0){
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-              ModelKillAplikasi appForeground = getForegroundApplication(context);
-              if(appForeground != null){
-                if(!appForeground.getPackageId().equals("com.keluargahkbp")){
-                  System.out.println("APLIKASI CURRENT : "+appForeground.getPackageId());
-                  System.out.println("PENGGUNAAN : "+appForeground.getTimePenggunaan());
-                  for(int i = 0; i<jsonArray.length(); i++){
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    if (appForeground.getPackageId().equals(jsonObject.getString("packageId"))) {
-                      System.out.println("PACKAGE FOREGROUND : "+appForeground.getPackageId());
-                      System.out.println("TIME FOREGROUND : "+appForeground.getTimePenggunaan());
-                      if(jsonObject.getString("blacklist").equals("true")){
-                        appForeground.setAppName(jsonObject.getString("appName"));
-                        appForeground.setBlacklist(jsonObject.getString("blacklist"));
-                        closeApps(context, appForeground);
-                      }else {
-                        if(Double.parseDouble(jsonObject.getString("limit" )) < Double.parseDouble(appForeground.getTimePenggunaan())){
+          try {
+            JSONObject checkAppLoad = (JSONObject) arguments;
+            JSONArray jsonArray = new JSONArray(checkAppLoad.getString("data"));
+            Double duration = 0.0;
+            if(jsonArray.length()>0){
+              if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                ModelKillAplikasi appForeground = getForegroundApplication(context);
+                String currentAppId = "";
+                if (checkAppLoad.has("currentApp") && !checkAppLoad.isNull("currentApp")) {
+                  JSONObject currentApp = checkAppLoad.getJSONObject("currentApp");
+                  Iterator<?> keys = currentApp.keys();
+                  while( keys.hasNext() ) {
+                    String key = (String) keys.next();
+                    currentAppId = key;
+                    duration = currentApp.getDouble(currentAppId) / 60000;
+                  }
+                }
+                // if(appForeground != null){
+                if (currentAppId != "") {
+                  System.out.println("APLIKASI CURRENT : "+ currentAppId);
+                  System.out.println("PENGGUNAAN : "+ duration.toString());
+                  // if(!appForeground.getPackageId().equals("com.keluargahkbp")){
+                  if(currentAppId != "com.ruangortu"){
+                    for(int i = 0; i<jsonArray.length(); i++){
+                      JSONObject jsonObject = jsonArray.getJSONObject(i);
+                      System.out.println("cek dengan app:" + jsonObject.getString("packageId"));
+                      // if (appForeground.getPackageId().equals(jsonObject.getString("packageId"))) {
+                      if (currentAppId.equals(jsonObject.getString("packageId"))) {
+                        System.out.println("PACKAGE FOREGROUND : "+ currentAppId);
+                        System.out.println("TIME FOREGROUND : "+ duration.toString());
+                        if(jsonObject.getString("blacklist").equals("true")){
+                          appForeground.setPackageId(currentAppId);
                           appForeground.setAppName(jsonObject.getString("appName"));
                           appForeground.setBlacklist(jsonObject.getString("blacklist"));
                           closeApps(context, appForeground);
+                        }else {
+                          if(Double.parseDouble(jsonObject.getString("limit" )) < duration){
+                            // if(Double.parseDouble(jsonObject.getString("limit" )) < Double.parseDouble(appForeground.getTimePenggunaan())){
+                            appForeground.setPackageId(currentAppId);
+                            appForeground.setAppName(jsonObject.getString("appName"));
+                            appForeground.setBlacklist(jsonObject.getString("blacklist"));
+                            closeApps(context, appForeground);
+                          }
                         }
                       }
                     }
@@ -166,7 +187,7 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
                 }
               }
             }
-          }
+          }catch (Exception e){}
           result.success(true);
           break;
         case "blockAppAndPackageNow":
@@ -180,11 +201,12 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
           result.success(true);
           break;
         case "lockDeviceChils":
-          MainAplication.getInstance().resultPremission = result;
-          JSONObject dataLock = (JSONObject) arguments;
-          DevicePolicyManager deviceManger = (DevicePolicyManager)
-                  context.getSystemService(Context.DEVICE_POLICY_SERVICE);
-          deviceManger.lockNow();
+          try {
+            JSONObject dataLock = (JSONObject) arguments;
+            DevicePolicyManager deviceManger = (DevicePolicyManager)
+                    context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+            deviceManger.lockNow();
+          }catch (Exception e){}
           result.success(true);
           break;
         case "permissionLockApp":
@@ -192,16 +214,23 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
           JSONObject permissionLock = (JSONObject) arguments;
           MainAplication.getInstance().permissionLockApp();
           break;
+        case "getAppUsageInfo":
+//                    HashMap<String, Object> map = (HashMap<String, Object>) arguments;
+//                    Log.i("MyTag", "map = " + map); // {os=Android}
+
+          JSONObject args = (JSONObject) arguments;
+          long start = args.getLong("start");
+          long end = args.getLong("end");
+          result.success(Stats.getUsageEvents(context, start, end));
+          break;
         default:
           result.notImplemented();
           break;
       }
-    } catch (JSONException e) {
-      result.error("error", "JSON error: " + e.getMessage(), null);
-    } catch (PluginRegistrantException e) {
-      result.error("error", "AlarmManager error: " + e.getMessage(), null);
-    }catch (PackageManager.NameNotFoundException e) {
-      e.printStackTrace();
+    } catch (PluginRegistrantException | JSONException e) {
+      result.success(true);
+    }  catch (Exception e){
+      result.success(true);
     }
   }
 

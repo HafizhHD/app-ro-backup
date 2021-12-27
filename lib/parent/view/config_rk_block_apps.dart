@@ -40,7 +40,7 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
 
     Response response = await MediaRepository().fetchAppList(widget.email);
     if (response.statusCode == 200) {
-      print('isi response fetch appList : ${response.body}');
+      // print('isi response fetch appList 200: ${response.body}');
       var json = jsonDecode(response.body);
       if (json['resultCode'] == 'OK') {
         if (json['appdevices'].length > 0) {
@@ -86,13 +86,15 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
             return [];
           }
         } else {
+          print('isi response fetch appList kosong datanya');
           return [];
         }
       } else {
+        print('isi response fetch appList NOK');
         return [];
       }
     } else {
-      print('isi response fetch appList : ${response.statusCode}');
+      print('isi response fetch appList error');
       return [];
     }
   }

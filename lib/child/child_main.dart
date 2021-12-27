@@ -36,7 +36,7 @@ class _ChildMainState extends State<ChildMain> {
     controller.setBottomNavIndex(2);
     controller.initData();
     startServicePlatform();
-    startPeriodic();
+    startAppUsagePeriodic();
     // _requestPermissions();
   }
 
@@ -44,10 +44,10 @@ class _ChildMainState extends State<ChildMain> {
     await SystemAlertWindow.requestPermissions(prefMode: prefMode);
   }*/
 
-  static Future<void> startPeriodic() async {
+  static Future<void> startAppUsagePeriodic() async {
     await BackgroundServiceNew.oneShot(
-      const Duration(minutes: 60),
-      100,
+      const Duration(minutes: 3),
+      12302,
       callback,
       wakeup: true,
       exact: true,
@@ -56,9 +56,16 @@ class _ChildMainState extends State<ChildMain> {
   }
 
   static Future<void> callback() async {
-    startPeriodic();
-    ChildController controller1 = new ChildController();
-    controller1.sendData();
+    try {
+      print("kirim data usage dan lokasi");
+      ChildController controller1 = new ChildController();
+      controller1.sendData();
+    } catch (e) {
+      print("Error alarm location :" + e.toString());
+    }
+    finally {
+      startAppUsagePeriodic();
+    }
   }
 
   @override

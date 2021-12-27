@@ -12,6 +12,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:ruangkeluarga/child/child_controller.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/model/content_aplikasi_data_usage.dart';
@@ -335,11 +336,12 @@ class BackgroundServiceNew {
     return (r == null) ? false : r;
   }
 
-  static Future<void> cekAppLaunch() async {
+  static Future<void> cekAppLaunch(currentApp) async {
     try{
       if(await AplikasiDB.instance.checkDataAplikasi()) {
         var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
-        print("dataAplikasiDb : "+dataAplikasiDb.toString());
+        // print("dataAplikasiDb : "+dataAplikasiDb.toString());
+        // print("dataAplikasiDb..");
         if (dataAplikasiDb != null) {
           //jika lock membahayakan hidde source dibawah ini sampai if selanjutnya
           if(dataAplikasiDb['modekunciLayar'] != null && dataAplikasiDb['modekunciLayar'] == 'true'){
@@ -347,11 +349,11 @@ class BackgroundServiceNew {
             new MethodChannel('com.ruangkeluargamobile/android_service_background', JSONMethodCodec()).invokeMethod('lockDeviceChils', {'data':'data'});
           }else if(dataAplikasiDb['kunciLayar'] != null) {
             List<dynamic> res = jsonDecode(dataAplikasiDb['kunciLayar']).map((e) => e).toList();
-            if(res.length>0){
+            if (res.length>0){
               bool cekScheduleLayar = false;
               for(var i =0; i<res.length; i++){
                 DeviceUsageSchedules dataUsage = DeviceUsageSchedules.fromJson(res[i]);
-                if(dataUsage.status.toString() == 'aktif'){
+                if(dataUsage.status.toString().toLowerCase() == 'aktif'){
                   if(dataUsage.scheduleType == ScheduleType.harian){
                     String deviceUsageDays = dataUsage.deviceUsageDays!.where((element) => element.toString() == dateFormat_EEEE()).last;
                     if(deviceUsageDays!=null){
@@ -393,8 +395,10 @@ class BackgroundServiceNew {
                   if (dataTrue != null && dataTrue.length > 0) {
                     ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
                     if (Platform.isAndroid) {
-                      print("Data To Method : " + listAplikasiDataUsage.toJson().toString());
-                      _channel.invokeMethod('startServiceCheckApp', listAplikasiDataUsage.toJson());
+                      print("Data To Method: " + listAplikasiDataUsage.toJson().toString());
+                      Map<String, dynamic> data = listAplikasiDataUsage.toJson();
+                      data['currentApp'] = currentApp;
+                      _channel.invokeMethod('startServiceCheckApp', data);
                     }
                   }
                 }
@@ -405,16 +409,30 @@ class BackgroundServiceNew {
               if (dataTrue != null && dataTrue.length > 0) {
                 ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
                 if (Platform.isAndroid) {
-                  print("Data To Method : " + listAplikasiDataUsage.toJson().toString());
-                  _channel.invokeMethod('startServiceCheckApp', listAplikasiDataUsage.toJson());
+                  Map<String, dynamic> data = listAplikasiDataUsage.toJson();
+                  data['currentApp'] = currentApp;
+                  // print("Data To Method : " + data.toString());
+                  _channel.invokeMethod('startServiceCheckApp', data);
                 }
+              }
+            }
+          }else if(dataAplikasiDb['dataAplikasi'] != null) {
+            List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(jsonDecode(dataAplikasiDb['dataAplikasi']).map((x) => AplikasiDataUsage.fromJson(x)));
+            List<AplikasiDataUsage> dataTrue = values.where((element) => element.blacklist == 'true' || element.limit != '0').toList();
+            if (dataTrue != null && dataTrue.length > 0) {
+              ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
+              if (Platform.isAndroid) {
+                // print("Data To Method : " + listAplikasiDataUsage.toJson().toString());
+                Map<String, dynamic> data = listAplikasiDataUsage.toJson();
+                data['currentApp'] = currentApp;
+                _channel.invokeMethod('startServiceCheckApp', data);
               }
             }
           }
         }
       }
     }catch(e){
-      print(e);
+      print(e.toString());
     }
   }
 }

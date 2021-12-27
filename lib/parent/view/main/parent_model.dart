@@ -11,8 +11,9 @@ class ParentProfile {
   final String userType;
   final String? imgPhoto;
   final DateTime? birdDate;
-  final String? namaGereja;
+//  final String? namaGereja;
   final List<Child>? children;
+//  final List<Spouse>? Spouse;
 
   ParentProfile({
     required this.id,
@@ -25,7 +26,6 @@ class ParentProfile {
     this.imgPhoto,
     this.children,
     this.birdDate,
-    this.namaGereja,
   });
 
   factory ParentProfile.fromJson(Map<String, dynamic> json) {
@@ -37,11 +37,10 @@ class ParentProfile {
         name: json['nameUser'],
         email: json['emailUser'],
         phone: json['phoneNumber'],
-        address: json['address'],
+        address: (json['address'] != null)?json['address'] : "",
         imgPhoto: json['imagePhoto'],
         userType: json['userType'],
         birdDate: bdate != null && bdate != '' ? DateTime.parse(bdate).toUtc().toLocal() : null,
-        namaGereja: json['namaHkbp'],
         parentStatus: json['parentStatus'].toString().toLowerCase() == 'ayah' ? GenderCharacter.Ayah : GenderCharacter.Bunda,
         children: listChild.map((e) => Child.fromJson(e)).toList(),
       );
@@ -53,7 +52,7 @@ class ParentProfile {
         name: json['nameUser'],
         email: json['emailUser'],
         phone: json['phoneNumber'],
-        address: json['address'],
+        address: (json['address'] != null)?json['address'] : "",
         imgPhoto: json['imagePhoto'],
         userType: json['userType'],
         parentStatus: json['parentStatus'].toString().toLowerCase() == 'ayah' ? GenderCharacter.Ayah : GenderCharacter.Bunda,

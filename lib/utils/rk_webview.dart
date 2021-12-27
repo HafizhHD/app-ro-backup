@@ -11,9 +11,11 @@ class RKWebViewDialog extends StatefulWidget {
   final String title;
   final String contents;
   final String image;
+  final String description;
+  final String source;
 
-
-  RKWebViewDialog({required this.url, required this.title, this.contents = '', this.image = ''});
+  RKWebViewDialog({required this.url, required this.title, this.contents = '',
+    this.image = '', this.description = '', this.source = ''});
 
   @override
   _RKWebViewDialogState createState() => _RKWebViewDialogState();
@@ -40,7 +42,7 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
         javascriptMode: JavascriptMode.unrestricted,
 
         onWebViewCreated: (WebViewController webViewController){
-          _webViewController=webViewController;
+          _webViewController = webViewController;
           loadAsset();
         },
       ),
@@ -50,14 +52,37 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
   loadAsset() async {
     if (widget.contents != '') {
       String fileHtmlContents = '';
-      String header = '<head> <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"> </head>';
-      if (widget.image != '') fileHtmlContents = "<!DOCTYPE html> <html>" + header + "<body> "
-          '<img src="' + widget.image + '" alt="Red dot" width="100%"/> </p>' +
-          widget.contents + "</body></html>";
-      else fileHtmlContents = "<!DOCTYPE html> <html> <body> " + widget.contents + "</body></html>";
-      _webViewController.loadUrl(Uri.dataFromString(
-          fileHtmlContents, mimeType: 'text/html',
-          encoding: Encoding.getByName('utf-8'))
+      String header =
+          '<head> <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"> </head>';
+      if (widget.image != '')
+        fileHtmlContents = "<!DOCTYPE html> <html>" +
+            header +
+            "<body> "
+                '<img src="' +
+            widget.image +
+            '" alt="Red dot" width="100%"/> </p>' +
+            "<h2>" +
+            widget.title +
+            "</h2>" +
+            "<h4>Source: " +
+            widget.source +
+            "</h4>" +
+            widget.contents +
+            "</body></html>";
+      else
+        fileHtmlContents = "<!DOCTYPE html> <html> <body> " +
+            widget.contents +
+            "<br/>" +
+            "<h2>" +
+            widget.title +
+            "</h2>" +
+            "<h4>Source: " +
+            widget.source +
+            "</h4>" +
+            widget.description +
+            "</body></html>";
+      _webViewController.loadUrl(Uri.dataFromString(fileHtmlContents,
+          mimeType: 'text/html', encoding: Encoding.getByName('utf-8'))
           .toString());
     }
   }
@@ -93,13 +118,15 @@ void showFAQ() {
   );
 }
 
-void showContent(String contents, title, image) {
+void showContent(String contents, title, image, desc, source) {
   Get.dialog(
     RKWebViewDialog(
       url: "",
       title: title,
       contents: contents,
       image: image,
+      description: desc,
+      source: source,
     ),
     transitionCurve: Curves.decelerate,
   );

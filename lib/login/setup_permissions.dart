@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:ruangkeluarga/child/child_main.dart';
 // import 'package:ruangkeluarga/child/home_child.dart';
+import 'package:ruangkeluarga/parent/view/feed/feed_controller.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
@@ -34,7 +35,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
   // bool _smsPermission = false;
   bool _contactPermission = false;
   bool _systemAlertWindow = false;
-
+  bool readMore = false;
   final _waitDelay = 400;
 
   Future<void> _showMyDialog() async {
@@ -47,7 +48,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
           content: SingleChildScrollView(
             child: ListBody(
               children: const <Widget>[
-                Text('Aplikasi.... $appName membutuhkan ijin akses anda untuk dapat berjalan dengan baik.'),
+                Text('Aplikasi $appName membutuhkan ijin akses anda untuk dapat berjalan dengan baik.'),
               ],
             ),
           ),
@@ -69,7 +70,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
     _contactPermission = (await Permission.contacts.status).isGranted;
     _cameraPermission = (await Permission.camera.status).isGranted;
     _audioPermission = (await Permission.microphone.status).isGranted;
-    _storage = (await Permission.manageExternalStorage.status).isGranted;
+    _storage = (await Permission.storage.status).isGranted;
     _systemAlertWindow = (await Permission.systemAlertWindow.status).isGranted;
 
     setState(() {});
@@ -135,6 +136,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   onPressed: () async {
                     if (_locationPermission && _contactPermission && _serviceAppUsage && _cameraPermission && _audioPermission && _kunciLayar) {
                       if (widget.userType == 'child') {
+                        Get.put(FeedController());
                         Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(
                               builder: (context) => ChildMain(
@@ -281,8 +283,8 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
             SizedBox(height: 10),
             SwitchListTile.adaptive(
               tileColor: cOrtuGrey,
-              title: Text('Storage'),
-              subtitle: Text('Kami membutuhkan akses storageuntuk menyimpan foto profile anda'),
+              title: Text('Media Penyimpanan'),
+              subtitle: Text('Kami membutuhkan akses media penyimpanan untuk menyimpan foto profile anda'),
               value: _storage,
               onChanged: (val) async {
                 var _permissionStatus = await Permission.storage.status;
@@ -293,7 +295,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   if (s.elapsedMilliseconds < _waitDelay && _permissionStatus.isPermanentlyDenied) {
                     await Get.dialog(AlertDialog(
                       title: Text('Akses ditolak'),
-                      content: Text('Akses untuk akses external storage telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
+                      content: Text('Akses untuk akses media penyimpanan telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
                       actions: [
                         TextButton(
                             onPressed: () async {
@@ -426,27 +428,40 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
             SwitchListTile.adaptive(
               tileColor: cOrtuGrey,
               title: Text('Lokasi'),
-              subtitle: Text('Aplikasi Keluarga HKBP mengumpulkan data lokasi untuk mengaktifkan "Pantau Lokasi Anak", "Riwayat Lokasi Anak", "ETA" dan "Pesan Darurat" bahkan jika aplikasi ditutup atau tidak digunakan.\n'+
-
-                  '\nLokasi adalah  informasi tempat/posisi berdasarkan lokasi ponsel. Lokasi yang diperlukan dan dikumpulkan berupa Geolokasi dan nama tempat.\n'
-
-                      '\nAplikasi Keluarga HKBP memungkinkan orang tua dalam memantau dan mengelola aktivitas penggunaan perangkat anak mereka termasuk melihat lokasi anak.\n'
-
-                      '\nAplikasi keluarga HKBP mengumpulkan data dan informasi lokasi perangkat anak sehingga dapat ditampilkan pada dasbor Aplikasi orang tua.\n'
-
-                      '\nFitur Lokasi yang digunakan dalam aplikasi Keluarga HKBP menggunakan Software Development Kit dari google. Pengguna dapat melihat permission yang digunakan dan memerlukan persetujuan dari pengguna untuk mengaktifkan fitur lokasi.\n'
-
-                      '\nAplikasi Keluarga HKBP selalu meminta akses lokasi bahkan saat aplikasi tidak digunakan untuk memberikan informasi lokasi yang tepat kepada orangtua dan memastikan mereka berada di lokasi yang aman, meskipun anak tidak mengaktifkan aplikasi Keluarga HKBP di perangkat mereka.\n'
-
-                      '\nDengan mengaktifkan fitur akses lokasi orang tua dapat melihat lokasi anak, prediksi perjalanan dan riwayat perjalanan anak.\n'
-
-                      '\nCara Kerja Lokasi pada Perangkat :\n'
-                      'Pengguna harus mengunduh aplikasi keluarga HKBP dan mendaftarkan akun gmail sebagai orangtua dan anak\n'
-                      'Sistem akan meminta persetujuan pengguna untuk mengaktifkan data lokasi untuk memberikan informasi terkait tempat dan informasi jarak lokasi\n'
-                      'Untuk melihat lokasi pada perangkat anak. Pengguna(Orang tua) dapat mendaftarkan perangkat anak yang ingin di monitor dengan memasukkan nama, email dan tanggal lahir anak.\n'
-                      'Pengguna(Anak) melakukan aktivasi pada perangkat anak dan login menggunakan akun yang sudah didaftarkan sebagai anak.\n'
-                      'Pada Aplikasi akan diminta persetujuan untuk mengaktifkan akses data lokasi untuk memberikan informasi lokasi di perangkat berada.\n'
-                      'Dengan kondisi lokasi sudah aktif, maka secara berkala aplikasi akan melakukan pengumpulan lokasi pada perangkat anak sehingga orang tua dapat mengetahui informasi lokasi anak mereka melalui aplikasi keluarga HKBP di perangkat orangtua.'),
+              subtitle: Column(children: [
+                Text(readMore == true
+                    ? ('Aplikasi Ruang ORTU mengumpulkan data lokasi untuk mengaktifkan "Pantau Lokasi Anak", "Riwayat Lokasi Anak", "ETA" dan "Pesan Darurat" bahkan jika aplikasi ditutup atau tidak digunakan.\n' +
+                    '\nLokasi adalah  informasi tempat/posisi berdasarkan lokasi ponsel. Lokasi yang diperlukan dan dikumpulkan berupa Geolokasi dan nama tempat.\n'
+                        '\nAplikasi Ruang ORTU memungkinkan orang tua dalam memantau dan mengelola aktivitas penggunaan perangkat anak mereka termasuk melihat lokasi anak.\n'
+                        '\nAplikasi Ruang ORTU mengumpulkan data dan informasi lokasi perangkat anak sehingga dapat ditampilkan pada dasbor Aplikasi orang tua.\n'
+                        '\nFitur Lokasi yang digunakan dalam aplikasi Ruang ORTU menggunakan Software Development Kit dari google. Pengguna dapat melihat permission yang digunakan dan memerlukan persetujuan dari pengguna untuk mengaktifkan fitur lokasi.\n'
+                        '\nAplikasi Ruang ORTU selalu meminta akses lokasi bahkan saat aplikasi tidak digunakan untuk memberikan informasi lokasi yang tepat kepada orangtua dan memastikan mereka berada di lokasi yang aman, meskipun anak tidak mengaktifkan aplikasi Ruang ORTU di perangkat mereka.\n'
+                        '\nDengan mengaktifkan fitur akses lokasi orang tua dapat melihat lokasi anak, prediksi perjalanan dan riwayat perjalanan anak.\n'
+                        '\nCara Kerja Lokasi pada Perangkat :\n'
+                        'Pengguna harus mengunduh aplikasi Ruang ORTU dan mendaftarkan akun gmail sebagai orangtua dan anak\n'
+                        'Sistem akan meminta persetujuan pengguna untuk mengaktifkan data lokasi untuk memberikan informasi terkait tempat dan informasi jarak lokasi\n'
+                        'Untuk melihat lokasi pada perangkat anak. Pengguna(Orang tua) dapat mendaftarkan perangkat anak yang ingin di monitor dengan memasukkan nama, email dan tanggal lahir anak.\n'
+                        'Pengguna(Anak) melakukan aktivasi pada perangkat anak dan login menggunakan akun yang sudah didaftarkan sebagai anak.\n'
+                        'Pada Aplikasi akan diminta persetujuan untuk mengaktifkan akses data lokasi untuk memberikan informasi lokasi di perangkat berada.\n'
+                        'Dengan kondisi lokasi sudah aktif, maka secara berkala aplikasi akan melakukan pengumpulan lokasi pada perangkat anak sehingga orang tua dapat mengetahui informasi lokasi anak mereka melalui aplikasi Ruang ORTU di perangkat orangtua.')
+                    : ('Aplikasi Ruang ORTU mengumpulkan data lokasi untuk mengaktifkan "Pantau Lokasi Anak", "Riwayat Lokasi Anak"...')),
+                InkWell(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        readMore == true ? "Show less..." : "Show more...",
+                        style: TextStyle(color: cOrtuBlue),
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    setState(() {
+                      readMore = !readMore;
+                    });
+                  },
+                ),
+              ]),
               value: _locationPermission,
               onChanged: (val) async {
                 var _permissionStatus = await Permission.locationAlways.status;
@@ -457,7 +472,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   if (s.elapsedMilliseconds < _waitDelay && _permissionStatus.isPermanentlyDenied) {
                     await Get.dialog(AlertDialog(
                       title: Text('Akses ditolak'),
-                      content: Text('Akses untuk lokasi telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
+                      content: Text('Akses untuk lokasi telah ditolak sebelumnya. Buka setting untuk mengubah akses.'),
                       actions: [
                         TextButton(
                             onPressed: () async {

@@ -82,7 +82,7 @@ class JadwalPage extends StatelessWidget {
                 tileColor: cOrtuBlue,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 leading: Icon(Icons.circle),
-                title: Text('Belajar Online HKBP'),
+                title: Text('Belajar Online Ruang ORTU'),
                 subtitle: Text('HKB PGO'),
               ),
             ),

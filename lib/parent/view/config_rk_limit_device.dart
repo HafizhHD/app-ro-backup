@@ -45,8 +45,9 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
 
   Future<List<DeviceUsageSchedules>> fetchListSchedule() async {
     Response response = await MediaRepository().fetchUserSchedule(widget.email);
-    print('isi response fetch deviceUsageSchedules : ${response.body}');
+    // print('isi response fetch deviceUsageSchedules : ${response.body}');
     if (response.statusCode == 200) {
+      print('isi response fetch deviceUsageSchedules 200');
       var json = jsonDecode(response.body);
       final List data = json['deviceUsageSchedules'];
       final res = data.map((e) => DeviceUsageSchedules.fromJson(e)).toList();

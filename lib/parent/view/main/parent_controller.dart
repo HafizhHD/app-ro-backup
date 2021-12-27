@@ -4,15 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/model/rk_child_model.dart';
+import 'package:ruangkeluarga/model/rk_spouse_model.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
 import 'package:ruangkeluarga/parent/view_model/appUsage_model.dart';
-import 'package:ruangkeluarga/parent/view_model/gereja_hkbp_model.dart';
+// import 'package:ruangkeluarga/parent/view_model/gereja_hkbp_model.dart';
 import 'package:ruangkeluarga/parent/view_model/inbox_notification_model.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:http/http.dart';
+import 'package:usage_stats/usage_stats.dart';
 
 class ParentController extends GetxController {
   ///ParentData Locale
@@ -26,18 +28,17 @@ class ParentController extends GetxController {
   late SharedPreferences prefs;
   late ParentProfile parentProfile;
   Rx<Future<List<Child>>> fChildList = Future<List<Child>>.value(<Child>[]).obs;
+  List<Spouse> spouseList = [];
   RxMap _modeAsuh = <int, int>{}.obs;
 
   ///INBOX DATA
   var inboxData = <InboxNotif>[];
   var unreadNotif = 0.obs;
 
-  ///LIST GEREJA HKBP
-  List<GerejaHKBP> listGereja = [];
-
   ///Child Activity Detail
-  Map<String, List<AppUsages>> mapChildActivity = {}, mapChildActivityDaily = {};
-  Map<String, String> mapChildScreentime = {}, mapChildScreentimeDaily = {};
+  Map<String, List<AppUsages>> mapChildActivity = {},
+      mapChildActivityDaily = {};
+  Map<String, String> mapChildScreentime = {}, mapChildScreentimeGaming = {}, mapChildScreentimeSocial = {}, mapChildScreentimeDaily = {};
 
   ///Getter & Setter
   int get bottomNavIndex => _bottomNavIndex.value;
@@ -52,7 +53,7 @@ class ParentController extends GetxController {
     update();
   }
 
-  void setParentProfile(ParentProfile p) {
+  void setParentProfile(ParentProfile p) { //tg
     parentProfile = p;
     update();
   }
@@ -69,14 +70,12 @@ class ParentController extends GetxController {
     super.onInit();
     initAsync();
     getBinding();
-    getListGerejaHKBP();
   }
 
   void getBinding() async {
     final prefs = await SharedPreferences.getInstance();
     userName = prefs.getString(rkUserName) ?? '';
     emailUser = prefs.getString(rkEmailUser) ?? '';
-    // if (emailUser != '') await getParentChildData();
     update();
   }
 
@@ -101,10 +100,13 @@ class ParentController extends GetxController {
   Future<List<Child>> _getUserData() async {
     prefs = await SharedPreferences.getInstance();
     final userID = prefs.getString(rkUserID);
-    Response response = await MediaRepository().getParentChildData(userID ?? '');
+    Response response =
+        await MediaRepository().getParentChildData(userID ?? '');
     if (response.statusCode == 200) {
       final jsonUser = jsonDecode(response.body)['user'];
       parentProfile = ParentProfile.fromJson(jsonUser);
+//      if (jsonUser.spouse)
+//      spouseList = ParentProfile. spouse ?? [];
       return parentProfile.children ?? [];
     }
     return [];
@@ -117,7 +119,11 @@ class ParentController extends GetxController {
     await firebaseMessaging.getToken().then((fcmToken) {
       token = fcmToken!;
     });
-    Response response = await MediaRepository().userLogin(prefs.getString(rkEmailUser)!, prefs.getString(accessGToken)!, token, '1.0');
+    Response response = await MediaRepository().userLogin(
+        prefs.getString(rkEmailUser)!,
+        prefs.getString(accessGToken)!,
+        token,
+        '1.0');
     if (response.statusCode == 200) {
       print("user exist ${response.body}");
       var json = jsonDecode(response.body);
@@ -169,7 +175,8 @@ class ParentController extends GetxController {
   }
 
   Future getInboxNotif() async {
-    Response res = await MediaRepository().fetchParentInbox(parentProfile.email);
+    Response res =
+        await MediaRepository().fetchParentInbox(parentProfile.email);
     if (res.statusCode == 200) {
       print('print res fetchParentInbox ${res.body}');
       final json = jsonDecode(res.body);
@@ -219,27 +226,17 @@ class ParentController extends GetxController {
               await getInboxNotif();
               closeOverlay();
               closeOverlay();
-              showToastSuccess(ctx: Get.context!, successText: 'Berhasil menghapus notifikasi');
+              showToastSuccess(
+                  ctx: Get.context!,
+                  successText: 'Berhasil menghapus notifikasi');
             } else
-              showToastFailed(ctx: Get.context!, failedText: 'Gagal menghapus notifikasi');
+              showToastFailed(
+                  ctx: Get.context!, failedText: 'Gagal menghapus notifikasi');
           },
           child: Text('Hapus', style: TextStyle(color: cOrtuBlue)),
         ),
       ],
     ));
-  }
-
-  Future getListGerejaHKBP() async {
-    Response res = await MediaRepository().fetchGerejaHKBP();
-    if (res.statusCode == 200) {
-      print('print res getListGerejaHKBP ${res.body}');
-      final json = jsonDecode(res.body);
-      if (json['resultCode'] == "OK") {
-        List HKBPData = json['HKBPData'];
-        listGereja = HKBPData.map((e) => GerejaHKBP.fromJson(e)).toList();
-        update();
-      }
-    }
   }
 
   ///child activity
@@ -248,8 +245,8 @@ class ParentController extends GetxController {
   }
 
   DateTime findLastDateOfTheWeek(DateTime dateTime) {
-    return dateTime.add(Duration(days: DateTime.daysPerWeek - dateTime.weekday));
-
+    return dateTime
+        .add(Duration(days: DateTime.daysPerWeek - dateTime.weekday));
   }
 
   DateTime findFirstHourOfTheDay(DateTime dateTime) {
@@ -274,24 +271,28 @@ class ParentController extends GetxController {
     var endDate = outputFormat.format(findLastDateOfTheWeek(DateTime.now()));
     if (parentProfile.children != null) {
       parentProfile.children!.forEach((child) async {
-        Response response = await MediaRepository().fetchAppUsageFilterRange(child.email!, startDate, endDate);
+        Response response = await MediaRepository()
+            .fetchAppUsageFilterRange(child.email!, startDate, endDate);
         if (response.statusCode == 200) {
-          int seconds = 0;
+          int seconds = 0, secondsGaming = 0, secondsSocial = 0;
           print('isi response filter app usage : ${response.body}');
-          //61a4b9ca54e0c97b35ebb40f
-          //61a4b9ca54e0c97b35ebb40f
           var json = jsonDecode(response.body);
           if (json['resultCode'] == "OK") {
             var jsonDataResult = json['appUsages'] as List;
-            final listAppUsage = jsonDataResult.map((e) => AppUsages.fromJson(e)).toList();
+            final listAppUsage =
+                jsonDataResult.map((e) => AppUsages.fromJson(e)).toList();
             mapChildActivity[child.email!] = listAppUsage;
             listAppUsage.forEach((appUsage) {
               appUsage.appUsagesDetail.forEach((e) {
                 seconds += e.duration;
+                if (e.appCategory == 'game') secondsGaming += e.duration;
+                if (e.appCategory == 'social') secondsSocial += e.duration;
               });
             });
           }
-          mapChildScreentime[child.email!] = setAverageDaily(seconds);
+          mapChildScreentime[child.email!] = setAverageDaily(seconds ~/ 1000);
+          mapChildScreentimeGaming[child.email!] = setAverageDaily(secondsGaming ~/ 1000);
+          mapChildScreentimeSocial[child.email!] = setAverageDaily(secondsSocial ~/ 1000);
           update();
         }
       });
@@ -299,6 +300,8 @@ class ParentController extends GetxController {
   }
 
   Future getDailyUsageStatistic() async {
+    UsageStats.grantUsagePermission();
+
     //var outputFormat = DateFormat('yyyy-MM-ddTHH:mm:ss.SSS');
     var outputFormat = DateFormat('yyyy-MM-dd');
     print('Ini tgl sekarang: ${outputFormat.format(DateTime.now())}');
@@ -306,10 +309,22 @@ class ParentController extends GetxController {
     var endDate = outputFormat.format(findLastHourOfTheDay(DateTime.now()));
     print('Ini start date: $startDate, end date: $endDate');
 
+    List<UsageInfo> usageInfo = await UsageStats.queryUsageStats(
+        findFirstHourOfTheDay(DateTime.now()),
+        findLastHourOfTheDay(DateTime.now()));
+
+    usageInfo.forEach((e) {
+      print('Ini nama pekejnya ${e.packageName}');
+      print(
+          'Ini pertama dipake ${DateTime.fromMillisecondsSinceEpoch(int.parse(e.firstTimeStamp!))}');
+      print(
+          'Ini terakhir dipake ${DateTime.fromMillisecondsSinceEpoch(int.parse(e.lastTimeStamp!))}');
+    });
+
     if (parentProfile.children != null) {
       parentProfile.children!.forEach((child) async {
         Response response = await MediaRepository()
-            .fetchAppUsageFilterRange(child.email!, startDate, endDate, isDaily: true);
+            .fetchAppUsageFilterRange(child.email!, startDate, endDate);
         if (response.statusCode == 200) {
           int seconds = 0;
           print('isi response filter app usage punya Daily : ${response.body}');
@@ -317,14 +332,14 @@ class ParentController extends GetxController {
           if (json['resultCode'] == "OK") {
             var jsonDataResult = json['appUsages'] as List;
             final listAppUsage =
-            jsonDataResult.map((e) => AppUsages.fromJson(e)).toList();
+                jsonDataResult.map((e) => AppUsages.fromJson(e)).toList();
             mapChildActivityDaily[child.email!] = listAppUsage;
             listAppUsage.forEach((appUsage) {
               appUsage.appUsagesDetail.forEach((e) {
                 e.usageHour!.forEach((h) {
                   var startTimeStamp = DateTime.parse(h['lastTimeStamp'])
                       .subtract(Duration(
-                      milliseconds: int.parse(h['durationInStamp'])));
+                          milliseconds: int.parse(h['durationInStamp'])));
                   Duration dur = DateTime.parse(h['lastTimeStamp'])
                       .difference(findFirstHourOfTheDay(DateTime.now()));
                   Duration durStart = startTimeStamp

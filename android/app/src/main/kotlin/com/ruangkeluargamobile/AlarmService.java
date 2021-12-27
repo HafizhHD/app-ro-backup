@@ -416,7 +416,7 @@ public class AlarmService extends JobIntentService {
         if(foregroundAppUsageStats != null) {
           modelKillAplikasi = new ModelKillAplikasi();
           modelKillAplikasi.setPackageId(foregroundAppUsageStats.getPackageName());
-          int minutes = (int) ((foregroundAppUsageStats.getTotalTimeInForeground() / (1000*60)) % 60);
+          int minutes = (int) ((foregroundAppUsageStats.getTotalTimeInForeground() / (1000*60)));
           modelKillAplikasi.setTimePenggunaan(String.valueOf(minutes));
         }
       }
@@ -424,6 +424,29 @@ public class AlarmService extends JobIntentService {
     return modelKillAplikasi;
   }
 
+//  public static int getAppUsageDuration(String packageName){
+//    final DateTime endDate = new DateTime.now();
+//    final DateTime startDate = endDate.subtract(Duration(hours: DateTime.now().hour, minutes: DateTime.now().minute, seconds: DateTime.now().second));
+//    final List<EventUsageInfo> infoList = await UsageStats.queryEvents(startDate, endDate);
+//    Map<String, List<List<int>>> infoList3 = {};
+//    infoList.forEach((e) {
+//      int eventType = int.parse(e.eventType!);
+//      int eventTime = int.parse(e.timeStamp!);
+//      var array = [eventType, eventTime];
+//      if (infoList3.containsKey(e.packageName)) {
+//        infoList3[e.packageName]!.add(array);
+//      } else {
+//        List<List<int>> eventPair = [];
+//        eventPair.add(array);
+//        infoList3[e.packageName!] = eventPair;
+//      }
+//    });
+//    final hasData = infoList3.where((e) => e.packageName == packageName).toList();
+//    if (hasData) {
+//
+//      return 1
+//    } else return 0;
+//  }
 
 //          int minutes = (int) ((foregroundAppUsageStats.getTotalTimeInForeground() / (1000*60)) % 60);
   //cek data aplikasi time
@@ -452,22 +475,25 @@ public class AlarmService extends JobIntentService {
     }*/
 
   public static void closeApps(Context context, ModelKillAplikasi appForeground){
-    ActivityManager am = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
-    System.out.println("CLOSE : "+appForeground.getAppName());
-    System.out.println("CLOSE : "+getDataShare(context, "APP_NAME"));
-    Intent intent = new Intent(Intent.ACTION_MAIN);
-    intent.putExtra("APP_NAME", appForeground.getAppName());
-    intent.addCategory(Intent.CATEGORY_HOME);
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    context.startActivity(intent);
-    am.killBackgroundProcesses(appForeground.getPackageId());
-    if(appForeground.getBlacklist().equals("true")){
-      Toast.makeText(context, "Keluarga HKBP melakukan blokir aplikasi "+appForeground.getAppName()+
-              " karena saat ini aplikasi tersebut dibatasi oleh Orangtua.", Toast.LENGTH_LONG).show();
-    }else{
-      Toast.makeText(context, "Keluarga HKBP melakukan blokir aplikasi "+appForeground.getAppName()+
-              " karena sudah melebihi batas waktu yang ditentukan oleh OrangTua.", Toast.LENGTH_LONG).show();
-    }
+    try {
+//      ActivityManager am = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+//      System.out.println("CLOSE cc: "+appForeground.getAppName());
+//      System.out.println("CLOSE : "+getDataShare(context, "APP_NAME"));
+      Intent intent = new Intent(Intent.ACTION_MAIN);
+//      intent.putExtra("APP_NAME", appForeground.getAppName());
+      intent.addCategory(Intent.CATEGORY_HOME);
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      context.startActivity(intent);
+      if(appForeground.getBlacklist().equals("true")){
+        Toast.makeText(context, "Ruang ORTU melakukan blokir aplikasi "+String.valueOf(appForeground.getAppName())+
+                " karena saat ini aplikasi tersebut dibatasi oleh Orangtua.", Toast.LENGTH_LONG).show();
+      }else{
+        Toast.makeText(context, "Ruang ORTU melakukan blokir aplikasi "+String.valueOf(appForeground.getAppName())+
+                " karena sudah melebihi batas waktu yang ditentukan oleh OrangTua.", Toast.LENGTH_LONG).show();
+      }
+//      am.killBackgroundProcesses(appForeground.getPackageId());
+//      am.killBackgroundProcesses(appForeground.getPackageId());
+    }catch (Exception e){System.out.println(e);}
   }
 
   public static void sharePref(Context context, String key, boolean value){
@@ -478,24 +504,27 @@ public class AlarmService extends JobIntentService {
   }
 
   public static Boolean getDataShare(Context context, String key){
-    SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-    return settings.getBoolean("APP_NAME", false);
+    try {
+      SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+      return settings.getBoolean(key, false);
+    }catch (Exception e){ return false;}
   }
 
+  // tidak dipakai
   public static void blockAppAndPackageNow(Context context, ModelKillAplikasi appForeground){
     ActivityManager am = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
-    System.out.println("CLOSE : "+appForeground.getAppName());
+    System.out.println("CLOSE xx: "+appForeground.getAppName());
     Intent intent = new Intent(Intent.ACTION_MAIN);
     intent.addCategory(Intent.CATEGORY_HOME);
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     context.startActivity(intent);
     am.killBackgroundProcesses(appForeground.getPackageId());
     if(appForeground.getBlacklist().equals("true")){
-      Toast.makeText(context, "Keluarga HKBP melakukan blokir aplikasi "+appForeground.getAppName()+
+      Toast.makeText(context, "Ruang ORTU melakukan blokir aplikasi "+appForeground.getAppName()+
               " karena saat ini aplikasi tersebut dibatasi oleh Orangtua.", Toast.LENGTH_LONG).show();
     }else{
-      Toast.makeText(context, "Keluarga HKBP melakukan blokir aplikasi "+appForeground.getAppName()+
-              " karena sudah melebihi batas waktu yang ditentukan oleh OrangTua.", Toast.LENGTH_LONG).show();
+      Toast.makeText(context, "Ruang ORTU melakukan blokir aplikasi "+appForeground.getAppName()+
+              " karena  sudah melebihi batas waktu yang ditentukan oleh OrangTua.", Toast.LENGTH_LONG).show();
     }
   }
 }

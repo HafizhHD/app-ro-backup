@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter_geocoder/geocoder.dart';
@@ -50,7 +49,7 @@ class MediaRepository {
   Future<Response> getParentChildData(String userID) async {
     var url = _rkService.baseUrl + '/user/view';
     Map<String, String> json = {
-      "userId": "$userID", "appName": "keluarga hkbp",
+      "userId": "$userID", "appName": "Ruang ORTU",
     };
     print('param get parent child data : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
@@ -66,7 +65,7 @@ class MediaRepository {
   }
 
   Future<Response> registerParent(String email, String name, String token, String photo, nohp, String alamat, String status, String accessToken,
-      String imgByte, String namaHKPB, String birthDate) async {
+      String imgByte, String birthDate) async {
     var url = _rkService.baseUrl + '/user/register';
     Map<String, dynamic> json = {
       "emailUser": "$email",
@@ -77,8 +76,9 @@ class MediaRepository {
       "address": "$alamat",
       "parentStatus": "$status",
       "birdDate": "$birthDate",
-      "namaHkbp": "$namaHKPB",
-      "accessCode": "$accessToken"
+      "namaHkbp": "",
+      "accessCode": "$accessToken",
+      "packageId": "com.ruangortu"
     };
     if (imgByte != "") json["imagePhoto"] = imgByte;
 
@@ -87,7 +87,8 @@ class MediaRepository {
     return response;
   }
 
-  Future<Response> inviteChild(String email,
+  Future<Response> inviteChild(
+      String email,
       String childEmail,
       String nohp,
       String childName,
@@ -97,7 +98,8 @@ class MediaRepository {
       int childNumber,
       String imgByte,
       String birthDate,
-      String address) async {
+      String address,
+      String userType) async {
     var url = _rkService.baseUrl + '/user/invite';
     Map<String, dynamic> json = {
       "emailUser": "$email",
@@ -109,7 +111,9 @@ class MediaRepository {
       "childOfNumber": childOfNumber,
       "childNumber": childNumber,
       "birdDate": "$birthDate",
-      "address": "$address"
+      "address": "$address",
+      "userType": "$userType",
+      "packageId": "com.ruangortu"
     };
     if (imgByte != "") json["imagePhoto"] = imgByte;
 
@@ -220,6 +224,7 @@ class MediaRepository {
       "limit": 1000
     };
     print('param fetch appList : $json');
+    print('URL : $url');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
@@ -564,9 +569,9 @@ class MediaRepository {
     print('fetchCoBrandContents');
     Map<String, dynamic> json = {
       "whereKeyValues": {
-        "cobrandEmail": "hkbp@test.com",
+        "cobrandEmail": "admin@ruangortu.id",
         "status": 'active'
-      }
+      }, "orderKeyValues": {"dateCreated": -1}
     };
     print('param content filter : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));

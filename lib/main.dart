@@ -30,7 +30,7 @@ import 'package:ruangkeluarga/parent/view_model/vm_content_rk.dart';
 import 'package:ruangkeluarga/utils/background_service_new.dart';
 import 'package:ruangkeluarga/utils/base_service/service_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:usage_stats/usage_stats.dart';
 import 'global/global.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -47,14 +47,19 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         controller1.featAppModeAsuh(message.data['content']);
       }
     }else if(message.data['body'].toString().toLowerCase()=='update lock screen'){
-      if(message.data['content'] != null) {
-        var dataNotif = jsonDecode(message.data['content']);
-        if(dataNotif['lockstatus']!=null){
-          //jika lock membahayakan aktifkan source dibawah ini dan hidden source dibawahnya
-          /*if(dataNotif['lockstatus'].toString() == 'true'){
-            new MethodChannel('com.ruangkeluargamobile/android_service_background', JSONMethodCodec()).invokeMethod('lockDeviceChils', {'data':'data'});
-          }*/
-          controller1.featStatusLockScreen(dataNotif['lockstatus'].toString());
+      if ((message.data['content'] != null) && (message.data['content'] != "")) {
+        try {
+          var dataNotif = jsonDecode(message.data['content']);
+          if (dataNotif['lockstatus'] != null) {
+            //jika lock membahayakan aktifkan source dibawah ini dan hidden source dibawahnya
+            /*if(dataNotif['lockstatus'].toString() == 'true'){
+          new MethodChannel('com.ruangkeluargamobile/android_service_background', JSONMethodCodec()).invokeMethod('lockDeviceChils', {'data':'data'});
+        }*/
+            controller1.featStatusLockScreen(
+                dataNotif['lockstatus'].toString());
+          }
+        } catch (e) {
+          print("Error Notif" + e.toString());
         }
       }else{
         controller1.featLockScreen();
@@ -69,25 +74,91 @@ late AndroidNotificationChannel channel;
 /// Initialize the [FlutterLocalNotificationsPlugin] package.
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
-/// The name associated with the UI isolate's [SendPort].
-const String isolateName = 'isolate';
-
-/// A port used to communicate from a background isolate to the UI isolate.
-final ReceivePort port = ReceivePort();
 void startServicePlatform() async{
   await BackgroundServiceNew.oneShot(
-      const Duration(milliseconds: 1),
-      10000,
-      callbackTest,
+      const Duration(milliseconds: 5000),
+      12301,
+      callbackBackgroundService,
       wakeup: true,
       exact: true,
       rescheduleOnReboot: true
   );
 }
 
-void callbackTest() async {
-  await BackgroundServiceNew.cekAppLaunch();
-  startServicePlatform();
+
+Future<Map<String, int>> getDurationAppForeground() async{
+  final DateTime endDate = new DateTime.now();
+  final DateTime startDate = endDate.subtract(Duration(hours: DateTime.now().hour, minutes: DateTime.now().minute, seconds: DateTime.now().second));
+  final List<EventUsageInfo> infoList = await UsageStats.queryEvents(startDate, endDate);
+  Map<String, List<List<int>>> infoList3 = {};
+  String packageName = "";
+  infoList.forEach((e) {
+    int eventType = int.parse(e.eventType!);
+    int eventTime = int.parse(e.timeStamp!);
+    if (eventType == 1) packageName = e.packageName!;
+    var array = [eventType, eventTime];
+    if (infoList3.containsKey(e.packageName)) {
+      infoList3[e.packageName]!.add(array);
+    } else {
+      List<List<int>> eventPair = [];
+      eventPair.add(array);
+      infoList3[e.packageName!] = eventPair;
+    }
+  });
+  int duration = 0;
+  int startTime = -1;
+  infoList3.forEach((app, e) {
+    // print(app);
+    if (app == packageName) {
+      e.asMap().forEach((i, val) {
+        if (val[0] == 2) {
+          if (i == 0) {
+            duration += val[1] - startDate.millisecondsSinceEpoch as int;
+            startTime = -1;
+          } else {
+            duration += val[1] - startTime as int;
+            startTime = -1;
+          }
+        } else if (val[0] == 1) {
+          if (i == e.length - 1) {
+            duration += DateTime.now().millisecondsSinceEpoch - val[1] as int;
+            startTime = -1;
+          } else
+            startTime = val[1];
+        }
+      });
+    }
+  });
+  Map<String, int> data = {};
+  data[packageName] = duration;
+  return(data);
+}
+
+void callbackBackgroundService() async {
+  print("background service on");
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  try {
+    final result = await InternetAddress.lookup('com.ruangortu');
+    var koneksiInternet = prefs.getBool('koneksiInternet');
+    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty && koneksiInternet != null && !koneksiInternet) {
+      print("Internet connected");
+      ChildController controller = new ChildController();
+      controller.fetchDataApp();
+      await prefs.setBool("koneksiInternet", true);
+    }
+  } on SocketException catch (_) {
+    print("Diskonnect internet");
+    await prefs.setBool("koneksiInternet", false);
+  } on Exception catch(_){
+    print("Diskonnect internet");
+    await prefs.setBool("koneksiInternet", false);
+  }
+  finally {
+    var durationAppForeground = await getDurationAppForeground();
+    // print("durasi = " + durationAppForeground.toString());
+    await BackgroundServiceNew.cekAppLaunch(durationAppForeground);
+    startServicePlatform();
+  }
 }
 
 /*void callBackAlert(String tag) {
@@ -118,10 +189,6 @@ void main() async {
   });
   // WidgetsFlutterBinding.ensureInitialized();
   initAdmob();
-  IsolateNameServer.registerPortWithName(
-    port.sendPort,
-    isolateName,
-  );
 
   // Set the background messaging handler early on, as a named top-level function
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -157,6 +224,8 @@ Future<void> initAdmob() async {
   await MobileAds.initialize(
     bannerAdUnitId: bannerAdUnitId,
   );
+  await MobileAds.setChildDirected(true);
+  await MobileAds.setMaxAdContentRating(0);
 }
 
 class MyApp extends StatelessWidget {
@@ -213,17 +282,22 @@ class _MyHomePageState extends State<MyHomePage> {
             Navigator.of(context).push(leftTransitionRoute(LoginPage()));
           } else {
             if (roUserType == "child") {
-              if (await childNeedPermission()) {
-                Navigator.of(context)
-                    .pushReplacement(MaterialPageRoute(builder: (context) =>
-                    SetupPermissionChildPage(
-                        email: roUserEmail, name: roUserName)));
-              } else {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => ChildMain(
-                      childEmail: roUserEmail, childName: roUserName)),
-                      (Route<dynamic> route) => false,
-                );
+              MethodChannel channel= new MethodChannel('com.ruangkeluargamobile/android_service_background', JSONMethodCodec());
+              bool? response = await channel.invokeMethod<bool>('permissionLockApp', {'data':'data'});
+              print('response : '+response.toString());
+              if(response!){
+                if (await childNeedPermission()) {
+                  Navigator.of(context)
+                      .pushReplacement(MaterialPageRoute(builder: (context) =>
+                      SetupPermissionChildPage(
+                          email: roUserEmail, name: roUserName)));
+                } else {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => ChildMain(
+                        childEmail: roUserEmail, childName: roUserName)),
+                        (Route<dynamic> route) => false,
+                  );
+                }
               }
             } else {
               Navigator.of(context).pushAndRemoveUntil(

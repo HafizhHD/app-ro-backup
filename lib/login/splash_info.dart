@@ -31,7 +31,7 @@ class SplashInfo extends StatelessWidget {
                     // ),
                     SizedBox(height: 20),
                     Text(
-                      'Aplikasi Untuk Keluarga HKBP',
+                      'Aplikasi Untuk Ruang ORTU',
                       style: TextStyle(
                         fontSize: 20,
                         color: cOrtuWhite,

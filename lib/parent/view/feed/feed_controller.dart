@@ -17,6 +17,7 @@ class ContentModel {
   String programId;
   String contentName;
   String contentDescription;
+  String contentSource;
   ContentType contentType;
   String contents;
   String? contentThumbnail;
@@ -30,6 +31,7 @@ class ContentModel {
     required this.programId,
     required this.contentName,
     required this.contentDescription,
+    required this.contentSource,
     required this.contentType,
     required this.contents,
     this.contentThumbnail,
@@ -44,6 +46,7 @@ class ContentModel {
       programId: json["programId"],
       contentName: json["contentName"],
       contentDescription: json["contentDescription"],
+      contentSource: json["contentSource"],
       contentType: ContentTypeFromString(json["contentType"]),
       contentThumbnail: json["contentThumbnail"],
       contents: json["contents"],
@@ -63,7 +66,6 @@ class FeedController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    WidgetsFlutterBinding.ensureInitialized();
     fGetList = getContents();
   }
 
