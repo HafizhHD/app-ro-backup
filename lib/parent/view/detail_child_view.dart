@@ -337,20 +337,20 @@ class _DetailChildPageState extends State<DetailChildPage> {
               })
             },
           ),
-          wKontrolKonfigurasiContent(
-            title: 'Akses Internet',
-            content: 'Dengan SafeSearch, Anda dapat memperbaiki penelusuran negatif'
-                'pada mesin peencarian Google. Pemfilteran internet memungkinkan'
-                'Anda memblokir situs web, gambar dan video dari kategori tertentu yang'
-                'Anda pilih. Anda juga dapat melihat riwayat internet dan bookmark mereka.',
-            onTap: () => Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => RKConfigAccessInternetPage(title: 'Akses Internet', name: widget.name))).then((value){
-              setState(() {
-                _loadingGetData = true;
-              });
-              getModeAsuh();
-            }),
-          ),
+          // wKontrolKonfigurasiContent(
+          //   title: 'Akses Internet',
+          //   content: 'Dengan SafeSearch, Anda dapat memperbaiki penelusuran negatif'
+          //       'pada mesin peencarian Google. Pemfilteran internet memungkinkan'
+          //       'Anda memblokir situs web, gambar dan video dari kategori tertentu yang'
+          //       'Anda pilih. Anda juga dapat melihat riwayat internet dan bookmark mereka.',
+          //   onTap: () => Navigator.of(context)
+          //       .push(MaterialPageRoute(builder: (context) => RKConfigAccessInternetPage(title: 'Akses Internet', name: widget.name))).then((value){
+          //     setState(() {
+          //       _loadingGetData = true;
+          //     });
+          //     getModeAsuh();
+          //   }),
+          // ),
           wKontrolKonfigurasiContent(
             title: 'Batas Penggunaan',
             content: 'Dengan menggunakan aplikasi Ruang Keluarga untuk orang tua dari perangkat'

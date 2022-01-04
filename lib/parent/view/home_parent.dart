@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart' hide Response;
 
 import 'package:flutter/material.dart';
-import 'package:native_admob_flutter/native_admob_flutter.dart';
 
 import 'package:ruangkeluarga/model/rk_child_model.dart';
 import 'package:ruangkeluarga/parent/view/detail_child_view.dart';
