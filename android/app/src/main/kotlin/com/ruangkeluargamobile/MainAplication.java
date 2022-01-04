@@ -53,7 +53,7 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
     DevicePolicyManager deviceManger;
     public static MethodChannel.Result resultPremission;
 
-    private static String APP_STAT_CHANNEL = "keluargahkbp.com/appUsage";
+    private static String APP_STAT_CHANNEL = "ruangortu.com/appUsage";
     private MethodChannel usageStatChannel;
     private UsageStatsManager usageStat;
     private Context thisContext;
@@ -167,7 +167,7 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
                                 System.out.println("APLIKASI CURRENT : "+ currentAppId);
                                 System.out.println("PENGGUNAAN : "+ duration.toString());
                                 // if(!appForeground.getPackageId().equals("com.keluargahkbp")){
-                                if(currentAppId != "com.keluargahkbp"){
+                                if(currentAppId != "com.ruangortu"){
                                     for(int i = 0; i<jsonArray.length(); i++){
                                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                                         System.out.println("cek dengan app:" + jsonObject.getString("packageId"));

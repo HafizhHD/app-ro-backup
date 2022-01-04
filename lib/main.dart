@@ -12,7 +12,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:native_admob_flutter/native_admob_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:ruangkeluarga/child/child_controller.dart';
@@ -22,7 +21,6 @@ import 'package:ruangkeluarga/login/login.dart';
 import 'package:ruangkeluarga/login/setup_permissions.dart';
 import 'package:ruangkeluarga/login/splash_info.dart';
 import 'package:ruangkeluarga/global/global.dart';
-import 'package:ruangkeluarga/parent/view/admob/core_banner_apps.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
@@ -38,15 +36,19 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Handling a background message ${message.messageId}');
   ChildController controller1 = new ChildController();
   if(message.data != null && message.data['body'] != null){
-    if(message.data['body'].toString().toLowerCase()=='update data block app'){
+    String strMessage = message.data['body'].toString().toLowerCase();
+    int posBlock = strMessage.indexOf('sedang dibatasi');
+    int posModeAsuh = strMessage.indexOf('mode asuh');
+    int poslockScreen = strMessage.indexOf('kunci layar');
+    if((message.data['body'].toString().toLowerCase()=='update data block app') || (posBlock >= 0)){
       if(message.data['content'] != null) {
         controller1.fetchAppList(message.data['content']);
       }
-    }else if(message.data['body'].toString().toLowerCase()=='mode asuh'){
+    }else if((message.data['body'].toString().toLowerCase()=='mode asuh') || (posModeAsuh >= 0)){
       if(message.data['content'] != null) {
         controller1.featAppModeAsuh(message.data['content']);
       }
-    }else if(message.data['body'].toString().toLowerCase()=='update lock screen'){
+    }else if((message.data['body'].toString().toLowerCase()=='update lock screen') || (poslockScreen >= 0)){
       if ((message.data['content'] != null) && (message.data['content'] != "")) {
         try {
           var dataNotif = jsonDecode(message.data['content']);
@@ -188,7 +190,6 @@ void main() async {
     FirebaseCrashlytics.instance.recordError(error, stackTrace);
   });
   // WidgetsFlutterBinding.ensureInitialized();
-  initAdmob();
 
   // Set the background messaging handler early on, as a named top-level function
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -218,14 +219,6 @@ void main() async {
     sound: true,
   );
   initializeDateFormatting('en_ID', null).then((_) => runApp(MyApp()));
-}
-
-Future<void> initAdmob() async {
-  await MobileAds.initialize(
-    bannerAdUnitId: bannerAdUnitId,
-  );
-  await MobileAds.setChildDirected(true);
-  await MobileAds.setMaxAdContentRating(0);
 }
 
 class MyApp extends StatelessWidget {

@@ -146,11 +146,12 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                           (Route<dynamic> route) => false,
                         );
                       }
-                      else Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (context) => ParentMain()),
-                            (Route<dynamic> route) => false,
-                      );
+                      else {
+                        Get.put(FeedController());
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (context) => ParentMain()),
+                            (Route<dynamic> route) => false,);
+                      }
                       // else Navigator.of(context).push(leftTransitionRoute(ParentMain()));
                     } else {
                       _showMyDialog();

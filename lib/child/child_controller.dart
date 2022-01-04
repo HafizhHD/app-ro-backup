@@ -135,16 +135,20 @@ class ChildController extends GetxController {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
       if(message.data != null && message.data['body'] != null){
-        if(message.data['body'].toString().toLowerCase()=='update data block app'){
+        String strMessage = message.data['body'].toString().toLowerCase();
+        int posBlock = strMessage.indexOf('sedang dibatasi');
+        int posModeAsuh = strMessage.indexOf('mode asuh');
+        int poslockScreen = strMessage.indexOf('kunci layar');
+        if((message.data['body'].toString().toLowerCase()=='update data block app') || (posBlock >= 0)){
           if(message.data['content'] != null) {
             fetchAppList(message.data['content']);
           }
-        }else if(message.data['body'].toString().toLowerCase()=='mode asuh'){
+        }else if((message.data['body'].toString().toLowerCase()=='mode asuh') || (posModeAsuh >= 0)){
           if(message.data['content'] != null) {
             featAppModeAsuh(message.data['content']);
           }
-        }else if(message.data['body'].toString().toLowerCase()=='update lock screen'){
-          if(message.data['content'] != null) {
+        }else if((message.data['body'].toString().toLowerCase()=='update lock screen') || (poslockScreen >= 0)){
+          if((message.data['content'] != null)&&(message.data['content'] != "")) {
             var dataNotif = jsonDecode(message.data['content']);
             if(dataNotif['lockstatus']!=null){
               //jika lock membahayakan aktifkan source dibawah ini dan hidden source dibawahnya

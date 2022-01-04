@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:flutter/material.dart';
-import 'package:native_admob_flutter/native_admob_flutter.dart';
-
 import 'package:ruangkeluarga/child/child_controller.dart';
 import 'package:ruangkeluarga/child/sos_record_video.dart';
 import 'package:ruangkeluarga/global/global_shimmer.dart';
@@ -47,34 +45,6 @@ class HomeChild extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Container(
-          //   width: screenSize.width - 20,
-          //   constraints: BoxConstraints(maxHeight: 150),
-          //   margin: const EdgeInsets.all(10.0), //Same as `blurRadius` i guess
-          //   child: ListView.builder(
-          //     padding: EdgeInsets.all(5.0),
-          //     shrinkWrap: true,
-          //     scrollDirection: Axis.horizontal,
-          //     itemCount: 2,
-          //     itemBuilder: (BuildContext context, int index) => Card(
-          //       key: Key('HKBPContent#$index'),
-          //       shape: RoundedRectangleBorder(
-          //         borderRadius: BorderRadius.circular(10.0),
-          //       ),
-          //       child: GestureDetector(
-          //         child: Image.asset('assets/images/hkbpgo.png', fit: BoxFit.cover),
-          //         onTap: () => childController.setBottomNavIndex(1),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          Container(
-            padding: EdgeInsets.only(top: 16, bottom: 16),
-            constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
-            child: BannerAd(
-              size: BannerSize.ADAPTIVE,
-            ),
-          ),
           Container(
               constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
               child: Obx(
