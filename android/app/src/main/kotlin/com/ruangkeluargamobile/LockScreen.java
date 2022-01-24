@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import com.ruangortu.R;
+import com.asia.ruangortu.R;
 
 import static com.ruangkeluargamobile.AlarmService.sharePref;
 
@@ -29,7 +29,7 @@ public class LockScreen extends Activity {
             }
         }
         sharePref(getApplicationContext(), "APP_NAME", true);
-        textDesc.setText("Ruang ORTU melakukan blokir aplikasi "+appName+" karena saat ini aplikasi tersebut dibatasi oleh Orangtua.");
+        textDesc.setText("Ruang ORTU by ASIA melakukan blokir aplikasi "+appName+" karena saat ini aplikasi tersebut dibatasi oleh Orangtua.");
 
         buttonCLose = (Button) findViewById(R.id.buttonCLose);
         buttonCLose.setOnClickListener(new View.OnClickListener() {

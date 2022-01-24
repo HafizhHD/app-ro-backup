@@ -323,7 +323,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
                 return ListView.builder(
                     // physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    scrollDirection: Axis.horizontal, //Ruang ORTU kebawah
+                    scrollDirection: Axis.horizontal, //Ruang ORTU by ASIA kebawah
                     itemCount: childsList.length,
                     itemBuilder: (BuildContext context, int index) {
                       parentController.setModeAsuh(

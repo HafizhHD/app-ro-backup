@@ -11,7 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 ///CONSTANT
 const keyboardHeight = 150;
-const appName = "Ruang ORTU";
+const appName = "Ruang ORTU by ASIA";
 
 final String isPrefLogin = "isPrefLogin";
 final String rkUserID = "rkUserID";
@@ -27,11 +27,11 @@ final String rkBaseUrlAppIcon = "rkBaseUrlAppIcon";
 
 const AppIconPathRO = 'assets/images/ruangortu-icon.png';
 const AppIconPathRO_x4 = 'assets/images/ruangortu-icon_4.png';
-const AppIconPathORTU = 'assets/images/ortu/logo-ruangortu.png';
+const AppIconPathORTU = 'assets/images/asia/logo-asia.png';
 const currentAppIconPath = AppIconPathORTU;
 
 const ApkDownloadURL = 'https://drive.google.com/drive/folders/1U5V9ZbUel3O0kNBw96O4TY0m7TrLnTwe?usp=sharing';
-const ApkDownloadURL_ORTU = 'https://play.google.com/store/apps/details?id=com.ruangortu';
+const ApkDownloadURL_ORTU = 'https://play.google.com/store/apps/details?id=com.asia.ruangortu';
 
 final urlPP = 'https://ruangortu.id/toc/privacy_policy_bahasa.html';
 final urlTOC = 'https://ruangortu.id/toc/toc_bahasa.html';

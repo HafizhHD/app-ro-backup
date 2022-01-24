@@ -18,7 +18,8 @@ class UserViewModel extends ChangeNotifier {
 
   /// Call the media service and gets the data of requested media data of
   /// an artist.
-  Future<void> fetchLoginUser(String email, String gToken, String fcmToken, String version) async {
+  Future<void> fetchLoginUser(String email, String gToken, String fcmToken,
+      String version) async {
     _apiResponse = ApiResponse.loading('Fetching artist data');
     notifyListeners();
     try {

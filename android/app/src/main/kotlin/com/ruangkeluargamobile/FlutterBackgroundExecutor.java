@@ -138,7 +138,7 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
               if (currentAppId != "") {
 //                System.out.println("APLIKASI CURRENT : "+ currentAppId);
 //                System.out.println("PENGGUNAAN : "+ duration.toString());
-                if(currentAppId != "com.ruangortu"){
+                if(currentAppId != "com.asia.ruangortu"){
                   for(int i = 0; i<jsonArray.length(); i++){
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     // System.out.println("cek dengan app:" + jsonObject.getString("packageId"));

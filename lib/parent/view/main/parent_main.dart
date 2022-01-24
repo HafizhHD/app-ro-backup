@@ -61,11 +61,11 @@ class _ParentMainState extends State<ParentMain> {
             notification.title,
             notification.body,
             NotificationDetails(
-              android: AndroidNotificationDetails(channel.id, channel.name, channel.description,
-                  // TODO add a proper drawable resource to android, for now using
-                  //      one that already exists in example app.
+              android: AndroidNotificationDetails(channel.id, channel.name,
+                  channelDescription: channel.description,
                   icon: 'launch_background',
-                  styleInformation: BigTextStyleInformation(notification.body.toString())),
+                  styleInformation: BigTextStyleInformation(
+                      message.data['body'].toString())),
             ));
       }
     });
@@ -77,7 +77,7 @@ class _ParentMainState extends State<ParentMain> {
     var outputDate = outputFormat.format(DateTime.now());
     Response response = await MediaRepository().fetchAppUsageFilter(prefs.getString("rkChildEmail").toString(), outputDate);
     if (response.statusCode == 200) {
-      print('isi response filter app usage : ${response.body}');
+      // print('isi response filter app usage : ${response.body}');
       var json = jsonDecode(response.body);
       if (json['resultCode'] == "OK") {
         var jsonDataResult = json['appUsages'] as List;
@@ -94,7 +94,7 @@ class _ParentMainState extends State<ParentMain> {
         }
       }
     } else {
-      print('isi response filter app usage : ${response.statusCode}');
+      // print('isi response filter app usage : ${response.statusCode}');
     }
   }
 

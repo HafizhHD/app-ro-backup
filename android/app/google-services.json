@@ -45,6 +45,43 @@
     },
     {
       "client_info": {
+        "mobilesdk_app_id": "1:78925276663:android:3d8d698170b800c79f7af2",
+        "android_client_info": {
+          "package_name": "com.defghi.ruangortu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "78925276663-fs9rn8kt5n64s009vr9pl1lr8at5tq8k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.defghi.ruangortu",
+            "certificate_hash": "fed936545c921bc20721cb88a86379690cde94af"
+          }
+        },
+        {
+          "client_id": "78925276663-urjebq8gu6etab5gokbu3vfefn0e11og.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCTWrG4jmikcH-vaGfSDyBC6qvjEOsi1Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "78925276663-urjebq8gu6etab5gokbu3vfefn0e11og.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:78925276663:android:b7e49820f4c5c15a9f7af2",
         "android_client_info": {
           "package_name": "com.keluargahkbp"
@@ -177,16 +214,32 @@
       "client_info": {
         "mobilesdk_app_id": "1:78925276663:android:6c5a8b05756263ed9f7af2",
         "android_client_info": {
-          "package_name": "com.ruangortu"
+          "package_name": "com.defgi.ruangortu"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "78925276663-6ipvc3jj8dajrc0ec4g0f5mqb93fdnlm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ruangortu",
+            "certificate_hash": "0a0289df2f7b22590c030c467ad189cfa58eee26"
+          }
+        },
         {
           "client_id": "78925276663-qjq9ei8bbu4ivfhsg235hfh3fgof8sjr.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.ruangortu",
             "certificate_hash": "32f844aa01fe35761e3a913d7eee57a969d68d4f"
+          }
+        },
+        {
+          "client_id": "78925276663-vco12l8p4lc2oc37cbk1bs7rt7vlrd1l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ruangortu",
+            "certificate_hash": "fed936545c921bc20721cb88a86379690cde94af"
           }
         },
         {

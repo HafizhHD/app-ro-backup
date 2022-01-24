@@ -5,9 +5,9 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class DatabaseHelper{
-  static final _dbname = 'ruangortu.db';
+  static final _dbname = 'ruangortuasia.db';
   static final _dbversion = 13;
-  static final tableAplikasi = 'AplikasiData';
+  static final tableAplikasi = 'AplikasiDataORTUASIA';
 
   DatabaseHelper._privateConstructor();
 

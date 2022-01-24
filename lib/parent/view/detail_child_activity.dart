@@ -321,7 +321,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
       http.Response response = await MediaRepository()
           .fetchAppUsageFilter(widget.email, outputDate, isDaily: true);
       if (response.statusCode == 200) {
-        print('isi response filter app usage si Dailynya : ${response.body}');
+        // print('isi response filter app usage si Dailynya : ${response.body}');
         var json = jsonDecode(response.body);
         if (json['resultCode'] == "OK") {
           var jsonDataResult = json['appUsages'] as List;
@@ -385,8 +385,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
           }
         }
       } else {
-        print(
-            'isi response filter app usage dailynya bruh : ${response.statusCode}');
+        // print('isi response filter app usage dailynya bruh : ${response.statusCode}');
       }
       print('Isi dataList: $dataList');
       return dataList;

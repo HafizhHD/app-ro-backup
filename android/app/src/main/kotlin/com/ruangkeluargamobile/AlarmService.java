@@ -485,10 +485,10 @@ public class AlarmService extends JobIntentService {
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       context.startActivity(intent);
       if(appForeground.getBlacklist().equals("true")){
-        Toast.makeText(context, "Ruang ORTU melakukan blokir aplikasi "+String.valueOf(appForeground.getAppName())+
+        Toast.makeText(context, "Ruang ORTU by ASIA melakukan blokir aplikasi "+String.valueOf(appForeground.getAppName())+
                 " karena saat ini aplikasi tersebut dibatasi oleh Orangtua.", Toast.LENGTH_LONG).show();
       }else{
-        Toast.makeText(context, "Ruang ORTU melakukan blokir aplikasi "+String.valueOf(appForeground.getAppName())+
+        Toast.makeText(context, "Ruang ORTU by ASIA melakukan blokir aplikasi "+String.valueOf(appForeground.getAppName())+
                 " karena sudah melebihi batas waktu yang ditentukan oleh OrangTua.", Toast.LENGTH_LONG).show();
       }
 //      am.killBackgroundProcesses(appForeground.getPackageId());
@@ -520,10 +520,10 @@ public class AlarmService extends JobIntentService {
     context.startActivity(intent);
     am.killBackgroundProcesses(appForeground.getPackageId());
     if(appForeground.getBlacklist().equals("true")){
-      Toast.makeText(context, "Ruang ORTU melakukan blokir aplikasi "+appForeground.getAppName()+
+      Toast.makeText(context, "Ruang ORTU by ASIA melakukan blokir aplikasi "+appForeground.getAppName()+
               " karena saat ini aplikasi tersebut dibatasi oleh Orangtua.", Toast.LENGTH_LONG).show();
     }else{
-      Toast.makeText(context, "Ruang ORTU melakukan blokir aplikasi "+appForeground.getAppName()+
+      Toast.makeText(context, "Ruang ORTU by ASIA melakukan blokir aplikasi "+appForeground.getAppName()+
               " karena  sudah melebihi batas waktu yang ditentukan oleh OrangTua.", Toast.LENGTH_LONG).show();
     }
   }

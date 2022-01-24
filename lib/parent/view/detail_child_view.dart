@@ -662,7 +662,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
       if (json['resultCode'] == 'OK') {
-        print("response aplikasi list : "+json.toString());
+        // print("response aplikasi list : "+json.toString());
         if (json['appdevices'].length > 0) {
           try {
             var appDevices = json['appdevices'][0];
