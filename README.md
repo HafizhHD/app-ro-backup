@@ -1,17 +1,17 @@
-# Ruang ORTU
+# Ruang ORTU by ASIA
 Create key.properties
 ```bash
-storePassword=RuangOrtu!
-keyPassword=RuangOrtu!
-keyAlias=key_ortu
-storeFile=keystore_ruangortu.jks
+storePassword=ruangORTUASIA
+keyPassword=ruangORTUASIA
+keyAlias=asia
+storeFile=asia.jks
 ```
 
 Agar Dapat Login menggunakan Google, Tambahkan SHA1 ke Firebase
 
 Generate Release SHA (dari key.jks / key store):
 ``` 
-keytool -list -v -keystore ./android/app/key.jks -alias key
+keytool -list -v -keystore ./android/app/asia.jks -alias key
 ```
 
 Generate Debug SHA:

@@ -100,14 +100,18 @@ class ParentController extends GetxController {
   Future<List<Child>> _getUserData() async {
     prefs = await SharedPreferences.getInstance();
     final userID = prefs.getString(rkUserID);
-    Response response =
-        await MediaRepository().getParentChildData(userID ?? '');
+    Response response = await MediaRepository().getParentChildData(userID ?? '');
     if (response.statusCode == 200) {
       final jsonUser = jsonDecode(response.body)['user'];
-      parentProfile = ParentProfile.fromJson(jsonUser);
+      if (jsonDecode(response.body)['resultCode'] == "OK") {
+        parentProfile = ParentProfile.fromJson(jsonUser);
 //      if (jsonUser.spouse)
 //      spouseList = ParentProfile. spouse ?? [];
-      return parentProfile.children ?? [];
+        return parentProfile.children ?? [];
+      } else {
+        logUserOut();
+        return [];
+      }
     }
     return [];
   }
@@ -275,7 +279,7 @@ class ParentController extends GetxController {
             .fetchAppUsageFilterRange(child.email!, startDate, endDate);
         if (response.statusCode == 200) {
           int seconds = 0, secondsGaming = 0, secondsSocial = 0;
-          print('isi response filter app usage : ${response.body}');
+          // print('isi response filter app usage : ${response.body}');
           var json = jsonDecode(response.body);
           if (json['resultCode'] == "OK") {
             var jsonDataResult = json['appUsages'] as List;
@@ -327,7 +331,7 @@ class ParentController extends GetxController {
             .fetchAppUsageFilterRange(child.email!, startDate, endDate);
         if (response.statusCode == 200) {
           int seconds = 0;
-          print('isi response filter app usage punya Daily : ${response.body}');
+          // print('isi response filter app usage punya Daily : ${response.body}');
           var json = jsonDecode(response.body);
           if (json['resultCode'] == "OK") {
             var jsonDataResult = json['appUsages'] as List;

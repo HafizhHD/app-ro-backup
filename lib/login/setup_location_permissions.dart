@@ -160,17 +160,17 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
             SwitchListTile.adaptive(
               tileColor: cOrtuGrey,
               title: Text('Lokasi'),
-              subtitle: Text('Aplikasi Ruang ORTU mengumpulkan data lokasi untuk mengaktifkan "Pantau Lokasi Anak", "Riwayat Lokasi Anak", "ETA" dan "Pesan Darurat" bahkan jika aplikasi ditutup atau tidak digunakan.\n'+
+              subtitle: Text('Aplikasi Ruang ORTU by ASIA mengumpulkan data lokasi untuk mengaktifkan "Pantau Lokasi Anak", "Riwayat Lokasi Anak", "ETA" dan "Pesan Darurat" bahkan jika aplikasi ditutup atau tidak digunakan.\n'+
 
                   '\nLokasi adalah  informasi tempat/posisi berdasarkan lokasi ponsel. Lokasi yang diperlukan dan dikumpulkan berupa Geolokasi dan nama tempat.\n'
 
-                  '\nAplikasi Ruang ORTU memungkinkan orang tua dalam memantau lokasi anak.\n'
+                  '\nAplikasi Ruang ORTU by ASIA memungkinkan orang tua dalam memantau lokasi anak.\n'
 
-                  '\nAplikasi Ruang ORTU mengumpulkan data dan informasi lokasi perangkat anak sehingga dapat ditampilkan pada dasbor Aplikasi orang tua. ETA Orang tua dapat diketahui oleh Aplikasi anak.\n'
+                  '\nAplikasi Ruang ORTU by ASIA mengumpulkan data dan informasi lokasi perangkat anak sehingga dapat ditampilkan pada dasbor Aplikasi orang tua. ETA Orang tua dapat diketahui oleh Aplikasi anak.\n'
 
-                  '\nFitur Lokasi yang digunakan dalam aplikasi Ruang ORTU menggunakan Software Development Kit dari google. Pengguna dapat melihat permission yang digunakan dan memerlukan persetujuan dari pengguna untuk mengaktifkan fitur lokasi.\n'
+                  '\nFitur Lokasi yang digunakan dalam aplikasi Ruang ORTU by ASIA menggunakan Software Development Kit dari google. Pengguna dapat melihat permission yang digunakan dan memerlukan persetujuan dari pengguna untuk mengaktifkan fitur lokasi.\n'
 
-                  '\nAplikasi Ruang ORTU selalu meminta akses lokasi bahkan saat aplikasi tidak digunakan untuk memberikan informasi lokasi yang tepat kepada orangtua dan memastikan mereka berada di lokasi yang aman, meskipun anak tidak mengaktifkan aplikasi Ruang ORTU di perangkat mereka.\n'
+                  '\nAplikasi Ruang ORTU by ASIA selalu meminta akses lokasi bahkan saat aplikasi tidak digunakan untuk memberikan informasi lokasi yang tepat kepada orangtua dan memastikan mereka berada di lokasi yang aman, meskipun anak tidak mengaktifkan aplikasi Ruang ORTU by ASIA di perangkat mereka.\n'
 
                   '\nCara Kerja Lokasi pada Perangkat :\n'
                   'Apliaski anak akan mengirimkan lokasi kepada orang Aplikasi orang tua dan Aplikasi orang tua akan mengirimkan lokasi pada anak.\n'

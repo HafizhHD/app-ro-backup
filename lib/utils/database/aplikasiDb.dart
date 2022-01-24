@@ -15,17 +15,38 @@ class AplikasiDB{
   }
 
   Future<int> insertData(Map<String, dynamic> row) async {
-    Database db = await instance.database;
-    return await db.insert(DatabaseHelper.tableAplikasi, row, conflictAlgorithm: ConflictAlgorithm.replace,);
+    try {
+      Database db = await instance.database;
+      return await db.insert(DatabaseHelper.tableAplikasi, row, conflictAlgorithm: ConflictAlgorithm.replace,);
+    }catch (e){
+      print('error insertData: ' + e.toString());
+      return 0;
+    }
+  }
+
+  Future<int> reNewData(Map<String, dynamic> row) async {
+    try {
+      Database db = await instance.database;
+      await db.delete(DatabaseHelper.tableAplikasi);
+      return await db.insert(DatabaseHelper.tableAplikasi, row, conflictAlgorithm: ConflictAlgorithm.replace,);
+    }catch (e){
+      print('error insertData: ' + e.toString());
+      return 0;
+    }
   }
 
   Future<Map<String, dynamic>?> queryAllRowsAplikasi() async {
-    Database db = await instance.database;
-    var result = await db.query(DatabaseHelper.tableAplikasi, limit: 1);
-    if(result.length>0){
-      return result[0];
+    try {
+      Database db = await instance.database;
+      var result = await db.query(DatabaseHelper.tableAplikasi, limit: 1);
+      if (result.length > 0) {
+        return result[0];
+      }
+      return null;
+    }catch (e){
+      print('error queryAllRowsAplikasi: ' + e.toString());
+      return null;
     }
-    return null;
   }
 
   Future<Map<String, dynamic>?> updateRowAplikasi() async {
@@ -41,14 +62,20 @@ class AplikasiDB{
     Map<String, dynamic> cust = new Map();
     try {
       cust = (await queryAllRowsAplikasi())!;
+      return (cust['email'] == null)? false : true;
     } catch (e) {
+      print("error checkDataAplikasi: " + e.toString());
       return false;
     }
-    return (cust['email'] == null)? false : true;
   }
 
   Future<int> deleteAllData() async {
+    try {
     Database db = await instance.database;
     return await db.delete(DatabaseHelper.tableAplikasi);
+    } catch (e) {
+      print("error deleteAllData: " + e.toString());
+      return 0;
+    }
   }
 }

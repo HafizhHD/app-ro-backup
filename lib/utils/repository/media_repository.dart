@@ -40,16 +40,20 @@ class MediaRepository {
 
   Future<Response> userLogin(String email, String gToken, String fcmToken, String version) async {
     var url = _rkService.baseUrl + '/user/userLogin';
-    Map<String, String> json = {"emailUser": "$email", "googleToken": "$gToken", "fcmToken": "$fcmToken", "version": "$version"};
+    Map<String, String> json = {"emailUser": "$email", "googleToken": "$gToken", "fcmToken": "$fcmToken", "version": "$version", "packageId": "com.asia.ruangortu"};
     print('param userLogin: $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
+  //flutter pub run change_app_package_name:main com.asia.ruangortu
+  //flutter pub run flutter_native_splash:create
+  //flutter pub run flutter_launcher_icons:main
+
 
   Future<Response> getParentChildData(String userID) async {
     var url = _rkService.baseUrl + '/user/view';
     Map<String, String> json = {
-      "userId": "$userID", "appName": "Ruang ORTU",
+      "userId": "$userID", "appName": "Ruang ORTU by ASIA",
     };
     print('param get parent child data : $json');
     Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
@@ -78,7 +82,7 @@ class MediaRepository {
       "birdDate": "$birthDate",
       "namaHkbp": "",
       "accessCode": "$accessToken",
-      "packageId": "com.ruangortu"
+      "packageId": "com.asia.ruangortu"
     };
     if (imgByte != "") json["imagePhoto"] = imgByte;
 
@@ -113,7 +117,7 @@ class MediaRepository {
       "birdDate": "$birthDate",
       "address": "$address",
       "userType": "$userType",
-      "packageId": "com.ruangortu"
+      "packageId": "com.asia.ruangortu"
     };
     if (imgByte != "") json["imagePhoto"] = imgByte;
 
@@ -569,7 +573,7 @@ class MediaRepository {
     print('fetchCoBrandContents');
     Map<String, dynamic> json = {
       "whereKeyValues": {
-        "cobrandEmail": "admin@ruangortu.id",
+        "cobrandEmail": "admin@asia.ruangortu.id",
         "status": 'active'
       }, "orderKeyValues": {"dateCreated": -1}
     };

@@ -167,7 +167,7 @@ public class MainAplication extends FlutterActivity implements MethodChannel.Met
                                 System.out.println("APLIKASI CURRENT : "+ currentAppId);
                                 System.out.println("PENGGUNAAN : "+ duration.toString());
                                 // if(!appForeground.getPackageId().equals("com.keluargahkbp")){
-                                if(currentAppId != "com.ruangortu"){
+                                if(currentAppId != "com.asia.ruangortu"){
                                     for(int i = 0; i<jsonArray.length(); i++){
                                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                                         System.out.println("cek dengan app:" + jsonObject.getString("packageId"));

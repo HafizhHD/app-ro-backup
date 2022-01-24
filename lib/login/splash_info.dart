@@ -22,7 +22,7 @@ class SplashInfo extends StatelessWidget {
                   children: [
                     Hero(tag: 'ruangortuIcon', child: Image.asset(currentAppIconPath)),
                     // Text(
-                    //   'Ruang Ortu',
+                    //   'Ruang ORTU by ASIA',
                     //   style: TextStyle(
                     //     fontSize: 50,
                     //     fontWeight: FontWeight.bold,
@@ -31,7 +31,7 @@ class SplashInfo extends StatelessWidget {
                     // ),
                     SizedBox(height: 20),
                     Text(
-                      'Aplikasi Untuk Ruang ORTU',
+                      'Aplikasi Untuk Keluarga',
                       style: TextStyle(
                         fontSize: 20,
                         color: cOrtuWhite,

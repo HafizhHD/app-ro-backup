@@ -338,14 +338,15 @@ class BackgroundServiceNew {
 
   static Future<void> cekAppLaunch(currentApp) async {
     try{
+      // print("cekAppLaunch..");
       if(await AplikasiDB.instance.checkDataAplikasi()) {
         var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
         // print("dataAplikasiDb : "+dataAplikasiDb.toString());
-        // print("dataAplikasiDb..");
+        print("dataAplikasiDb..");
         if (dataAplikasiDb != null) {
           //jika lock membahayakan hidde source dibawah ini sampai if selanjutnya
           if(dataAplikasiDb['modekunciLayar'] != null && dataAplikasiDb['modekunciLayar'] == 'true'){
-            print(dataAplikasiDb['modekunciLayar']);
+            print('mode kunci layar = ' + dataAplikasiDb['modekunciLayar']);
             new MethodChannel('com.ruangkeluargamobile/android_service_background', JSONMethodCodec()).invokeMethod('lockDeviceChils', {'data':'data'});
           }else if(dataAplikasiDb['kunciLayar'] != null) {
             List<dynamic> res = jsonDecode(dataAplikasiDb['kunciLayar']).map((e) => e).toList();
@@ -355,20 +356,35 @@ class BackgroundServiceNew {
                 DeviceUsageSchedules dataUsage = DeviceUsageSchedules.fromJson(res[i]);
                 if(dataUsage.status.toString().toLowerCase() == 'aktif'){
                   if(dataUsage.scheduleType == ScheduleType.harian){
-                    String deviceUsageDays = dataUsage.deviceUsageDays!.where((element) => element.toString() == dateFormat_EEEE()).last;
-                    if(deviceUsageDays!=null){
-                      if(dataUsage.deviceUsageStartTime != null && dataUsage.deviceUsageEndTime != null){
-                        final format = new DateFormat("yyyy-MM-dd HH:mm");
-                        DateTime startTime = format.parse(
-                            DateFormat("yyyy-MM-dd").format(DateTime.now()).toString()+' '+dataUsage.deviceUsageStartTime.toString());
-                        DateTime endTime = format.parse(
-                            DateFormat("yyyy-MM-dd").format(DateTime.now()).toString()+' '+dataUsage.deviceUsageEndTime.toString());
-                        DateTime now = format.parse(format.format(DateTime.now()));
-                        if(now.isAfter(startTime) && now.isBefore(endTime)){
-                          print("LOCK LAYAR HARIAN : "+now.toString());
-                          cekScheduleLayar = true;
+                    var ss = dataUsage.deviceUsageDays!.where((element) => element.toString() == dateFormat_EEEE());
+                    int ad = dataUsage.deviceUsageDays!.indexWhere((element) => element.toString() == dateFormat_EEEE());
+                    if ((ss.length > 0)||(ad > 0)) {
+                      print("jadwal harian ada");
+                      String deviceUsageDays = dataUsage.deviceUsageDays!.where((element) => element.toString() == dateFormat_EEEE()).last;
+                      if (deviceUsageDays != null) {
+                        if (dataUsage.deviceUsageStartTime != null &&
+                            dataUsage.deviceUsageEndTime != null) {
+                          final format = new DateFormat("yyyy-MM-dd HH:mm");
+                          DateTime startTime = format.parse(
+                              DateFormat("yyyy-MM-dd")
+                                  .format(DateTime.now())
+                                  .toString() + ' ' +
+                                  dataUsage.deviceUsageStartTime.toString());
+                          DateTime endTime = format.parse(
+                              DateFormat("yyyy-MM-dd")
+                                  .format(DateTime.now())
+                                  .toString() + ' ' +
+                                  dataUsage.deviceUsageEndTime.toString());
+                          DateTime now = format.parse(format.format(DateTime
+                              .now()));
+                          if (now.isAfter(startTime) && now.isBefore(endTime)) {
+                            print("LOCK LAYAR HARIAN : " + now.toString());
+                            cekScheduleLayar = true;
+                          }
                         }
                       }
+                    } else {
+                      print("jadwal harian tidak ada " + ad.toString() + "  ss =" + ss.toString() );
                     }
                   }else if(dataUsage.scheduleType == ScheduleType.terjadwal){
                     if(dataUsage.deviceUsageStartTime != null && dataUsage.deviceUsageEndTime != null){
@@ -395,7 +411,7 @@ class BackgroundServiceNew {
                   if (dataTrue != null && dataTrue.length > 0) {
                     ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
                     if (Platform.isAndroid) {
-                      print("Data To Method: " + listAplikasiDataUsage.toJson().toString());
+                      // print("Data To Method: " + listAplikasiDataUsage.toJson().toString());
                       Map<String, dynamic> data = listAplikasiDataUsage.toJson();
                       data['currentApp'] = currentApp;
                       _channel.invokeMethod('startServiceCheckApp', data);
@@ -432,7 +448,7 @@ class BackgroundServiceNew {
         }
       }
     }catch(e){
-      print(e.toString());
+      print('error cekAppLaunch: ' + e.toString());
     }
   }
 }

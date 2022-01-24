@@ -11,7 +11,7 @@ class AppListWithIcons {
   AppListWithIcons({this.appName, this.packageId, this.blacklist, required this.appCategory, this.appIcons, this.limit});
 
   factory AppListWithIcons.fromJson(Map<String, dynamic> json) {
-    print('json $json');
+    // print('json $json');
     return AppListWithIcons(
       appName: json['appName'] as String?,
       packageId: json['packageId'] as String?,

@@ -7,12 +7,11 @@ import 'package:get/get.dart';
 
 import 'package:permission_handler/permission_handler.dart';
 import 'package:ruangkeluarga/child/child_main.dart';
-// import 'package:ruangkeluarga/child/home_child.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_controller.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:ruangkeluarga/login/login.dart';
+import 'package:device_info/device_info.dart';
+import 'package:app_settings/app_settings.dart';
 
 
 class SetupPermissionPage extends StatefulWidget {
@@ -37,6 +36,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
   bool _systemAlertWindow = false;
   bool readMore = false;
   final _waitDelay = 400;
+  int adVersion = 8;
 
   Future<void> _showMyDialog() async {
     return showDialog<void>(
@@ -73,6 +73,10 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
     _storage = (await Permission.storage.status).isGranted;
     _systemAlertWindow = (await Permission.systemAlertWindow.status).isGranted;
 
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    // print('Running on ${androidInfo.model}');  // e.g. "Moto G (4)"
+    adVersion = androidInfo.version.sdkInt;
     setState(() {});
   }
 
@@ -89,28 +93,26 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
           backgroundColor: cPrimaryBg,
           body: Container(
               child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                color: cPrimaryBg,
-                padding: EdgeInsets.only(top: 30.0, left: 20.0, right: 20.0, bottom: 10),
-                // margin: EdgeInsets.only(bottom: 10),
-                // height: 80,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Hi, ${widget.name}',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: cOrtuWhite),
-                    ),
-                    Text(
-                      'Aplikasi $appName memerlukan beberapa ijin untuk mengakses data yang dibutuhkan:',
-                      style: TextStyle(fontSize: 16, color: cOrtuWhite),
-                    )
-                  ],
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    color: cPrimaryBg,
+                    padding: EdgeInsets.only(top: 30.0, left: 20.0, right: 20.0, bottom: 10),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Hi, ${widget.name}',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: cOrtuWhite),
+                        ),
+                        Text(
+                          'Aplikasi $appName memerlukan beberapa ijin untuk mengakses data yang dibutuhkan:',
+                          style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                        )
+                      ],
                 ),
               ),
               Flexible(
@@ -431,21 +433,51 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
               title: Text('Lokasi'),
               subtitle: Column(children: [
                 Text(readMore == true
-                    ? ('Aplikasi Ruang ORTU mengumpulkan data lokasi untuk mengaktifkan "Pantau Lokasi Anak", "Riwayat Lokasi Anak", "ETA" dan "Pesan Darurat" bahkan jika aplikasi ditutup atau tidak digunakan.\n' +
+                    ? ('Aplikasi Ruang ORTU by ASIA mengumpulkan data lokasi untuk mengaktifkan "Pantau Lokasi Anak", "Riwayat Lokasi Anak", "ETA" dan "Pesan Darurat" bahkan jika aplikasi ditutup atau tidak digunakan.\n' +
                     '\nLokasi adalah  informasi tempat/posisi berdasarkan lokasi ponsel. Lokasi yang diperlukan dan dikumpulkan berupa Geolokasi dan nama tempat.\n'
-                        '\nAplikasi Ruang ORTU memungkinkan orang tua dalam memantau dan mengelola aktivitas penggunaan perangkat anak mereka termasuk melihat lokasi anak.\n'
-                        '\nAplikasi Ruang ORTU mengumpulkan data dan informasi lokasi perangkat anak sehingga dapat ditampilkan pada dasbor Aplikasi orang tua.\n'
-                        '\nFitur Lokasi yang digunakan dalam aplikasi Ruang ORTU menggunakan Software Development Kit dari google. Pengguna dapat melihat permission yang digunakan dan memerlukan persetujuan dari pengguna untuk mengaktifkan fitur lokasi.\n'
-                        '\nAplikasi Ruang ORTU selalu meminta akses lokasi bahkan saat aplikasi tidak digunakan untuk memberikan informasi lokasi yang tepat kepada orangtua dan memastikan mereka berada di lokasi yang aman, meskipun anak tidak mengaktifkan aplikasi Ruang ORTU di perangkat mereka.\n'
+                        '\nAplikasi Ruang ORTU by ASIA memungkinkan orang tua dalam memantau dan mengelola aktivitas penggunaan perangkat anak mereka termasuk melihat lokasi anak.\n'
+                        '\nAplikasi Ruang ORTU by ASIA mengumpulkan data dan informasi lokasi perangkat anak sehingga dapat ditampilkan pada dasbor Aplikasi orang tua.\n'
+                        '\nFitur Lokasi yang digunakan dalam aplikasi Ruang ORTU by ASIA menggunakan Software Development Kit dari google. Pengguna dapat melihat permission yang digunakan dan memerlukan persetujuan dari pengguna untuk mengaktifkan fitur lokasi.\n'
+                        '\nAplikasi Ruang ORTU by ASIA selalu meminta akses lokasi bahkan saat aplikasi tidak digunakan untuk memberikan informasi lokasi yang tepat kepada orangtua dan memastikan mereka berada di lokasi yang aman, meskipun anak tidak mengaktifkan aplikasi Ruang ORTU by ASIA di perangkat mereka.\n'
                         '\nDengan mengaktifkan fitur akses lokasi orang tua dapat melihat lokasi anak, prediksi perjalanan dan riwayat perjalanan anak.\n'
                         '\nCara Kerja Lokasi pada Perangkat :\n'
-                        'Pengguna harus mengunduh aplikasi Ruang ORTU dan mendaftarkan akun gmail sebagai orangtua dan anak\n'
+                        'Pengguna harus mengunduh aplikasi Ruang ORTU by ASIA dan mendaftarkan akun gmail sebagai orangtua dan anak\n'
                         'Sistem akan meminta persetujuan pengguna untuk mengaktifkan data lokasi untuk memberikan informasi terkait tempat dan informasi jarak lokasi\n'
                         'Untuk melihat lokasi pada perangkat anak. Pengguna(Orang tua) dapat mendaftarkan perangkat anak yang ingin di monitor dengan memasukkan nama, email dan tanggal lahir anak.\n'
                         'Pengguna(Anak) melakukan aktivasi pada perangkat anak dan login menggunakan akun yang sudah didaftarkan sebagai anak.\n'
                         'Pada Aplikasi akan diminta persetujuan untuk mengaktifkan akses data lokasi untuk memberikan informasi lokasi di perangkat berada.\n'
-                        'Dengan kondisi lokasi sudah aktif, maka secara berkala aplikasi akan melakukan pengumpulan lokasi pada perangkat anak sehingga orang tua dapat mengetahui informasi lokasi anak mereka melalui aplikasi Ruang ORTU di perangkat orangtua.')
-                    : ('Aplikasi Ruang ORTU mengumpulkan data lokasi untuk mengaktifkan "Pantau Lokasi Anak", "Riwayat Lokasi Anak"...')),
+                        'Dengan kondisi lokasi sudah aktif, maka secara berkala aplikasi akan melakukan pengumpulan lokasi pada perangkat anak sehingga orang tua dapat mengetahui informasi lokasi anak mereka melalui aplikasi Ruang ORTU by ASIA di perangkat orangtua.\n\n'
+                        'Menemukan aplikasi mana yang menggunakan lokasi ponsel \n\n')
+                    : ('Aplikasi Ruang ORTU by ASIA mengumpulkan data lokasi untuk mengaktifkan "Pantau Lokasi Anak", "Riwayat Lokasi Anak"...')),
+                if (adVersion > 10) ...[
+                  Text('\nBerikut langkah-langkah untuk mengaktifkan lokasi:\n'
+                      '1. Geser layar dari atas ke bawah.\n'
+                      '2. Sentuh lama Lokasi \n'
+                          'Jika Anda tidak menemukan Lokasi: \n'
+                          '- Ketuk Edit Edit atau Setelan.\n'
+                      '3. Ketuk Akses aplikasi ke lokasi\n '
+                      '4. Cari aplikasi "Ruang ORTU by ASIA".\n'
+                      '5. Pilih Di bagian "Diizinkan sepanjang waktu".\n'
+                      '6. Tutup pengaturan dan buka kembali aplikasi "Ruang ORTU by ASIA".\n\n')
+                ],
+                InkWell(
+                    child: Row(
+                        children: [
+                          Text('atau tekan tombol setelan di bawah ini'),
+                        ]
+                    )
+                ),
+                InkWell(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      ElevatedButton(
+                        onPressed: AppSettings.openAppSettings,
+                        child: const Text('Setelan Izin'),
+                      ),
+                    ]
+                )
+                ),
                 InkWell(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -492,7 +524,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
               contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
             ),
-          ],
+      ],
         ),
       ),
     );

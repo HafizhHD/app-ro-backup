@@ -13,6 +13,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:http/http.dart';
 import 'package:location/location.dart';
+import 'package:ruangkeluarga/utils/database/aplikasiDb.dart';
 import 'package:ruangkeluarga/child/child_model.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/global/global_formatter.dart';
@@ -25,7 +26,6 @@ import 'package:ruangkeluarga/model/rk_child_contact.dart';
 import 'package:ruangkeluarga/model/rk_schedule_model.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
-import 'package:ruangkeluarga/utils/database/aplikasiDb.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
@@ -65,7 +65,7 @@ class ChildController extends GetxController {
       if ((value)) {
         fParentProfile.value = getParentData();
         onMessageListen();
-        fetchDataApp();
+        // fetchDataApp();
         saveCurrentAppList();
         fetchContacts();
         // onGetSMS();
@@ -80,6 +80,7 @@ class ChildController extends GetxController {
     childEmail = prefs.getString(rkEmailUser)?? '';
     // await getChildData();
     if (childEmail != '') {
+      fetchDataApp();
       getAppUsageData();
       // fetchChildLocation();
       getCurrentLocation();
@@ -166,13 +167,10 @@ class ChildController extends GetxController {
               message.data['title'],
               message.data['body'],
               NotificationDetails(
-                android: AndroidNotificationDetails(
-                    channel.id, channel.name, channel.description,
-                    // TODO add a proper drawable resource to android, for now using
-                    //      one that already exists in example app.
-                    icon: 'launch_background',
-                    styleInformation: BigTextStyleInformation(
-                        message.data['body'].toString())),
+                  android: AndroidNotificationDetails(channel.id, channel.name,
+                      channelDescription: channel.description,
+                      styleInformation: BigTextStyleInformation(
+                          message.data['body'].toString())),
               ));
         }
       }
@@ -198,9 +196,12 @@ class ChildController extends GetxController {
         // }
         update();
         return true;
+      }else {
+        logUserOut();
+        print('no user found');
       }
     } else {
-      print('no user found');
+      print('error user view');
     }
     return false;
   }
@@ -216,8 +217,12 @@ class ChildController extends GetxController {
         update();
         return true;
       }
+      else {
+        logUserOut();
+        print('no user found');
+      }
     } else {
-      print('no user found');
+      print('error user view');
     }
     return false;
   }
@@ -490,7 +495,7 @@ class ChildController extends GetxController {
       // final List<UsageInfo> infoList2 = await UsageStats.queryUsageStats(startDate, endDate);
       // infoList.forEach((app) {
       //   final hasData = listAppLocal.where((e) => e.packageName == app.packageName).toList();
-      //   if ((hasData.length > 0)&&(app.packageName != "com.ruangortu")) {
+      //   if ((hasData.length > 0)&&(app.packageName != "com.asia.ruangortu")) {
       //     final appName = hasData.first.appName;
       //     final cat = hasData.first.category.toString().split('.')[1];
       //     List<dynamic> usageHour = [];
@@ -635,6 +640,7 @@ class ChildController extends GetxController {
 
   void featLockScreen() async{
     try{
+      print("qxueryAllRowsAplikasi featLockScreen");
       var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
       if (dataAplikasiDb != null) {
         Response response = await MediaRepository().fetchUserSchedule(dataAplikasiDb['email']);
@@ -647,7 +653,7 @@ class ChildController extends GetxController {
           dataAplikasi['dataAplikasi'] = dataAplikasiDb['dataAplikasi'];
           dataAplikasi['kunciLayar'] = jsonEncode(json['deviceUsageSchedules']);
           dataAplikasi['modekunciLayar'] = dataAplikasiDb['modekunciLayar'];
-          AplikasiDB.instance.deleteAllData();
+          await AplikasiDB.instance.deleteAllData();
           AplikasiDB.instance.insertData(dataAplikasi);
           String lockStatus = '';
           featStatusLockScreen(lockStatus);
@@ -660,6 +666,7 @@ class ChildController extends GetxController {
 
   void featStatusLockScreen(String lockStatus) async{
     try{
+      print("featStatusLockScreen qxueryAllRowsAplikasi");
       var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
       if(lockStatus != null && lockStatus.isNotEmpty){
         if (dataAplikasiDb != null) {
@@ -669,7 +676,7 @@ class ChildController extends GetxController {
           dataAplikasi['dataAplikasi'] = dataAplikasiDb['dataAplikasi'];
           dataAplikasi['kunciLayar'] = dataAplikasiDb['kunciLayar'];
           dataAplikasi['modekunciLayar'] = lockStatus;
-          AplikasiDB.instance.deleteAllData();
+          await AplikasiDB.instance.deleteAllData();
           AplikasiDB.instance.insertData(dataAplikasi);
         }
       }else{
@@ -687,7 +694,7 @@ class ChildController extends GetxController {
                 dataAplikasi['dataAplikasi'] = dataAplikasiDb['dataAplikasi'];
                 dataAplikasi['kunciLayar'] = dataAplikasiDb['kunciLayar'];
                 dataAplikasi['modekunciLayar'] = result['lockStatus'].toString();
-                AplikasiDB.instance.deleteAllData();
+                await AplikasiDB.instance.deleteAllData();
                 AplikasiDB.instance.insertData(dataAplikasi);
               }
             }
@@ -702,6 +709,7 @@ class ChildController extends GetxController {
   void featAppModeAsuh(String listDataApp) async{
     try{
       var dataNotif = jsonDecode(listDataApp);
+      print("featAppModeAsuh qxueryAllRowsAplikasi");
       var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
       if (dataAplikasiDb != null) {
         List<Map<String, dynamic>> listDataAplikasi = [];
@@ -740,7 +748,7 @@ class ChildController extends GetxController {
         dataAplikasi['dataAplikasi'] = jsonEncode(listDataAplikasi);
         dataAplikasi['kunciLayar'] = dataAplikasiDb['kunciLayar'];
         dataAplikasi['modekunciLayar'] = dataAplikasiDb['modekunciLayar'];
-        AplikasiDB.instance.deleteAllData();
+        await AplikasiDB.instance.deleteAllData();
         AplikasiDB.instance.insertData(dataAplikasi);
       }
     }catch(e){
@@ -750,6 +758,7 @@ class ChildController extends GetxController {
 
   void fetchAppList(String listDataApp) async {
     var dataNotif = jsonDecode(listDataApp);
+    print("fxetchAppList qxueryAllRowsAplikasi");
     var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
     if (dataAplikasiDb != null && dataAplikasiDb['dataAplikasi'] != null) {
       List<Map<String, dynamic>> listDataAplikasi = [];
@@ -771,8 +780,9 @@ class ChildController extends GetxController {
       dataAplikasi['dataAplikasi'] = jsonEncode(listDataAplikasi);
       dataAplikasi['kunciLayar'] = dataAplikasiDb['kunciLayar'];
       dataAplikasi['modekunciLayar'] = dataAplikasiDb['modekunciLayar'];
-      AplikasiDB.instance.deleteAllData();
-      AplikasiDB.instance.insertData(dataAplikasi);
+      // await AplikasiDB.instance.deleteAllData();
+      // AplikasiDB.instance.insertData(dataAplikasi);
+      AplikasiDB.instance.reNewData(dataAplikasi);
     }else{
       AplikasiDataUsage dataUsage = new AplikasiDataUsage(
         limit: dataNotif['limit'].toString(),
@@ -790,8 +800,9 @@ class ChildController extends GetxController {
       dataAplikasi['dataAplikasi'] = jsonEncode(listDataAplikasi);
       dataAplikasi['kunciLayar'] = '';
       dataAplikasi['modekunciLayar'] = '';
-      AplikasiDB.instance.deleteAllData();
-      AplikasiDB.instance.insertData(dataAplikasi);
+      // await AplikasiDB.instance.deleteAllData();
+      // AplikasiDB.instance.insertData(dataAplikasi);
+      AplikasiDB.instance.reNewData(dataAplikasi);
     }
   }
 
@@ -799,6 +810,7 @@ class ChildController extends GetxController {
     if(childEmail!=null && childEmail.isNotEmpty){
       childEmail = childEmail;
     }else{
+      print("fxetchDataApp qxueryAllRowsAplikasi");
       var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
       if(dataAplikasiDb!= null){
         if(dataAplikasiDb['email']!=null && dataAplikasiDb['email'] != '') {
@@ -835,10 +847,10 @@ class ChildController extends GetxController {
                 };
                 dataList.add(dataAplikasi);
               }
-              var dataAplikasiDb = await AplikasiDB.instance
-                  .queryAllRowsAplikasi();
+              print("fxetchDataApp2 qxueryAllRowsAplikasi");
+              var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
               if (dataAplikasiDb != null) {
-                AplikasiDB.instance.deleteAllData();
+                // await AplikasiDB.instance.deleteAllData();
                 Map<String, dynamic> dataAplikasi = new Map();
                 dataAplikasi['idUsage'] = dataAplikasiDb['idUsage'];
                 dataAplikasi['email'] = childEmail;
@@ -848,7 +860,7 @@ class ChildController extends GetxController {
                 (dataAplikasiDb['modekunciLayar'] != null)
                     ? dataAplikasiDb['modekunciLayar']
                     : '';
-                AplikasiDB.instance.deleteAllData();
+                await AplikasiDB.instance.deleteAllData();
                 AplikasiDB.instance.insertData(dataAplikasi);
               } else {
                 Map<String, dynamic> dataAplikasi = new Map();

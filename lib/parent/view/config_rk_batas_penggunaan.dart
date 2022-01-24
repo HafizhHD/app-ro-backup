@@ -45,7 +45,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
   Future<List<AppUsageData>> getData() async {
     mapUsageDataApp.clear();
     Response response = await MediaRepository().fetchLimitUsageFilter(widget.email);
-    print('isi response filter app usage : ${response.body}');
+    // print('isi response filter app usage : ${response.body}');
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
       if (json['resultCode'] == "OK") {

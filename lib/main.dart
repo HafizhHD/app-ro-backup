@@ -48,7 +48,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       if(message.data['content'] != null) {
         controller1.featAppModeAsuh(message.data['content']);
       }
-    }else if((message.data['body'].toString().toLowerCase()=='update lock screen') || (poslockScreen >= 0)){
+    }else if((message.data['body'].toString().toLowerCase()=='update lock screen')||(poslockScreen >= 0)){
       if ((message.data['content'] != null) && (message.data['content'] != "")) {
         try {
           var dataNotif = jsonDecode(message.data['content']);
@@ -57,8 +57,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
             /*if(dataNotif['lockstatus'].toString() == 'true'){
           new MethodChannel('com.ruangkeluargamobile/android_service_background', JSONMethodCodec()).invokeMethod('lockDeviceChils', {'data':'data'});
         }*/
-            controller1.featStatusLockScreen(
-                dataNotif['lockstatus'].toString());
+            controller1.featStatusLockScreen(dataNotif['lockstatus'].toString());
           }
         } catch (e) {
           print("Error Notif" + e.toString());
@@ -79,7 +78,7 @@ late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 void startServicePlatform() async{
   await BackgroundServiceNew.oneShot(
       const Duration(milliseconds: 5000),
-      12301,
+      12304,
       callbackBackgroundService,
       wakeup: true,
       exact: true,
@@ -140,7 +139,7 @@ void callbackBackgroundService() async {
   print("background service on");
   SharedPreferences prefs = await SharedPreferences.getInstance();
   try {
-    final result = await InternetAddress.lookup('com.ruangortu');
+    final result = await InternetAddress.lookup('ruangortu.id');
     var koneksiInternet = prefs.getBool('koneksiInternet');
     if (result.isNotEmpty && result[0].rawAddress.isNotEmpty && koneksiInternet != null && !koneksiInternet) {
       print("Internet connected");
@@ -149,10 +148,10 @@ void callbackBackgroundService() async {
       await prefs.setBool("koneksiInternet", true);
     }
   } on SocketException catch (_) {
-    print("Diskonnect internet");
+    print("Diskonnect internet SocketException");
     await prefs.setBool("koneksiInternet", false);
   } on Exception catch(_){
-    print("Diskonnect internet");
+    print("Diskonnect internet Exception");
     await prefs.setBool("koneksiInternet", false);
   }
   finally {
@@ -194,11 +193,18 @@ void main() async {
   // Set the background messaging handler early on, as a named top-level function
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  channel = const AndroidNotificationChannel(
-    'high_importance_channel', // id
-    'High Importance Notifications', // title
-    'This channel is used for important notifications.', // description
-    importance: Importance.low,
+  // channel = const AndroidNotificationChannel(
+  //   'high_importance_channel', // id
+  //   'High Importance Notifications', // title
+  //   'This channel is used for important notifications.', // description
+  //   importance: Importance.low,
+  // );
+
+  channel = AndroidNotificationChannel(
+    'high_importance_channel',
+    'High Importance Notifications',
+    description: 'This channel is used for important notifications.',
+    importance: Importance.low
   );
 
   flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -207,8 +213,7 @@ void main() async {
   ///
   /// We use this channel in the `AndroidManifest.xml` file to override the
   /// default FCM channel to enable heads up notifications.
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+  await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
 
   /// Update the iOS foreground notification presentation options to allow

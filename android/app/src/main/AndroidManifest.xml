@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.ruangortu">
+    package="com.asia.ruangortu">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -28,7 +28,7 @@
 
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="Ruang ORTU"
+        android:label="Ruang ORTU by ASIA"
         android:icon="@mipmap/launcher_icon"
         android:usesCleartextTraffic="true"
         android:allowBackup="false">
@@ -48,6 +48,7 @@
         <activity
             android:name="com.ruangkeluargamobile.MainAplication"
             android:launchMode="singleTop"
+            android:exported="true"
             android:theme="@style/NoActionBarTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
@@ -75,9 +76,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
         <activity android:name="com.ruangkeluargamobile.LockScreen"
             android:configChanges="orientation|keyboardHidden"
-            android:label="Ruang ORTU.."
+            android:label="Ruang ORTU by ASIA"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBarTheme" >
             <meta-data
@@ -97,9 +99,11 @@
             android:name="com.ruangkeluargamobile.AlarmService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
         <receiver
             android:name="com.ruangkeluargamobile.AlarmBroadcastReceiver"
             android:exported="false" />
+
         <receiver
             android:name="com.ruangkeluargamobile.RebootBroadcastReceiver"
             android:enabled="false"
@@ -111,8 +115,9 @@
 
         <receiver
             android:name="com.ruangkeluargamobile.MyAdmin"
-            android:label="Ruang ORTU.."
-            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            android:label="Ruang ORTU by ASIA"
+            android:permission="android.permission.BIND_DEVICE_ADMIN"
+            android:exported="false">
             <meta-data
                 android:name="android.app.device_admin"
                 android:resource="@xml/device_admin" />
@@ -120,13 +125,6 @@
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
             </intent-filter>
         </receiver>
-
-       <!-- <receiver android:name="com.ruangkeluargamobile.AutoStartService">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-            </intent-filter>
-        </receiver>-->
 
         <activity
                 android:name="com.yalantis.ucrop.UCropActivity"

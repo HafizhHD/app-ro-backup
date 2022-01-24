@@ -129,12 +129,12 @@ class _LoginState extends State<LoginPage> {
         }
         else {
           await prefs.setBool(isPrefLogin, false);
-          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'ruang ortu')));
+          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'Ruang ORTU by ASIA')));
         }
       }
       else {
         await prefs.setBool(isPrefLogin, false);
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'ruang ortu')));
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'Ruang ORTU by ASIA')));
       }
     } catch (e, s) {
       print('onHandleLogin error : $e');
@@ -286,7 +286,7 @@ class _LoginState extends State<LoginPage> {
                             showLoadingOverlay();
                             await _handleSignIn();
                             // Navigator.of(context)
-                            //     .pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'ruang ortu')));
+                            //     .pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'Ruang ORTU by ASIA')));
                           }
                         : null,
                   )),
