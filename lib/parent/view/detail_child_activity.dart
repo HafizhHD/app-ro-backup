@@ -307,7 +307,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
         seconds += e.duration;
       });
     }
-    return seconds~/1000;
+    return seconds ~/ 1000;
   }
 
   //Ga Dipake
@@ -385,7 +385,8 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
           }
         }
       } else {
-        // print('isi response filter app usage dailynya bruh : ${response.statusCode}');
+        // print(
+        //    'isi response filter app usage dailynya bruh : ${response.statusCode}');
       }
       print('Isi dataList: $dataList');
       return dataList;
@@ -762,7 +763,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
   Widget onMostWeekData() {
     List<AppUsagesDetail> appList = [];
     mapWeeklyAppUsage.forEach((key, appData) {
-      appList.add(appData);
+      if (appData.duration > 0) appList.add(appData);
     });
     appList.sort((a, b) => b.duration.compareTo(a.duration));
     return FutureBuilder(
@@ -798,7 +799,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                   usageData = "${jam.toString()}h ${menit.toString()}m";
                 }
 
-                String iconUrl =  app.iconUrl! ?? '';
+                String iconUrl = app.iconUrl! ?? '';
                 return ListTile(
                   leading: app.iconUrl != null && app.iconUrl != ''
                       ? Container(

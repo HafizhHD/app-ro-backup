@@ -113,149 +113,149 @@ class _CameraAppState extends State<CameraApp> with TickerProviderStateMixin {
                     // ),
                     child: !finishRecording
                         ? ClipRRect(
-                        borderRadius: BorderRadius.circular(15.0),
-                        child: CameraPreview(
-                          controller,
-                          child: cancelSOSCountDown > 0 &&
-                              startSOSCountDown < recordingDuration
-                              ? null
-                              : Align(
-                            alignment: Alignment.topRight,
-                            child: Container(
-                              margin: EdgeInsets.all(10),
-                              child: Icon(
-                                Icons.videocam_rounded,
-                                color: Colors.red,
-                                size: 50,
-                              ),
-                            ),
-                          ),
-                        ))
+                            borderRadius: BorderRadius.circular(15.0),
+                            child: CameraPreview(
+                              controller,
+                              child: cancelSOSCountDown > 0 &&
+                                      startSOSCountDown < recordingDuration
+                                  ? null
+                                  : Align(
+                                      alignment: Alignment.topRight,
+                                      child: Container(
+                                        margin: EdgeInsets.all(10),
+                                        child: Icon(
+                                          Icons.videocam_rounded,
+                                          color: Colors.red,
+                                          size: 50,
+                                        ),
+                                      ),
+                                    ),
+                            ))
                         : ScaleTransition(
-                        scale: _animation,
-                        child: Container(
-                            padding: EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15.0),
-                                color: cOrtuWhite),
-                            child: Column(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceEvenly,
-                                crossAxisAlignment:
-                                CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                      padding: EdgeInsets.all(15),
-                                      decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Colors.green),
-                                      child: Text('\u2713',
+                            scale: _animation,
+                            child: Container(
+                                padding: EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    color: cOrtuWhite),
+                                child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                          padding: EdgeInsets.all(15),
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.green),
+                                          child: Text('\u2713',
+                                              style: TextStyle(
+                                                  fontSize: 60,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: cOrtuWhite),
+                                              textAlign: TextAlign.center)),
+                                      Text(
+                                          'KAMI SUDAH MENGHUBUNGI ORANGTUA KAMU',
                                           style: TextStyle(
-                                              fontSize: 60,
-                                              fontWeight: FontWeight.bold,
-                                              color: cOrtuWhite),
-                                          textAlign: TextAlign.center)),
-                                  Text(
-                                      'KAMI SUDAH MENGHUBUNGI ORANGTUA KAMU',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                      textAlign: TextAlign.center),
-                                  Text(
-                                      'Orangtua kamu sudah dihubungi tentang situasi kamu dan mengirimkan lokasi kamu berada saat ini. Mereka sedang menuju ke tempat kamu.',
-                                      textAlign: TextAlign.justify),
-                                  RichText(
-                                      text: TextSpan(
-                                          text: 'Jangan Panik. ',
-                                          style: TextStyle(
-                                              color: Colors.red,
+                                              fontSize: 20,
                                               fontWeight: FontWeight.bold),
-                                          children: <TextSpan>[
-                                            TextSpan(
-                                                text:
-                                                'Ingat, panik tidak akan membantu apapun. Panik adalah musuhmu dalam melawan perlombaan waktu ini.',
-                                                style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontWeight:
-                                                    FontWeight.normal))
-                                          ]),
-                                      textAlign: TextAlign.justify),
-                                  RichText(
-                                      text: TextSpan(
-                                          text: 'Tetap tenang. ',
-                                          style: TextStyle(
-                                              color: Colors.red,
-                                              fontWeight: FontWeight.bold),
-                                          children: <TextSpan>[
-                                            TextSpan(
-                                                text:
-                                                'Sangat penting untuk tetap tenang saat ini. Semua akan baik-baik saja jika kita tetap tenang dalam situasi apapun.',
-                                                style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontWeight:
-                                                    FontWeight.normal)),
-                                          ]),
-                                      textAlign: TextAlign.justify),
-                                  Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        ElevatedButton(
-                                            child: Text('Kirim Ulang',
-                                                style: TextStyle(
-                                                    fontSize: 16)),
-                                            style: ElevatedButton.styleFrom(
-                                                primary: cOrtuBlue,
-                                                padding:
-                                                EdgeInsets.all(20)),
-                                            onPressed: (() {
-                                              initAsync();
-                                              setState(() {
-                                                startSOSCountDown = 0;
-                                                finishRecording = false;
-                                                _controller.reverse();
-                                              });
-                                              startCancelTimer();
-                                            })),
-                                        ElevatedButton(
-                                            child: Text('Tutup',
-                                                style: TextStyle(
-                                                    fontSize: 16)),
-                                            style: ElevatedButton.styleFrom(
-                                                primary: cOrtuBlue,
-                                                padding:
-                                                EdgeInsets.all(20)),
-                                            onPressed: (() =>
-                                            {Navigator.pop(context)}))
-                                      ])
-                                ])))),
+                                          textAlign: TextAlign.center),
+                                      Text(
+                                          'Orangtua kamu sudah dihubungi tentang situasi kamu dan mengirimkan lokasi kamu berada saat ini. Mereka sedang menuju ke tempat kamu.',
+                                          textAlign: TextAlign.justify),
+                                      RichText(
+                                          text: TextSpan(
+                                              text: 'Jangan Panik. ',
+                                              style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontWeight: FontWeight.bold),
+                                              children: <TextSpan>[
+                                                TextSpan(
+                                                    text:
+                                                        'Ingat, panik tidak akan membantu apapun. Panik adalah musuhmu dalam melawan perlombaan waktu ini.',
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.normal))
+                                              ]),
+                                          textAlign: TextAlign.justify),
+                                      RichText(
+                                          text: TextSpan(
+                                              text: 'Tetap tenang. ',
+                                              style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontWeight: FontWeight.bold),
+                                              children: <TextSpan>[
+                                                TextSpan(
+                                                    text:
+                                                        'Sangat penting untuk tetap tenang saat ini. Semua akan baik-baik saja jika kita tetap tenang dalam situasi apapun.',
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.normal)),
+                                              ]),
+                                          textAlign: TextAlign.justify),
+                                      Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            ElevatedButton(
+                                                child: Text('Kirim Ulang',
+                                                    style: TextStyle(
+                                                        fontSize: 16)),
+                                                style: ElevatedButton.styleFrom(
+                                                    primary: cOrtuBlue,
+                                                    padding:
+                                                        EdgeInsets.all(20)),
+                                                onPressed: (() {
+                                                  initAsync();
+                                                  setState(() {
+                                                    startSOSCountDown = 0;
+                                                    finishRecording = false;
+                                                    _controller.reverse();
+                                                  });
+                                                  startCancelTimer();
+                                                })),
+                                            ElevatedButton(
+                                                child: Text('Tutup',
+                                                    style: TextStyle(
+                                                        fontSize: 16)),
+                                                style: ElevatedButton.styleFrom(
+                                                    primary: cOrtuBlue,
+                                                    padding:
+                                                        EdgeInsets.all(20)),
+                                                onPressed: (() =>
+                                                    {Navigator.pop(context)}))
+                                          ])
+                                    ])))),
               ),
               Container(
                 height: 50,
                 margin: EdgeInsets.all(10),
                 child: !finishRecording
                     ? roElevatedButton(
-                  cColor: Colors.white,
-                  radius: 50,
-                  text: Text(
-                    cancelSOSCountDown > 0
-                        ? 'Batalkan SOS ($cancelSOSCountDown)'
-                        : 'Merekam SOS ($startSOSCountDown)',
-                    style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  onPress: cancelSOSCountDown > 0
-                      ? () async {
-                    // showLoadingOverlay();
-                    // await controller.stopVideoRecording();
-                    // closeOverlay();
-                    // controller.dispose();
-                    Navigator.pop(context);
-                  }
-                      : null,
-                )
+                        cColor: Colors.white,
+                        radius: 50,
+                        text: Text(
+                          cancelSOSCountDown > 0
+                              ? 'Batalkan SOS ($cancelSOSCountDown)'
+                              : 'Merekam SOS ($startSOSCountDown)',
+                          style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        onPress: cancelSOSCountDown > 0
+                            ? () async {
+                                // showLoadingOverlay();
+                                // await controller.stopVideoRecording();
+                                // closeOverlay();
+                                // controller.dispose();
+                                Navigator.pop(context);
+                              }
+                            : null,
+                      )
                     : Container(),
               )
               // Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [

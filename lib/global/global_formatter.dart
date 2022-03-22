@@ -84,7 +84,9 @@ String setMonthName(String tanggal) {
 
 ///TEXT FORMAT
 String limitChar(String text, int limit, {bool dots = true}) =>
-    text != null && text != '' && text.length > limit ? text.substring(0, limit - 3) + (dots ? '...' : '') : text;
+    text != null && text != '' && text.length > limit
+        ? text.substring(0, limit - 3) + (dots ? '...' : '')
+        : text;
 
 ///NUMBERFORMAT
 double getDiffPercent(num a, num b) {
@@ -96,7 +98,8 @@ String shrinkNum(num value) {
   ///123456  > 123,5K
   ///123579  > 123,6K
   ///1234567 > 1,2M
-  if (value >= 1000000) return '${(value.toDouble() / 1000000).toStringAsFixed(1)}M';
+  if (value >= 1000000)
+    return '${(value.toDouble() / 1000000).toStringAsFixed(1)}M';
   if (value >= 1000) return '${(value.toDouble() / 1000).toStringAsFixed(1)}K';
   return value.toStringAsFixed(1);
 }
@@ -145,7 +148,7 @@ String now_ddMMMMyyyy() {
   return formatter.format(now);
 }
 
-String day_EEEE(String day){
+String day_EEEE(String day) {
   switch (day) {
     case "Sunday":
       return "Minggu";
@@ -173,7 +176,7 @@ String day_EEEE(String day){
   }
 }
 
-String hari_EEEE(String day){
+String hari_EEEE(String day) {
   switch (day) {
     case "Minggu":
       return "Sunday";
@@ -344,7 +347,8 @@ String epochToHumanStr(num epoch) {
 
 String readTimestamp(num timestamp) {
   var format = new DateFormat("yMd");
-  var date = new DateTime.fromMillisecondsSinceEpoch((timestamp * 1000).round());
+  var date =
+      new DateTime.fromMillisecondsSinceEpoch((timestamp * 1000).round());
   String formatted = format.format(date);
 
   return formatted;
@@ -443,8 +447,47 @@ String validateNumber(String numText) {
   if (numText.isEmpty) {
     return "Tidak boleh kosong";
   }
-  if (numText != null && numText.length > 0 && isNumeric(numText.replaceAll(".", "")) == false) {
+  if (numText != null &&
+      numText.length > 0 &&
+      isNumeric(numText.replaceAll(".", "")) == false) {
     return "Tidak valid";
   }
   return "";
+}
+
+String secsToHours(double secs) {
+  String avgData = '0s';
+  if (secs > 0) {
+    int tmpAvg = secs ~/ 1;
+    int totalHour = 0;
+    if (tmpAvg >= 3600) {
+      totalHour = tmpAvg ~/ 3600;
+      tmpAvg = tmpAvg - (totalHour * 3600);
+    }
+    int totalMenit = 0;
+    if (tmpAvg >= 60) {
+      totalMenit = tmpAvg ~/ 60;
+      tmpAvg = tmpAvg - (totalMenit * 60);
+    }
+    if (totalHour == 0) {
+      if (totalMenit == 0) {
+        avgData = '${tmpAvg}s';
+      } else {
+        avgData = '${totalMenit}m ${tmpAvg}s';
+      }
+    } else {
+      avgData = '${totalHour}h ${totalMenit}m';
+    }
+  }
+  return avgData;
+}
+
+String mToKm(double d) {
+  String distance = '0 m';
+  if (d > 1000) {
+    int tmpDistance = d ~/ 10;
+    distance = '${tmpDistance / 100} km';
+  } else
+    distance = '${d ~/ 1} m';
+  return distance;
 }

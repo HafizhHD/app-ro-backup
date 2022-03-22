@@ -75,11 +75,16 @@ class _DetailChildPageState extends State<DetailChildPage> {
     if (widget.toLocation) {
       WidgetsFlutterBinding.ensureInitialized();
       Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => RKConfigLocationPage(title: 'Penelurusan Lokasi', email: widget.email, name: widget.name))).then((value){
-            setState(() {
-              _loadingGetData = true;
-            });
-            getModeAsuh();
+          .push(MaterialPageRoute(
+              builder: (context) => RKConfigLocationPage(
+                  title: 'Penelurusan Lokasi',
+                  email: widget.email,
+                  name: widget.name)))
+          .then((value) {
+        setState(() {
+          _loadingGetData = true;
+        });
+        getModeAsuh();
       });
     }
   }
@@ -165,11 +170,11 @@ class _DetailChildPageState extends State<DetailChildPage> {
         listAppUsage.where((e) => e.appUsageDate == tanggal);
     if (thisDayAppUsage.length > 0) {
       var data = thisDayAppUsage.first.appUsagesDetail;
-      print('inilah a');
-      print(thisDayAppUsage.first.appUsageDate);
+      // print('inilah a');
+      // print(thisDayAppUsage.first.appUsageDate);
       data.forEach((e) {
-        print('inilah b');
-        print(e.duration);
+        // print('inilah b');
+        // print(e.duration);
         seconds += e.duration;
       });
     }
@@ -308,15 +313,17 @@ class _DetailChildPageState extends State<DetailChildPage> {
                 'mereka saat ini dan riwayat lokasi kapan saja untuk mencari tahu dimana'
                 'mereka dulu dan dimana mereka saat ini kapan saja.',
             onTap: () => {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => RKConfigLocationPage(
-                      title: 'Penelurusan Lokasi',
-                      email: widget.email,
-                      name: widget.name))).then((value){
+              Navigator.of(context)
+                  .push(MaterialPageRoute(
+                      builder: (context) => RKConfigLocationPage(
+                          title: 'Penelurusan Lokasi',
+                          email: widget.email,
+                          name: widget.name)))
+                  .then((value) {
                 setState(() {
                   _loadingGetData = true;
                 });
-                    getModeAsuh();
+                getModeAsuh();
               })
             },
           ),
@@ -329,7 +336,12 @@ class _DetailChildPageState extends State<DetailChildPage> {
                 'pemberitahuan bila ada kontak yang dibuat dengan orang yang tidak diinginkan.',
             onTap: () => {
               Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => ConfigRKContactPage(title: 'Daftar Kontak', name: widget.name, email: widget.email))).then((value) {
+                  .push(MaterialPageRoute(
+                      builder: (context) => ConfigRKContactPage(
+                          title: 'Daftar Kontak',
+                          name: widget.name,
+                          email: widget.email)))
+                  .then((value) {
                 setState(() {
                   _loadingGetData = true;
                 });
@@ -353,14 +365,19 @@ class _DetailChildPageState extends State<DetailChildPage> {
           // ),
           wKontrolKonfigurasiContent(
             title: 'Batas Penggunaan',
-            content: 'Dengan menggunakan aplikasi Ruang Keluarga untuk orang tua dari perangkat'
+            content:
+                'Dengan menggunakan aplikasi Ruang Keluarga untuk orang tua dari perangkat'
                 'anda. Anda dapat memantau dan mengontrol perangkat anak-anak anda'
                 'dari mana saja di dunia. Dapatkan aplikasi, internet, dan statistik'
                 'penggunaan telepon langsung dari dasbor anda.',
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute<Object>(
-                  builder: (BuildContext context) => RKConfigBatasPenggunaanPage(title: 'Batas Penggunaan', name: widget.name, email: widget.email)),
+                  builder: (BuildContext context) =>
+                      RKConfigBatasPenggunaanPage(
+                          title: 'Batas Penggunaan',
+                          name: widget.name,
+                          email: widget.email)),
             ).then((value) {
               setState(() {
                 _loadingGetData = true;
@@ -370,13 +387,18 @@ class _DetailChildPageState extends State<DetailChildPage> {
           ),
           wKontrolKonfigurasiContent(
             title: 'Blok Aplikasi / Games',
-            content: 'Tetapkan jadwal untuk aplikasi atau game tertentu agar anak anda'
+            content:
+                'Tetapkan jadwal untuk aplikasi atau game tertentu agar anak anda'
                 'dapat menggunakanya hanya pada waktu yang dijadwalkan.'
                 'Anda juga dapat memblokir sepenuhnya aplikasi atau game apa pun'
                 'yang anda anggap berbahaya dan tidak ingin diberikan akses kepada mereka.',
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute<Object>(builder: (BuildContext context) => RKConfigBlockAppsPage(email: widget.email, nama: widget.name,)),
+              MaterialPageRoute<Object>(
+                  builder: (BuildContext context) => RKConfigBlockAppsPage(
+                        email: widget.email,
+                        nama: widget.name,
+                      )),
             ).then((value) {
               setState(() {
                 _loadingGetData = true;
@@ -386,12 +408,17 @@ class _DetailChildPageState extends State<DetailChildPage> {
           ),
           wKontrolKonfigurasiContent(
             title: 'Set Jadwal Penggunaan',
-            content: 'Tetapkan jadwal agar anak Anda dapat menggunakan ponsel mereka hanya pada'
+            content:
+                'Tetapkan jadwal agar anak Anda dapat menggunakan ponsel mereka hanya pada'
                 'waktu tertentu dan memblokir akses selama waktu makan malam atau saat'
                 'waktunya tidur. Anda juga dapat langsung memblokir akses ke ponsel'
                 'mereka dengan fitur kunci layar.',
-            onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => RKConfigLimitDevicePage(title: 'Jadwal Penggunaan', name: widget.name, email: widget.email)))
+            onTap: () => Navigator.of(context)
+                .push(MaterialPageRoute(
+                    builder: (context) => RKConfigLimitDevicePage(
+                        title: 'Jadwal Penggunaan',
+                        name: widget.name,
+                        email: widget.email)))
                 .then((value) {
               setState(() {
                 _loadingGetData = true;
@@ -417,108 +444,126 @@ class _DetailChildPageState extends State<DetailChildPage> {
                     fontWeight: FontWeight.bold,
                     color: cOrtuWhite)),
           ),
-          (_loadingLockScreen)?Container(
-            margin: EdgeInsets.all(10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  child: Text(
-                    'Mode Kunci Layar',
-                    style: TextStyle(fontSize: 16, color: cOrtuWhite),
-                  ),
-                ),
-                Container(
-                  child: CupertinoSwitch(
-                    activeColor: cOrtuBlue,
-                    value: _switchLockScreen,
-                    onChanged: (value) {
-                      fetchUpdateModeLock(!_switchLockScreen);
-                    },
-                  ),
-                )
-              ],
-            ),
-          ):wProgressIndicator(),
-          (dataModeAsuh.length<=0)?wProgressIndicator():Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
+          (_loadingLockScreen)
+              ? Container(
                   margin: EdgeInsets.all(10.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
                         child: Text(
-                          'Mode Asuh',
+                          'Mode Kunci Layar',
                           style: TextStyle(fontSize: 16, color: cOrtuWhite),
                         ),
                       ),
                       Container(
                         child: CupertinoSwitch(
                           activeColor: cOrtuBlue,
-                          value: _switchModeAsuh,
-                          onChanged: (value) async {
-                            prefs = await SharedPreferences.getInstance();
-                            setState(() {
-                              _loadingGetData = true;
-                              _switchModeAsuh = value;
-                              /*if(!_switchModeAsuh){
-                                prefs.setInt("LVL_MODE"+widget.name.toUpperCase(), 0);
-                              }*/
-                              // prefs.setBool("MODE_ASUH"+widget.name.toUpperCase(), _switchModeAsuh);
-                              if (value) _switchLevel = 0;
-                              updateDatatoFirebase(0);
-                            });
+                          value: _switchLockScreen,
+                          onChanged: (value) {
+                            fetchUpdateModeLock(!_switchLockScreen);
                           },
                         ),
                       )
                     ],
                   ),
-                ),
-                if (_switchModeAsuh)
-                  Theme(
-                    data: ThemeData.dark(),
-                    child: Container(
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: dataModeAsuh.map((e) {
-                            int _switch = 0;
-                            int index = dataModeAsuh.indexOf(e);
-                            _switch = index;
-                            return modeAsuhLevelTile(
-                              leading: Radio<int>(
-                                value: _switch,
-                                groupValue: _switchLevel,
+                )
+              : wProgressIndicator(),
+          (dataModeAsuh.length <= 0)
+              ? wProgressIndicator()
+              : Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.all(10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              child: Text(
+                                'Mode Asuh',
+                                style:
+                                    TextStyle(fontSize: 16, color: cOrtuWhite),
+                              ),
+                            ),
+                            Container(
+                              child: CupertinoSwitch(
                                 activeColor: cOrtuBlue,
-                                onChanged: (int? value) {
+                                value: _switchModeAsuh,
+                                onChanged: (value) async {
+                                  prefs = await SharedPreferences.getInstance();
                                   setState(() {
                                     _loadingGetData = true;
-                                    _switchLevel = _switch;
-                                    // prefs.setInt("LVL_MODE"+widget.name.toUpperCase(), dataModeAsuh.indexOf(e));
-                                    updateDatatoFirebase(dataModeAsuh.indexOf(e));
+                                    _switchModeAsuh = value;
+                                    /*if(!_switchModeAsuh){
+                                prefs.setInt("LVL_MODE"+widget.name.toUpperCase(), 0);
+                              }*/
+                                    // prefs.setBool("MODE_ASUH"+widget.name.toUpperCase(), _switchModeAsuh);
+                                    if (value) _switchLevel = 0;
+                                    updateDatatoFirebase(0);
                                   });
                                 },
                               ),
-                              title: Text(
-                                (e['modeAsuhLable']!= null)?e['modeAsuhLable']:'',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _switchLevel == _switch ? cOrtuBlue : cOrtuWhite),
-                              ),
-                              subtitle: Text(
-                                (e['description']!=null)?e['description']:'',
-                                textAlign: TextAlign.justify,
-                                style: TextStyle(color: _switchLevel == _switch ? cOrtuBlue : cOrtuWhite),
-                              ),
-                            );
-                          }).toList()),
-                    ),
+                            )
+                          ],
+                        ),
+                      ),
+                      if (_switchModeAsuh)
+                        Theme(
+                          data: ThemeData.dark(),
+                          child: Container(
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: dataModeAsuh.map((e) {
+                                  int _switch = 0;
+                                  int index = dataModeAsuh.indexOf(e);
+                                  _switch = index;
+                                  return modeAsuhLevelTile(
+                                    leading: Radio<int>(
+                                      value: _switch,
+                                      groupValue: _switchLevel,
+                                      activeColor: cOrtuBlue,
+                                      onChanged: (int? value) {
+                                        setState(() {
+                                          _loadingGetData = true;
+                                          _switchLevel = _switch;
+                                          // prefs.setInt("LVL_MODE"+widget.name.toUpperCase(), dataModeAsuh.indexOf(e));
+                                          updateDatatoFirebase(
+                                              dataModeAsuh.indexOf(e));
+                                        });
+                                      },
+                                    ),
+                                    title: Text(
+                                      (e['modeAsuhLable'] != null)
+                                          ? e['modeAsuhLable']
+                                          : '',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: _switchLevel == _switch
+                                              ? cOrtuBlue
+                                              : cOrtuWhite),
+                                    ),
+                                    subtitle: Text(
+                                      (e['description'] != null)
+                                          ? e['description']
+                                          : '',
+                                      textAlign: TextAlign.justify,
+                                      style: TextStyle(
+                                          color: _switchLevel == _switch
+                                              ? cOrtuBlue
+                                              : cOrtuWhite),
+                                    ),
+                                  );
+                                }).toList()),
+                          ),
+                        ),
+                    ],
                   ),
-              ],
-            ),
-          ),
+                ),
         ],
       ),
     );
@@ -559,12 +604,14 @@ class _DetailChildPageState extends State<DetailChildPage> {
               'Detail Penggunaan',
               style: TextStyle(color: cOrtuBlue),
             ),
-            onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => DetailChildActivityPage(
-                  name: widget.name,
-                  email: widget.email,
-                  lastUpdate: dateToday,
-                ))).then((value) {
+            onPressed: () => Navigator.of(context)
+                .push(MaterialPageRoute(
+                    builder: (context) => DetailChildActivityPage(
+                          name: widget.name,
+                          email: widget.email,
+                          lastUpdate: dateToday,
+                        )))
+                .then((value) {
               setState(() {
                 _loadingGetData = true;
               });
@@ -662,7 +709,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
       if (json['resultCode'] == 'OK') {
-        // print("response aplikasi list : "+json.toString());
+        // print("response aplikasi list : " + json.toString());
         if (json['appdevices'].length > 0) {
           try {
             var appDevices = json['appdevices'][0];
@@ -671,28 +718,37 @@ class _DetailChildPageState extends State<DetailChildPage> {
             List<dynamic> dataList = [];
 
             List<ApplicationInstalled> dataAppsInstalled =
-            List<ApplicationInstalled>.from(tmpData.map((model) => ApplicationInstalled.fromJson(model)));
+                List<ApplicationInstalled>.from(tmpData
+                    .map((model) => ApplicationInstalled.fromJson(model)));
             var imageUrl = "${prefs.getString(rkBaseUrlAppIcon)}";
 
             List<AppIconList> dataListIconApps = [];
             if (prefs.getString(rkListAppIcons) != null) {
               var respList = jsonDecode(prefs.getString(rkListAppIcons)!);
               var listIcons = respList['appIcons'];
-              dataListIconApps = List<AppIconList>.from(listIcons.map((model) => AppIconList.fromJson(model)));
+              dataListIconApps = List<AppIconList>.from(
+                  listIcons.map((model) => AppIconList.fromJson(model)));
             }
 
             for (int i = 0; i < dataAppsInstalled.length; i++) {
-              final appIcon = dataListIconApps.where((e) => e.appId == dataAppsInstalled[i].packageId).toList();
+              final appIcon = dataListIconApps
+                  .where((e) => e.appId == dataAppsInstalled[i].packageId)
+                  .toList();
               dataList.add({
                 "appName": "${dataAppsInstalled[i].appName}",
                 "packageId": "${dataAppsInstalled[i].packageId}",
                 "blacklist": dataAppsInstalled[i].blacklist,
                 "appCategory": dataAppsInstalled[i].appCategory,
-                "limit": (dataAppsInstalled[i].limit != null)?dataAppsInstalled[i].limit.toString():'0',
-                "appIcons": appIcon.length > 0 ? "${imageUrl + appIcon.first.appIcon.toString()}" : '',
+                "limit": (dataAppsInstalled[i].limit != null)
+                    ? dataAppsInstalled[i].limit.toString()
+                    : '0',
+                "appIcons": appIcon.length > 0
+                    ? "${imageUrl + appIcon.first.appIcon.toString()}"
+                    : '',
               });
             }
-            List<AppListWithIcons> data = List<AppListWithIcons>.from(dataList.map((model) => AppListWithIcons.fromJson(model)));
+            List<AppListWithIcons> data = List<AppListWithIcons>.from(
+                dataList.map((model) => AppListWithIcons.fromJson(model)));
             data.sort((a, b) => a.appName!.compareTo(b.appName!));
             setState(() {
               detailAplikasiChild = data;
@@ -738,29 +794,29 @@ class _DetailChildPageState extends State<DetailChildPage> {
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
       if (json['resultCode'] == 'OK') {
-        if(json['resultData'] != null){
+        if (json['resultData'] != null) {
           var result = json['resultData'];
-          if(result['lockStatus'] != null){
+          if (result['lockStatus'] != null) {
             setState(() {
               _switchLockScreen = result['lockStatus'];
               _loadingLockScreen = true;
             });
-          }else{
+          } else {
             setState(() {
               _loadingLockScreen = true;
             });
           }
-        }else{
+        } else {
           setState(() {
             _loadingLockScreen = true;
           });
         }
-      }else{
+      } else {
         setState(() {
           _loadingLockScreen = true;
         });
       }
-    }else{
+    } else {
       setState(() {
         _loadingLockScreen = true;
       });
@@ -769,35 +825,42 @@ class _DetailChildPageState extends State<DetailChildPage> {
 
   Future<void> fetchUpdateModeLock(bool lockStatus) async {
     showLoadingOverlay();
-    var response = await MediaRepository().fetchUpdateModeLock(widget.email, lockStatus);
+    var response =
+        await MediaRepository().fetchUpdateModeLock(widget.email, lockStatus);
     print('isi response fetchUpdateModeLock : ${response.body}');
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
       if (json['resultCode'] == 'OK') {
-        if(json['resultData'] != null){
+        if (json['resultData'] != null) {
           var result = json['resultData'];
           print('lockStatus : ${result['lockStatus']}');
-          if(result['lockStatus'] != null){
+          if (result['lockStatus'] != null) {
             setState(() {
               _switchLockScreen = result['lockStatus'];
             });
             closeOverlay();
-            showToastSuccess(ctx: context, successText: 'Perubahan mode kunci layar berhasil!');
-          }else{
+            showToastSuccess(
+                ctx: context,
+                successText: 'Perubahan mode kunci layar berhasil!');
+          } else {
             closeOverlay();
-            showToastFailed(ctx: context, failedText: 'Perubahan mode kunci layar gagal!');
+            showToastFailed(
+                ctx: context, failedText: 'Perubahan mode kunci layar gagal!');
           }
-        }else{
+        } else {
           closeOverlay();
-          showToastFailed(ctx: context, failedText: 'Perubahan mode kunci layar gagal!');
+          showToastFailed(
+              ctx: context, failedText: 'Perubahan mode kunci layar gagal!');
         }
-      }else{
+      } else {
         closeOverlay();
-        showToastFailed(ctx: context, failedText: 'Perubahan mode kunci layar gagal!');
+        showToastFailed(
+            ctx: context, failedText: 'Perubahan mode kunci layar gagal!');
       }
-    }else{
+    } else {
       closeOverlay();
-      showToastFailed(ctx: context, failedText: 'Perubahan mode kunci layar gagal!');
+      showToastFailed(
+          ctx: context, failedText: 'Perubahan mode kunci layar gagal!');
     }
   }
 
@@ -820,7 +883,8 @@ class _DetailChildPageState extends State<DetailChildPage> {
   }
 
   Future<bool> updateModeAsuhh(String modeAsuhName) async {
-    var response = await MediaRepository().updateModeAsuh(widget.email, modeAsuhName);
+    var response =
+        await MediaRepository().updateModeAsuh(widget.email, modeAsuhName);
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
       if (json['resultCode'] == 'OK') {
@@ -834,78 +898,84 @@ class _DetailChildPageState extends State<DetailChildPage> {
   }
 
   void getModeAsuh() {
-    if(_loadingGetData) {
+    if (_loadingGetData) {
       showLoadingOverlay();
     }
-    fetchListModeAsuhh().then((value1){
-      if(value1 != null && value1.length>0){
-        filterModeAsuhh().then((value2){
-          if(value2 != null){
-            if(value2['modeAsuh']!=null && value2['modeAsuhName']!=null && value2['modeAsuh'].toString().toUpperCase() == 'ON' && value2['modeAsuhName'].toString().isNotEmpty){
+    fetchListModeAsuhh().then((value1) {
+      if (value1 != null && value1.length > 0) {
+        filterModeAsuhh().then((value2) {
+          if (value2 != null) {
+            if (value2['modeAsuh'] != null &&
+                value2['modeAsuhName'] != null &&
+                value2['modeAsuh'].toString().toUpperCase() == 'ON' &&
+                value2['modeAsuhName'].toString().isNotEmpty) {
               fetchAppList().then((value) async {
                 setState(() {
                   dataModeAsuh = value1;
                   _switchModeAsuh = true;
-                  var data = dataModeAsuh.where((element) =>
-                  element['modeAsuhName'].toString().toLowerCase() == value2['modeAsuhName'].toString().toLowerCase()).first;
-                  if(data != null){
+                  var data = dataModeAsuh
+                      .where((element) =>
+                          element['modeAsuhName'].toString().toLowerCase() ==
+                          value2['modeAsuhName'].toString().toLowerCase())
+                      .first;
+                  if (data != null) {
                     _switchLevel = dataModeAsuh.indexOf(data);
-                  }else{
+                  } else {
                     _switchLevel = 0;
                   }
                 });
-                if(_loadingGetData) {
+                if (_loadingGetData) {
                   closeOverlay();
                 }
               }).onError((error, stackTrace) {
-                if(_loadingGetData) {
+                if (_loadingGetData) {
                   closeOverlay();
                 }
               });
-            }else{
+            } else {
               fetchAppList().then((value) async {
                 setState(() {
                   dataModeAsuh = value1;
                   _switchModeAsuh = false;
                   _switchLevel = 0;
                 });
-                if(_loadingGetData) {
+                if (_loadingGetData) {
                   closeOverlay();
                 }
               }).onError((error, stackTrace) {
-                if(_loadingGetData) {
+                if (_loadingGetData) {
                   closeOverlay();
                 }
               });
             }
-          }else{
+          } else {
             fetchAppList().then((value) async {
               setState(() {
                 dataModeAsuh = value1;
                 _switchModeAsuh = false;
                 _switchLevel = 0;
               });
-              if(_loadingGetData) {
+              if (_loadingGetData) {
                 closeOverlay();
               }
             }).onError((error, stackTrace) {
-              if(_loadingGetData) {
+              if (_loadingGetData) {
                 closeOverlay();
               }
             });
           }
         }).onError((error, stackTrace) {
-          if(_loadingGetData) {
+          if (_loadingGetData) {
             closeOverlay();
           }
         });
-      }else{
-        if(_loadingGetData) {
+      } else {
+        if (_loadingGetData) {
           closeOverlay();
         }
       }
     }).onError((error, stackTrace) {
-      if(_loadingGetData) {
+      if (_loadingGetData) {
         closeOverlay();
       }
     });
@@ -915,13 +985,13 @@ class _DetailChildPageState extends State<DetailChildPage> {
     showLoadingOverlay();
     List<Map<String, dynamic>> data = [];
     var id_child_usage = await prefs.getString('ID_CHILD_USAGE');
-    if(id_child_usage != null){
-      if(dataModeAsuh.length>0){
+    if (id_child_usage != null) {
+      if (dataModeAsuh.length > 0) {
         String namaModeAsuh = '';
-        if(_switchModeAsuh){
+        if (_switchModeAsuh) {
           namaModeAsuh = dataModeAsuh[index]['modeAsuhName'];
         }
-        updateModeAsuhh(namaModeAsuh).then((value){
+        updateModeAsuhh(namaModeAsuh).then((value) {
           closeOverlay();
         }).onError((error, stackTrace) {
           closeOverlay();

@@ -14,8 +14,13 @@ class RKWebViewDialog extends StatefulWidget {
   final String description;
   final String source;
 
-  RKWebViewDialog({required this.url, required this.title, this.contents = '',
-    this.image = '', this.description = '', this.source = ''});
+  RKWebViewDialog(
+      {required this.url,
+      required this.title,
+      this.contents = '',
+      this.image = '',
+      this.description = '',
+      this.source = ''});
 
   @override
   _RKWebViewDialogState createState() => _RKWebViewDialogState();
@@ -40,8 +45,7 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
       body: WebView(
         initialUrl: widget.url,
         javascriptMode: JavascriptMode.unrestricted,
-
-        onWebViewCreated: (WebViewController webViewController){
+        onWebViewCreated: (WebViewController webViewController) {
           _webViewController = webViewController;
           loadAsset();
         },
@@ -70,7 +74,8 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
             widget.contents +
             "</body></html>";
       else
-        fileHtmlContents = "<!DOCTYPE html> <html> <body> " +
+        fileHtmlContents =
+            "<!DOCTYPE html> <html> <body style=\"white-space: pre-line;\"> " +
             widget.contents +
             "<br/>" +
             "<h2>" +

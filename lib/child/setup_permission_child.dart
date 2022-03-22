@@ -8,13 +8,15 @@ import 'package:ruangkeluarga/child/child_main.dart';
 import 'package:ruangkeluarga/global/global.dart';
 
 class SetupPermissionChildPage extends StatefulWidget {
-  SetupPermissionChildPage({Key? key, required this.email, required this.name}) : super(key: key);
+  SetupPermissionChildPage({Key? key, required this.email, required this.name})
+      : super(key: key);
 
   final String email;
   final String name;
 
   @override
-  _SetupPermissionChildPageState createState() => _SetupPermissionChildPageState();
+  _SetupPermissionChildPageState createState() =>
+      _SetupPermissionChildPageState();
 }
 
 class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
@@ -24,6 +26,8 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
   bool _audioPermission = false;
   // bool _smsPermission = false;
   bool _contactPermission = false;
+
+  bool readMore = false;
 
   final _waitDelay = 400;
 
@@ -37,7 +41,8 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
           content: SingleChildScrollView(
             child: ListBody(
               children: const <Widget>[
-                Text('Aplikasi $appName membutuhkan ijin akses anda untuk dapat berjalan dengan baik.'),
+                Text(
+                    'Aplikasi $appName membutuhkan ijin akses anda untuk dapat berjalan dengan baik.'),
               ],
             ),
           ),
@@ -80,7 +85,8 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
             children: [
               Container(
                 color: cPrimaryBg,
-                padding: EdgeInsets.only(top: 30.0, left: 20.0, right: 20.0, bottom: 10),
+                padding: EdgeInsets.only(
+                    top: 30.0, left: 20.0, right: 20.0, bottom: 10),
                 // margin: EdgeInsets.only(bottom: 10),
                 // height: 80,
                 child: Column(
@@ -90,7 +96,10 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
                   children: [
                     Text(
                       'Hi, ${widget.name}',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: cOrtuWhite),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: cOrtuWhite),
                     ),
                     Text(
                       'Aplikasi $appName memerlukan beberapa ijin untuk mengakses data yang dibutuhkan:',
@@ -120,7 +129,11 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
                     borderRadius: new BorderRadius.circular(15.0),
                   ),
                   onPressed: () async {
-                    if (_locationPermission && _contactPermission && _serviceAppUsage && _cameraPermission && _audioPermission) {
+                    if (_locationPermission &&
+                        _contactPermission &&
+                        _serviceAppUsage &&
+                        _cameraPermission &&
+                        _audioPermission) {
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (context) => ChildMain(
@@ -159,7 +172,8 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
             SwitchListTile.adaptive(
               tileColor: cOrtuGrey,
               title: Text('Kontak'),
-              subtitle: Text('Kami membutuhkan akses kontak pada perangkat anak untuk memonitoring kontak anak'),
+              subtitle: Text(
+                  'Kami membutuhkan akses kontak pada perangkat anak untuk memonitoring kontak anak'),
               value: _contactPermission,
               onChanged: (val) async {
                 print(val);
@@ -169,10 +183,12 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
                   final s = Stopwatch()..start();
                   _permissionStatus = await Permission.contacts.request();
                   s.stop();
-                  if (s.elapsedMilliseconds < _waitDelay && _permissionStatus.isPermanentlyDenied) {
+                  if (s.elapsedMilliseconds < _waitDelay &&
+                      _permissionStatus.isPermanentlyDenied) {
                     await Get.dialog(AlertDialog(
                       title: Text('Akses ditolak'),
-                      content: Text('Akses untuk kontak telah di tolak sebelum nya. Buka setting untuk merubah akses'),
+                      content: Text(
+                          'Akses untuk kontak telah di tolak sebelum nya. Buka setting untuk merubah akses'),
                       actions: [
                         TextButton(
                             onPressed: () async {
@@ -188,8 +204,10 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
                 _contactPermission = _permissionStatus.isGranted;
                 setState(() {});
               },
-              contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
+              contentPadding:
+                  EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(15))),
             ),
             SizedBox(height: 10),
             SwitchListTile.adaptive(
@@ -223,10 +241,12 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
                   final s = Stopwatch()..start();
                   _permissionStatus = await Permission.location.request();
                   s.stop();
-                  if (s.elapsedMilliseconds < _waitDelay && _permissionStatus.isPermanentlyDenied) {
+                  if (s.elapsedMilliseconds < _waitDelay &&
+                      _permissionStatus.isPermanentlyDenied) {
                     await Get.dialog(AlertDialog(
                       title: Text('Akses ditolak'),
-                      content: Text('Akses untuk lokasi telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
+                      content: Text(
+                          'Akses untuk lokasi telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
                       actions: [
                         TextButton(
                             onPressed: () async {
@@ -242,14 +262,17 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
                 _locationPermission = _permissionStatus.isGranted;
                 setState(() {});
               },
-              contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
+              contentPadding:
+                  EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(15))),
             ),
             SizedBox(height: 10),
             SwitchListTile.adaptive(
               tileColor: cOrtuGrey,
               title: Text('Kamera'),
-              subtitle: Text('Kami membutuhkan akses kamera pada perangkat anak untuk mengirimkan rekaman video sos.'),
+              subtitle: Text(
+                  'Kami membutuhkan akses kamera pada perangkat anak untuk mengirimkan rekaman video sos.'),
               value: _cameraPermission,
               onChanged: (val) async {
                 var _permissionStatus = await Permission.camera.status;
@@ -257,10 +280,12 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
                   final s = Stopwatch()..start();
                   _permissionStatus = await Permission.camera.request();
                   s.stop();
-                  if (s.elapsedMilliseconds < _waitDelay && _permissionStatus.isPermanentlyDenied) {
+                  if (s.elapsedMilliseconds < _waitDelay &&
+                      _permissionStatus.isPermanentlyDenied) {
                     await Get.dialog(AlertDialog(
                       title: Text('Akses ditolak'),
-                      content: Text('Akses untuk kamera telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
+                      content: Text(
+                          'Akses untuk kamera telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
                       actions: [
                         TextButton(
                             onPressed: () async {
@@ -275,14 +300,17 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
                 _cameraPermission = _permissionStatus.isGranted;
                 setState(() {});
               },
-              contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
+              contentPadding:
+                  EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(15))),
             ),
             SizedBox(height: 10),
             SwitchListTile.adaptive(
               tileColor: cOrtuGrey,
               title: Text('Audio'),
-              subtitle: Text('Kami membutuhkan akses microphone pada perangkat anak untuk mengirimkan rekaman suara ketika sos.'),
+              subtitle: Text(
+                  'Kami membutuhkan akses microphone pada perangkat anak untuk mengirimkan rekaman suara ketika sos.'),
               value: _audioPermission,
               onChanged: (val) async {
                 var _permissionStatus = await Permission.microphone.status;
@@ -290,10 +318,12 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
                   final s = Stopwatch()..start();
                   _permissionStatus = await Permission.microphone.request();
                   s.stop();
-                  if (s.elapsedMilliseconds < _waitDelay && _permissionStatus.isPermanentlyDenied) {
+                  if (s.elapsedMilliseconds < _waitDelay &&
+                      _permissionStatus.isPermanentlyDenied) {
                     await Get.dialog(AlertDialog(
                       title: Text('Akses ditolak'),
-                      content: Text('Akses untuk microphone telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
+                      content: Text(
+                          'Akses untuk microphone telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
                       actions: [
                         TextButton(
                             onPressed: () async {
@@ -308,8 +338,10 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
                 _audioPermission = _permissionStatus.isGranted;
                 setState(() {});
               },
-              contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
+              contentPadding:
+                  EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(15))),
             ),
             SizedBox(height: 10),
             // SwitchListTile.adaptive(
@@ -349,14 +381,16 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
             SwitchListTile.adaptive(
               tileColor: cOrtuGrey,
               title: Text('Penggunaan Aplikasi'),
-              subtitle: Text('Kami membutuhkan akses data aplikasi pada perangkat anak untuk memonitoring penggunaan aplikasi/game anak.'),
+              subtitle: Text(
+                  'Kami membutuhkan akses data aplikasi pada perangkat anak untuk memonitoring penggunaan aplikasi/game anak.'),
               value: _serviceAppUsage,
               onChanged: (val) async {
                 if (val) {
                   try {
                     DateTime endDate = new DateTime.now();
                     DateTime startDate = endDate.subtract(Duration(hours: 10));
-                    List<AppUsageInfo> infoList = await AppUsage.getAppUsage(startDate, endDate);
+                    List<AppUsageInfo> infoList =
+                        await AppUsage.getAppUsage(startDate, endDate);
                     print('AppUsageInfo ${infoList.length}');
                     if (infoList.length > 0) {
                       _serviceAppUsage = true;
@@ -367,8 +401,10 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
                   }
                 }
               },
-              contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
+              contentPadding:
+                  EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(15))),
             ),
           ],
         ),

@@ -14,6 +14,7 @@ import 'package:get/get.dart' hide Response;
 import 'package:http/http.dart';
 import 'package:location/location.dart';
 import 'package:ruangkeluarga/utils/database/aplikasiDb.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:ruangkeluarga/child/child_model.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/global/global_formatter.dart';
@@ -34,12 +35,14 @@ import 'package:usage_stats/usage_stats.dart';
 late List<CameraDescription> cameras;
 
 class ChildController extends GetxController {
-  MethodChannel platform = MethodChannel('ruangortu.com/appUsage', JSONMethodCodec());
+  MethodChannel platform =
+  MethodChannel('ruangortu.com/appUsage', JSONMethodCodec());
   var _bottomNavIndex = 2.obs;
   var childID = '';
   var childEmail = '';
   late ChildProfile childProfile;
   late ParentProfile parentProfile;
+  late List<ParentProfile> otherParentProfile = [];
   List<BlacklistedContact> blackListed = [];
   Rx<Future<bool>> fParentProfile = Future<bool>.value(false).obs;
 
@@ -77,7 +80,7 @@ class ChildController extends GetxController {
 
   void sendData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    childEmail = prefs.getString(rkEmailUser)?? '';
+    childEmail = prefs.getString(rkEmailUser) ?? '';
     // await getChildData();
     if (childEmail != '') {
       fetchDataApp();
@@ -125,43 +128,50 @@ class ChildController extends GetxController {
 
   void onMessageListen() {
     FirebaseMessaging.instance.getToken().then((fcmToken) {
-      print("FCM TOKEN : "+fcmToken!);
+      print("FCM TOKEN : " + fcmToken!);
     });
     FirebaseMessaging.instance.getInitialMessage().then((value) => {
           if (value != null) {print('remote message ${value.data}')}
         });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("MESSAGE : "+message.data.toString());
+      print("MESSAGE : " + message.data.toString());
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
-      if(message.data != null && message.data['body'] != null){
+      if (message.data != null && message.data['body'] != null) {
         String strMessage = message.data['body'].toString().toLowerCase();
         int posBlock = strMessage.indexOf('sedang dibatasi');
         int posModeAsuh = strMessage.indexOf('mode asuh');
         int poslockScreen = strMessage.indexOf('kunci layar');
-        if((message.data['body'].toString().toLowerCase()=='update data block app') || (posBlock >= 0)){
-          if(message.data['content'] != null) {
+        if ((message.data['body'].toString().toLowerCase() ==
+            'update data block app') || (posBlock >= 0)) {
+          if (message.data['content'] != null) {
             fetchAppList(message.data['content']);
           }
-        }else if((message.data['body'].toString().toLowerCase()=='mode asuh') || (posModeAsuh >= 0)){
-          if(message.data['content'] != null) {
+        } else if ((message.data['body'].toString().toLowerCase() ==
+            'mode asuh') || (posModeAsuh >= 0)) {
+          if (message.data['content'] != null) {
             featAppModeAsuh(message.data['content']);
           }
-        }else if((message.data['body'].toString().toLowerCase()=='update lock screen') || (poslockScreen >= 0)){
-          if((message.data['content'] != null)&&(message.data['content'] != "")) {
+        } else if ((message.data['body'].toString().toLowerCase() ==
+            'update lock screen') || (poslockScreen >= 0)) {
+          if ((message.data['content'] != null) &&
+              (message.data['content'] != "")) {
             var dataNotif = jsonDecode(message.data['content']);
-            if(dataNotif['lockstatus']!=null){
+            if (dataNotif['lockstatus'] != null) {
               //jika lock membahayakan aktifkan source dibawah ini dan hidden source dibawahnya
-              if(dataNotif['lockstatus'].toString() == 'true'){
-                new MethodChannel('com.ruangkeluargamobile/android_service_background', JSONMethodCodec()).invokeMethod('lockDeviceChils', {'data':'data'});
+              if (dataNotif['lockstatus'].toString() == 'true') {
+                new MethodChannel(
+                        'com.ruangkeluargamobile/android_service_background',
+                        JSONMethodCodec())
+                    .invokeMethod('lockDeviceChils', {'data': 'data'});
               }
               // featStatusLockScreen(dataNotif['lockstatus'].toString());
             }
-          }else{
+          } else {
             featLockScreen();
           }
-        }else{
+        } else {
           flutterLocalNotificationsPlugin.show(
               notification.hashCode,
               message.data['title'],
@@ -173,13 +183,21 @@ class ChildController extends GetxController {
                           message.data['body'].toString())),
               ));
         }
+      } else {
+        var dataNotif = jsonDecode(message.data['content']);
+        if (dataNotif['message'] != null &&
+            dataNotif['message'].toString().toLowerCase() ==
+                'request location') {
+          getCurrentLocation();
+        }
       }
     });
   }
 
   Future<bool> getChildData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    Response response = await MediaRepository().getParentChildData(prefs.getString(rkUserID) ?? '');
+    Response response = await MediaRepository()
+        .getParentChildData(prefs.getString(rkUserID) ?? '');
     print('response getChildData: ${response.body}');
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
@@ -196,7 +214,7 @@ class ChildController extends GetxController {
         // }
         update();
         return true;
-      }else {
+      } else {
         logUserOut();
         print('no user found');
       }
@@ -207,13 +225,27 @@ class ChildController extends GetxController {
   }
 
   Future<bool> getParentData() async {
-    Response response = await MediaRepository().getParentChildData(childProfile.parent.id);
+    Response response =
+        await MediaRepository().getParentChildData(childProfile.parent.id);
     print('response getParentData: ${response.body}');
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
       if (json['resultCode'] == "OK") {
         var jsonUser = json['user'];
         parentProfile = ParentProfile.fromJson(jsonUser);
+        for (var e in childProfile.otherParent) {
+          ParentProfile otherProfile = ParentProfile.fromJson(e);
+          Response res =
+              await MediaRepository().getParentChildData(otherProfile.id);
+          print('response getOtherParentData: ${res.body}');
+          if (res.statusCode == 200) {
+            var json2 = jsonDecode(res.body);
+            if (json2['resultCode'] == "OK") {
+              var jsonUser2 = json2['user'];
+              otherParentProfile.add(ParentProfile.fromJson(jsonUser2));
+            }
+          }
+        }
         update();
         return true;
       }
@@ -233,7 +265,8 @@ class ChildController extends GetxController {
       var json = jsonDecode(response.body);
       if (json['appdevices'].length > 0) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString("deviceAppUsageAplikasi", json['appdevices'][0]['_id']);
+        await prefs.setString(
+            "deviceAppUsageAplikasi", json['appdevices'][0]['_id']);
         List appDevices = json['appdevices'][0]['appName'];
         return appDevices.map((e) => ApplicationInstalled.fromJson(e)).toList();
       }
@@ -246,15 +279,19 @@ class ChildController extends GetxController {
     if (res.statusCode == 200) {
       print('print res fetchAppIconList ${res.body}');
       return jsonDecode(res.body);
-    } else return [];
+    } else
+      return [];
   }
 
   void saveCurrentAppList() async {
     final listAppServer = await getListAppServer();
     final listAppIcon = await getAppIconList();
-    final listAppLocal = await DeviceApps.getInstalledApplications(includeAppIcons: true, includeSystemApps: true, onlyAppsWithLaunchIntent: true);
-    print ("listAppLocal::::");
-    print (listAppLocal);
+    final listAppLocal = await DeviceApps.getInstalledApplications(
+        includeAppIcons: true,
+        includeSystemApps: true,
+        onlyAppsWithLaunchIntent: true);
+    print("listAppLocal::::");
+    print(listAppLocal);
     int ada = 0;
     String? cat;
     // listAppLocal.forEach((localApp) async {
@@ -298,8 +335,11 @@ class ChildController extends GetxController {
 
     final listAppsOK = listAppLocal.map((localApp) {
       final cat = localApp.category.toString().split('.')[1];
-      final onServerApp = listAppServer.where((serverApp) => serverApp.packageId == localApp.packageName).toList();
-      final isBlacklist = onServerApp.length > 0 ? onServerApp.first.blacklist : false;
+      final onServerApp = listAppServer
+          .where((serverApp) => serverApp.packageId == localApp.packageName)
+          .toList();
+      final isBlacklist =
+          onServerApp.length > 0 ? onServerApp.first.blacklist : false;
       final limit = onServerApp.length > 0 ? onServerApp.first.limit : 0;
 
       return ApplicationInstalled(
@@ -311,7 +351,8 @@ class ChildController extends GetxController {
       );
     }).toList();
 
-    Response response = await MediaRepository().saveAppList(childEmail, listAppsOK);
+    Response response =
+        await MediaRepository().saveAppList(childEmail, listAppsOK);
     if (response.statusCode == 200) {
       // print('save appList ${response.body}');
       print('save appList ok');
@@ -357,9 +398,10 @@ class ChildController extends GetxController {
 
   Future fetchContacts() async {
     try {
-    // var permission = await FlutterContacts.requestPermission();
-    // if (permission) {
-      final kontak = await FlutterContacts.getContacts(withProperties: true, withPhoto: true);
+      // var permission = await FlutterContacts.requestPermission();
+      // if (permission) {
+      final kontak = await FlutterContacts.getContacts(
+          withProperties: true, withPhoto: true);
       var contacts = [];
       for (int i = 0; i < kontak.length; i++) {
         var phoneNum = [];
@@ -367,17 +409,22 @@ class ChildController extends GetxController {
           phoneNum.add(kontak[i].phones[j].normalizedNumber);
         }
         var photo = kontak[i].photo;
-        contacts.add({"name": kontak[i].displayName, "nomor": phoneNum, "blacklist": false});
+        contacts.add({
+          "name": kontak[i].displayName,
+          "nomor": phoneNum,
+          "blacklist": false
+        });
       }
 
-      Response response = await MediaRepository().saveContacts(childEmail, contacts);
+      Response response =
+          await MediaRepository().saveContacts(childEmail, contacts);
       if (response.statusCode == 200) {
         print('isi response save contact : ${response.body}');
       } else {
         print('isi response save contact : ${response.statusCode}');
       }
-    // }
-    }catch (e, s) {
+      // }
+    } catch (e, s) {
       print('err: $e');
       print('stk: $s');
     }
@@ -398,7 +445,8 @@ class ChildController extends GetxController {
     print('isi response fetch blacklisted contact : ${resBL.body}');
     if (resBL.statusCode == 200) {
       final List blacklistedJson = jsonDecode(resBL.body)['contacts'];
-      blackListed = blacklistedJson.map((e) => BlacklistedContact.fromJson(e)).toList();
+      blackListed =
+          blacklistedJson.map((e) => BlacklistedContact.fromJson(e)).toList();
       update();
     }
   }
@@ -432,10 +480,14 @@ class ChildController extends GetxController {
     // }
   }
 
-  Future<Map<String, int>> getDurationAppForeground() async{
+  Future<Map<String, int>> getDurationAppForeground() async {
     final DateTime endDate = new DateTime.now();
-    final DateTime startDate = endDate.subtract(Duration(hours: DateTime.now().hour, minutes: DateTime.now().minute, seconds: DateTime.now().second));
-    final List<EventUsageInfo> infoList = await UsageStats.queryEvents(startDate, endDate);
+    final DateTime startDate = endDate.subtract(Duration(
+        hours: DateTime.now().hour,
+        minutes: DateTime.now().minute,
+        seconds: DateTime.now().second));
+    final List<EventUsageInfo> infoList =
+        await UsageStats.queryEvents(startDate, endDate);
     Map<String, List<List<int>>> infoList3 = {};
     String packageName = "";
     infoList.forEach((e) {
@@ -477,25 +529,38 @@ class ChildController extends GetxController {
     });
     Map<String, int> data = {};
     data[packageName] = duration;
-    return(data);
+    return (data);
   }
 
   void getAppUsageData() async {
     try {
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      Application? thisApp = await DeviceApps.getApp(packageInfo.packageName);
       final DateTime endDate = new DateTime.now();
-      final DateTime startDate = endDate.subtract(Duration(hours: DateTime.now().hour, minutes: DateTime.now().minute, seconds: DateTime.now().second));
+      DateTime startDate = endDate.subtract(Duration(
+          hours: DateTime.now().hour,
+          minutes: DateTime.now().minute,
+          seconds: DateTime.now().second));
+      final DateTime installDate = thisApp != null
+          ? DateTime.fromMillisecondsSinceEpoch(thisApp.installTimeMillis)
+          : startDate;
+
+      // Menghitung Usage dari waktu install aplikasi ini untuk hari pertama. Hapus line di bawah jika ingin dihitung dari jam 00.00 di hari tsb
+      if (installDate.compareTo(startDate) >= 0) startDate = installDate;
+
       // final DateTime startDate = DateTime(endDate.year, endDate.month, endDate.day, 0, 0, 0);
       final listAppLocal = await DeviceApps.getInstalledApplications(
           includeAppIcons: true,
           includeSystemApps: true,
           onlyAppsWithLaunchIntent: true);
-      final List<EventUsageInfo> infoList = await UsageStats.queryEvents(startDate, endDate);
+      final List<EventUsageInfo> infoList =
+          await UsageStats.queryEvents(startDate, endDate);
 
       List<dynamic> usageDataList = [];
       // final List<UsageInfo> infoList2 = await UsageStats.queryUsageStats(startDate, endDate);
       // infoList.forEach((app) {
       //   final hasData = listAppLocal.where((e) => e.packageName == app.packageName).toList();
-      //   if ((hasData.length > 0)&&(app.packageName != "com.asia.ruangortu")) {
+      //   if ((hasData.length > 0)&&(app.packageName != "com.byasia.ruangortu")) {
       //     final appName = hasData.first.appName;
       //     final cat = hasData.first.category.toString().split('.')[1];
       //     List<dynamic> usageHour = [];
@@ -540,7 +605,8 @@ class ChildController extends GetxController {
       });
       infoList3.forEach((app, e) {
         print(app);
-        final hasData = listAppLocal.where((e) => e.packageName == app).toList();
+        final hasData =
+            listAppLocal.where((e) => e.packageName == app).toList();
 
         if (hasData.length > 0) {
           final appName = hasData.first.appName;
@@ -559,9 +625,9 @@ class ChildController extends GetxController {
                 duration += val[1] - startDate.millisecondsSinceEpoch as int;
                 var usageStamp = {
                   'durationInStamp':
-                  '${val[1] - startDate.millisecondsSinceEpoch}',
+                      '${val[1] - startDate.millisecondsSinceEpoch}',
                   'lastTimeStamp':
-                  "${DateTime.fromMillisecondsSinceEpoch(val[1])}"
+                      "${DateTime.fromMillisecondsSinceEpoch(val[1])}"
                 };
                 usageHour.add(usageStamp);
                 startTime = -1;
@@ -570,7 +636,7 @@ class ChildController extends GetxController {
                 var usageStamp = {
                   'durationInStamp': '${val[1] - startTime}',
                   'lastTimeStamp':
-                  "${DateTime.fromMillisecondsSinceEpoch(val[1])}"
+                      "${DateTime.fromMillisecondsSinceEpoch(val[1])}"
                 };
                 usageHour.add(usageStamp);
                 startTime = -1;
@@ -581,7 +647,7 @@ class ChildController extends GetxController {
                     DateTime.now().millisecondsSinceEpoch - val[1] as int;
                 var usageStamp = {
                   'durationInStamp':
-                  '${DateTime.now().millisecondsSinceEpoch - val[1]}',
+                      '${DateTime.now().millisecondsSinceEpoch - val[1]}',
                   'lastTimeStamp': "${DateTime.now()}"
                 };
                 usageHour.add(usageStamp);
@@ -602,14 +668,15 @@ class ChildController extends GetxController {
         }
       });
 
-      Response response = await MediaRepository().saveChildUsage(childEmail, usageDataList);
+      Response response =
+          await MediaRepository().saveChildUsage(childEmail, usageDataList);
       if (response.statusCode == 200) {
         // print('isi response save app usage : ${response.body}');
         print('isi response save app usage : 200');
       } else {
         print('isi response save app usage : ${response.statusCode}');
       }
-    }catch (e, s) {
+    } catch (e, s) {
       print('err: $e');
       print('stk: $s');
     }
@@ -623,7 +690,8 @@ class ChildController extends GetxController {
     final locData = await location.getLocation();
     final base64Video = "data:video/mp4;base64,${base64Encode(recordAsBytes)}";
 
-    Response response = await MediaRepository().postPanicSOS(childEmail, locData, base64Video);
+    Response response =
+        await MediaRepository().postPanicSOS(childEmail, locData, base64Video);
     if (response.statusCode == 200) {
       print('isi response sentPanicSOS : ${response.body}');
     } else {
@@ -638,12 +706,13 @@ class ChildController extends GetxController {
     return ((bytes / pow(1024, i)).toStringAsFixed(2)) + ' ' + suffixes[i];
   }
 
-  void featLockScreen() async{
-    try{
+  void featLockScreen() async {
+    try {
       print("qxueryAllRowsAplikasi featLockScreen");
       var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
       if (dataAplikasiDb != null) {
-        Response response = await MediaRepository().fetchUserSchedule(dataAplikasiDb['email']);
+        Response response =
+            await MediaRepository().fetchUserSchedule(dataAplikasiDb['email']);
         // print('isi response fetch deviceUsageSchedules : ${response.body}');
         if (response.statusCode == 200) {
           var json = jsonDecode(response.body);
@@ -659,16 +728,16 @@ class ChildController extends GetxController {
           featStatusLockScreen(lockStatus);
         }
       }
-    }catch(e){
+    } catch(e) {
       print(e);
     }
   }
 
   void featStatusLockScreen(String lockStatus) async{
-    try{
+    try {
       print("featStatusLockScreen qxueryAllRowsAplikasi");
       var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
-      if(lockStatus != null && lockStatus.isNotEmpty){
+      if (lockStatus != null && lockStatus.isNotEmpty) {
         if (dataAplikasiDb != null) {
           Map<String, dynamic> dataAplikasi = new Map();
           dataAplikasi['idUsage'] = dataAplikasiDb['_id'];
@@ -679,21 +748,23 @@ class ChildController extends GetxController {
           await AplikasiDB.instance.deleteAllData();
           AplikasiDB.instance.insertData(dataAplikasi);
         }
-      }else{
+      } else {
         if (dataAplikasiDb != null) {
-          Response response = await MediaRepository().fetchModeLock(dataAplikasiDb['email']);
+          Response response =
+              await MediaRepository().fetchModeLock(dataAplikasiDb['email']);
           print('isi response fetch featStatusLockScreen : ${response.body}');
           if (response.statusCode == 200) {
             var json = jsonDecode(response.body);
-            if(json['resultData'] != null){
+            if (json['resultData'] != null) {
               var result = json['resultData'];
-              if(result['lockStatus'] != null){
+              if (result['lockStatus'] != null) {
                 Map<String, dynamic> dataAplikasi = new Map();
                 dataAplikasi['idUsage'] = dataAplikasiDb['_id'];
                 dataAplikasi['email'] = dataAplikasiDb['email'];
                 dataAplikasi['dataAplikasi'] = dataAplikasiDb['dataAplikasi'];
                 dataAplikasi['kunciLayar'] = dataAplikasiDb['kunciLayar'];
-                dataAplikasi['modekunciLayar'] = result['lockStatus'].toString();
+                dataAplikasi['modekunciLayar'] =
+                    result['lockStatus'].toString();
                 await AplikasiDB.instance.deleteAllData();
                 AplikasiDB.instance.insertData(dataAplikasi);
               }
@@ -701,41 +772,44 @@ class ChildController extends GetxController {
           }
         }
       }
-    }catch(e){
+    } catch (e) {
       print(e);
     }
   }
 
-  void featAppModeAsuh(String listDataApp) async{
-    try{
+  void featAppModeAsuh(String listDataApp) async {
+    try {
       var dataNotif = jsonDecode(listDataApp);
       print("featAppModeAsuh qxueryAllRowsAplikasi");
       var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
       if (dataAplikasiDb != null) {
         List<Map<String, dynamic>> listDataAplikasi = [];
-        List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(jsonDecode(dataAplikasiDb['dataAplikasi']).map((x) => AplikasiDataUsage.fromJson(x)));
-        if(values.length>0){
-          for(var i=0; i<values.length; i++){
-            if(dataNotif['appCategoryBlocked'] != null){
+        List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(
+            jsonDecode(dataAplikasiDb['dataAplikasi'])
+                .map((x) => AplikasiDataUsage.fromJson(x)));
+        if (values.length > 0) {
+          for (var i = 0; i < values.length; i++) {
+            if (dataNotif['appCategoryBlocked'] != null) {
               List<dynamic> kategoryMode = dataNotif['appCategoryBlocked'];
-              if(kategoryMode.length>0){
-                for(var j=0; j<kategoryMode.length; j++){
-                  if(values[i].appCategory.toString().toLowerCase() == kategoryMode[j].toLowerCase()){
+              if (kategoryMode.length > 0) {
+                for (var j = 0; j < kategoryMode.length; j++) {
+                  if (values[i].appCategory.toString().toLowerCase() ==
+                      kategoryMode[j].toLowerCase()) {
                     values[i].blacklist = 'true';
                     values[i].limit = '0';
                     listDataAplikasi.add(values[i].toJson());
-                  }else{
+                  } else {
                     values[i].blacklist = 'false';
                     values[i].limit = '0';
                     listDataAplikasi.add(values[i].toJson());
                   }
                 }
-              }else{
+              } else {
                 values[i].blacklist = 'false';
                 values[i].limit = '0';
                 listDataAplikasi.add(values[i].toJson());
               }
-            }else{
+            } else {
               values[i].blacklist = 'false';
               values[i].limit = '0';
               listDataAplikasi.add(values[i].toJson());
@@ -751,9 +825,7 @@ class ChildController extends GetxController {
         await AplikasiDB.instance.deleteAllData();
         AplikasiDB.instance.insertData(dataAplikasi);
       }
-    }catch(e){
-
-    }
+    } catch (e) {}
   }
 
   void fetchAppList(String listDataApp) async {
@@ -762,14 +834,20 @@ class ChildController extends GetxController {
     var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
     if (dataAplikasiDb != null && dataAplikasiDb['dataAplikasi'] != null) {
       List<Map<String, dynamic>> listDataAplikasi = [];
-      List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(jsonDecode(dataAplikasiDb['dataAplikasi']).map((x) => AplikasiDataUsage.fromJson(x)));
-      if(values.length>0){
-        for(var i=0; i<values.length; i++){
-          if(values[i].packageId == dataNotif['packageId']){
-            values[i].blacklist = (dataNotif['blacklist'] != null)?dataNotif['blacklist'].toString():'false';
-            values[i].limit = (dataNotif['limit'] != null)?dataNotif['limit'].toString():'0';
+      List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(
+          jsonDecode(dataAplikasiDb['dataAplikasi'])
+              .map((x) => AplikasiDataUsage.fromJson(x)));
+      if (values.length > 0) {
+        for (var i = 0; i < values.length; i++) {
+          if (values[i].packageId == dataNotif['packageId']) {
+            values[i].blacklist = (dataNotif['blacklist'] != null)
+                ? dataNotif['blacklist'].toString()
+                : 'false';
+            values[i].limit = (dataNotif['limit'] != null)
+                ? dataNotif['limit'].toString()
+                : '0';
             listDataAplikasi.add(values[i].toJson());
-          }else{
+          } else {
             listDataAplikasi.add(values[i].toJson());
           }
         }
@@ -785,13 +863,12 @@ class ChildController extends GetxController {
       AplikasiDB.instance.reNewData(dataAplikasi);
     }else{
       AplikasiDataUsage dataUsage = new AplikasiDataUsage(
-        limit: dataNotif['limit'].toString(),
-        appCategory: dataNotif['appCategory'].toString(),
-        appName: dataNotif['appName'].toString(),
-        blacklist: dataNotif['blacklist'].toString(),
-        packageId: dataNotif['packageId'].toString(),
-        date: now_ddMMMMyyyy()
-      );
+          limit: dataNotif['limit'].toString(),
+          appCategory: dataNotif['appCategory'].toString(),
+          appName: dataNotif['appName'].toString(),
+          blacklist: dataNotif['blacklist'].toString(),
+          packageId: dataNotif['packageId'].toString(),
+          date: now_ddMMMMyyyy());
       List<Map<String, dynamic>> listDataAplikasi = [];
       listDataAplikasi.add(dataUsage.toJson());
       Map<String, dynamic> dataAplikasi = new Map();
@@ -806,19 +883,19 @@ class ChildController extends GetxController {
     }
   }
 
-  void fetchDataApp() async{
-    if(childEmail!=null && childEmail.isNotEmpty){
+  void fetchDataApp() async {
+    if (childEmail != null && childEmail.isNotEmpty) {
       childEmail = childEmail;
-    }else{
+    } else {
       print("fxetchDataApp qxueryAllRowsAplikasi");
       var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
-      if(dataAplikasiDb!= null){
-        if(dataAplikasiDb['email']!=null && dataAplikasiDb['email'] != '') {
+      if (dataAplikasiDb != null) {
+        if (dataAplikasiDb['email'] != null && dataAplikasiDb['email'] != '') {
           childEmail = dataAplikasiDb['email'];
         }
       }
     }
-    if(childEmail!=null && childEmail.isNotEmpty) {
+    if (childEmail != null && childEmail.isNotEmpty) {
       print('EMAIL : ' + childEmail);
       Response response = await MediaRepository().fetchAppList(childEmail);
       if (response.statusCode == 200) {
@@ -832,8 +909,8 @@ class ChildController extends GetxController {
               List<Map<String, dynamic>> dataList = [];
 
               List<ApplicationInstalled> dataAppsInstalled =
-              List<ApplicationInstalled>.from(
-                  tmpData.map((model) => ApplicationInstalled.fromJson(model)));
+                  List<ApplicationInstalled>.from(tmpData
+                      .map((model) => ApplicationInstalled.fromJson(model)));
 
               for (int i = 0; i < dataAppsInstalled.length; i++) {
                 Map<String, dynamic> dataAplikasi = {
@@ -847,8 +924,8 @@ class ChildController extends GetxController {
                 };
                 dataList.add(dataAplikasi);
               }
-              print("fxetchDataApp2 qxueryAllRowsAplikasi");
-              var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
+              var dataAplikasiDb =
+                  await AplikasiDB.instance.queryAllRowsAplikasi();
               if (dataAplikasiDb != null) {
                 // await AplikasiDB.instance.deleteAllData();
                 Map<String, dynamic> dataAplikasi = new Map();

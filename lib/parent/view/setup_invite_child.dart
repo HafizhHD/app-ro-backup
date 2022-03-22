@@ -13,13 +13,12 @@ import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum StatusStudyLevel { SD, SMP, SMA }
-enum userTypes { Parent, Child}
-
 class SetupInviteChildPage extends StatefulWidget {
   final String? address;
-  final String? userType;
+  final String? userTypeStr;
 
-  const SetupInviteChildPage({Key? key, this.address, this.userType}) : super(key: key);
+  const SetupInviteChildPage({Key? key, this.address, this.userTypeStr})
+      : super(key: key);
   @override
   _SetupInviteChildPageState createState() => _SetupInviteChildPageState();
 }
@@ -36,7 +35,6 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
   String emailUser = '';
   String nameUser = '';
   String cAddress = '';
-  userTypes? userType = userTypes.Parent;
   late FToast fToast;
   String birthDateString = '';
   DateTime birthDate = DateTime.now().subtract(Duration(days: 365 * 5));
@@ -52,8 +50,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
   void onInviteChild() async {
     showLoadingOverlay();
     String status = "SD";
-    String userTypeString = 'parent';
-    if(userType.toString() == "userTypes.Child") userTypeString = 'child';
+    String userTypeString = widget.userTypeStr!;
     await prefs.setString("rkChildName", cChildName.text);
     final Uint8List? _imageBytes =
         _selectedImage != null ? _selectedImage!.readAsBytesSync() : null;
@@ -190,7 +187,6 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final borderRadiusSize = Radius.circular(10);
-
     cAddress = widget.address!;
     return Scaffold(
         appBar: AppBar(
@@ -255,50 +251,6 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                         ),
                       ),
                       Container(
-                        margin: EdgeInsets.only(top: 15.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Container(
-                              margin: EdgeInsets.only(right: 20.0),
-                              child: Row(
-                                children: [
-                                  Radio(
-                                    value: userTypes.Parent,
-                                    groupValue: userType,
-                                    activeColor: Colors.white,
-                                    onChanged: (userTypes? value) {
-                                      setState(() {
-                                        userType = value;
-                                      });
-                                    },
-                                  ),
-                                  Text('Parent', style: TextStyle(color: Colors.white, fontSize: 16)),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              margin: EdgeInsets.only(right: 20.0),
-                              child: Row(
-                                children: [
-                                  Radio(
-                                    value: userTypes.Child,
-                                    groupValue: userType,
-                                    activeColor: Colors.white,
-                                    onChanged: (userTypes? value) {
-                                      setState(() {
-                                        userType = value;
-                                      });
-                                    },
-                                  ),
-                                  Text('Child', style: TextStyle(color: Colors.white, fontSize: 16)),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
                         margin: const EdgeInsets.only(top: 30.0, bottom: 10),
                         child: Theme(
                           data: Theme.of(context)
@@ -309,9 +261,9 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                               return null;
                             },
                             autovalidateMode:
-                            AutovalidateMode.onUserInteraction,
+                                AutovalidateMode.onUserInteraction,
                             style:
-                            TextStyle(fontSize: 16.0, color: Colors.black),
+                                TextStyle(fontSize: 16.0, color: Colors.black),
                             keyboardType: TextInputType.text,
                             minLines: 1,
                             maxLines: 1,
@@ -349,9 +301,9 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                               return null;
                             },
                             autovalidateMode:
-                            AutovalidateMode.onUserInteraction,
+                                AutovalidateMode.onUserInteraction,
                             style:
-                            TextStyle(fontSize: 16.0, color: Colors.black),
+                                TextStyle(fontSize: 16.0, color: Colors.black),
                             keyboardType: TextInputType.emailAddress,
                             minLines: 1,
                             maxLines: 1,
@@ -504,23 +456,23 @@ class InviteChildQR extends StatelessWidget {
       this.prefs})
       : super(key: key);
 
-  void onInviteChild(
+  void onReInviteChild(
       oAllData, oShowToastSuccess, oShowToastFailed, oPrefs) async {
     showLoadingOverlay();
     await oPrefs.setString("rkChildName", oAllData[3]!);
     Response response = await MediaRepository().inviteChild(
-        oAllData[0],
-        oAllData[1],
-        oAllData[2],
-        oAllData[3],
-        oAllData[4],
-        oAllData[5],
-        oAllData[6],
-        oAllData[7],
-        oAllData[8],
-        oAllData[9],
-        oAllData[10],
-        oAllData[11],
+      oAllData[0],
+      oAllData[1],
+      oAllData[2],
+      oAllData[3],
+      oAllData[4],
+      oAllData[5],
+      oAllData[6],
+      oAllData[7],
+      oAllData[8],
+      oAllData[9],
+      oAllData[10],
+      oAllData[11],
     );
     print('isi response invite : ${response.body}');
     if (response.statusCode == 200) {
@@ -587,7 +539,7 @@ class InviteChildQR extends StatelessWidget {
                     borderRadius: new BorderRadius.circular(15.0),
                   ),
                   onPressed: () {
-                    onInviteChild(
+                    onReInviteChild(
                         allData, showToastSuccess, showToastFailed, prefs);
                   },
                   color: cOrtuBlue,

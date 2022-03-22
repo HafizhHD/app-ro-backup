@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/utils/rk_webview.dart';
+import 'package:ruangkeluarga/parent/view/inbox/inbox_page_detail.dart';
 
 class InboxPage extends StatelessWidget {
   @override
@@ -19,9 +20,10 @@ class InboxPage extends StatelessWidget {
           builder: (controller) => RefreshIndicator(
             onRefresh: () => controller.getInboxNotif(),
             child: controller.inboxData.length > 0
-                ? _body(controller)
+                ? _body(context, controller)
                 : Center(
-                    child: Text('Inbox Kosong', style: TextStyle(color: cOrtuWhite)),
+                    child: Text('Inbox Kosong',
+                        style: TextStyle(color: cOrtuWhite)),
                   ),
           ),
         ),
@@ -29,7 +31,7 @@ class InboxPage extends StatelessWidget {
     );
   }
 
-  Widget _body(ParentController controller) {
+  Widget _body(BuildContext context, ParentController controller) {
     final inbox = controller.inboxData;
     return Container(
       child: ListView.builder(
@@ -43,7 +45,9 @@ class InboxPage extends StatelessWidget {
               return await controller.deleteNotif(notifData.id);
             },
             child: Container(
-              decoration: BoxDecoration(color: cOrtuGrey, borderRadius: BorderRadius.all(Radius.circular(15))),
+              decoration: BoxDecoration(
+                  color: cOrtuGrey,
+                  borderRadius: BorderRadius.all(Radius.circular(15))),
               margin: EdgeInsets.all(5),
               padding: EdgeInsets.only(top: 5, bottom: 2),
               child: ListTile(
@@ -51,14 +55,20 @@ class InboxPage extends StatelessWidget {
                   showLoadingOverlay();
                   await controller.readNotifByID(notifData.id, idx);
                   closeOverlay();
-                  final String videoUrl = notifData.message.videoUrl != null ? notifData.message.videoUrl.toString() : "";
-                  if (videoUrl != '') {
-                    showUrl(videoUrl, "Panic Video");
-                  }
+                  // final String videoUrl = notifData.message.videoUrl != null ? notifData.message.videoUrl.toString() : "";
+                  // if (videoUrl != '') {
+                  //   showUrl(videoUrl, "Panic Video");
+                  // }
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          InboxDetail(inboxNotif: notifData)));
                 },
                 title: Text(
                   notifData.message.message,
-                  style: TextStyle(fontWeight: notifData.readStatus ? FontWeight.normal : FontWeight.bold),
+                  style: TextStyle(
+                      fontWeight: notifData.readStatus
+                          ? FontWeight.normal
+                          : FontWeight.bold),
                 ),
                 subtitle: Text('\n${dateFormat_EDMYHM(notifData.createAt)}'),
               ),

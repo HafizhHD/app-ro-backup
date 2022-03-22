@@ -61,11 +61,12 @@ class _ParentMainState extends State<ParentMain> {
             notification.title,
             notification.body,
             NotificationDetails(
-              android: AndroidNotificationDetails(channel.id, channel.name,
+              android: AndroidNotificationDetails(
+                  channel.id, channel.name,
                   channelDescription: channel.description,
                   icon: 'launch_background',
-                  styleInformation: BigTextStyleInformation(
-                      message.data['body'].toString())),
+                  styleInformation:
+                      BigTextStyleInformation(notification.body.toString())),
             ));
       }
     });
@@ -75,7 +76,8 @@ class _ParentMainState extends State<ParentMain> {
     prefs = await SharedPreferences.getInstance();
     var outputFormat = DateFormat('yyyy-MM-dd');
     var outputDate = outputFormat.format(DateTime.now());
-    Response response = await MediaRepository().fetchAppUsageFilter(prefs.getString("rkChildEmail").toString(), outputDate);
+    Response response = await MediaRepository().fetchAppUsageFilter(
+        prefs.getString("rkChildEmail").toString(), outputDate);
     if (response.statusCode == 200) {
       // print('isi response filter app usage : ${response.body}');
       var json = jsonDecode(response.body);
@@ -146,8 +148,10 @@ class _ParentMainState extends State<ParentMain> {
               )
             ],
           ),
-          drawer: ParentDrawer(userMail: controller.emailUser, userName: controller.userName),
-          body: Obx(() => ChosenPage(bottomNavIndex: controller.bottomNavIndex)),
+          drawer: ParentDrawer(
+              userMail: controller.emailUser, userName: controller.userName),
+          body:
+              Obx(() => ChosenPage(bottomNavIndex: controller.bottomNavIndex)),
           bottomNavigationBar: _bottomAppBar(),
           floatingActionButton: Visibility(
             visible: !showKeyboard(context),
@@ -157,7 +161,9 @@ class _ParentMainState extends State<ParentMain> {
               child: Obx(
                 () => FloatingActionButton(
                   elevation: 0,
-                  backgroundColor: controller.bottomNavIndex == 2 ? cOrtuOrange : Colors.black54,
+                  backgroundColor: controller.bottomNavIndex == 2
+                      ? cOrtuOrange
+                      : Colors.black54,
                   child: Container(
                     margin: EdgeInsets.all(8),
                     decoration: BoxDecoration(
@@ -172,7 +178,8 @@ class _ParentMainState extends State<ParentMain> {
               ),
             ),
           ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
         ),
       ),
     );
@@ -199,7 +206,9 @@ class _ParentMainState extends State<ParentMain> {
                 position: BadgePosition.topEnd(end: 0),
                 showBadge: controller.unreadNotif > 0 ? true : false,
                 badgeContent: Text(
-                  controller.unreadNotif > 99 ? '99+' : controller.unreadNotif.toString(),
+                  controller.unreadNotif > 99
+                      ? '99+'
+                      : controller.unreadNotif.toString(),
                   style: TextStyle(fontSize: 10),
                 ),
                 child: IconWithLabel(
@@ -228,11 +237,8 @@ class _ParentMainState extends State<ParentMain> {
                 activeIcon: Icons.help,
                 label: 'Bantuan',
                 isSelected: controller.bottomNavIndex == 5,
-                onPressed: () => {
-                  showFAQ(),
-                  controller.setBottomNavIndex(5)
-                }),
-                // onPressed: () => showFAQ()),
+                onPressed: () => {showFAQ(), controller.setBottomNavIndex(5)}),
+            // onPressed: () => showFAQ()),
           ],
         ),
       ),
@@ -254,6 +260,7 @@ class ChosenPage extends StatelessWidget {
         return new InboxPage();
       // return new AddonPage();
       case 2:
+        Get.find<ParentController>().getParentChildData();
         return new HomeParentPage();
       case 3:
         return new JadwalPage();
@@ -297,9 +304,13 @@ class IconWithLabel extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Flexible(child: Icon(isSelected ? activeIcon : defaultIcon, color: isSelected ? activeColor : defaultColor)),
+              Flexible(
+                  child: Icon(isSelected ? activeIcon : defaultIcon,
+                      color: isSelected ? activeColor : defaultColor)),
               SizedBox(height: 4),
-              Text(label, style: TextStyle(color: isSelected ? activeColor : defaultColor))
+              Text(label,
+                  style:
+                      TextStyle(color: isSelected ? activeColor : defaultColor))
             ],
           ),
         ),

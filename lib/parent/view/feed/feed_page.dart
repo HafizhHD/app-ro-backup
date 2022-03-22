@@ -16,47 +16,98 @@ class FeedPage extends GetView<FeedController> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Container(
-          //   constraints: BoxConstraints(
-          //     maxHeight: screenSize.height / 6,
-          //     maxWidth: screenSize.width - 20,
-          //   ),
-          //   child: ListView.builder(
-          //     shrinkWrap: true,
-          //     scrollDirection: Axis.horizontal,
-          //     itemCount: 10,
-          //     itemBuilder: (context, index) {
-          //       return roundAddonAvatar(imgUrl: 'assets/images/hkbpgo.png', addonName: 'HKBP GO $index');
-          //     },
-          //   ),
-          // ),
+          // DIHILANGKAN DI APLIKASI KELUARGA HKBP ==
+          FutureBuilder<bool>(
+              future: controller.fGetListCoBrand,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) return wProgressIndicator();
+                return GetBuilder<FeedController>(builder: (builderCtrl) {
+                  return Container(
+                    constraints: BoxConstraints(
+                      maxHeight: screenSize.height / 7,
+                      maxWidth: screenSize.width - 20,
+                    ),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: builderCtrl.listCoBrand.length,
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                            child: Card(
+                                color: builderCtrl.selectedCoBrand == index
+                                    ? cOrtuBlue
+                                    : Colors.transparent,
+                                child: roundAddonAvatar(
+                                    imgUrl: builderCtrl
+                                        .listCoBrand[index].thumbnail ??
+                                        'assets/images/hkbpgo.png',
+                                    // imgUrl: 'assets/images/hkbpgo.png',
+                                    addonName:
+                                        builderCtrl.listCoBrand[index].name,
+                                    isSelected: true)),
+                            onTap: () async {
+                              showLoadingOverlay();
+                              if (builderCtrl.selectedCoBrand == index) {
+                                builderCtrl.selectedCoBrand = -1;
+                                await builderCtrl.getContents(
+                                    refresh: true, cobrand: 'all');
+                              } else {
+                                builderCtrl.selectedCoBrand = index;
+                                await builderCtrl.getContents(
+                                    refresh: true,
+                                    cobrand:
+                                        builderCtrl.listCoBrand[index].email);
+                              }
+                              closeOverlay();
+                            });
+                      },
+                    ),
+                  );
+                });
+              }),
+          // SAMPAI SINI ==
           Container(
             padding: EdgeInsets.only(top: 10, bottom: 10),
             child: WSearchBar(
-              hintText: 'Search by name',
-              fOnChanged: (text) {
-                controller.setSearchData(text);
-              },
-            ),
+                hintText: 'Search by name',
+                fOnSubmitted: (text) {
+                  controller.setSearchData(text);
+                },
+                tecController: TextEditingController(text: controller.search)),
           ),
           Flexible(
             flex: 4,
             child: FutureBuilder<bool>(
-                future: controller.fGetList,
+                future: controller.fGetListContent,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) return wProgressIndicator();
                   return RefreshIndicator(
-                    onRefresh: () => controller.getContents(),
+                    onRefresh: () => controller.getContents(refresh: true),
                     child: Container(
                       padding: EdgeInsets.all(5),
                       child: GetBuilder<FeedController>(
                         builder: (builderCtrl) {
-                          return ListView.separated(
-                            shrinkWrap: true,
-                            itemCount: builderCtrl.listSearchContent.length,
-                            itemBuilder: (context, index) => feedContainer(builderCtrl.listSearchContent[index]),
-                            separatorBuilder: (ctx, idx) => Divider(color: cOrtuGrey),
-                          );
+                          if (builderCtrl.listSearchContent.length == 0)
+                            return Center(
+                                child: Text('Tidak ada konten',
+                                    style: TextStyle(color: cOrtuWhite)));
+                          else
+                            return ListView.separated(
+                              controller: builderCtrl.scrollController,
+                              shrinkWrap: true,
+                              itemCount: builderCtrl.isThereMore
+                                  ? builderCtrl.listSearchContent.length + 1
+                                  : builderCtrl.listSearchContent.length,
+                              itemBuilder: (context, index) =>
+                                  index < builderCtrl.listSearchContent.length
+                                      ? feedContainer(
+                                          builderCtrl.listSearchContent[index])
+                                      : builderCtrl.isThereMore
+                                          ? wProgressIndicator()
+                                          : Container(),
+                              separatorBuilder: (ctx, idx) =>
+                                  Divider(color: cOrtuGrey),
+                            );
                         },
                       ),
                     ),
@@ -71,49 +122,60 @@ class FeedPage extends GetView<FeedController> {
   Widget feedContainer(ContentModel data) {
     final textColor = cOrtuWhite;
     return InkWell(
-      child: Container(
-        margin: EdgeInsets.only(top: 5, bottom: 5),
-        child: Row(
-          children: [
-            data.contentThumbnail != null ? imgContainer(data.contentThumbnail!) : SizedBox(),
-            Flexible(
-                flex: 3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.only(bottom: 5, left: 10),
-                      child: Text(data.coBrandEmail, style: TextStyle(fontSize: 10, color: textColor)),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(bottom: 2, left: 10),
-                      child: Text(data.contentName, style: TextStyle(fontSize: 14, color: textColor, fontWeight: FontWeight.bold)),
-                    ),
-                    // Container(
-                    //   padding: EdgeInsets.only(bottom: 2),
-                    //   child: Text(data.contentDescription, textAlign: TextAlign.justify, style: TextStyle(color: cOrtuGrey)),
-                    // ),
-                    Container(
-                      padding: EdgeInsets.only(bottom: 2, right: 10, left: 10),
-                      child: Text('\n${dateFormat_EDMYHM(data.dateCreated)}', style: TextStyle(fontSize: 10, color: textColor)),
-                    ),
-                  ],
-                )),
-          ],
+        child: Container(
+          margin: EdgeInsets.only(top: 5, bottom: 5),
+          child: Row(
+            children: [
+              data.contentThumbnail != null
+                  ? imgContainer(data.contentThumbnail!)
+                  : SizedBox(),
+              Flexible(
+                  flex: 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(bottom: 5, left: 10),
+                        child: Text(data.coBrandEmail,
+                            style: TextStyle(fontSize: 10, color: textColor)),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(bottom: 2, left: 10),
+                        child: Text(data.contentName,
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: textColor,
+                                fontWeight: FontWeight.bold)),
+                      ),
+                      // Container(
+                      //   padding: EdgeInsets.only(bottom: 2),
+                      //   child: Text(data.contentDescription, textAlign: TextAlign.justify, style: TextStyle(color: cOrtuGrey)),
+                      // ),
+                      Container(
+                        padding:
+                            EdgeInsets.only(bottom: 2, right: 10, left: 10),
+                        child: Text('\n${dateFormat_EDMY(data.startDate)}',
+                            style: TextStyle(fontSize: 10, color: textColor)),
+                      ),
+                    ],
+                  )),
+            ],
+          ),
         ),
-      ),
-        onTap: (){
-          if(data.contentType == ContentType.artikel) {
+        onTap: () {
+          if (data.contentType == ContentType.artikel) {
             String imgData = '';
             imgData = data.contentThumbnail!;
-            showContent(data.contents, data.contentName, imgData, '', data.contentSource);
+            showContent(data.contents, data.contentName, imgData, '',
+                data.contentSource);
           } else if (data.contentType == ContentType.video) {
-            showContent(data.contents, data.contentName, '', data.contentDescription, data.contentSource);
+            showContent(data.contents, data.contentName, '',
+                data.contentDescription, data.contentSource);
           } else {
-            showContent(data.contents, data.contentName, '', '', data.contentSource);
+            showContent(
+                data.contents, data.contentName, '', '', data.contentSource);
           }
-        }
-    );
+        });
   }
 
   Widget imgContainer(String imgUrl) {
@@ -123,19 +185,19 @@ class FeedPage extends GetView<FeedController> {
     Image image = Image.memory(_bytesImage);
     return imgUrl.contains('data')
         ? ConstrainedBox(
-      constraints: BoxConstraints(
-        maxWidth: 100,
-      ),
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(image: image.image, fit: BoxFit.cover),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-        ),
-      ),
-    )
+            constraints: BoxConstraints(
+              maxWidth: 100,
+            ),
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(image: image.image, fit: BoxFit.cover),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+          )
         : SizedBox();
     // return imgUrl.contains('http')
     //     ? ConstrainedBox(
@@ -155,24 +217,38 @@ class FeedPage extends GetView<FeedController> {
     //     : SizedBox();
   }
 
-  Widget roundAddonAvatar({
-    required String imgUrl,
-    required String addonName,
-  }) {
+  Widget roundAddonAvatar(
+      {
+        required String imgUrl,
+        required String addonName,
+        bool isSelected = false}) {
+    var dataImage = imgUrl.split(",");
+    Uint8List _bytesImage;
+    _bytesImage = dataImage.length > 1
+        ? Base64Decoder().convert(dataImage[1])
+        : Base64Decoder().convert('');
+    Image image = Image.memory(_bytesImage);
     return Container(
+      //color: isSelected ? cOrtuBlue : Colors.transparent,
       margin: EdgeInsets.all(10),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           CircleAvatar(
-            radius: 40,
-            backgroundImage: AssetImage('$imgUrl'),
+            radius: 30,
+            backgroundImage: imgUrl == 'assets/images/hkbpgo.png'
+                ? AssetImage('$imgUrl')
+                : image.image,
           ),
           Padding(
             padding: EdgeInsets.only(top: 10),
             child: Text(
-              '$addonName',
-              style: TextStyle(color: cOrtuWhite),
+              addonName == null
+                  ? ''
+                  : addonName.length >= 12
+                      ? '${addonName.substring(0, 9)}...'
+                      : addonName,
+              style: TextStyle(fontSize: 10, color: cOrtuWhite),
             ),
           )
         ],

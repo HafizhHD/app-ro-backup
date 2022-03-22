@@ -108,71 +108,76 @@ class _HomeParentPageState extends State<HomeParentPage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done)
             return wProgressIndicator();
-          return SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                // Flexible(
-                //   flex: 1,
-                //   child: Container(
-                //     margin: const EdgeInsets.all(10.0), //Same as `blurRadius` i guess
-                //     child: ListView.builder(
-                //       padding: EdgeInsets.all(5.0),
-                //       shrinkWrap: false,
-                //       scrollDirection: Axis.horizontal,
-                //       itemCount: 2,
-                //       itemBuilder: (BuildContext context, int index) => Card(
-                //         shape: RoundedRectangleBorder(
-                //           borderRadius: BorderRadius.circular(10.0),
-                //         ),
-                //         child: GestureDetector(
-                //           child: Row(
-                //             children: [
-                //               Container(
-                //                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0)),
-                //                 // child: Center(child: Text('Dummy Card Text', style: TextStyle(color: Colors.black)))
-                //                 child: Image.asset('assets/images/hkbpgo.png'),
-                //               ),
-                //             ],
-                //           ),
-                //           onTap: () => parentController.setBottomNavIndex(1),
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                Container(
-                  constraints: BoxConstraints(
-                      maxHeight: screenSize.height / 3,
-                      maxWidth: screenSize.width),
-                  child: _childDataLayout(),
+          return RefreshIndicator(
+              onRefresh: () async {
+                await parentController.getParentChildData();
+              },
+              child: SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    // Flexible(
+                    //   flex: 1,
+                    //   child: Container(
+                    //     margin: const EdgeInsets.all(10.0), //Same as `blurRadius` i guess
+                    //     child: ListView.builder(
+                    //       padding: EdgeInsets.all(5.0),
+                    //       shrinkWrap: false,
+                    //       scrollDirection: Axis.horizontal,
+                    //       itemCount: 2,
+                    //       itemBuilder: (BuildContext context, int index) => Card(
+                    //         shape: RoundedRectangleBorder(
+                    //           borderRadius: BorderRadius.circular(10.0),
+                    //         ),
+                    //         child: GestureDetector(
+                    //           child: Row(
+                    //             children: [
+                    //               Container(
+                    //                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0)),
+                    //                 // child: Center(child: Text('Dummy Card Text', style: TextStyle(color: Colors.black)))
+                    //                 child: Image.asset('assets/images/hkbpgo.png'),
+                    //               ),
+                    //             ],
+                    //           ),
+                    //           onTap: () => parentController.setBottomNavIndex(1),
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                    Container(
+                      constraints: BoxConstraints(
+                          maxHeight: screenSize.height / 3,
+                          maxWidth: screenSize.width),
+                      child: _childDataLayout(),
+                    ),
+                    // Flexible(
+                    //   flex: 2,
+                    //   child: ListView.builder(
+                    //     physics: BouncingScrollPhysics(),
+                    //     scrollDirection: Axis.horizontal,
+                    //     itemCount: _ids.length,
+                    //     itemBuilder: (BuildContext context, int position) {
+                    //       return Container(
+                    //         width: screenSize.width / 2,
+                    //         height: screenSize.height / 4,
+                    //         color: Colors.transparent,
+                    //         margin: const EdgeInsets.all(10),
+                    //         child: _coBrandContent(
+                    //           _ids[position],
+                    //           'Title Here',
+                    //           'Content: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                    //           () {},
+                    //           screenSize.height / 4 / 2,
+                    //         ),
+                    //       );
+                    //     },
+                    //   ),
+                    // ),
+                  ],
                 ),
-                // Flexible(
-                //   flex: 2,
-                //   child: ListView.builder(
-                //     physics: BouncingScrollPhysics(),
-                //     scrollDirection: Axis.horizontal,
-                //     itemCount: _ids.length,
-                //     itemBuilder: (BuildContext context, int position) {
-                //       return Container(
-                //         width: screenSize.width / 2,
-                //         height: screenSize.height / 4,
-                //         color: Colors.transparent,
-                //         margin: const EdgeInsets.all(10),
-                //         child: _coBrandContent(
-                //           _ids[position],
-                //           'Title Here',
-                //           'Content: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                //           () {},
-                //           screenSize.height / 4 / 2,
-                //         ),
-                //       );
-                //     },
-                //   ),
-                // ),
-              ],
-            ),
-          );
+              ));
         });
   }
 
@@ -299,7 +304,8 @@ class _HomeParentPageState extends State<HomeParentPage> {
                                   builder: (BuildContext context) =>
                                       SetupInviteChildPage(
                                           address: parentController
-                                              .parentProfile.address!, userType: "child")),
+                                              .parentProfile.address!,
+                                          userTypeStr: "child")),
                             );
                             print('Add Child Response: $res');
                             if (res.toString().toLowerCase() == 'addchild')
@@ -323,7 +329,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
                 return ListView.builder(
                     // physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    scrollDirection: Axis.horizontal, //Ruang ORTU by ASIA kebawah
+                    scrollDirection: Axis.horizontal,
                     itemCount: childsList.length,
                     itemBuilder: (BuildContext context, int index) {
                       parentController.setModeAsuh(
@@ -415,14 +421,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                 padding: EdgeInsets.all(0),
                 icon: Icon(Icons.add_circle_outline_rounded),
                 onPressed: () async {
-                  final res = await Navigator.push(
-                    context,
-                    MaterialPageRoute<Object>(
-                        builder: (BuildContext context) => SetupInviteChildPage(
-                            address: parentController.parentProfile.address!, userType: "Child")),
-                  );
-                  print('Add Child Response: $res');
-                  if (res.toString().toLowerCase() == 'addchild') onAddChild();
+                  showSelectUserType(context);
                 },
               ),
             ),
@@ -483,112 +482,100 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                 Container(
                                   margin: EdgeInsets.only(
                                       left: 10, top: 5, bottom: 5, right: 10),
-                                  child: GetBuilder<ParentController>(
-                                    builder: (ctrl) {
-                                      final thisScreenTime = ctrl
-                                          .mapChildScreentime[childData.email];
-                                      final thisSTGaming = ctrl.mapChildScreentimeGaming[childData.email];
-                                      final thisSTSocial = ctrl.mapChildScreentimeSocial[childData.email];
-                                      return Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          contentTime('Screen Time',
-                                              thisScreenTime ?? '00:00'),
-                                          contentTime('Gaming', thisSTGaming ?? '00:00'),
-                                          contentTime('Social Media', thisSTSocial ?? '00:00'),
-                                        ],
-                                      );
-                                    },
-                                  ),
+                                  child: childData.status == 'invitation'
+                                      ? Text(
+                                          'Menunggu Aktivasi',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20),
+                                        )
+                                      : GetBuilder<ParentController>(
+                                          builder: (ctrl) {
+                                            final thisScreenTime =
+                                                ctrl.mapChildScreentime[
+                                                    childData.email];
+                                            final thisSTGaming =
+                                                ctrl.mapChildScreentimeGaming[
+                                                    childData.email];
+                                            final thisSTSocial =
+                                                ctrl.mapChildScreentimeSocial[
+                                                    childData.email];
+                                            return Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                contentTime('Screen Time',
+                                                    thisScreenTime ?? '00:00'),
+                                                contentTime('Gaming',
+                                                    thisSTGaming ?? '00:00'),
+                                                contentTime('Social Media',
+                                                    thisSTSocial ?? '00:00'),
+                                              ],
+                                            );
+                                          },
+                                        ),
                                 ),
-                                Container(
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      // GetBuilder<ParentController>(builder: (ctrl) {
-                                      //   return Row(
-                                      //     children: [
-                                      //       GestureDetector(
-                                      //         onTap: () => ctrl.setModeAsuh(childData.childOfNumber ?? 0, 1),
-                                      //         child: Icon(
-                                      //           ctrl.getmodeAsuh(childData.childOfNumber ?? 0) >= 1 ? Icons.looks_one : Icons.looks_one_outlined,
-                                      //           color: cOrtuBlue,
-                                      //           size: 35,
-                                      //         ),
-                                      //       ),
-                                      //       GestureDetector(
-                                      //         onTap: () => ctrl.setModeAsuh(childData.childOfNumber ?? 0, 2),
-                                      //         child: Icon(
-                                      //           ctrl.getmodeAsuh(childData.childOfNumber ?? 0) >= 2 ? Icons.looks_two : Icons.looks_two_outlined,
-                                      //           color: cOrtuBlue,
-                                      //           size: 35,
-                                      //         ),
-                                      //       ),
-                                      //       GestureDetector(
-                                      //         onTap: () => ctrl.setModeAsuh(childData.childOfNumber ?? 0, 3),
-                                      //         child: Icon(
-                                      //           ctrl.getmodeAsuh(childData.childOfNumber ?? 0) == 3 ? Icons.looks_3 : Icons.looks_3_outlined,
-                                      //           color: cOrtuBlue,
-                                      //           size: 35,
-                                      //         ),
-                                      //       ),
-                                      //     ],
-                                      //   );
-                                      // }),
-                                      IconButton(
-                                        iconSize: 35,
-                                        onPressed: () {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      DetailChildPage(
-                                                        title:
-                                                            'Kontrol dan Konfigurasi',
-                                                        name:
-                                                            '${childData.name}',
-                                                        email:
-                                                            '${childData.email}',
-                                                        toLocation: true,
-                                                      )));
-                                        },
-                                        icon: Icon(
-                                          Icons.location_on_outlined,
-                                          color: cOrtuBlue,
+                                childData.status == 'invitation'
+                                    ? Container()
+                                    : Container(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            IconButton(
+                                              iconSize: 35,
+                                              onPressed: () {
+                                                Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            DetailChildPage(
+                                                              title:
+                                                                  'Kontrol dan Konfigurasi',
+                                                              name:
+                                                                  '${childData.name}',
+                                                              email:
+                                                                  '${childData.email}',
+                                                              toLocation: true,
+                                                            )));
+                                              },
+                                              icon: Icon(
+                                                Icons.location_on_outlined,
+                                                color: cOrtuBlue,
+                                              ),
+                                            ),
+                                            IconButton(
+                                              iconSize: 35,
+                                              onPressed: () {},
+                                              icon: Icon(
+                                                Icons.notifications,
+                                                color: cOrtuBlue,
+                                              ),
+                                            ),
+                                            IconButton(
+                                              iconSize: 35,
+                                              onPressed: () {
+                                                Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            DetailChildPage(
+                                                              title:
+                                                                  'Kontrol dan Konfigurasi',
+                                                              name:
+                                                                  '${childData.name}',
+                                                              email:
+                                                                  '${childData.email}',
+                                                            )));
+                                              },
+                                              icon: Icon(
+                                                Icons.settings,
+                                                color: cOrtuBlue,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                      IconButton(
-                                        iconSize: 35,
-                                        onPressed: () {},
-                                        icon: Icon(
-                                          Icons.notifications,
-                                          color: cOrtuBlue,
-                                        ),
-                                      ),
-                                      IconButton(
-                                        iconSize: 35,
-                                        onPressed: () {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      DetailChildPage(
-                                                        title:
-                                                            'Kontrol dan Konfigurasi',
-                                                        name:
-                                                            '${childData.name}',
-                                                        email:
-                                                            '${childData.email}',
-                                                      )));
-                                        },
-                                        icon: Icon(
-                                          Icons.settings,
-                                          color: cOrtuBlue,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
+                                      )
                               ],
                             ),
                           ),
@@ -605,6 +592,74 @@ class ChildCardWithBottomSheet extends StatelessWidget {
     );
   }
 
+  void showSelectUserType(context) async{
+    showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 10.0, right: 10.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      "Pilih Jenis Akun",
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  )
+                ],
+              ),
+            ),
+            Divider(),
+            Padding(
+              padding: EdgeInsets.all(10.0),
+              child: InkWell(
+                onTap: () async {
+                  final res = await Navigator.push(
+                    context,
+                    MaterialPageRoute<Object>(
+                        builder: (BuildContext context) => SetupInviteChildPage(
+                            address: parentController.parentProfile.address!,
+                            userTypeStr: "child")),
+                  );
+                  print('Add Child Response: $res');
+                  if (res.toString().toLowerCase() == 'addchild') onAddChild();
+                  Navigator.pop(context);
+                },
+                child: Image.asset('assets/images/invitation_anak.png'),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(10.0),
+              child: InkWell(
+                onTap: () async {
+                  final res = await Navigator.push(
+                    context,
+                    MaterialPageRoute<Object>(
+                        builder: (BuildContext context) => SetupInviteChildPage(
+                            address: parentController.parentProfile.address!,
+                            userTypeStr: "parent")),
+                  );
+                  print('Add Child Response: $res');
+                  if (res.toString().toLowerCase() == 'addchild') onAddChild();
+                  Navigator.pop(context);
+                },
+                child: Image.asset('assets/images/invitation_parent.png'),
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
+
   Widget contentTime(
     String title,
     String timeValue,
@@ -616,7 +671,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
         children: [
           Text(
             '$title',
-            style: TextStyle(color: Colors.white, fontSize: 12),
+            style: TextStyle(color: Colors.white, fontSize: 10),
           ),
           Text(
             '$timeValue',

@@ -10,9 +10,9 @@ import 'package:ruangkeluarga/application_event.dart';
 
 class DeviceApps {
   static const MethodChannel _methodChannel =
-  MethodChannel('g123k/device_apps');
+      MethodChannel('g123k/device_apps');
   static const EventChannel _eventChannel =
-  EventChannel('g123k/device_apps_events');
+      EventChannel('g123k/device_apps_events');
 
   /// List installed applications on the device
   /// [includeSystemApps] will also include system apps (or pre-installed) like
@@ -29,7 +29,7 @@ class DeviceApps {
   }) async {
     try {
       final Object apps =
-      await _methodChannel.invokeMethod('getInstalledApps', <String, bool>{
+          await _methodChannel.invokeMethod('getInstalledApps', <String, bool>{
         'system_apps': includeSystemApps,
         'include_app_icons': includeAppIcons,
         'only_apps_with_launch_intent': onlyAppsWithLaunchIntent
@@ -68,7 +68,7 @@ class DeviceApps {
   }) {
     try {
       final Object apps =
-      _methodChannel.invokeMethod('getInstalledApps', <String, bool>{
+          _methodChannel.invokeMethod('getInstalledApps', <String, bool>{
         'system_apps': includeSystemApps,
         'include_app_icons': includeAppIcons,
         'only_apps_with_launch_intent': onlyAppsWithLaunchIntent
@@ -104,9 +104,9 @@ class DeviceApps {
   /// [includeAppIcon] will also include the icon for the app.
   /// To get it, you have to cast the object to [ApplicationWithIcon].
   static Future<Application?> getApp(
-      String packageName, [
-        bool includeAppIcon = false,
-      ]) async {
+    String packageName, [
+    bool includeAppIcon = false,
+  ]) async {
     if (packageName.isEmpty) {
       throw Exception('The package name can not be empty');
     }
@@ -137,9 +137,9 @@ class DeviceApps {
 
     return _methodChannel
         .invokeMethod<bool>(
-      'isAppInstalled',
-      <String, String>{'package_name': packageName},
-    )
+          'isAppInstalled',
+          <String, String>{'package_name': packageName},
+        )
         .then((bool? value) => value ?? false)
         .catchError((dynamic err) => false);
   }
@@ -155,9 +155,9 @@ class DeviceApps {
 
     return _methodChannel
         .invokeMethod<bool>(
-      'openApp',
-      <String, String>{'package_name': packageName},
-    )
+          'openApp',
+          <String, String>{'package_name': packageName},
+        )
         .then((bool? value) => value ?? false)
         .catchError((dynamic err) => false);
   }
@@ -172,7 +172,7 @@ class DeviceApps {
 
     return _methodChannel
         .invokeMethod<bool>(
-        'openAppSettings', <String, String>{'package_name': packageName})
+            'openAppSettings', <String, String>{'package_name': packageName})
         .then((bool? value) => value ?? false)
         .catchError((dynamic err) => false);
   }
@@ -184,7 +184,7 @@ class DeviceApps {
     return _eventChannel
         .receiveBroadcastStream()
         .map(((dynamic event) =>
-        ApplicationEvent._(event as Map<dynamic, dynamic>)))
+            ApplicationEvent._(event as Map<dynamic, dynamic>)))
         .handleError((Object err) => null);
   }
 }
@@ -265,27 +265,30 @@ class Application extends _BaseApplication {
   /// [https://developer.android.com/reference/kotlin/android/content/pm/ApplicationInfo]
   /// [category] is null on Android < 26
   static ApplicationCategory _parseCategory(Object? category) {
-    if (category is num && category < 0) {
+    if (category is num) {
+      if (category < 0) {
+        return ApplicationCategory.undefined;
+      } else if (category == 0) {
+        return ApplicationCategory.game;
+      } else if (category == 1) {
+        return ApplicationCategory.audio;
+      } else if (category == 2) {
+        return ApplicationCategory.video;
+      } else if (category == 3) {
+        return ApplicationCategory.image;
+      } else if (category == 4) {
+        return ApplicationCategory.social;
+      } else if (category == 5) {
+        return ApplicationCategory.news;
+      } else if (category == 6) {
+        return ApplicationCategory.maps;
+      } else if (category == 7) {
+        return ApplicationCategory.productivity;
+      } else {
+        return ApplicationCategory.undefined;
+      }
+    } else
       return ApplicationCategory.undefined;
-    } else if (category == 0) {
-      return ApplicationCategory.game;
-    } else if (category == 1) {
-      return ApplicationCategory.audio;
-    } else if (category == 2) {
-      return ApplicationCategory.video;
-    } else if (category == 3) {
-      return ApplicationCategory.image;
-    } else if (category == 4) {
-      return ApplicationCategory.social;
-    } else if (category == 5) {
-      return ApplicationCategory.news;
-    } else if (category == 6) {
-      return ApplicationCategory.maps;
-    } else if (category == 7) {
-      return ApplicationCategory.productivity;
-    } else {
-      return ApplicationCategory.undefined;
-    }
   }
 
   // Open the app default screen

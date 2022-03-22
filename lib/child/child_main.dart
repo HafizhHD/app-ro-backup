@@ -62,8 +62,7 @@ class _ChildMainState extends State<ChildMain> {
       controller1.sendData();
     } catch (e) {
       print("Error alarm location :" + e.toString());
-    }
-    finally {
+    } finally {
       startAppUsagePeriodic();
     }
   }
@@ -104,7 +103,8 @@ class _ChildMainState extends State<ChildMain> {
             ],
           ),
           drawer: ChildDrawer(widget.childName, widget.childEmail),
-          body: Obx(() => ChosenPage(bottomNavIndex: controller.bottomNavIndex)),
+          body:
+              Obx(() => ChosenPage(bottomNavIndex: controller.bottomNavIndex)),
           bottomNavigationBar: _bottomAppBar(),
           floatingActionButton: Visibility(
             visible: !showKeyboard(context),
@@ -113,7 +113,9 @@ class _ChildMainState extends State<ChildMain> {
               width: 80,
               child: FloatingActionButton(
                 elevation: 0,
-                backgroundColor: controller.bottomNavIndex == 2 ? Colors.blueGrey : Colors.black54,
+                backgroundColor: controller.bottomNavIndex == 2
+                    ? Colors.blueGrey
+                    : Colors.black54,
                 child: Container(
                   margin: EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -127,7 +129,8 @@ class _ChildMainState extends State<ChildMain> {
               ),
             ),
           ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
         ),
       ),
     );
@@ -236,9 +239,13 @@ class IconWithLabel extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Flexible(child: Icon(isSelected ? activeIcon : defaultIcon, color: isSelected ? activeColor : defaultColor)),
+              Flexible(
+                  child: Icon(isSelected ? activeIcon : defaultIcon,
+                      color: isSelected ? activeColor : defaultColor)),
               SizedBox(height: 4),
-              Text(label, style: TextStyle(color: isSelected ? activeColor : defaultColor))
+              Text(label,
+                  style:
+                      TextStyle(color: isSelected ? activeColor : defaultColor))
             ],
           ),
         ),

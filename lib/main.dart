@@ -271,42 +271,65 @@ class _MyHomePageState extends State<MyHomePage> {
         final roUserEmail = prefs.getString(rkEmailUser) ?? '';
         final roUserName = prefs.getString(rkUserName) ?? '';
 
-        if (prevLogin != null && roUserType != null && roUserType != '') {
-          if (await childNeedPermission()) {
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            await prefs.clear();
-            await signOutGoogle();
-            // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
-            Navigator.of(context).push(leftTransitionRoute(LoginPage()));
+        try {
+          final result = await InternetAddress.lookup('ruangortu.id');
+          if (result.isEmpty) {
+            showSnackbar(
+                'Silahkan periksa koneksi internet anda',
+                bgColor: Colors.red,
+                pShowDuration: Duration(seconds: 10));
+            print("Internet not connected");
           } else {
-            if (roUserType == "child") {
-              MethodChannel channel= new MethodChannel('com.ruangkeluargamobile/android_service_background', JSONMethodCodec());
-              bool? response = await channel.invokeMethod<bool>('permissionLockApp', {'data':'data'});
-              print('response : '+response.toString());
-              if(response!){
-                if (await childNeedPermission()) {
-                  Navigator.of(context)
-                      .pushReplacement(MaterialPageRoute(builder: (context) =>
-                      SetupPermissionChildPage(
-                          email: roUserEmail, name: roUserName)));
+            if (prevLogin != null && roUserType != null && roUserType != '') {
+              if (await childNeedPermission()) {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                await prefs.clear();
+                await signOutGoogle();
+                // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
+                Navigator.of(context).push(leftTransitionRoute(LoginPage()));
+              } else {
+                if (roUserType == "child") {
+                  MethodChannel channel = new MethodChannel(
+                      'com.ruangkeluargamobile/android_service_background',
+                      JSONMethodCodec());
+                  bool? response = await channel.invokeMethod<bool>(
+                      'permissionLockApp', {'data': 'data'});
+                  print('response : ' + response.toString());
+                  if (response!) {
+                    if (await childNeedPermission()) {
+                      Navigator.of(context)
+                          .pushReplacement(MaterialPageRoute(builder: (
+                          context) =>
+                          SetupPermissionChildPage(
+                              email: roUserEmail, name: roUserName)));
+                    } else {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) =>
+                            ChildMain(
+                                childEmail: roUserEmail,
+                                childName: roUserName)),
+                            (Route<dynamic> route) => false,
+                      );
+                    }
+                  }
                 } else {
                   Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => ChildMain(
-                        childEmail: roUserEmail, childName: roUserName)),
+                    MaterialPageRoute(builder: (context) => ParentMain()),
                         (Route<dynamic> route) => false,
                   );
                 }
               }
+              Get.put(FeedController());
             } else {
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => ParentMain()),
-                    (Route<dynamic> route) => false,
-              );
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => SplashInfo()));
             }
           }
-          Get.put(FeedController());
-        } else {
-          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SplashInfo()));
+        } catch (e) {
+          showToastFailed(
+              failedText: 'Silahkan periksa koneksi internet anda',
+              ctx: context);
+          print("Error Cek Internet. " + e.toString());
         }
       });
     });
