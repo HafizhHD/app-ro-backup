@@ -53,10 +53,8 @@ class _LoginState extends State<LoginPage> {
       }
     } catch (error) {
       closeOverlay();
-      showSnackbar(
-          error.toString(),
-          bgColor: Colors.red,
-          pShowDuration: Duration(seconds: 10));
+      showSnackbar(error.toString(),
+          bgColor: Colors.red, pShowDuration: Duration(seconds: 10));
       // showSnackbar(
       //     'Gagal melakukan login google. Mohon cek kembali koneksi internet Anda.',
       //     bgColor: Colors.red,
@@ -107,9 +105,12 @@ class _LoginState extends State<LoginPage> {
           parentController.userId = jsonUser["_id"];
           parentController.userName = jsonUser["nameUser"];
           parentController.emailUser = jsonUser["emailUser"];
-          if (await childNeedPermission()) {
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => SetupPermissionPage(email: jsonUser['emailUser'], name: jsonUser['nameUser'], userType: jsonUser['userType'])));
+          if (await childNeedPermission() && jsonUser['userType'] == 'child') {
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => SetupPermissionPage(
+                    email: jsonUser['emailUser'],
+                    name: jsonUser['nameUser'],
+                    userType: jsonUser['userType'])));
           } else {
             if (jsonUser['userType'] == "child") {
               // if (await childNeedPermission()) {
@@ -149,7 +150,8 @@ class _LoginState extends State<LoginPage> {
       } else {
         await prefs.setBool(isPrefLogin, false);
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => SetupParentProfilePage(title: 'Ruang ORTU by ASIA')));
+            builder: (context) =>
+                SetupParentProfilePage(title: 'Ruang ORTU by ASIA')));
       }
     } catch (e, s) {
       print('onHandleLogin error : $e');

@@ -13,6 +13,7 @@ class AkunPage extends StatelessWidget {
       body: GetBuilder<ParentController>(
         builder: (ctrl) {
           final parentData = ctrl.parentProfile;
+          final spouse = parentData.spouse ?? [];
           final children = parentData.children ?? [];
 
           return Container(
@@ -33,6 +34,32 @@ class AkunPage extends StatelessWidget {
                       alamat: parentData.address,
                       birthDate: parentData.birdDate,
                       isParent: parentData.parentStatus.toEnumString()),
+                  Flexible(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: spouse.length,
+                      itemBuilder: (ctx, idx) {
+                        final spouseData = spouse[idx];
+                        print('Nama: ${spouseData.name}');
+                        print('Telepon: ${spouseData.phone}');
+                        print('Alamat: ${spouseData.address}');
+                        print('Tgl. Lahir: ${spouseData.birdDate.toString()}');
+                        return profileContainer(
+                            imgUrl: spouseData.imgPhoto,
+                            name: spouseData.name ?? 'Nama Pasangan',
+                            email: spouseData.email ?? 'email@coparent.com',
+                            id: spouseData.id,
+                            phone: spouseData.phone ?? '',
+                            alamat: spouseData.address ?? '',
+                            birthDate: spouseData.birdDate,
+                            isParent:
+                                parentData.parentStatus.toEnumString() == 'Ayah'
+                                    ? 'Bunda'
+                                    : 'Ayah');
+                      },
+                    ),
+                  ),
                   Flexible(
                     child: ListView.builder(
                       shrinkWrap: true,
@@ -82,7 +109,8 @@ class AkunPage extends StatelessWidget {
   }) {
     return Dismissible(
       key: Key('$name+$email'),
-      direction: isParent == '' ? DismissDirection.horizontal : DismissDirection.none,
+      direction:
+          isParent == '' ? DismissDirection.horizontal : DismissDirection.none,
       confirmDismiss: isParent == ''
           ? (_) async {
               return await deleteChild(id, name);

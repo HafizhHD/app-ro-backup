@@ -28,6 +28,8 @@ class ParentController extends GetxController {
   late SharedPreferences prefs;
   late ParentProfile parentProfile;
   Rx<Future<List<Child>>> fChildList = Future<List<Child>>.value(<Child>[]).obs;
+  Rx<Future<List<Spouse>>> fSpouseList =
+      Future<List<Spouse>>.value(<Spouse>[]).obs;
   List<Spouse> spouseList = [];
   RxMap _modeAsuh = <int, int>{}.obs;
 
@@ -110,8 +112,7 @@ class ParentController extends GetxController {
       final jsonUser = jsonDecode(response.body)['user'];
       if (jsonDecode(response.body)['resultCode'] == "OK") {
         parentProfile = ParentProfile.fromJson(jsonUser);
-//      if (jsonUser.spouse)
-//      spouseList = ParentProfile. spouse ?? [];
+        spouseList = parentProfile.spouse ?? [];
         return parentProfile.children ?? [];
       } else {
         logUserOut();
@@ -311,8 +312,6 @@ class ParentController extends GetxController {
   }
 
   Future getDailyUsageStatistic() async {
-    UsageStats.grantUsagePermission();
-
     //var outputFormat = DateFormat('yyyy-MM-ddTHH:mm:ss.SSS');
     var outputFormat = DateFormat('yyyy-MM-dd');
     print('Ini tgl sekarang: ${outputFormat.format(DateTime.now())}');
@@ -364,9 +363,10 @@ class ParentController extends GetxController {
               });
             });
           }
-          seconds ~/= 1000;
-          print('total durationnya: $seconds detik');
-          mapChildScreentimeDaily[child.email!] = setAverageDaily(seconds);
+          // seconds ~/= 1000;
+          // print('total durationnya: $seconds detik');
+          mapChildScreentimeDaily[child.email!] =
+              setAverageDaily(seconds ~/ 1000);
           update();
         }
       });

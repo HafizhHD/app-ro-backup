@@ -21,7 +21,9 @@ Future<File?> openCamOrDirDialog() async {
               final _getImg = await getImageCamera();
               closeOverlay();
               if (_getImg != null)
-                Get.back(result: await ImageCropper.cropImage(sourcePath: _getImg.path));
+                Get.back(
+                    result: await ImageCropper()
+                        .cropImage(sourcePath: _getImg.path));
               else
                 Get.back();
             },
@@ -36,7 +38,9 @@ Future<File?> openCamOrDirDialog() async {
             onPressed: () async {
               final _getImg = await getImageStorage();
               if (_getImg != null)
-                Get.back(result: await ImageCropper.cropImage(sourcePath: _getImg.path));
+                Get.back(
+                    result: await ImageCropper()
+                        .cropImage(sourcePath: _getImg.path));
               else
                 Get.back();
             },
@@ -59,7 +63,8 @@ Future<File?> getImageCamera() async {
   if (!camera.isGranted) {
     await Permission.camera.request();
   }
-  final pickedFile = await picker.pickImage(source: ImageSource.camera, imageQuality: 50);
+  final pickedFile =
+      await picker.pickImage(source: ImageSource.camera, imageQuality: 50);
   if (pickedFile != null) {
     final rawFile = File(pickedFile.path);
     // final rawFileSize = rawFile.readAsBytesSync();

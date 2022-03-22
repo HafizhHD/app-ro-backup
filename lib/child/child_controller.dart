@@ -36,7 +36,7 @@ late List<CameraDescription> cameras;
 
 class ChildController extends GetxController {
   MethodChannel platform =
-  MethodChannel('ruangortu.com/appUsage', JSONMethodCodec());
+      MethodChannel('ruangortu.com/appUsage', JSONMethodCodec());
   var _bottomNavIndex = 2.obs;
   var childID = '';
   var childEmail = '';
@@ -91,33 +91,37 @@ class ChildController extends GetxController {
   }
 
   void getCurrentLocation() async {
-      try {
-        print("akses lokasi....");
-        LocationPermission permission = await Geolocator.checkPermission();
-        if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
-          print("tidak boleh akses lokasi");
-        }
-        else {
-          Position currentPosition = await Geolocator.getCurrentPosition();
-          print("Longitude" + currentPosition.longitude.toString());
-          print("latitude" + currentPosition.latitude.toString());
+    try {
+      print("akses lokasi....");
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        print("tidak boleh akses lokasi");
+      } else {
+        Position currentPosition = await Geolocator.getCurrentPosition();
+        print("Longitude" + currentPosition.longitude.toString());
+        print("latitude" + currentPosition.latitude.toString());
 
-          try {
-            await MediaRepository().saveUserLocationx(childEmail, currentPosition, DateTime.now().toIso8601String()).then((response) {
-              if (response.statusCode == 200) {
-                print('isi response save location Current: ${response.body}');
-              } else {
-                print('isi response save location Current: ${response.statusCode}');
-              }
-            });
-          } catch (e, s) {
-            print('err: $e');
-            print('stk: $s');
-          }
+        try {
+          await MediaRepository()
+              .saveUserLocationx(
+                  childEmail, currentPosition, DateTime.now().toIso8601String())
+              .then((response) {
+            if (response.statusCode == 200) {
+              print('isi response save location Current: ${response.body}');
+            } else {
+              print(
+                  'isi response save location Current: ${response.statusCode}');
+            }
+          });
+        } catch (e, s) {
+          print('err: $e');
+          print('stk: $s');
         }
-      } catch (e) {
-        print(e);
       }
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -144,17 +148,20 @@ class ChildController extends GetxController {
         int posModeAsuh = strMessage.indexOf('mode asuh');
         int poslockScreen = strMessage.indexOf('kunci layar');
         if ((message.data['body'].toString().toLowerCase() ==
-            'update data block app') || (posBlock >= 0)) {
+                'update data block app') ||
+            (posBlock >= 0)) {
           if (message.data['content'] != null) {
             fetchAppList(message.data['content']);
           }
         } else if ((message.data['body'].toString().toLowerCase() ==
-            'mode asuh') || (posModeAsuh >= 0)) {
+                'mode asuh') ||
+            (posModeAsuh >= 0)) {
           if (message.data['content'] != null) {
             featAppModeAsuh(message.data['content']);
           }
         } else if ((message.data['body'].toString().toLowerCase() ==
-            'update lock screen') || (poslockScreen >= 0)) {
+                'update lock screen') ||
+            (poslockScreen >= 0)) {
           if ((message.data['content'] != null) &&
               (message.data['content'] != "")) {
             var dataNotif = jsonDecode(message.data['content']);
@@ -177,10 +184,10 @@ class ChildController extends GetxController {
               message.data['title'],
               message.data['body'],
               NotificationDetails(
-                  android: AndroidNotificationDetails(channel.id, channel.name,
-                      channelDescription: channel.description,
-                      styleInformation: BigTextStyleInformation(
-                          message.data['body'].toString())),
+                android: AndroidNotificationDetails(channel.id, channel.name,
+                    channelDescription: channel.description,
+                    styleInformation: BigTextStyleInformation(
+                        message.data['body'].toString())),
               ));
         }
       } else {
@@ -248,8 +255,7 @@ class ChildController extends GetxController {
         }
         update();
         return true;
-      }
-      else {
+      } else {
         logUserOut();
         print('no user found');
       }
@@ -296,7 +302,7 @@ class ChildController extends GetxController {
     String? cat;
     // listAppLocal.forEach((localApp) async {
     // for (var localApp in listAppLocal) {
-    for (var i=0; i < listAppLocal.length; i++) {
+    for (var i = 0; i < listAppLocal.length; i++) {
       try {
         var localApp = listAppLocal[i];
         cat = "";
@@ -505,24 +511,31 @@ class ChildController extends GetxController {
     });
     int duration = 0;
     int startTime = -1;
+    int lastType = -1;
     infoList3.forEach((app, e) {
       print(app);
       if (app == packageName) {
         e.asMap().forEach((i, val) {
-          if (val[0] == 2) {
-            if (i == 0) {
-              duration += val[1] - startDate.millisecondsSinceEpoch as int;
-              startTime = -1;
-            } else {
-              duration += val[1] - startTime as int;
-              startTime = -1;
+          if (val[0] == 1 || val[0] == 2) {
+            if ((val[0] == 2) && (lastType != 2)) {
+              if (i == 0) {
+                duration += val[1] - startDate.millisecondsSinceEpoch as int;
+                startTime = -1;
+              } else {
+                duration += val[1] - startTime as int;
+                startTime = -1;
+              }
+              lastType = val[0];
+            } else if (val[0] == 1 && lastType != 1) {
+              if (i == e.length - 1) {
+                duration +=
+                    DateTime.now().millisecondsSinceEpoch - val[1] as int;
+                startTime = -1;
+              } else
+                startTime = val[1];
+
+              lastType = val[0];
             }
-          } else if (val[0] == 1) {
-            if (i == e.length - 1) {
-              duration += DateTime.now().millisecondsSinceEpoch - val[1] as int;
-              startTime = -1;
-            } else
-              startTime = val[1];
           }
         });
       }
@@ -545,8 +558,8 @@ class ChildController extends GetxController {
           ? DateTime.fromMillisecondsSinceEpoch(thisApp.installTimeMillis)
           : startDate;
 
-      // Menghitung Usage dari waktu install aplikasi ini untuk hari pertama. Hapus line di bawah jika ingin dihitung dari jam 00.00 di hari tsb
-      if (installDate.compareTo(startDate) >= 0) startDate = installDate;
+      // // Menghitung Usage dari waktu install aplikasi ini untuk hari pertama. Hapus line di bawah jika ingin dihitung dari jam 00.00 di hari tsb
+      // if (installDate.compareTo(startDate) >= 0) startDate = installDate;
 
       // final DateTime startDate = DateTime(endDate.year, endDate.month, endDate.day, 0, 0, 0);
       final listAppLocal = await DeviceApps.getInstalledApplications(
@@ -614,46 +627,53 @@ class ChildController extends GetxController {
           // print('Ini nama: ${hasData.first.appName}, category aplikasi: $cat');
           List<dynamic> usageHour = [];
           int startTime = -1;
+          int lastType = -1;
           int duration = 0;
           e.asMap().forEach((i, val) {
             // print(
             //     'Nama pekej: ${val.packageName}, stamp pertama: ${DateTime.fromMillisecondsSinceEpoch(int.parse(val.firstTimeStamp!))}, stamp terakhir: ${DateTime.fromMillisecondsSinceEpoch(int.parse(val.lastTimeStamp!))}');
             // print(
             //     'Terakhir dipake: ${DateTime.fromMillisecondsSinceEpoch(int.parse(val.lastTimeUsed!))}, durasi: ${DateTime.fromMillisecondsSinceEpoch(int.parse(val.totalTimeInForeground!))}');
-            if (val[0] == 2) {
-              if (i == 0) {
-                duration += val[1] - startDate.millisecondsSinceEpoch as int;
-                var usageStamp = {
-                  'durationInStamp':
-                      '${val[1] - startDate.millisecondsSinceEpoch}',
-                  'lastTimeStamp':
-                      "${DateTime.fromMillisecondsSinceEpoch(val[1])}"
-                };
-                usageHour.add(usageStamp);
-                startTime = -1;
-              } else {
-                duration += val[1] - startTime as int;
-                var usageStamp = {
-                  'durationInStamp': '${val[1] - startTime}',
-                  'lastTimeStamp':
-                      "${DateTime.fromMillisecondsSinceEpoch(val[1])}"
-                };
-                usageHour.add(usageStamp);
-                startTime = -1;
+            if (val[0] == 1 || val[0] == 2) {
+              if ((val[0] == 2) && (lastType != 2)) {
+                if (i == 0) {
+                  duration += val[1] - startDate.millisecondsSinceEpoch as int;
+                  var usageStamp = {
+                    'durationInStamp':
+                        '${val[1] - startDate.millisecondsSinceEpoch}',
+                    'lastTimeStamp':
+                        "${DateTime.fromMillisecondsSinceEpoch(val[1])}"
+                  };
+                  usageHour.add(usageStamp);
+                  startTime = -1;
+                } else {
+                  duration += val[1] - startTime as int;
+                  var usageStamp = {
+                    'durationInStamp': '${val[1] - startTime}',
+                    'lastTimeStamp':
+                        "${DateTime.fromMillisecondsSinceEpoch(val[1])}"
+                  };
+                  usageHour.add(usageStamp);
+                  startTime = -1;
+                }
+
+                lastType = val[0];
+              } else if (val[0] == 1 && lastType != 1) {
+                if (i == e.length - 1) {
+                  duration +=
+                      DateTime.now().millisecondsSinceEpoch - val[1] as int;
+                  var usageStamp = {
+                    'durationInStamp':
+                        '${DateTime.now().millisecondsSinceEpoch - val[1]}',
+                    'lastTimeStamp': "${DateTime.now()}"
+                  };
+                  usageHour.add(usageStamp);
+                  startTime = -1;
+                } else
+                  startTime = val[1];
+
+                lastType = val[0];
               }
-            } else if (val[0] == 1) {
-              if (i == e.length - 1) {
-                duration +=
-                    DateTime.now().millisecondsSinceEpoch - val[1] as int;
-                var usageStamp = {
-                  'durationInStamp':
-                      '${DateTime.now().millisecondsSinceEpoch - val[1]}',
-                  'lastTimeStamp': "${DateTime.now()}"
-                };
-                usageHour.add(usageStamp);
-                startTime = -1;
-              } else
-                startTime = val[1];
             }
           });
           var temp = {
@@ -665,6 +685,10 @@ class ChildController extends GetxController {
             'usageHour': usageHour
           };
           usageDataList.add(temp);
+          print('nama aplikasi pada getAppUsageData: $appName');
+          print('durasinya getAppUsageData: $duration');
+          print('pair event: $e');
+          print('usage: $usageHour');
         }
       });
 
@@ -680,7 +704,6 @@ class ChildController extends GetxController {
       print('err: $e');
       print('stk: $s');
     }
-
   }
 
   Future sentPanicSOS(XFile recording) async {
@@ -728,12 +751,12 @@ class ChildController extends GetxController {
           featStatusLockScreen(lockStatus);
         }
       }
-    } catch(e) {
+    } catch (e) {
       print(e);
     }
   }
 
-  void featStatusLockScreen(String lockStatus) async{
+  void featStatusLockScreen(String lockStatus) async {
     try {
       print("featStatusLockScreen qxueryAllRowsAplikasi");
       var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
@@ -861,7 +884,7 @@ class ChildController extends GetxController {
       // await AplikasiDB.instance.deleteAllData();
       // AplikasiDB.instance.insertData(dataAplikasi);
       AplikasiDB.instance.reNewData(dataAplikasi);
-    }else{
+    } else {
       AplikasiDataUsage dataUsage = new AplikasiDataUsage(
           limit: dataNotif['limit'].toString(),
           appCategory: dataNotif['appCategory'].toString(),
@@ -934,9 +957,9 @@ class ChildController extends GetxController {
                 dataAplikasi['dataAplikasi'] = jsonEncode(dataList);
                 dataAplikasi['kunciLayar'] = dataAplikasiDb['kunciLayar'];
                 dataAplikasi['modekunciLayar'] =
-                (dataAplikasiDb['modekunciLayar'] != null)
-                    ? dataAplikasiDb['modekunciLayar']
-                    : '';
+                    (dataAplikasiDb['modekunciLayar'] != null)
+                        ? dataAplikasiDb['modekunciLayar']
+                        : '';
                 await AplikasiDB.instance.deleteAllData();
                 AplikasiDB.instance.insertData(dataAplikasi);
               } else {
@@ -959,4 +982,3 @@ class ChildController extends GetxController {
     }
   }
 }
-

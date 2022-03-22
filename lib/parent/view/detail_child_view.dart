@@ -658,6 +658,8 @@ class _DetailChildPageState extends State<DetailChildPage> {
       primaryXAxis: CategoryAxis(
         majorGridLines: MajorGridLines(width: 0),
       ),
+      primaryYAxis: NumericAxis(
+          maximum: 24 - dtx.reduce(max) < 1 ? 24 : dtx.reduce(max) ~/ 1 + 1),
       series: _columnData,
       tooltipBehavior: TooltipBehavior(
           enable: true,

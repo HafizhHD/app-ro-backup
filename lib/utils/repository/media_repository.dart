@@ -52,7 +52,8 @@ class MediaRepository {
       "googleToken": "$gToken",
       "fcmToken": "$fcmToken",
       "version": "$version",
-      "packageId": "com.byasia.ruangortu"};
+      "packageId": "com.byasia.ruangortu"
+    };
     print('param userLogin: $json');
     Response response = await post(Uri.parse(url),
         headers: noAuthHeaders, body: jsonEncode(json));
@@ -149,6 +150,21 @@ class MediaRepository {
     return response;
   }
 
+  Future<Response> sendEmailInvitation(
+      String parentEmail, String inviteEmail) async {
+    var url = _rkService.baseUrl + '/user/sendEmailInvitation';
+    Map<String, dynamic> json = {
+      "parentEmail": "$parentEmail",
+      "inviteEmail": "$inviteEmail"
+    };
+    print('param invite email: $json');
+    Response response = await post(Uri.parse(url),
+        headers: noAuthHeaders, body: jsonEncode(json));
+
+    print('response invite email user : ${response.body}');
+    return response;
+  }
+
   Future<Response> removeUser(String id) async {
     var url = _rkService.baseUrl + '/user/remove';
     Map<String, dynamic> json = {"userId": "$id"};
@@ -183,7 +199,8 @@ class MediaRepository {
       "appUsages": data
     };
     print('param child usage : $json');
-    Response response = await post(Uri.parse(url), headers: noAuthHeaders, body: jsonEncode(json));
+    Response response = await post(Uri.parse(url),
+        headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
@@ -696,7 +713,9 @@ class MediaRepository {
   Future<Response> fetchCoBrand() async {
     var url = _rkService.baseUrl + '/cobrand/cobrandFilter';
     print('fetchCoBrand');
-    Map<String, dynamic> json = {"whereKeyValues": {"status": "active"}};
+    Map<String, dynamic> json = {
+      "whereKeyValues": {"status": "active"}
+    };
     print('param content filter : $json');
     Response response = await post(Uri.parse(url),
         headers: noAuthHeaders, body: jsonEncode(json));

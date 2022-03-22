@@ -20,6 +20,7 @@ import 'package:ruangkeluarga/parent/view/main/parent_drawer.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:ruangkeluarga/utils/rk_webview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ruangkeluarga/forum/forum_main.dart';
 
 final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
@@ -61,9 +62,10 @@ class _ParentMainState extends State<ParentMain> {
             notification.title,
             notification.body,
             NotificationDetails(
-              android: AndroidNotificationDetails(
-                  channel.id, channel.name,
+              android: AndroidNotificationDetails(channel.id, channel.name,
                   channelDescription: channel.description,
+                  // TODO add a proper drawable resource to android, for now using
+                  //      one that already exists in example app.
                   icon: 'launch_background',
                   styleInformation:
                       BigTextStyleInformation(notification.body.toString())),
@@ -162,7 +164,7 @@ class _ParentMainState extends State<ParentMain> {
                 () => FloatingActionButton(
                   elevation: 0,
                   backgroundColor: controller.bottomNavIndex == 2
-                      ? cOrtuOrange
+                      ? cOrtuDarkBlue
                       : Colors.black54,
                   child: Container(
                     margin: EdgeInsets.all(8),
@@ -233,11 +235,11 @@ class _ParentMainState extends State<ParentMain> {
                 isSelected: controller.bottomNavIndex == 4,
                 onPressed: () => controller.setBottomNavIndex(4)),
             IconWithLabel(
-                defaultIcon: Icons.help_outlined,
-                activeIcon: Icons.help,
-                label: 'Bantuan',
+                defaultIcon: Icons.forum_outlined,
+                activeIcon: Icons.forum,
+                label: 'Forum',
                 isSelected: controller.bottomNavIndex == 5,
-                onPressed: () => {showFAQ(), controller.setBottomNavIndex(5)}),
+                onPressed: () => controller.setBottomNavIndex(5)),
             // onPressed: () => showFAQ()),
           ],
         ),
@@ -266,6 +268,8 @@ class ChosenPage extends StatelessWidget {
         return new JadwalPage();
       case 4:
         return new AkunPage();
+      case 5:
+        return new ForumMain();
       default:
         return new HomeParentPage();
     }
@@ -287,7 +291,7 @@ class IconWithLabel extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.defaultColor: cOrtuWhite,
-    this.activeColor: cOrtuOrange,
+    this.activeColor: cOrtuDarkBlue,
     this.isSelected: false,
   });
 

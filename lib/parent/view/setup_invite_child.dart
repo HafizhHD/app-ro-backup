@@ -13,6 +13,7 @@ import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum StatusStudyLevel { SD, SMP, SMA }
+
 class SetupInviteChildPage extends StatefulWidget {
   final String? address;
   final String? userTypeStr;
@@ -460,20 +461,8 @@ class InviteChildQR extends StatelessWidget {
       oAllData, oShowToastSuccess, oShowToastFailed, oPrefs) async {
     showLoadingOverlay();
     await oPrefs.setString("rkChildName", oAllData[3]!);
-    Response response = await MediaRepository().inviteChild(
-      oAllData[0],
-      oAllData[1],
-      oAllData[2],
-      oAllData[3],
-      oAllData[4],
-      oAllData[5],
-      oAllData[6],
-      oAllData[7],
-      oAllData[8],
-      oAllData[9],
-      oAllData[10],
-      oAllData[11],
-    );
+    Response response =
+        await MediaRepository().sendEmailInvitation(oAllData[0], oAllData[1]);
     print('isi response invite : ${response.body}');
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
@@ -495,6 +484,68 @@ class InviteChildQR extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final FToast fToast = FToast().init(context);
+
+    Widget toastSuccess() {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(25.0),
+          color: Color(0xff05745F),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.check, color: Colors.white),
+            SizedBox(
+              width: 12.0,
+            ),
+            Flexible(
+              child: Text(
+                  "Pesan aktivasi telah berhasil dikirimkan pada email ${allData![1]}}",
+                  style: TextStyle(color: Colors.white, fontSize: 12),
+                  overflow: TextOverflow.visible),
+            )
+          ],
+        ),
+      );
+    }
+
+    final Widget toastFailed = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25.0),
+        color: Colors.redAccent,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.close, color: Colors.white),
+          SizedBox(
+            width: 12.0,
+          ),
+          Text("Maaf, undang anak gagal.\nSilahkan coba kembali",
+              style: TextStyle(color: Colors.white, fontSize: 12)),
+        ],
+      ),
+    );
+
+    _showToastSuccess() {
+      fToast.showToast(
+        child: toastSuccess(),
+        gravity: ToastGravity.BOTTOM,
+        toastDuration: Duration(seconds: 2),
+      );
+    }
+
+    _showToastFailed() {
+      fToast.showToast(
+        child: toastFailed,
+        gravity: ToastGravity.BOTTOM,
+        toastDuration: Duration(seconds: 2),
+      );
+    }
+
     return Material(
       color: cPrimaryBg,
       child: SafeArea(
@@ -540,7 +591,14 @@ class InviteChildQR extends StatelessWidget {
                   ),
                   onPressed: () {
                     onReInviteChild(
-                        allData, showToastSuccess, showToastFailed, prefs);
+                        allData,
+                        showToastSuccess != null
+                            ? showToastSuccess
+                            : _showToastSuccess,
+                        showToastFailed != null
+                            ? showToastFailed
+                            : _showToastFailed,
+                        prefs);
                   },
                   color: cOrtuBlue,
                   child: Text(

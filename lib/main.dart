@@ -35,21 +35,27 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print('Handling a background message ${message.messageId}');
   ChildController controller1 = new ChildController();
-  if(message.data != null && message.data['body'] != null){
+  if (message.data != null && message.data['body'] != null) {
     String strMessage = message.data['body'].toString().toLowerCase();
     int posBlock = strMessage.indexOf('sedang dibatasi');
     int posModeAsuh = strMessage.indexOf('mode asuh');
     int poslockScreen = strMessage.indexOf('kunci layar');
-    if((message.data['body'].toString().toLowerCase()=='update data block app') || (posBlock >= 0)){
-      if(message.data['content'] != null) {
+    if ((message.data['body'].toString().toLowerCase() ==
+            'update data block app') ||
+        (posBlock >= 0)) {
+      if (message.data['content'] != null) {
         controller1.fetchAppList(message.data['content']);
       }
-    }else if((message.data['body'].toString().toLowerCase()=='mode asuh') || (posModeAsuh >= 0)){
-      if(message.data['content'] != null) {
+    } else if ((message.data['body'].toString().toLowerCase() == 'mode asuh') ||
+        (posModeAsuh >= 0)) {
+      if (message.data['content'] != null) {
         controller1.featAppModeAsuh(message.data['content']);
       }
-    }else if((message.data['body'].toString().toLowerCase()=='update lock screen')||(poslockScreen >= 0)){
-      if ((message.data['content'] != null) && (message.data['content'] != "")) {
+    } else if ((message.data['body'].toString().toLowerCase() ==
+            'update lock screen') ||
+        (poslockScreen >= 0)) {
+      if ((message.data['content'] != null) &&
+          (message.data['content'] != "")) {
         try {
           var dataNotif = jsonDecode(message.data['content']);
           if (dataNotif['lockstatus'] != null) {
@@ -57,12 +63,13 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
             /*if(dataNotif['lockstatus'].toString() == 'true'){
           new MethodChannel('com.ruangkeluargamobile/android_service_background', JSONMethodCodec()).invokeMethod('lockDeviceChils', {'data':'data'});
         }*/
-            controller1.featStatusLockScreen(dataNotif['lockstatus'].toString());
+            controller1
+                .featStatusLockScreen(dataNotif['lockstatus'].toString());
           }
         } catch (e) {
           print("Error Notif" + e.toString());
         }
-      }else{
+      } else {
         controller1.featLockScreen();
       }
     }
@@ -75,22 +82,20 @@ late AndroidNotificationChannel channel;
 /// Initialize the [FlutterLocalNotificationsPlugin] package.
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
-void startServicePlatform() async{
+void startServicePlatform() async {
   await BackgroundServiceNew.oneShot(
-      const Duration(milliseconds: 5000),
-      12304,
-      callbackBackgroundService,
-      wakeup: true,
-      exact: true,
-      rescheduleOnReboot: true
-  );
+      const Duration(milliseconds: 5000), 12304, callbackBackgroundService,
+      wakeup: true, exact: true, rescheduleOnReboot: true);
 }
 
-
-Future<Map<String, int>> getDurationAppForeground() async{
+Future<Map<String, int>> getDurationAppForeground() async {
   final DateTime endDate = new DateTime.now();
-  final DateTime startDate = endDate.subtract(Duration(hours: DateTime.now().hour, minutes: DateTime.now().minute, seconds: DateTime.now().second));
-  final List<EventUsageInfo> infoList = await UsageStats.queryEvents(startDate, endDate);
+  final DateTime startDate = endDate.subtract(Duration(
+      hours: DateTime.now().hour,
+      minutes: DateTime.now().minute,
+      seconds: DateTime.now().second));
+  final List<EventUsageInfo> infoList =
+      await UsageStats.queryEvents(startDate, endDate);
   Map<String, List<List<int>>> infoList3 = {};
   String packageName = "";
   infoList.forEach((e) {
@@ -108,31 +113,38 @@ Future<Map<String, int>> getDurationAppForeground() async{
   });
   int duration = 0;
   int startTime = -1;
+  int lastType = -1;
   infoList3.forEach((app, e) {
     // print(app);
     if (app == packageName) {
       e.asMap().forEach((i, val) {
-        if (val[0] == 2) {
-          if (i == 0) {
-            duration += val[1] - startDate.millisecondsSinceEpoch as int;
-            startTime = -1;
-          } else {
-            duration += val[1] - startTime as int;
-            startTime = -1;
+        if (val[0] == 1 || val[0] == 2) {
+          if ((val[0] == 2) && (lastType != 2)) {
+            if (i == 0) {
+              duration += val[1] - startDate.millisecondsSinceEpoch as int;
+              startTime = -1;
+            } else {
+              duration += val[1] - startTime as int;
+              startTime = -1;
+            }
+
+            lastType = val[0];
+          } else if (val[0] == 1 && lastType != 1) {
+            if (i == e.length - 1) {
+              duration += DateTime.now().millisecondsSinceEpoch - val[1] as int;
+              startTime = -1;
+            } else
+              startTime = val[1];
+
+            lastType = val[0];
           }
-        } else if (val[0] == 1) {
-          if (i == e.length - 1) {
-            duration += DateTime.now().millisecondsSinceEpoch - val[1] as int;
-            startTime = -1;
-          } else
-            startTime = val[1];
         }
       });
     }
   });
   Map<String, int> data = {};
   data[packageName] = duration;
-  return(data);
+  return (data);
 }
 
 void callbackBackgroundService() async {
@@ -141,7 +153,10 @@ void callbackBackgroundService() async {
   try {
     final result = await InternetAddress.lookup('ruangortu.id');
     var koneksiInternet = prefs.getBool('koneksiInternet');
-    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty && koneksiInternet != null && !koneksiInternet) {
+    if (result.isNotEmpty &&
+        result[0].rawAddress.isNotEmpty &&
+        koneksiInternet != null &&
+        !koneksiInternet) {
       print("Internet connected");
       ChildController controller = new ChildController();
       controller.fetchDataApp();
@@ -150,11 +165,10 @@ void callbackBackgroundService() async {
   } on SocketException catch (_) {
     print("Diskonnect internet SocketException");
     await prefs.setBool("koneksiInternet", false);
-  } on Exception catch(_){
+  } on Exception catch (_) {
     print("Diskonnect internet Exception");
     await prefs.setBool("koneksiInternet", false);
-  }
-  finally {
+  } finally {
     var durationAppForeground = await getDurationAppForeground();
     // print("durasi = " + durationAppForeground.toString());
     await BackgroundServiceNew.cekAppLaunch(durationAppForeground);
@@ -179,7 +193,8 @@ void callbackBackgroundService() async {
 }*/
 
 void main() async {
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: cPrimaryBg, statusBarIconBrightness: Brightness.light));
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: cPrimaryBg, statusBarIconBrightness: Brightness.light));
 
   await runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -201,11 +216,9 @@ void main() async {
   // );
 
   channel = AndroidNotificationChannel(
-    'high_importance_channel',
-    'High Importance Notifications',
-    description: 'This channel is used for important notifications.',
-    importance: Importance.low
-  );
+      'high_importance_channel', 'High Importance Notifications',
+      description: 'This channel is used for important notifications.',
+      importance: Importance.low);
 
   flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
@@ -213,7 +226,9 @@ void main() async {
   ///
   /// We use this channel in the `AndroidManifest.xml` file to override the
   /// default FCM channel to enable heads up notifications.
-  await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
 
   /// Update the iOS foreground notification presentation options to allow
@@ -274,14 +289,12 @@ class _MyHomePageState extends State<MyHomePage> {
         try {
           final result = await InternetAddress.lookup('ruangortu.id');
           if (result.isEmpty) {
-            showSnackbar(
-                'Silahkan periksa koneksi internet anda',
-                bgColor: Colors.red,
-                pShowDuration: Duration(seconds: 10));
+            showSnackbar('Silahkan periksa koneksi internet anda',
+                bgColor: Colors.red, pShowDuration: Duration(seconds: 10));
             print("Internet not connected");
           } else {
             if (prevLogin != null && roUserType != null && roUserType != '') {
-              if (await childNeedPermission()) {
+              if (await childNeedPermission() && roUserType == 'child') {
                 SharedPreferences prefs = await SharedPreferences.getInstance();
                 await prefs.clear();
                 await signOutGoogle();
@@ -297,25 +310,23 @@ class _MyHomePageState extends State<MyHomePage> {
                   print('response : ' + response.toString());
                   if (response!) {
                     if (await childNeedPermission()) {
-                      Navigator.of(context)
-                          .pushReplacement(MaterialPageRoute(builder: (
-                          context) =>
-                          SetupPermissionChildPage(
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => SetupPermissionChildPage(
                               email: roUserEmail, name: roUserName)));
                     } else {
                       Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (context) =>
-                            ChildMain(
+                        MaterialPageRoute(
+                            builder: (context) => ChildMain(
                                 childEmail: roUserEmail,
                                 childName: roUserName)),
-                            (Route<dynamic> route) => false,
+                        (Route<dynamic> route) => false,
                       );
                     }
                   }
                 } else {
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => ParentMain()),
-                        (Route<dynamic> route) => false,
+                    (Route<dynamic> route) => false,
                   );
                 }
               }
@@ -344,7 +355,10 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Flexible(child: Hero(tag: 'ruangortuIcon', child: Image.asset(currentAppIconPath))),
+              Flexible(
+                  child: Hero(
+                      tag: 'ruangortuIcon',
+                      child: Image.asset(currentAppIconPath))),
               wProgressIndicator(),
             ],
           ),

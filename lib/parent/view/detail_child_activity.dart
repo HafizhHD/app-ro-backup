@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -178,12 +179,12 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
             var lastTimeStamp = DateTime.parse(t['lastTimeStamp']);
             var startTimeStamp = lastTimeStamp.subtract(
                 Duration(milliseconds: int.parse(t['durationInStamp'])));
-            print('Last time stamp: ' + lastTimeStamp.toLocal().toString());
-            print('First time stamp: ' + startTimeStamp.toLocal().toString());
+            // print('Last time stamp: ' + lastTimeStamp.toLocal().toString());
+            // print('First time stamp: ' + startTimeStamp.toLocal().toString());
             Duration dif1 = lastTimeStamp.difference(tanggal);
             Duration dif2 = tanggal.difference(startTimeStamp);
 
-            print('Masuk sini! Gils last. Dif1: $dif1, Dif2: $dif2');
+            // print('Masuk sini! Gils last. Dif1: $dif1, Dif2: $dif2');
             if (int.parse(t['durationInStamp']) > 0) {
               if (dif1.inSeconds >= 0) {
                 if (dif1.inSeconds >= 3600) {
@@ -205,13 +206,13 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                 }
               }
             }
-            print(
-                'Durasi menit untuk aplikasi ${f.appName}: ${secondsPerApp ~/ 60}');
+            // print(
+            //     'Durasi menit untuk aplikasi ${f.appName}: ${secondsPerApp ~/ 60}');
             totalSecsPerApp += secondsPerApp;
           });
-          print('Total seccs per app ${f.appName}: $totalSecsPerApp');
+          // print('Total seccs per app ${f.appName}: $totalSecsPerApp');
           f.duration += totalSecsPerApp ~/ 1000;
-          print('Durasi per aplikasi: ${f.duration}');
+          // print('Durasi per aplikasi: ${f.duration}');
         });
       });
     });
@@ -321,7 +322,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
       http.Response response = await MediaRepository()
           .fetchAppUsageFilter(widget.email, outputDate, isDaily: true);
       if (response.statusCode == 200) {
-        // print('isi response filter app usage si Dailynya : ${response.body}');
+        print('isi response filter app usage si Dailynya : ${response.body}');
         var json = jsonDecode(response.body);
         if (json['resultCode'] == "OK") {
           var jsonDataResult = json['appUsages'] as List;
@@ -385,8 +386,8 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
           }
         }
       } else {
-        // print(
-        //    'isi response filter app usage dailynya bruh : ${response.statusCode}');
+        print(
+            'isi response filter app usage dailynya bruh : ${response.statusCode}');
       }
       print('Isi dataList: $dataList');
       return dataList;
@@ -545,7 +546,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                       await updateChart();
                     },
                     child: SingleChildScrollView(
-                        physics: BouncingScrollPhysics(
+                        physics: ClampingScrollPhysics(
                             parent: AlwaysScrollableScrollPhysics()),
                         child: Container(
                             height: MediaQuery.of(context).size.height -
@@ -696,6 +697,10 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
       primaryXAxis: CategoryAxis(
         majorGridLines: MajorGridLines(width: 0),
       ),
+      primaryYAxis: NumericAxis(
+          maximum: 60 - dtxDaily.reduce(max) < 1
+              ? 60
+              : dtxDaily.reduce(max) ~/ 1 + 1),
       series: _columnData,
       tooltipBehavior: TooltipBehavior(
           enable: true,
@@ -742,6 +747,8 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
       primaryXAxis: CategoryAxis(
         majorGridLines: MajorGridLines(width: 0),
       ),
+      primaryYAxis: NumericAxis(
+          maximum: 24 - dtx.reduce(max) < 1 ? 24 : dtx.reduce(max) ~/ 1 + 1),
       series: _columnData,
       tooltipBehavior: TooltipBehavior(
           enable: true,
@@ -799,7 +806,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                   usageData = "${jam.toString()}h ${menit.toString()}m";
                 }
 
-                String iconUrl = app.iconUrl! ?? '';
+                String iconUrl = app.iconUrl ?? '';
                 return ListTile(
                   leading: app.iconUrl != null && app.iconUrl != ''
                       ? Container(
@@ -880,7 +887,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                   usageData = "${jam.toString()}h ${menit.toString()}m";
                 }
 
-                String iconUrl = app.iconUrl! ?? '';
+                String iconUrl = app.iconUrl ?? '';
                 return ListTile(
                   leading: app.iconUrl != null && app.iconUrl != ''
                       ? Container(

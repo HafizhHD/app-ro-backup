@@ -1,8 +1,4 @@
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
-import 'dart:ui';
-import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart' hide Response;
 
 import 'package:flutter/material.dart';
@@ -11,9 +7,7 @@ import 'package:ruangkeluarga/model/rk_child_model.dart';
 import 'package:ruangkeluarga/parent/view/detail_child_view.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/setup_invite_child.dart';
-import 'package:ruangkeluarga/parent/view_model/appUsage_model.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
-import 'package:ruangkeluarga/utils/app_usage.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,8 +19,6 @@ class HomeParentPage extends StatefulWidget {
 class _HomeParentPageState extends State<HomeParentPage> {
   late SharedPreferences prefs;
   bool flag = false;
-  double _opacity = 0.0;
-  List<AppUsageInfo> _infos = [];
   late Future<List<Application>> apps;
   List<Application> itemsApp = [];
   List<Child> childsList = [];
@@ -36,50 +28,42 @@ class _HomeParentPageState extends State<HomeParentPage> {
   late Future fLogin;
   final parentController = Get.find<ParentController>();
 
-  bool _isPlayerReady = false;
+  // void getUsageStats() async {
+  //   try {
+  //     DateTime endDate = new DateTime.now();
+  //     DateTime startDate = endDate.subtract(Duration(hours: 1));
+  //     List<AppUsageInfo> infoList =
+  //         await AppUsage.getAppUsage(startDate, endDate);
+  //     setState(() {
+  //       _infos = infoList;
+  //       log('list info $infoList');
+  //     });
 
-  final List<String> _ids = [
-    'unsplash-digital-habit.jpg',
-    'unsplash-reward.jpg',
-    'unsplash-parenting.jpg',
-  ];
+  //     for (var info in infoList) {
+  //       print(info.toString());
+  //     }
+  //   } on AppUsageException catch (exception) {
+  //     print(exception);
+  //   }
+  // }
 
-  void getUsageStats() async {
-    try {
-      DateTime endDate = new DateTime.now();
-      DateTime startDate = endDate.subtract(Duration(hours: 1));
-      List<AppUsageInfo> infoList =
-          await AppUsage.getAppUsage(startDate, endDate);
-      setState(() {
-        _infos = infoList;
-        log('list info $infoList');
-      });
+  // void getListApps() async {
+  //   try {
+  //     List<Application> appData = await DeviceApps.getInstalledApplications(
+  //         includeAppIcons: true,
+  //         includeSystemApps: true,
+  //         onlyAppsWithLaunchIntent: true);
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     itemsApp = appData;
+  //     prefs.setString("appsLists", json.encode(itemsApp));
+  //     prefs.commit();
 
-      for (var info in infoList) {
-        print(info.toString());
-      }
-    } on AppUsageException catch (exception) {
-      print(exception);
-    }
-  }
-
-  void getListApps() async {
-    try {
-      List<Application> appData = await DeviceApps.getInstalledApplications(
-          includeAppIcons: true,
-          includeSystemApps: true,
-          onlyAppsWithLaunchIntent: true);
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      itemsApp = appData;
-      prefs.setString("appsLists", json.encode(itemsApp));
-      prefs.commit();
-
-      // return appData;
-    } catch (exception) {
-      print(exception);
-      // return [];
-    }
-  }
+  //     // return appData;
+  //   } catch (exception) {
+  //     print(exception);
+  //     // return [];
+  //   }
+  // }
 
   void setBindingData() async {
     prefs = await SharedPreferences.getInstance();
@@ -329,7 +313,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
                 return ListView.builder(
                     // physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
+                    scrollDirection: Axis.horizontal, //Keluarga HKBP kebawah
                     itemCount: childsList.length,
                     itemBuilder: (BuildContext context, int index) {
                       parentController.setModeAsuh(
@@ -359,6 +343,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
   final Function() onAddChild;
 
   final parentController = Get.find<ParentController>();
+
   ChildCardWithBottomSheet(
       {required this.childData, required this.prefs, required this.onAddChild});
 
@@ -483,13 +468,15 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                   margin: EdgeInsets.only(
                                       left: 10, top: 5, bottom: 5, right: 10),
                                   child: childData.status == 'invitation'
-                                      ? Text(
-                                          'Menunggu Aktivasi',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 20),
-                                        )
+                                      ? Container(
+                                          margin: EdgeInsets.all(5),
+                                          child: Text(
+                                            'Menunggu Aktivasi',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16),
+                                          ))
                                       : GetBuilder<ParentController>(
                                           builder: (ctrl) {
                                             final thisScreenTime =
@@ -518,12 +505,133 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                         ),
                                 ),
                                 childData.status == 'invitation'
-                                    ? Container()
+                                    ? Container(
+                                        margin: EdgeInsets.only(
+                                            left: 15,
+                                            right: 15,
+                                            top: 5,
+                                            bottom: 5),
+                                        child: FlatButton(
+                                          height: 35,
+                                          minWidth: 100,
+                                          shape: new RoundedRectangleBorder(
+                                            borderRadius:
+                                                new BorderRadius.circular(15.0),
+                                          ),
+                                          onPressed: () async {
+                                            await Future(() {
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          InviteChildQR(
+                                                              allData: [
+                                                                prefs.getString(
+                                                                            rkEmailUser) !=
+                                                                        null
+                                                                    ? prefs.getString(
+                                                                        rkEmailUser)!
+                                                                    : '',
+                                                                childData.email !=
+                                                                        null
+                                                                    ? childData
+                                                                        .email!
+                                                                    : '',
+                                                                childData.phone !=
+                                                                        null
+                                                                    ? childData
+                                                                        .phone!
+                                                                    : '',
+                                                                childData.name !=
+                                                                        null
+                                                                    ? childData
+                                                                        .name!
+                                                                    : '',
+                                                                childData.age !=
+                                                                        null
+                                                                    ? childData
+                                                                        .age!
+                                                                    : 10,
+                                                                childData.status !=
+                                                                        null
+                                                                    ? childData
+                                                                        .status!
+                                                                    : '',
+                                                                childData.childOfNumber !=
+                                                                        null
+                                                                    ? childData
+                                                                        .childOfNumber!
+                                                                    : 1,
+                                                                childData.childNumber !=
+                                                                        null
+                                                                    ? childData
+                                                                        .childNumber!
+                                                                    : 1,
+                                                                childData.imgPhoto !=
+                                                                        null
+                                                                    ? childData
+                                                                        .imgPhoto!
+                                                                    : '',
+                                                                childData.birdDate !=
+                                                                        null
+                                                                    ? childData
+                                                                        .birdDate!
+                                                                        .toIso8601String()
+                                                                    : '',
+                                                                childData.address !=
+                                                                        null
+                                                                    ? childData
+                                                                        .address!
+                                                                    : '',
+                                                                'child'
+                                                              ],
+                                                              prefs: prefs)));
+                                            });
+                                          },
+                                          color: cOrtuBlue,
+                                          child: Text(
+                                            "INVITE ULANG",
+                                            style: TextStyle(
+                                              fontFamily: 'Raleway',
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15,
+                                            ),
+                                          ),
+                                        ))
                                     : Container(
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
+                                            // GetBuilder<ParentController>(builder: (ctrl) {
+                                            //   return Row(
+                                            //     children: [
+                                            //       GestureDetector(
+                                            //         onTap: () => ctrl.setModeAsuh(childData.childOfNumber ?? 0, 1),
+                                            //         child: Icon(
+                                            //           ctrl.getmodeAsuh(childData.childOfNumber ?? 0) >= 1 ? Icons.looks_one : Icons.looks_one_outlined,
+                                            //           color: cOrtuBlue,
+                                            //           size: 35,
+                                            //         ),
+                                            //       ),
+                                            //       GestureDetector(
+                                            //         onTap: () => ctrl.setModeAsuh(childData.childOfNumber ?? 0, 2),
+                                            //         child: Icon(
+                                            //           ctrl.getmodeAsuh(childData.childOfNumber ?? 0) >= 2 ? Icons.looks_two : Icons.looks_two_outlined,
+                                            //           color: cOrtuBlue,
+                                            //           size: 35,
+                                            //         ),
+                                            //       ),
+                                            //       GestureDetector(
+                                            //         onTap: () => ctrl.setModeAsuh(childData.childOfNumber ?? 0, 3),
+                                            //         child: Icon(
+                                            //           ctrl.getmodeAsuh(childData.childOfNumber ?? 0) == 3 ? Icons.looks_3 : Icons.looks_3_outlined,
+                                            //           color: cOrtuBlue,
+                                            //           size: 35,
+                                            //         ),
+                                            //       ),
+                                            //     ],
+                                            //   );
+                                            // }),
                                             IconButton(
                                               iconSize: 35,
                                               onPressed: () {
@@ -531,8 +639,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                                     MaterialPageRoute(
                                                         builder: (context) =>
                                                             DetailChildPage(
-                                                              title:
-                                                                  'Kontrol dan Konfigurasi',
+                                                              title: 'Lokasi',
                                                               name:
                                                                   '${childData.name}',
                                                               email:
@@ -547,7 +654,10 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                             ),
                                             IconButton(
                                               iconSize: 35,
-                                              onPressed: () {},
+                                              onPressed: () {
+                                                parentController
+                                                    .setBottomNavIndex(1);
+                                              },
                                               icon: Icon(
                                                 Icons.notifications,
                                                 color: cOrtuBlue,
@@ -592,7 +702,30 @@ class ChildCardWithBottomSheet extends StatelessWidget {
     );
   }
 
-  void showSelectUserType(context) async{
+  Widget contentTime(
+    String title,
+    String timeValue,
+  ) {
+    return Container(
+      padding: EdgeInsets.all(2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '$title',
+            style: TextStyle(color: Colors.white, fontSize: 10),
+          ),
+          Text(
+            '$timeValue',
+            style: TextStyle(
+                color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void showSelectUserType(context) async {
     showDialog(
       context: context,
       builder: (context) {
@@ -657,29 +790,6 @@ class ChildCardWithBottomSheet extends StatelessWidget {
           ],
         );
       },
-    );
-  }
-
-  Widget contentTime(
-    String title,
-    String timeValue,
-  ) {
-    return Container(
-      padding: EdgeInsets.all(2),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '$title',
-            style: TextStyle(color: Colors.white, fontSize: 10),
-          ),
-          Text(
-            '$timeValue',
-            style: TextStyle(
-                color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold),
-          ),
-        ],
-      ),
     );
   }
 }
