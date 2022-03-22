@@ -18,7 +18,8 @@ class AppUsages {
       id: json['_id'],
       emailUser: json['emailUser'],
       appUsageDate: json['appUsageDate'],
-      appUsagesDetail: appUsageData.map((e) => AppUsagesDetail.fromJson(e)).toList(),
+      appUsagesDetail:
+          appUsageData.map((e) => AppUsagesDetail.fromJson(e)).toList(),
     );
   }
 }

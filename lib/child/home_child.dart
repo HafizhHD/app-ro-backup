@@ -18,7 +18,8 @@ class HomeChild extends StatelessWidget {
     String filePath = '';
     String myUrl = '';
     try {
-      myUrl = 'https://www.google.com/maps/timeline/kml?authuser=0&pb=!1m8!1m3!1i2021!2i4!3i1!2m3!1i2021!2i4!3i4';
+      myUrl =
+          'https://www.google.com/maps/timeline/kml?authuser=0&pb=!1m8!1m3!1i2021!2i4!3i1!2m3!1i2021!2i4!3i4';
       var request = await httpClient.getUrl(Uri.parse(myUrl));
       var response = await request.close();
       if (response.statusCode == 200) {
@@ -46,13 +47,36 @@ class HomeChild extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-              constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
+              constraints: BoxConstraints(
+                  maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
               child: Obx(
                 () => FutureBuilder<bool>(
                     future: childController.fParentProfile.value,
                     builder: (context, snapshot) {
-                      if (snapshot.hasData && snapshot.data!) return CardWithBottomSheet(parentData: childController.parentProfile);
-                      return Container(padding: EdgeInsets.all(10), child: shimmerUserCard());
+                      if (snapshot.hasData && snapshot.data!)
+                        return ListView.builder(
+                            // physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            scrollDirection:
+                                Axis.horizontal,
+                            itemCount:
+                                childController.otherParentProfile.length + 1,
+                            itemBuilder: (BuildContext context, int index) {
+                              final screenSize = MediaQuery.of(context).size;
+                              final thisParent = index == 0
+                                  ? childController.parentProfile
+                                  : childController
+                                      .otherParentProfile[index - 1];
+                              return Container(
+                                // constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
+                                child:
+                                    CardWithBottomSheet(parentData: thisParent),
+                              );
+                            });
+                      //CardWithBottomSheet(parentData: childController.parentProfile);
+                      return Container(
+                          padding: EdgeInsets.all(10),
+                          child: shimmerUserCard());
                     }),
               )),
         ],
@@ -69,7 +93,8 @@ class CardWithBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final double paddingValue = 8;
-    final bool hasPhoto = parentData.imgPhoto != null && parentData.imgPhoto != '';
+    final bool hasPhoto =
+        parentData.imgPhoto != null && parentData.imgPhoto != '';
 
     return Container(
       margin: EdgeInsets.all(paddingValue),
@@ -87,13 +112,15 @@ class CardWithBottomSheet extends StatelessWidget {
                     child: Image.network(
                       parentData.imgPhoto!,
                       fit: BoxFit.cover,
-                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent? loadingProgress) {
                         if (loadingProgress == null) return child;
                         return Center(
                           child: CircularProgressIndicator(
                             color: cOrtuOrange,
                             value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
                                 : null,
                           ),
                         );
@@ -118,7 +145,8 @@ class CardWithBottomSheet extends StatelessWidget {
               initialChildSize: 0.2,
               minChildSize: 0.2,
               maxChildSize: 0.6,
-              builder: (BuildContext context, ScrollController scrollController) {
+              builder:
+                  (BuildContext context, ScrollController scrollController) {
                 return Container(
                   padding: EdgeInsets.all(5),
                   decoration: BoxDecoration(
@@ -128,7 +156,8 @@ class CardWithBottomSheet extends StatelessWidget {
                   width: screenSize.width,
                   child: NotificationListener(
                     //buat hilangin clamp scroll android
-                    onNotification: (OverscrollIndicatorNotification overscroll) {
+                    onNotification:
+                        (OverscrollIndicatorNotification overscroll) {
                       overscroll.disallowGlow();
                       return true;
                     },
@@ -141,7 +170,10 @@ class CardWithBottomSheet extends StatelessWidget {
                             margin: EdgeInsets.only(top: 2),
                             width: screenSize.width / 6,
                             height: 5,
-                            decoration: BoxDecoration(color: cOrtuGrey, borderRadius: BorderRadius.all(Radius.circular(15))),
+                            decoration: BoxDecoration(
+                                color: cOrtuGrey,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15))),
                           ),
                         ),
                         Flexible(
@@ -152,13 +184,17 @@ class CardWithBottomSheet extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
-                                  margin: EdgeInsets.only(left: 10.0, right: 10),
+                                  margin:
+                                      EdgeInsets.only(left: 10.0, right: 10),
                                   child: Text(
                                     '${parentData.name}',
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     textAlign: TextAlign.left,
-                                    style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ),
                                 Center(
@@ -168,7 +204,8 @@ class CardWithBottomSheet extends StatelessWidget {
                                       margin: EdgeInsets.all(10),
                                       decoration: BoxDecoration(
                                         color: Colors.red,
-                                        borderRadius: BorderRadius.all(Radius.circular(30)),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(30)),
                                       ),
                                       child: Container(
                                         margin: EdgeInsets.all(10),
@@ -177,11 +214,13 @@ class CardWithBottomSheet extends StatelessWidget {
                                             radius: 20,
                                             text: Row(
                                               mainAxisSize: MainAxisSize.min,
-                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
                                               children: [
                                                 Container(
                                                   child: Align(
-                                                    alignment: Alignment.centerLeft,
+                                                    alignment:
+                                                        Alignment.centerLeft,
                                                     child: Icon(
                                                       Icons.add_ic_call,
                                                       color: Colors.red,
@@ -189,12 +228,18 @@ class CardWithBottomSheet extends StatelessWidget {
                                                   ),
                                                 ),
                                                 Container(
-                                                  margin: EdgeInsets.only(left: 10.0),
+                                                  margin: EdgeInsets.only(
+                                                      left: 10.0),
                                                   child: Align(
-                                                    alignment: Alignment.centerRight,
+                                                    alignment:
+                                                        Alignment.centerRight,
                                                     child: Text(
                                                       'SOS',
-                                                      style: TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold),
+                                                      style: TextStyle(
+                                                          color: Colors.red,
+                                                          fontSize: 18,
+                                                          fontWeight:
+                                                              FontWeight.bold),
                                                     ),
                                                   ),
                                                 )
@@ -202,7 +247,10 @@ class CardWithBottomSheet extends StatelessWidget {
                                             ),
                                             onPress: () {
                                               // Navigator.of(context).push(MaterialPageRoute(builder: (context) => SOSRecordVideoPage()));
-                                              Navigator.of(context).push(MaterialPageRoute(builder: (context) => CameraApp()));
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          CameraApp()));
                                             }),
                                       )),
                                 ),

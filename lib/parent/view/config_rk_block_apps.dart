@@ -24,7 +24,8 @@ class RKConfigBlockAppsPage extends StatefulWidget {
 
   final String email;
   final String nama;
-  RKConfigBlockAppsPage({Key? key, required this.email, required this.nama}) : super(key: key);
+  RKConfigBlockAppsPage({Key? key, required this.email, required this.nama})
+      : super(key: key);
 }
 
 class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
@@ -50,7 +51,8 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
             List<dynamic> dataList = [];
 
             List<ApplicationInstalled> dataAppsInstalled =
-                List<ApplicationInstalled>.from(tmpData.map((model) => ApplicationInstalled.fromJson(model)));
+                List<ApplicationInstalled>.from(tmpData
+                    .map((model) => ApplicationInstalled.fromJson(model)));
             var imageUrl = "${prefs.getString(rkBaseUrlAppIcon)}";
 
             List<AppIconList> dataListIconApps = [];
@@ -58,26 +60,43 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
               var respList = jsonDecode(prefs.getString(rkListAppIcons)!);
               print('respList $respList');
               var listIcons = respList['appIcons'];
-              dataListIconApps = List<AppIconList>.from(listIcons.map((model) => AppIconList.fromJson(model)));
+              dataListIconApps = List<AppIconList>.from(
+                  listIcons.map((model) => AppIconList.fromJson(model)));
             }
 
             for (int i = 0; i < dataAppsInstalled.length; i++) {
-              final appIcon = dataListIconApps.where((e) => e.appId == dataAppsInstalled[i].packageId).toList();
+              final appIcon = dataListIconApps
+                  .where((e) => e.appId == dataAppsInstalled[i].packageId)
+                  .toList();
               dataList.add({
                 "appName": "${dataAppsInstalled[i].appName}",
                 "packageId": "${dataAppsInstalled[i].packageId}",
                 "blacklist": dataAppsInstalled[i].blacklist,
                 "appCategory": dataAppsInstalled[i].appCategory,
-                "limit": (dataAppsInstalled[i].limit != null)?dataAppsInstalled[i].limit.toString():'0',
-                "appIcons": appIcon.length > 0 ? "${imageUrl + appIcon.first.appIcon.toString()}" : '',
+                "limit": (dataAppsInstalled[i].limit != null)
+                    ? dataAppsInstalled[i].limit.toString()
+                    : '0',
+                "appIcons": appIcon.length > 0
+                    ? "${imageUrl + appIcon.first.appIcon.toString()}"
+                    : '',
               });
             }
-            List<AppListWithIcons> data = List<AppListWithIcons>.from(dataList.map((model) => AppListWithIcons.fromJson(model)));
+            List<AppListWithIcons> data = List<AppListWithIcons>.from(
+                dataList.map((model) => AppListWithIcons.fromJson(model)));
             data.sort((a, b) => a.appName!.compareTo(b.appName!));
+            data.sort((a, b) {
+              if (b.blacklist!) {
+                if (a.blacklist! == b.blacklist!) {
+                  return a.appName!.compareTo(b.appName!);
+                } else
+                  return 1;
+              } else
+                return -1;
+            });
             print('SetData');
             appList = data;
             appListSearch = data;
-            print('id : '+appDevices['_id']);
+            print('id : ' + appDevices['_id']);
             setState(() {});
             return data;
           } catch (e, s) {
@@ -100,12 +119,14 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
   }
 
   Future<Response> blockApp(String appID, String appCategory) async {
-    Response response = await MediaRepository().addLimitUsageAndBlockApp(widget.email, appID, appCategory, 0, 'blacklist');
+    Response response = await MediaRepository().addLimitUsageAndBlockApp(
+        widget.email, appID, appCategory, 0, 'blacklist');
     return response;
   }
 
   Future<Response> unBlockApp(String appID, String appCategory) async {
-    Response response = await MediaRepository().addLimitUsageAndBlockApp(widget.email, appID, appCategory, 0, '');
+    Response response = await MediaRepository()
+        .addLimitUsageAndBlockApp(widget.email, appID, appCategory, 0, '');
     return response;
   }
 
@@ -127,7 +148,8 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
       backgroundColor: cPrimaryBg,
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Blok Aplikasi / Games', style: TextStyle(color: cOrtuWhite)),
+        title:
+            Text('Blok Aplikasi / Games', style: TextStyle(color: cOrtuWhite)),
         backgroundColor: cPrimaryBg,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
@@ -143,7 +165,11 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
           children: [
             WSearchBar(
               fOnChanged: (v) {
-                appListSearch = appList.where((e) => e.appName!.toLowerCase().contains(v.toLowerCase()) == true).toList();
+                appListSearch = appList
+                    .where((e) =>
+                        e.appName!.toLowerCase().contains(v.toLowerCase()) ==
+                        true)
+                    .toList();
                 setState(() {});
               },
             ),
@@ -156,7 +182,10 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
                     if (!snapshot.hasData) return wProgressIndicator();
 
                     final listApps = snapshot.data ?? [];
-                    if (listApps.length <= 0) return Center(child: Text('List aplikasi kosong', style: TextStyle(color: cOrtuWhite)));
+                    if (listApps.length <= 0)
+                      return Center(
+                          child: Text('List aplikasi kosong',
+                              style: TextStyle(color: cOrtuWhite)));
                     return ListView.builder(
                         itemCount: appListSearch.length,
                         itemBuilder: (ctx, index) {
@@ -170,14 +199,16 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
                                 children: [
                                   app.appIcons != null && app.appIcons != ''
                                       ? Container(
-                                          margin: EdgeInsets.all(5).copyWith(right: 10),
+                                          margin: EdgeInsets.all(5)
+                                              .copyWith(right: 10),
                                           child: Image.network(
                                             app.appIcons ?? '',
                                             height: 50,
                                             fit: BoxFit.contain,
                                           ))
                                       : Container(
-                                          margin: EdgeInsets.all(5).copyWith(right: 10),
+                                          margin: EdgeInsets.all(5)
+                                              .copyWith(right: 10),
                                           color: cOrtuBlue,
                                           height: 50,
                                           child: Center(
@@ -197,28 +228,42 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
                                 children: [
                                   Text(
                                     app.blacklist ?? false ? 'ON' : 'OFF',
-                                    style: TextStyle(color: app.blacklist ?? false ? cOrtuBlue : cOrtuWhite),
+                                    style: TextStyle(
+                                        color: app.blacklist ?? false
+                                            ? cOrtuBlue
+                                            : cOrtuWhite),
                                   ),
                                   IconButton(
                                       onPressed: () async {
                                         showLoadingOverlay();
                                         final response;
-                                        if (app.blacklist == false) response = await blockApp(app.packageId!, app.appCategory);
-                                        else response = await unBlockApp(app.packageId!, app.appCategory);
+                                        if (app.blacklist == false)
+                                          response = await blockApp(
+                                              app.packageId!, app.appCategory);
+                                        else
+                                          response = await unBlockApp(
+                                              app.packageId!, app.appCategory);
                                         if (response.statusCode == 200) {
                                           fAppList = fetchAppList();
                                           setState(() {});
                                           closeOverlay();
-                                          showToastSuccess(ctx: context, successText: "Berhasil memblokir aplikasi ${app.appName}");
+                                          showToastSuccess(
+                                              ctx: context,
+                                              successText:
+                                                  "Berhasil memblokir aplikasi ${app.appName}");
                                         } else {
                                           closeOverlay();
                                           showToastFailed(
-                                              ctx: context, failedText: "Gagal memblokir aplikasi ${app.appName}. Terjadi kesalahan server");
+                                              ctx: context,
+                                              failedText:
+                                                  "Gagal memblokir aplikasi ${app.appName}. Terjadi kesalahan server");
                                         }
                                       },
                                       icon: Icon(
                                         Icons.app_blocking,
-                                        color: app.blacklist ?? false ? cOrtuBlue : cOrtuWhite,
+                                        color: app.blacklist ?? false
+                                            ? cOrtuBlue
+                                            : cOrtuWhite,
                                       ))
                                 ],
                               ),

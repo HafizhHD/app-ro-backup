@@ -38,7 +38,8 @@ class InboxNotif {
     //
     // }
     return InboxNotif(
-      readStatus: json['status'].toString().toLowerCase() == 'unread' ? false : true,
+      readStatus:
+          json['status'].toString().toLowerCase() == 'unread' ? false : true,
       id: json['_id'],
       type: notifTypeFromString(json['type'].toString()),
       message: messages,

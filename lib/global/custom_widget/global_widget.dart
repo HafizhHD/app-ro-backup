@@ -32,14 +32,20 @@ void closeOverlay({bool all = false}) {
 
 class WSearchBar extends StatelessWidget {
   final Function(String)? fOnChanged;
+  final Function(String)? fOnSubmitted;
   final TextEditingController? tecController;
   final String hintText;
-  WSearchBar({this.fOnChanged, this.tecController, this.hintText = "Cari"});
+  WSearchBar(
+      {this.fOnChanged,
+        this.fOnSubmitted,
+        this.tecController,
+        this.hintText = "Cari"});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: cOrtuWhite, borderRadius: BorderRadius.circular(10)),
+      decoration: BoxDecoration(
+          color: cOrtuWhite, borderRadius: BorderRadius.circular(10)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -55,6 +61,7 @@ class WSearchBar extends StatelessWidget {
                 data: ThemeData.light(),
                 child: TextField(
                     onChanged: fOnChanged,
+                    onSubmitted: fOnSubmitted,
                     controller: tecController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
@@ -75,13 +82,19 @@ class WSearchBar extends StatelessWidget {
   }
 }
 
-Widget roElevatedButton({Color cColor = cOrtuBlue, double radius = 10, required Widget text, required Function()? onPress}) {
+Widget roElevatedButton(
+    {Color cColor = cOrtuBlue,
+    double radius = 10,
+    required Widget text,
+    required Function()? onPress}) {
   return ElevatedButton(
     style: ButtonStyle(
-      shape: MaterialStateProperty.all((RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius)))),
+      shape: MaterialStateProperty.all((RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radius)))),
       backgroundColor: MaterialStateProperty.resolveWith<Color>(
         (Set<MaterialState> states) {
-          if (states.contains(MaterialState.disabled)) return Colors.grey.shade700;
+          if (states.contains(MaterialState.disabled))
+            return Colors.grey.shade700;
           return cColor;
         },
       ),
@@ -94,7 +107,8 @@ Widget roElevatedButton({Color cColor = cOrtuBlue, double radius = 10, required 
 
 MaterialStateProperty<double> globalBtnElevation() {
   return MaterialStateProperty.resolveWith((states) {
-    if (states.contains(MaterialState.disabled) || states.contains(MaterialState.pressed)) return 0;
+    if (states.contains(MaterialState.disabled) ||
+        states.contains(MaterialState.pressed)) return 0;
     if (states.contains(MaterialState.hovered)) return 6;
     return 4;
   });
@@ -126,7 +140,8 @@ Future<bool> onWillCloseApp() async {
   return false;
 }
 
-bool showKeyboard(BuildContext ctx) => MediaQuery.of(ctx).viewInsets.bottom > keyboardHeight;
+bool showKeyboard(BuildContext ctx) =>
+    MediaQuery.of(ctx).viewInsets.bottom > keyboardHeight;
 
 void logUserOut() {
   Get.dialog(

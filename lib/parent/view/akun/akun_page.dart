@@ -51,8 +51,7 @@ class AkunPage extends StatelessWidget {
                             id: childData.id,
                             phone: childData.phone ?? '',
                             alamat: childData.address ?? '',
-                            birthDate: childData.birdDate
-                        );
+                            birthDate: childData.birdDate);
                       },
                     ),
                   ),
@@ -109,7 +108,8 @@ class AkunPage extends StatelessWidget {
                 isParent: boolParent,
                 imgUrl: imgUrl,
                 birthDate: birthDate,
-                parentGender: boolParent ? genderCharFromString(isParent) : null,
+                parentGender:
+                    boolParent ? genderCharFromString(isParent) : null,
               ),
             );
           },
@@ -130,14 +130,20 @@ class AkunPage extends StatelessWidget {
                             color: cOrtuBlue,
                             borderRadius: BorderRadius.circular(15.0),
                           ),
-                          child: Center(child: Icon(Icons.add_a_photo, color: cPrimaryBg, size: 50)),
+                          child: Center(
+                              child: Icon(Icons.add_a_photo,
+                                  color: cPrimaryBg, size: 50)),
                         )
                       : Container(
                           margin: EdgeInsets.all(5),
                           decoration: BoxDecoration(
                             image: imgUrl.contains('http')
-                                ? DecorationImage(image: NetworkImage(imgUrl), fit: BoxFit.cover)
-                                : DecorationImage(image: AssetImage(imgUrl), fit: BoxFit.cover),
+                                ? DecorationImage(
+                                    image: NetworkImage(imgUrl),
+                                    fit: BoxFit.cover)
+                                : DecorationImage(
+                                    image: AssetImage(imgUrl),
+                                    fit: BoxFit.cover),
                             borderRadius: BorderRadius.circular(15.0),
                           ),
                         ),
@@ -196,9 +202,14 @@ class AkunPage extends StatelessWidget {
               await Get.find<ParentController>().getParentChildData();
               closeOverlay();
               closeOverlay();
-              showToastSuccess(ctx: Get.context!, successText: 'Berhasil menghapus anak dengan nama $childName');
+              showToastSuccess(
+                  ctx: Get.context!,
+                  successText:
+                      'Berhasil menghapus anak dengan nama $childName');
             } else
-              showToastFailed(ctx: Get.context!, failedText: 'Gagal menghapus anak dengan nama $childName');
+              showToastFailed(
+                  ctx: Get.context!,
+                  failedText: 'Gagal menghapus anak dengan nama $childName');
           },
           child: Text('Hapus', style: TextStyle(color: cOrtuBlue)),
         ),

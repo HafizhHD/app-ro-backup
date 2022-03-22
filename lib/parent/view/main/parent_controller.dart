@@ -38,7 +38,10 @@ class ParentController extends GetxController {
   ///Child Activity Detail
   Map<String, List<AppUsages>> mapChildActivity = {},
       mapChildActivityDaily = {};
-  Map<String, String> mapChildScreentime = {}, mapChildScreentimeGaming = {}, mapChildScreentimeSocial = {}, mapChildScreentimeDaily = {};
+  Map<String, String> mapChildScreentime = {},
+      mapChildScreentimeGaming = {},
+      mapChildScreentimeSocial = {},
+      mapChildScreentimeDaily = {};
 
   ///Getter & Setter
   int get bottomNavIndex => _bottomNavIndex.value;
@@ -53,7 +56,8 @@ class ParentController extends GetxController {
     update();
   }
 
-  void setParentProfile(ParentProfile p) { //tg
+  void setParentProfile(ParentProfile p) {
+    //tg
     parentProfile = p;
     update();
   }
@@ -100,7 +104,8 @@ class ParentController extends GetxController {
   Future<List<Child>> _getUserData() async {
     prefs = await SharedPreferences.getInstance();
     final userID = prefs.getString(rkUserID);
-    Response response = await MediaRepository().getParentChildData(userID ?? '');
+    Response response =
+        await MediaRepository().getParentChildData(userID ?? '');
     if (response.statusCode == 200) {
       final jsonUser = jsonDecode(response.body)['user'];
       if (jsonDecode(response.body)['resultCode'] == "OK") {
@@ -295,8 +300,10 @@ class ParentController extends GetxController {
             });
           }
           mapChildScreentime[child.email!] = setAverageDaily(seconds ~/ 1000);
-          mapChildScreentimeGaming[child.email!] = setAverageDaily(secondsGaming ~/ 1000);
-          mapChildScreentimeSocial[child.email!] = setAverageDaily(secondsSocial ~/ 1000);
+          mapChildScreentimeGaming[child.email!] =
+              setAverageDaily(secondsGaming ~/ 1000);
+          mapChildScreentimeSocial[child.email!] =
+              setAverageDaily(secondsSocial ~/ 1000);
           update();
         }
       });
@@ -318,11 +325,11 @@ class ParentController extends GetxController {
         findLastHourOfTheDay(DateTime.now()));
 
     usageInfo.forEach((e) {
-      print('Ini nama pekejnya ${e.packageName}');
-      print(
-          'Ini pertama dipake ${DateTime.fromMillisecondsSinceEpoch(int.parse(e.firstTimeStamp!))}');
-      print(
-          'Ini terakhir dipake ${DateTime.fromMillisecondsSinceEpoch(int.parse(e.lastTimeStamp!))}');
+      // print('Ini nama pekejnya ${e.packageName}');
+      // print(
+      //     'Ini pertama dipake ${DateTime.fromMillisecondsSinceEpoch(int.parse(e.firstTimeStamp!))}');
+      // print(
+      //     'Ini terakhir dipake ${DateTime.fromMillisecondsSinceEpoch(int.parse(e.lastTimeStamp!))}');
     });
 
     if (parentProfile.children != null) {

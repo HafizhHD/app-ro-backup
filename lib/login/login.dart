@@ -40,16 +40,27 @@ class _LoginState extends State<LoginPage> {
 
   Future<void> _handleSignIn() async {
     try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.isSignedIn() ? await _googleSignIn.signInSilently() : await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleUser = await _googleSignIn.isSignedIn()
+          ? await _googleSignIn.signInSilently()
+          : await _googleSignIn.signIn();
       if (googleUser != null) {
         await onLogin(googleUser);
       } else {
         closeOverlay();
-        showToastFailed(failedText: 'Gagal login google', ctx: context);
+        showToastFailed(
+            failedText: 'Gagal login google. Coba beberapa saat lagi.',
+            ctx: context);
       }
     } catch (error) {
       closeOverlay();
-      showSnackbar('$error', bgColor: Colors.red, pShowDuration: Duration(seconds: 10));
+      showSnackbar(
+          error.toString(),
+          bgColor: Colors.red,
+          pShowDuration: Duration(seconds: 10));
+      // showSnackbar(
+      //     'Gagal melakukan login google. Mohon cek kembali koneksi internet Anda.',
+      //     bgColor: Colors.red,
+      //     pShowDuration: Duration(seconds: 10));
       print('Google Login Error: $error');
     }
   }
@@ -66,7 +77,11 @@ class _LoginState extends State<LoginPage> {
       await prefs.setString(rkUserName, googleUser.displayName.toString());
       await prefs.setString(rkPhotoUrl, googleUser.photoUrl.toString());
       await prefs.setString(accessGToken, googleKey.accessToken.toString());
-      Response response = await MediaRepository().userLogin(googleUser.email.toString(), googleKey.accessToken.toString(), token, '1.0');
+      Response response = await MediaRepository().userLogin(
+          googleUser.email.toString(),
+          googleKey.accessToken.toString(),
+          token,
+          '1.0');
       await onHandleLogin(response);
     }).catchError((err) {
       print('inner error : $err');
@@ -105,12 +120,11 @@ class _LoginState extends State<LoginPage> {
               // } else {
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(
-                  builder: (context) =>
-                    ChildMain(
-                      childEmail: jsonUser['emailUser'],
-                      childName: jsonUser['nameUser'],
-                    )),
-                  (Route<dynamic> route) => false,
+                    builder: (context) => ChildMain(
+                          childEmail: jsonUser['emailUser'],
+                          childName: jsonUser['nameUser'],
+                        )),
+                (Route<dynamic> route) => false,
               );
               //}
             } else {
@@ -122,19 +136,20 @@ class _LoginState extends State<LoginPage> {
               // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ParentMain()));
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => ParentMain()),
-                    (Route<dynamic> route) => false,
+                (Route<dynamic> route) => false,
               );
             }
           }
-        }
-        else {
+        } else {
           await prefs.setBool(isPrefLogin, false);
-          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'Ruang ORTU by ASIA')));
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (context) =>
+                  SetupParentProfilePage(title: 'Ruang ORTU by ASIA')));
         }
-      }
-      else {
+      } else {
         await prefs.setBool(isPrefLogin, false);
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => SetupParentProfilePage(title: 'Ruang ORTU by ASIA')));
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (context) => SetupParentProfilePage(title: 'Ruang ORTU by ASIA')));
       }
     } catch (e, s) {
       print('onHandleLogin error : $e');
@@ -210,7 +225,8 @@ class _LoginState extends State<LoginPage> {
                 ),
               ),
               Container(
-                padding: EdgeInsets.only(top: 50, bottom: 20, left: 20, right: 20),
+                padding:
+                    EdgeInsets.only(top: 50, bottom: 20, left: 20, right: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -280,7 +296,10 @@ class _LoginState extends State<LoginPage> {
                         child: Image.asset(
                           'assets/images/google_logo.png',
                         )),
-                    title: Text('Sign in with Google', textAlign: TextAlign.center, style: TextStyle(color: _okPolicy ? cPrimaryBg : cOrtuWhite)),
+                    title: Text('Sign in with Google',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: _okPolicy ? cPrimaryBg : cOrtuWhite)),
                     onTap: _okPolicy
                         ? () async {
                             showLoadingOverlay();

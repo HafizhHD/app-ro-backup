@@ -12,6 +12,7 @@ class ChildProfile {
   final String? imgPhoto;
   final DateTime? birdDate;
   final ParentProfile parent;
+  final List otherParent;
   final Child? childInfo;
 
   ChildProfile({
@@ -24,6 +25,7 @@ class ChildProfile {
     this.imgPhoto,
     this.birdDate,
     required this.parent,
+    required this.otherParent,
     this.childInfo,
   });
 
@@ -38,8 +40,11 @@ class ChildProfile {
         address: json['address'],
         imgPhoto: json['imagePhoto'],
         userType: json['userType'],
-        birdDate: bdate != null && bdate != '' ? DateTime.parse(bdate).toUtc().toLocal() : null,
+        birdDate: bdate != null && bdate != ''
+            ? DateTime.parse(bdate).toUtc().toLocal()
+            : null,
         parent: ParentProfile.fromJson(json['parent']),
+        otherParent: json['otherParent'],
         childInfo: Child.fromJson(json['childInfo']),
       );
     } catch (e, s) {
@@ -52,6 +57,7 @@ class ChildProfile {
         phone: json['phoneNumber'],
         address: json['address'],
         parent: ParentProfile.fromJson(json['parent']),
+        otherParent: json['otherParent'],
         imgPhoto: json['imagePhoto'],
         userType: json['userType'],
       );
