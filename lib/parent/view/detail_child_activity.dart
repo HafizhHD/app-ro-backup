@@ -513,11 +513,11 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
   Widget build(BuildContext context) {
     AppBar appBar = AppBar(
       centerTitle: true,
-      title: Text(widget.name, style: TextStyle(color: cOrtuWhite)),
+      title: Text(widget.name, style: TextStyle(color: cOrtuBlack)),
       backgroundColor: cPrimaryBg,
       iconTheme: IconThemeData(color: Colors.grey.shade700),
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
+        icon: Icon(Icons.arrow_back_ios, color: cOrtuBlack),
         onPressed: () => Navigator.of(context).pop(),
       ),
       elevation: 0,
@@ -579,7 +579,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: cOrtuWhite)),
+                        color: cOrtuBlack)),
               ),
             ],
           ),
@@ -606,7 +606,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
             margin: EdgeInsets.all(10.0),
             child: Text(
               type == 'week' ? 'Rata-rata Mingguan' : 'Rata-rata Harian',
-              style: TextStyle(fontSize: 16, color: cOrtuWhite),
+              style: TextStyle(fontSize: 16, color: cOrtuBlack),
             ),
           ),
           Container(
@@ -616,7 +616,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: cOrtuWhite,
+                color: cOrtuBlack,
               ),
             ),
           ),
@@ -633,7 +633,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                 children: [
                   Text(
                       'Update today ${lastUpdated != '' ? lastUpdated : widget.lastUpdate}',
-                      style: TextStyle(fontSize: 14, color: cOrtuWhite)),
+                      style: TextStyle(fontSize: 14, color: cOrtuBlack)),
                   TextButton(
                       style: TextButton.styleFrom(
                           textStyle: TextStyle(fontSize: 14, color: cOrtuBlue)),
@@ -713,7 +713,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                 margin: EdgeInsets.all(5),
                 child: Text(
                     '${point.x} : ${point.y ~/ 1}m ${((point.y - (point.y ~/ 1)) * 60) ~/ 1}s',
-                    style: TextStyle(color: cOrtuWhite)));
+                    style: TextStyle(color: cOrtuBlack)));
           },
           header: ''),
     );
@@ -761,7 +761,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                 margin: EdgeInsets.all(5),
                 child: Text(
                     '${point.x} : ${point.y ~/ 1}h ${((point.y - (point.y ~/ 1)) * 60) ~/ 1}m',
-                    style: TextStyle(color: cOrtuWhite)));
+                    style: TextStyle(color: cOrtuBlack)));
           },
           header: ''),
     );
@@ -826,7 +826,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                             child: Icon(Icons.android),
                           ),
                         ),
-                  title: Text(app.appName, style: TextStyle(color: cOrtuWhite)),
+                  title: Text(app.appName, style: TextStyle(color: cOrtuBlack)),
                   subtitle: Row(
                     children: <Widget>[
                       Container(
@@ -837,7 +837,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                             borderRadius: BorderRadius.circular(10.0),
                             color: Color(0xffFF018786)),
                       ),
-                      Text(usageData, style: TextStyle(color: cOrtuWhite))
+                      Text(usageData, style: TextStyle(color: cOrtuBlack))
                     ],
                   ),
                 );
@@ -907,7 +907,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                             child: Icon(Icons.android),
                           ),
                         ),
-                  title: Text(app.appName, style: TextStyle(color: cOrtuWhite)),
+                  title: Text(app.appName, style: TextStyle(color: cOrtuBlack)),
                   subtitle: Row(
                     children: <Widget>[
                       Container(
@@ -918,7 +918,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                             borderRadius: BorderRadius.circular(10.0),
                             color: Color(0xffFF018786)),
                       ),
-                      Text(usageData, style: TextStyle(color: cOrtuWhite))
+                      Text(usageData, style: TextStyle(color: cOrtuBlack))
                     ],
                   ),
                 );

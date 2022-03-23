@@ -20,7 +20,9 @@ class SplashInfo extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Hero(tag: 'ruangortuIcon', child: Image.asset(currentAppIconPath)),
+                    Hero(
+                        tag: 'ruangortuIcon',
+                        child: Image.asset(currentAppIconPath)),
                     // Text(
                     //   'Ruang ORTU by ASIA',
                     //   style: TextStyle(
@@ -34,7 +36,7 @@ class SplashInfo extends StatelessWidget {
                       'Aplikasi Untuk Keluarga',
                       style: TextStyle(
                         fontSize: 20,
-                        color: cOrtuWhite,
+                        color: cOrtuBlack,
                       ),
                     ),
                   ],
@@ -49,11 +51,14 @@ class SplashInfo extends StatelessWidget {
                     child: IconButton(
                       iconSize: 50,
                       icon: Container(
-                        decoration: BoxDecoration(color: cAccentButton, shape: BoxShape.circle),
-                        child: Icon(Icons.arrow_forward_rounded, color: cPrimaryBg),
+                        decoration: BoxDecoration(
+                            color: cAccentButton, shape: BoxShape.circle),
+                        child: Icon(Icons.arrow_forward_rounded,
+                            color: cPrimaryBg),
                       ),
                       // onPressed: () => Navigator.of(context).push(leftTransitionRoute(kReleaseMode ? SplashInfo1() : LoginPage())),
-                      onPressed: () => Navigator.of(context).push(leftTransitionRoute(SplashInfo1())),
+                      onPressed: () => Navigator.of(context)
+                          .push(leftTransitionRoute(SplashInfo1())),
                     ),
                   ),
                 ),

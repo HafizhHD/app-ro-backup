@@ -222,7 +222,7 @@ class _LoginState extends State<LoginPage> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20,
-                    color: cOrtuWhite,
+                    color: cOrtuBlack,
                   ),
                 ),
               ),
@@ -233,8 +233,8 @@ class _LoginState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Checkbox(
-                        side: BorderSide(color: cOrtuWhite),
-                        activeColor: cOrtuWhite,
+                        side: BorderSide(color: cOrtuBlack),
+                        activeColor: cOrtuBlack,
                         checkColor: cPrimaryBg,
                         value: _okPolicy,
                         onChanged: (value) {
@@ -246,7 +246,7 @@ class _LoginState extends State<LoginPage> {
                         child: RichText(
                           text: TextSpan(
                             text: 'Saya telah membaca dan menyetujui \n',
-                            style: TextStyle(color: cOrtuWhite),
+                            style: TextStyle(color: cOrtuBlack),
                             children: <TextSpan>[
                               TextSpan(
                                 recognizer: _onTapPP,
@@ -259,7 +259,7 @@ class _LoginState extends State<LoginPage> {
                               TextSpan(
                                 text: ' dan ',
                                 style: TextStyle(
-                                  color: cOrtuWhite,
+                                  color: cOrtuBlack,
                                 ),
                               ),
                               TextSpan(
@@ -273,7 +273,7 @@ class _LoginState extends State<LoginPage> {
                               TextSpan(
                                 text: '\ndari $appName',
                                 style: TextStyle(
-                                  color: cOrtuWhite,
+                                  color: cOrtuBlack,
                                 ),
                               ),
                             ],
@@ -288,7 +288,7 @@ class _LoginState extends State<LoginPage> {
                   margin: const EdgeInsets.all(10).copyWith(bottom: 50),
                   width: screenSize.width / 1.5,
                   decoration: BoxDecoration(
-                    color: _okPolicy ? cOrtuWhite : cDisabled,
+                    color: _okPolicy ? cOrtuBlue : cDisabled,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: ListTile(

@@ -194,7 +194,7 @@ void callbackBackgroundService() async {
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: cPrimaryBg, statusBarIconBrightness: Brightness.light));
+      statusBarColor: cPrimaryBg, statusBarIconBrightness: Brightness.dark));
 
   await runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -314,6 +314,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           builder: (context) => SetupPermissionChildPage(
                               email: roUserEmail, name: roUserName)));
                     } else {
+                      Get.put(FeedController());
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (context) => ChildMain(
@@ -324,13 +325,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     }
                   }
                 } else {
+                  Get.put(FeedController());
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => ParentMain()),
                     (Route<dynamic> route) => false,
                   );
                 }
               }
-              Get.put(FeedController());
             } else {
               Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context) => SplashInfo()));

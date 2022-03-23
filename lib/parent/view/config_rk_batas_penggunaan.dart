@@ -20,15 +20,19 @@ class RKConfigBatasPenggunaan extends StatelessWidget {
 class RKConfigBatasPenggunaanPage extends StatefulWidget {
   // List<charts.Series> seriesList;
   @override
-  _RKConfigBatasPenggunaanPageState createState() => _RKConfigBatasPenggunaanPageState();
+  _RKConfigBatasPenggunaanPageState createState() =>
+      _RKConfigBatasPenggunaanPageState();
   final String title;
   final String name;
   final String email;
 
-  RKConfigBatasPenggunaanPage({Key? key, required this.title, required this.name, required this.email}) : super(key: key);
+  RKConfigBatasPenggunaanPage(
+      {Key? key, required this.title, required this.name, required this.email})
+      : super(key: key);
 }
 
-class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPage> {
+class _RKConfigBatasPenggunaanPageState
+    extends State<RKConfigBatasPenggunaanPage> {
   bool checkSocial = false;
   bool checkGames = false;
   bool checkProductivity = false;
@@ -44,17 +48,20 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
 
   Future<List<AppUsageData>> getData() async {
     mapUsageDataApp.clear();
-    Response response = await MediaRepository().fetchLimitUsageFilter(widget.email);
+    Response response =
+        await MediaRepository().fetchLimitUsageFilter(widget.email);
     // print('isi response filter app usage : ${response.body}');
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
       if (json['resultCode'] == "OK") {
         List usageData = json['appUsageLimit'] as List;
-        final appUsageLimit = usageData.map((e) => AppUsageData.fromJson(e)).toList();
+        final appUsageLimit =
+            usageData.map((e) => AppUsageData.fromJson(e)).toList();
         appUsageLimit.forEach((e) {
           if (e.appId != null && e.appId != '')
             mapUsageDataApp[e.appId] = e.limit;
-          else if (e.appCategory != null && e.appCategory != '') mapUsageDataCategory[e.appCategory] = e.limit;
+          else if (e.appCategory != null && e.appCategory != '')
+            mapUsageDataCategory[e.appCategory] = e.limit;
         });
         setState(() {});
         return appUsageLimit;
@@ -79,28 +86,37 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
           List<dynamic> tmpData = appDevices['appName'];
           List<dynamic> dataList = [];
           List<ApplicationInstalled> dataAppsInstalled =
-              List<ApplicationInstalled>.from(tmpData.map((model) => ApplicationInstalled.fromJson(model)));
+              List<ApplicationInstalled>.from(
+                  tmpData.map((model) => ApplicationInstalled.fromJson(model)));
           var imageUrl = "${prefs.getString(rkBaseUrlAppIcon)}";
 
           List<AppIconList> dataListIconApps = [];
           if (prefs.getString(rkListAppIcons) != null) {
             var respList = jsonDecode(prefs.getString(rkListAppIcons)!);
             var listIcons = respList['appIcons'];
-            dataListIconApps = List<AppIconList>.from(listIcons.map((model) => AppIconList.fromJson(model)));
+            dataListIconApps = List<AppIconList>.from(
+                listIcons.map((model) => AppIconList.fromJson(model)));
           }
 
           for (int i = 0; i < dataAppsInstalled.length; i++) {
-            final appIcon = dataListIconApps.where((e) => e.appId == dataAppsInstalled[i].packageId).toList();
+            final appIcon = dataListIconApps
+                .where((e) => e.appId == dataAppsInstalled[i].packageId)
+                .toList();
             dataList.add({
               "appName": "${dataAppsInstalled[i].appName}",
               "packageId": "${dataAppsInstalled[i].packageId}",
               "blacklist": dataAppsInstalled[i].blacklist,
               "appCategory": dataAppsInstalled[i].appCategory,
-              "limit": (dataAppsInstalled[i].limit != null)?dataAppsInstalled[i].limit.toString():'0',
-              "appIcons": appIcon.length > 0 ? "${imageUrl + appIcon.first.appIcon.toString()}" : '',
+              "limit": (dataAppsInstalled[i].limit != null)
+                  ? dataAppsInstalled[i].limit.toString()
+                  : '0',
+              "appIcons": appIcon.length > 0
+                  ? "${imageUrl + appIcon.first.appIcon.toString()}"
+                  : '',
             });
           }
-          List<AppListWithIcons> data = List<AppListWithIcons>.from(dataList.map((model) => AppListWithIcons.fromJson(model)));
+          List<AppListWithIcons> data = List<AppListWithIcons>.from(
+              dataList.map((model) => AppListWithIcons.fromJson(model)));
           data.sort((a, b) => a.appName!.compareTo(b.appName!));
           print('SetData');
           appList = data;
@@ -121,13 +137,16 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
   }
 
   Future<Response> onRemoveData(String category, String appId) async {
-    Response response = await MediaRepository().removeAppLimit(widget.email, category);
+    Response response =
+        await MediaRepository().removeAppLimit(widget.email, category);
     // Response response = await MediaRepository().removeAppLimit(widget.email, appId);
     return response;
   }
 
-  Future<Response> addAppUsageLimit(String category, String appId, int limit) async {
-    return await MediaRepository().addLimitUsageAndBlockApp(widget.email, appId, category, limit, limit > 0 ? 'Aktif' : '');
+  Future<Response> addAppUsageLimit(
+      String category, String appId, int limit) async {
+    return await MediaRepository().addLimitUsageAndBlockApp(
+        widget.email, appId, category, limit, limit > 0 ? 'Aktif' : '');
   }
 
   @override
@@ -143,10 +162,10 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
       backgroundColor: cPrimaryBg,
       appBar: AppBar(
         centerTitle: true,
-        title: Text(widget.name, style: TextStyle(color: cOrtuWhite)),
+        title: Text(widget.name, style: TextStyle(color: cOrtuBlack)),
         backgroundColor: cPrimaryBg,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
+          icon: Icon(Icons.arrow_back_ios, color: cOrtuBlack),
           onPressed: () => Navigator.of(context).pop(),
         ),
         elevation: 0,
@@ -159,7 +178,11 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
           children: [
             WSearchBar(
               fOnChanged: (v) {
-                appListSearch = appList.where((e) => e.appName!.toLowerCase().contains(v.toLowerCase()) == true).toList();
+                appListSearch = appList
+                    .where((e) =>
+                        e.appName!.toLowerCase().contains(v.toLowerCase()) ==
+                        true)
+                    .toList();
                 setState(() {});
               },
             ),
@@ -174,7 +197,8 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                     final listApps = snapshot.data ?? [];
                     if (listApps.length <= 0)
                       return Center(
-                        child: Text('List aplikasi kosong', style: TextStyle(color: cOrtuWhite)),
+                        child: Text('List aplikasi kosong',
+                            style: TextStyle(color: cOrtuBlack)),
                       );
                     listApps.sort((a, b) => a.appName!.compareTo(b.appName!));
 
@@ -182,7 +206,8 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                         itemCount: appListSearch.length,
                         itemBuilder: (ctx, index) {
                           final app = appListSearch[index];
-                          final int timeLimit = mapUsageDataApp[app.packageId] ?? 0;
+                          final int timeLimit =
+                              mapUsageDataApp[app.packageId] ?? 0;
                           var limitTime = "0hrs";
                           int limitHour = 0;
                           if (timeLimit >= 60) {
@@ -191,7 +216,8 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                           int limitMinute = timeLimit % 60;
                           if (limitHour > 0) {
                             if (limitMinute > 0) {
-                              limitTime = "${limitHour}hrs ${limitMinute}min\nSetiap Hari";
+                              limitTime =
+                                  "${limitHour}hrs ${limitMinute}min\nSetiap Hari";
                             } else {
                               limitTime = "${limitHour}hrs\nSetiap Hari";
                             }
@@ -211,14 +237,16 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                                     children: [
                                       app.appIcons != null && app.appIcons != ''
                                           ? Container(
-                                              margin: EdgeInsets.all(5).copyWith(right: 10),
+                                              margin: EdgeInsets.all(5)
+                                                  .copyWith(right: 10),
                                               child: Image.network(
                                                 app.appIcons ?? '',
                                                 height: 50,
                                                 fit: BoxFit.contain,
                                               ))
                                           : Container(
-                                              margin: EdgeInsets.all(5).copyWith(right: 10),
+                                              margin: EdgeInsets.all(5)
+                                                  .copyWith(right: 10),
                                               color: cOrtuBlue,
                                               height: 50,
                                               child: Center(
@@ -228,7 +256,7 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                                       Flexible(
                                         child: Text(
                                           app.appName ?? '',
-                                          style: TextStyle(color: cOrtuWhite),
+                                          style: TextStyle(color: cOrtuBlack),
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -251,11 +279,14 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                                         ),
                                       IconButton(
                                           onPressed: () {
-                                            addUsageLimitBottomSheet(app, timeLimit);
+                                            addUsageLimitBottomSheet(
+                                                app, timeLimit);
                                           },
                                           icon: Icon(
                                             Icons.access_time,
-                                            color: timeLimit > 0 ? cOrtuBlue : cOrtuWhite,
+                                            color: timeLimit > 0
+                                                ? cOrtuBlue
+                                                : cOrtuBlack,
                                           )),
                                     ],
                                   ),
@@ -286,7 +317,8 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                   AppBar(
                     backgroundColor: cOrtuBlue,
                     centerTitle: true,
-                    title: Text('Ubah Batas Penggunaan', style: TextStyle(color: cPrimaryBg)),
+                    title: Text('Ubah Batas Penggunaan',
+                        style: TextStyle(color: cPrimaryBg)),
                     leading: SizedBox(),
                     actions: [
                       IconButton(
@@ -317,7 +349,10 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                             onPress: newLimit > 0
                                 ? () async {
                                     showLoadingOverlay();
-                                    final response = await addAppUsageLimit(app.appCategory, app.packageId ?? '', 0);
+                                    final response = await addAppUsageLimit(
+                                        app.appCategory,
+                                        app.packageId ?? '',
+                                        0);
                                     if (response.statusCode == 200) {
                                       final body = jsonDecode(response.body);
                                       if (body['resultCode'] == "OK") {
@@ -325,18 +360,28 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                                         fListApps = fetchAppList();
                                         closeOverlay();
                                         closeOverlay();
-                                        showToastSuccess(ctx: context, successText: 'Berhasil Reset Batas Penggunaan!');
+                                        showToastSuccess(
+                                            ctx: context,
+                                            successText:
+                                                'Berhasil Reset Batas Penggunaan!');
                                       } else {
                                         closeOverlay();
-                                        showToastFailed(ctx: context, failedText: 'Gagal Reset Batas Penggunaan!');
+                                        showToastFailed(
+                                            ctx: context,
+                                            failedText:
+                                                'Gagal Reset Batas Penggunaan!');
                                       }
                                     } else {
                                       closeOverlay();
-                                      showToastFailed(ctx: context, failedText: 'Gagal Reset Batas Penggunaan!');
+                                      showToastFailed(
+                                          ctx: context,
+                                          failedText:
+                                              'Gagal Reset Batas Penggunaan!');
                                     }
                                   }
                                 : null,
-                            text: Text('Reset', style: TextStyle(color: cPrimaryBg)),
+                            text: Text('Reset',
+                                style: TextStyle(color: cPrimaryBg)),
                             cColor: cOrtuOrange),
                       ),
                       Container(
@@ -345,7 +390,8 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                         child: roElevatedButton(
                           onPress: () async {
                             showLoadingOverlay();
-                            final response = await addAppUsageLimit(app.appCategory, app.packageId ?? '', newLimit);
+                            final response = await addAppUsageLimit(
+                                app.appCategory, app.packageId ?? '', newLimit);
                             if (response.statusCode == 200) {
                               final body = jsonDecode(response.body);
                               if (body['resultCode'] == "OK") {
@@ -353,17 +399,25 @@ class _RKConfigBatasPenggunaanPageState extends State<RKConfigBatasPenggunaanPag
                                 fListApps = fetchAppList();
                                 closeOverlay();
                                 closeOverlay();
-                                showToastSuccess(ctx: context, successText: 'Berhasil Ubah Batas Penggunaan!');
+                                showToastSuccess(
+                                    ctx: context,
+                                    successText:
+                                        'Berhasil Ubah Batas Penggunaan!');
                               } else {
                                 closeOverlay();
-                                showToastFailed(ctx: context, failedText: 'Gagal Ubah Batas Penggunaan!');
+                                showToastFailed(
+                                    ctx: context,
+                                    failedText: 'Gagal Ubah Batas Penggunaan!');
                               }
                             } else {
                               closeOverlay();
-                              showToastFailed(ctx: context, failedText: 'Gagal Ubah Batas Penggunaan!');
+                              showToastFailed(
+                                  ctx: context,
+                                  failedText: 'Gagal Ubah Batas Penggunaan!');
                             }
                           },
-                          text: Text('Simpan', style: TextStyle(color: cPrimaryBg)),
+                          text: Text('Simpan',
+                              style: TextStyle(color: cPrimaryBg)),
                         ),
                       ),
                     ],

@@ -237,8 +237,8 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
         zoom: distance < 10000
             ? 10.0
             : distance < 100000
-            ? 7.0
-            : 5.0,
+                ? 7.0
+                : 5.0,
       );
       controller.animateCamera(CameraUpdate.newCameraPosition(etaCamera));
       showEta = true;
@@ -253,10 +253,10 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
       backgroundColor: cPrimaryBg,
       appBar: AppBar(
         centerTitle: true,
-        title: Text(widget.name, style: TextStyle(color: cOrtuWhite)),
+        title: Text(widget.name, style: TextStyle(color: cOrtuBlack)),
         backgroundColor: cPrimaryBg,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
+          icon: Icon(Icons.arrow_back_ios, color: cOrtuBlack),
           onPressed: () => Navigator.of(context).pop(),
         ),
         elevation: 0,
@@ -277,12 +277,12 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                       children: [
                         Flexible(
                           child: Text('Update Lokasi: 1 menit lalu',
-                              style: TextStyle(color: cOrtuWhite)),
+                              style: TextStyle(color: cOrtuBlack)),
                         ),
                         Row(
                           children: [
                             IconButton(
-                              color: cOrtuWhite,
+                              color: cOrtuBlack,
                               icon: Icon(Icons.directions),
                               onPressed: () async {
                                 showLoadingOverlay();
@@ -291,7 +291,7 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                               },
                             ),
                             IconButton(
-                              color: cOrtuWhite,
+                              color: cOrtuBlack,
                               icon: Icon(Icons.my_location),
                               onPressed: () async {
                                 showLoadingOverlay();
@@ -339,10 +339,10 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                             children: [
                                 Text('ETA: $etaDuration',
                                     style: TextStyle(
-                                        fontSize: 20, color: cOrtuWhite)),
+                                        fontSize: 20, color: cOrtuBlack)),
                                 Text('Distance: $etaDistance',
                                     style: TextStyle(
-                                        fontSize: 20, color: cOrtuWhite))
+                                        fontSize: 20, color: cOrtuBlack))
                               ])
                         : Container(),
                     Container(
@@ -351,12 +351,12 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                         _myLocationPlace != ''
                             ? 'Nama lokasi: $_myLocationPlace'
                             : '',
-                        style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                        style: TextStyle(fontSize: 16, color: cOrtuBlack),
                       ),
                     ),
                     Divider(
                       thickness: 1,
-                      color: cOrtuWhite,
+                      color: cOrtuBlack,
                     ),
                     Container(
                       margin: EdgeInsets.all(10.0),
@@ -365,7 +365,7 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                         children: [
                           Text(
                             'Timeline',
-                            style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                            style: TextStyle(fontSize: 16, color: cOrtuBlack),
                           ),
                           SizedBox(width: 10),
                           Flexible(
@@ -418,7 +418,7 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                     ),
                     Divider(
                       thickness: 1,
-                      color: cOrtuWhite,
+                      color: cOrtuBlack,
                     ),
                     Flexible(
                       child: ListView.builder(
@@ -428,16 +428,16 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                           return ListTile(
                             title: Text(
                               data.location.place,
-                              style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                              style: TextStyle(fontSize: 16, color: cOrtuBlack),
                             ),
                             // isThreeLine: true,
                             // subtitle: Text(
                             //   'on Jln $index where in indonesia',
-                            //   style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                            //   style: TextStyle(fontSize: 16, color: cOrtuBlack),
                             // ),
                             trailing: Text(
                               data.dateHistory,
-                              style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                              style: TextStyle(fontSize: 16, color: cOrtuBlack),
                             ),
                             onTap: () async {
                               showEta = false;

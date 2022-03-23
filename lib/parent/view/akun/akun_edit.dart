@@ -53,7 +53,8 @@ class _AkunEditPageState extends State<AkunEditPage> {
     cEmail.text = widget.email;
     cPhoneNumber.text = widget.phoneNum ?? '';
     cAlamat.text = widget.alamat ?? '';
-    if (widget.birthDate != null) birthDateString = dateTimeTo_ddMMMMyyyy(widget.birthDate!);
+    if (widget.birthDate != null)
+      birthDateString = dateTimeTo_ddMMMMyyyy(widget.birthDate!);
   }
 
   @override
@@ -87,25 +88,36 @@ class _AkunEditPageState extends State<AkunEditPage> {
                         child: GestureDetector(
                           onTap: () async {
                             final imgPicker = await openCamOrDirDialog();
-                            if (imgPicker != null) setState(() => _selectedImage = imgPicker);
+                            if (imgPicker != null)
+                              setState(() => _selectedImage = imgPicker);
                           },
                           child: AspectRatio(
                             aspectRatio: 1,
                             child: _selectedImage != null
                                 ? Container(
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.all(borderRadiusSize),
-                                      image: DecorationImage(image: FileImage(_selectedImage!), fit: BoxFit.cover),
+                                      borderRadius:
+                                          BorderRadius.all(borderRadiusSize),
+                                      image: DecorationImage(
+                                          image: FileImage(_selectedImage!),
+                                          fit: BoxFit.cover),
                                     ),
                                   )
                                 : widget.imgUrl != null && widget.imgUrl != ''
                                     ? Container(
                                         padding: EdgeInsets.all(5),
                                         decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.all(borderRadiusSize),
+                                          borderRadius: BorderRadius.all(
+                                              borderRadiusSize),
                                           image: widget.imgUrl!.contains('http')
-                                              ? DecorationImage(image: NetworkImage(widget.imgUrl!), fit: BoxFit.cover)
-                                              : DecorationImage(image: AssetImage(widget.imgUrl!), fit: BoxFit.cover),
+                                              ? DecorationImage(
+                                                  image: NetworkImage(
+                                                      widget.imgUrl!),
+                                                  fit: BoxFit.cover)
+                                              : DecorationImage(
+                                                  image: AssetImage(
+                                                      widget.imgUrl!),
+                                                  fit: BoxFit.cover),
                                         ),
                                         child: Align(
                                           alignment: Alignment.topRight,
@@ -115,9 +127,12 @@ class _AkunEditPageState extends State<AkunEditPage> {
                                     : Container(
                                         decoration: BoxDecoration(
                                           color: cOrtuBlue,
-                                          borderRadius: BorderRadius.all(borderRadiusSize),
+                                          borderRadius: BorderRadius.all(
+                                              borderRadiusSize),
                                         ),
-                                        child: Center(child: Icon(Icons.add_a_photo, size: 50)),
+                                        child: Center(
+                                            child: Icon(Icons.add_a_photo,
+                                                size: 50)),
                                       ),
                           ),
                         ),
@@ -126,7 +141,8 @@ class _AkunEditPageState extends State<AkunEditPage> {
                         margin: const EdgeInsets.only(top: 30.0, bottom: 10),
                         width: MediaQuery.of(context).size.width,
                         child: Theme(
-                          data: Theme.of(context).copyWith(splashColor: Colors.transparent),
+                          data: Theme.of(context)
+                              .copyWith(splashColor: Colors.transparent),
                           child: TextFormField(
                             validator: (val) {
                               print(val);
@@ -135,7 +151,8 @@ class _AkunEditPageState extends State<AkunEditPage> {
                             },
                             autovalidateMode: AutovalidateMode.always,
 
-                            style: TextStyle(fontSize: 16.0, color: Colors.black),
+                            style:
+                                TextStyle(fontSize: 16.0, color: Colors.black),
                             // readOnly: true,
                             keyboardType: TextInputType.text,
                             minLines: 1,
@@ -144,9 +161,10 @@ class _AkunEditPageState extends State<AkunEditPage> {
                             decoration: InputDecoration(
                               errorStyle: TextStyle(color: cOrtuOrange),
                               filled: true,
-                              fillColor: cOrtuWhite,
+                              fillColor: cOrtuBlack,
                               hintText: 'Nama Lengkap',
-                              contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                              contentPadding: const EdgeInsets.only(
+                                  left: 14.0, bottom: 8.0, top: 8.0),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(color: cOrtuWhite),
                                 borderRadius: BorderRadius.circular(10),
@@ -163,9 +181,11 @@ class _AkunEditPageState extends State<AkunEditPage> {
                         margin: const EdgeInsets.only(top: 10.0, bottom: 10),
                         width: MediaQuery.of(context).size.width,
                         child: Theme(
-                          data: Theme.of(context).copyWith(splashColor: Colors.transparent),
+                          data: Theme.of(context)
+                              .copyWith(splashColor: Colors.transparent),
                           child: TextField(
-                            style: TextStyle(fontSize: 16.0, color: Colors.black),
+                            style:
+                                TextStyle(fontSize: 16.0, color: Colors.black),
                             readOnly: true,
                             keyboardType: TextInputType.emailAddress,
                             minLines: 1,
@@ -175,7 +195,8 @@ class _AkunEditPageState extends State<AkunEditPage> {
                               filled: true,
                               fillColor: cOrtuWhite,
                               hintText: 'Email',
-                              contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                              contentPadding: const EdgeInsets.only(
+                                  left: 14.0, bottom: 8.0, top: 8.0),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(color: cOrtuWhite),
                                 borderRadius: BorderRadius.circular(10),
@@ -192,9 +213,11 @@ class _AkunEditPageState extends State<AkunEditPage> {
                         margin: const EdgeInsets.only(top: 10.0, bottom: 10),
                         width: MediaQuery.of(context).size.width,
                         child: Theme(
-                          data: Theme.of(context).copyWith(splashColor: Colors.transparent),
+                          data: Theme.of(context)
+                              .copyWith(splashColor: Colors.transparent),
                           child: TextField(
-                            style: TextStyle(fontSize: 16.0, color: Colors.black),
+                            style:
+                                TextStyle(fontSize: 16.0, color: Colors.black),
                             keyboardType: TextInputType.number,
                             minLines: 1,
                             maxLines: 1,
@@ -203,7 +226,8 @@ class _AkunEditPageState extends State<AkunEditPage> {
                               filled: true,
                               fillColor: cOrtuWhite,
                               hintText: 'No. Telp',
-                              contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                              contentPadding: const EdgeInsets.only(
+                                  left: 14.0, bottom: 8.0, top: 8.0),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(color: cOrtuWhite),
                                 borderRadius: BorderRadius.circular(10),
@@ -243,7 +267,9 @@ class _AkunEditPageState extends State<AkunEditPage> {
                                   );
                                 },
                                 context: context,
-                                initialDate: widget.birthDate ?? DateTime.now().subtract(Duration(days: 365 * 5)),
+                                initialDate: widget.birthDate ??
+                                    DateTime.now()
+                                        .subtract(Duration(days: 365 * 5)),
                                 firstDate: DateTime(1940, 1),
                                 lastDate: DateTime.now());
                             if (picked != null && picked != widget.birthDate) {
@@ -261,10 +287,17 @@ class _AkunEditPageState extends State<AkunEditPage> {
                                 Expanded(
                                   child: TextField(
                                     decoration: InputDecoration(
-                                      contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                                      contentPadding: const EdgeInsets.only(
+                                          left: 14.0, bottom: 8.0, top: 8.0),
                                       border: InputBorder.none,
-                                      hintText: birthDateString == '' ? "- Pilih Tanggal -" : birthDateString,
-                                      hintStyle: birthDateString == '' ? TextStyle(fontSize: 16) : TextStyle(fontSize: 16, color: Colors.black),
+                                      hintText: birthDateString == ''
+                                          ? "- Pilih Tanggal -"
+                                          : birthDateString,
+                                      hintStyle: birthDateString == ''
+                                          ? TextStyle(fontSize: 16)
+                                          : TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.black),
                                     ),
                                     readOnly: true,
                                   ),
@@ -287,9 +320,11 @@ class _AkunEditPageState extends State<AkunEditPage> {
                         margin: const EdgeInsets.only(top: 10.0, bottom: 10),
                         width: MediaQuery.of(context).size.width,
                         child: Theme(
-                          data: Theme.of(context).copyWith(splashColor: Colors.transparent),
+                          data: Theme.of(context)
+                              .copyWith(splashColor: Colors.transparent),
                           child: TextField(
-                            style: TextStyle(fontSize: 16.0, color: Colors.black),
+                            style:
+                                TextStyle(fontSize: 16.0, color: Colors.black),
                             keyboardType: TextInputType.multiline,
                             minLines: 3,
                             maxLines: 5,
@@ -298,7 +333,8 @@ class _AkunEditPageState extends State<AkunEditPage> {
                               filled: true,
                               fillColor: cOrtuWhite,
                               hintText: 'Alamat',
-                              contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                              contentPadding: const EdgeInsets.only(
+                                  left: 14.0, bottom: 8.0, top: 8.0),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(color: cOrtuWhite),
                                 borderRadius: BorderRadius.circular(10),
@@ -325,7 +361,8 @@ class _AkunEditPageState extends State<AkunEditPage> {
                                     groupValue: widget.parentGender,
                                     activeColor: cOrtuBlue,
                                     onChanged: (GenderCharacter? value) {
-                                      setState(() => widget.parentGender = value);
+                                      setState(
+                                          () => widget.parentGender = value);
                                     },
                                   ),
                                 ),
@@ -338,7 +375,8 @@ class _AkunEditPageState extends State<AkunEditPage> {
                                     groupValue: widget.parentGender,
                                     activeColor: cOrtuBlue,
                                     onChanged: (GenderCharacter? value) {
-                                      setState(() => widget.parentGender = value);
+                                      setState(
+                                          () => widget.parentGender = value);
                                     },
                                   ),
                                 ),
@@ -363,29 +401,44 @@ class _AkunEditPageState extends State<AkunEditPage> {
                             ? () async {
                                 if (cName.text == '') {
                                   showToastSuccess(
-                                      ctx: context, successText: 'Silahkan isi Nama');
+                                      ctx: context,
+                                      successText: 'Silahkan isi Nama');
                                 }
                                 showLoadingOverlay();
                                 print('widget.isParent ${widget.isParent}');
                                 if (widget.isParent) {
                                   final res = await onEditProfileParent();
                                   if (res.statusCode == 200) {
-                                    showToastSuccess(ctx: context, successText: 'Berhasil edit data user ${widget.name}');
-                                    await Get.find<ParentController>().getParentChildData();
+                                    showToastSuccess(
+                                        ctx: context,
+                                        successText:
+                                            'Berhasil edit data user ${widget.name}');
+                                    await Get.find<ParentController>()
+                                        .getParentChildData();
                                     Get.close(2);
                                   } else {
                                     closeOverlay();
-                                    showToastFailed(ctx: context, failedText: 'Gagal edit data user ${widget.name}');
+                                    showToastFailed(
+                                        ctx: context,
+                                        failedText:
+                                            'Gagal edit data user ${widget.name}');
                                   }
                                 } else {
                                   final res = await onEditProfileChild();
                                   if (res.statusCode == 200) {
-                                    showToastSuccess(ctx: context, successText: 'Berhasil edit data anak ${widget.name}');
-                                    await Get.find<ParentController>().getParentChildData();
+                                    showToastSuccess(
+                                        ctx: context,
+                                        successText:
+                                            'Berhasil edit data anak ${widget.name}');
+                                    await Get.find<ParentController>()
+                                        .getParentChildData();
                                     Get.close(2);
                                   } else {
                                     closeOverlay();
-                                    showToastFailed(ctx: context, failedText: 'Gagal edit data anak ${widget.name}');
+                                    showToastFailed(
+                                        ctx: context,
+                                        failedText:
+                                            'Gagal edit data anak ${widget.name}');
                                   }
                                 }
                               }
@@ -407,29 +460,38 @@ class _AkunEditPageState extends State<AkunEditPage> {
   }
 
   Future<Response> onEditProfileParent() async {
-    final Uint8List? _imageBytes = _selectedImage != null ? _selectedImage!.readAsBytesSync() : null;
+    final Uint8List? _imageBytes =
+        _selectedImage != null ? _selectedImage!.readAsBytesSync() : null;
     Map<String, dynamic> editedValue = {
       "nameUser": cName.text,
       "phoneNumber": cPhoneNumber.text,
       "address": cAlamat.text,
-      "parentStatus": (widget.parentGender ?? GenderCharacter.Ayah).toEnumString(),
+      "parentStatus":
+          (widget.parentGender ?? GenderCharacter.Ayah).toEnumString(),
     };
-    if (_imageBytes != null) editedValue["imagePhoto"] = "data:image/png;base64,${base64Encode(_imageBytes)}";
-    if (widget.birthDate != null) editedValue["birdDate"] = widget.birthDate?.toIso8601String();
+    if (_imageBytes != null)
+      editedValue["imagePhoto"] =
+          "data:image/png;base64,${base64Encode(_imageBytes)}";
+    if (widget.birthDate != null)
+      editedValue["birdDate"] = widget.birthDate?.toIso8601String();
 
     return await MediaRepository().editUser(widget.id, editedValue);
   }
 
   Future<Response> onEditProfileChild() async {
-    final Uint8List? _imageBytes = _selectedImage != null ? _selectedImage!.readAsBytesSync() : null;
+    final Uint8List? _imageBytes =
+        _selectedImage != null ? _selectedImage!.readAsBytesSync() : null;
     Map<String, dynamic> editedValue = {
       "nameUser": cName.text,
       "phoneNumber": cPhoneNumber.text,
       "address": cAlamat.text,
       "birdDate": widget.birthDate?.toIso8601String(),
     };
-    if (_imageBytes != null) editedValue["imagePhoto"] = "data:image/png;base64,${base64Encode(_imageBytes)}";
-    if (widget.birthDate != null) editedValue["birdDate"] = widget.birthDate?.toIso8601String();
+    if (_imageBytes != null)
+      editedValue["imagePhoto"] =
+          "data:image/png;base64,${base64Encode(_imageBytes)}";
+    if (widget.birthDate != null)
+      editedValue["birdDate"] = widget.birthDate?.toIso8601String();
 
     return await MediaRepository().editUser(widget.id, editedValue);
   }

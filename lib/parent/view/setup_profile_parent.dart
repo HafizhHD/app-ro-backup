@@ -50,7 +50,8 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
       token = fcmToken!;
     });
 
-    final Uint8List? _imageBytes = _selectedImage != null ? _selectedImage!.readAsBytesSync() : null;
+    final Uint8List? _imageBytes =
+        _selectedImage != null ? _selectedImage!.readAsBytesSync() : null;
     Response response = await MediaRepository().registerParent(
       cEmail.text,
       cName.text,
@@ -60,7 +61,9 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
       cAlamat.text,
       (_character ?? GenderCharacter.Ayah).toEnumString(),
       accessToken,
-      _imageBytes != null ? "data:image/png;base64,${base64Encode(_imageBytes)}" : "",
+      _imageBytes != null
+          ? "data:image/png;base64,${base64Encode(_imageBytes)}"
+          : "",
       birthDate.toIso8601String(),
     );
     if (response.statusCode == 200) {
@@ -73,9 +76,9 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
         await prefs.setBool(isPrefLogin, true);
         print('isi response register : ${response.body}');
         if (await childNeedPermission()) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) =>
-              SetupPermissionPage(email: jsonUser['emailUser'],
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (context) => SetupPermissionPage(
+                  email: jsonUser['emailUser'],
                   name: jsonUser['nameUser'],
                   userType: jsonUser['userType'])));
           // Navigator.of(context).push(leftTransitionRoute(SetupPermissionPage(
@@ -83,20 +86,19 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
           //     name: jsonUser['nameUser'],
           //     userType: jsonUser['userType'])));
         } else {
-          if(jsonUser['userType'] == 'parent'){
+          if (jsonUser['userType'] == 'parent') {
             Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => ParentMain()),
-                  (Route<dynamic> route) => false,
+              (Route<dynamic> route) => false,
             );
           } else {
             Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(
-                  builder: (context) =>
-                      ChildMain(
+                  builder: (context) => ChildMain(
                         childEmail: jsonUser['emailUser'],
                         childName: jsonUser['nameUser'],
                       )),
-                  (Route<dynamic> route) => false,
+              (Route<dynamic> route) => false,
             );
           }
         }
@@ -166,26 +168,34 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                     child: Column(
                       children: [
                         ConstrainedBox(
-                          constraints: BoxConstraints(maxHeight: screenSize.height / 4),
+                          constraints:
+                              BoxConstraints(maxHeight: screenSize.height / 4),
                           child: GestureDetector(
                             onTap: () async {
                               final imgPicker = await openCamOrDirDialog();
-                              if (imgPicker != null) setState(() => _selectedImage = imgPicker);
+                              if (imgPicker != null)
+                                setState(() => _selectedImage = imgPicker);
                             },
                             child: AspectRatio(
                               aspectRatio: 1,
                               child: _selectedImage != null
                                   ? Container(
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.all(borderRadiusSize),
-                                        image: DecorationImage(image: FileImage(_selectedImage!), fit: BoxFit.cover),
+                                        borderRadius:
+                                            BorderRadius.all(borderRadiusSize),
+                                        image: DecorationImage(
+                                            image: FileImage(_selectedImage!),
+                                            fit: BoxFit.cover),
                                       ),
                                     )
                                   : photo != ''
                                       ? Container(
                                           decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.all(borderRadiusSize),
-                                            image: DecorationImage(image: NetworkImage(photo), fit: BoxFit.cover),
+                                            borderRadius: BorderRadius.all(
+                                                borderRadiusSize),
+                                            image: DecorationImage(
+                                                image: NetworkImage(photo),
+                                                fit: BoxFit.cover),
                                           ),
                                         )
                                       : Container(
@@ -193,9 +203,12 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                                           width: double.infinity,
                                           decoration: BoxDecoration(
                                             color: cOrtuBlue,
-                                            borderRadius: BorderRadius.all(borderRadiusSize),
+                                            borderRadius: BorderRadius.all(
+                                                borderRadiusSize),
                                           ),
-                                          child: Center(child: Icon(Icons.add_a_photo, size: 50)),
+                                          child: Center(
+                                              child: Icon(Icons.add_a_photo,
+                                                  size: 50)),
                                         ),
                             ),
                           ),
@@ -204,7 +217,8 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                           margin: const EdgeInsets.only(top: 30.0, bottom: 10),
                           width: MediaQuery.of(context).size.width,
                           child: Theme(
-                            data: Theme.of(context).copyWith(splashColor: Colors.transparent),
+                            data: Theme.of(context)
+                                .copyWith(splashColor: Colors.transparent),
                             child: TextFormField(
                               validator: (val) {
                                 print(val);
@@ -213,7 +227,8 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                               },
                               autovalidateMode: AutovalidateMode.always,
 
-                              style: TextStyle(fontSize: 16.0, color: Colors.black),
+                              style: TextStyle(
+                                  fontSize: 16.0, color: Colors.black),
                               // readOnly: true,
                               keyboardType: TextInputType.text,
                               minLines: 1,
@@ -224,7 +239,8 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                                 filled: true,
                                 fillColor: cOrtuWhite,
                                 hintText: 'Nama Lengkap',
-                                contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                                contentPadding: const EdgeInsets.only(
+                                    left: 14.0, bottom: 8.0, top: 8.0),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(color: cOrtuWhite),
                                   borderRadius: BorderRadius.circular(10),
@@ -241,9 +257,11 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                           margin: const EdgeInsets.only(top: 10.0, bottom: 10),
                           width: MediaQuery.of(context).size.width,
                           child: Theme(
-                            data: Theme.of(context).copyWith(splashColor: Colors.transparent),
+                            data: Theme.of(context)
+                                .copyWith(splashColor: Colors.transparent),
                             child: TextField(
-                              style: TextStyle(fontSize: 16.0, color: Colors.black),
+                              style: TextStyle(
+                                  fontSize: 16.0, color: Colors.black),
                               readOnly: true,
                               keyboardType: TextInputType.emailAddress,
                               minLines: 1,
@@ -253,7 +271,8 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                                 filled: true,
                                 fillColor: cOrtuWhite,
                                 hintText: 'Email',
-                                contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                                contentPadding: const EdgeInsets.only(
+                                    left: 14.0, bottom: 8.0, top: 8.0),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(color: cOrtuWhite),
                                   borderRadius: BorderRadius.circular(10),
@@ -270,9 +289,11 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                           margin: const EdgeInsets.only(top: 10.0, bottom: 10),
                           width: MediaQuery.of(context).size.width,
                           child: Theme(
-                            data: Theme.of(context).copyWith(splashColor: Colors.transparent),
+                            data: Theme.of(context)
+                                .copyWith(splashColor: Colors.transparent),
                             child: TextField(
-                              style: TextStyle(fontSize: 16.0, color: Colors.black),
+                              style: TextStyle(
+                                  fontSize: 16.0, color: Colors.black),
                               keyboardType: TextInputType.number,
                               minLines: 1,
                               maxLines: 1,
@@ -281,7 +302,8 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                                 filled: true,
                                 fillColor: cOrtuWhite,
                                 hintText: 'No. Telp',
-                                contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                                contentPadding: const EdgeInsets.only(
+                                    left: 14.0, bottom: 8.0, top: 8.0),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(color: cOrtuWhite),
                                   borderRadius: BorderRadius.circular(10),
@@ -328,22 +350,31 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                               if (picked != null && picked != birthDate) {
                                 setState(() {
                                   birthDate = picked;
-                                  birthDateString = dateTimeTo_ddMMMMyyyy(birthDate);
+                                  birthDateString =
+                                      dateTimeTo_ddMMMMyyyy(birthDate);
                                 });
                               }
                             },
                             child: IgnorePointer(
                               ignoring: true,
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
                                   Expanded(
                                     child: TextField(
                                       decoration: InputDecoration(
-                                        contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                                        contentPadding: const EdgeInsets.only(
+                                            left: 14.0, bottom: 8.0, top: 8.0),
                                         border: InputBorder.none,
-                                        hintText: birthDateString == '' ? "- Pilih Tanggal -" : birthDateString,
-                                        hintStyle: birthDateString == '' ? TextStyle(fontSize: 16) : TextStyle(fontSize: 16, color: Colors.black),
+                                        hintText: birthDateString == ''
+                                            ? "- Pilih Tanggal -"
+                                            : birthDateString,
+                                        hintStyle: birthDateString == ''
+                                            ? TextStyle(fontSize: 16)
+                                            : TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.black),
                                       ),
                                       readOnly: true,
                                     ),
@@ -366,9 +397,11 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                           margin: const EdgeInsets.only(top: 10.0, bottom: 10),
                           width: MediaQuery.of(context).size.width,
                           child: Theme(
-                            data: Theme.of(context).copyWith(splashColor: Colors.transparent),
+                            data: Theme.of(context)
+                                .copyWith(splashColor: Colors.transparent),
                             child: TextField(
-                              style: TextStyle(fontSize: 16.0, color: Colors.black),
+                              style: TextStyle(
+                                  fontSize: 16.0, color: Colors.black),
                               keyboardType: TextInputType.multiline,
                               minLines: 3,
                               maxLines: 5,
@@ -377,7 +410,8 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                                 filled: true,
                                 fillColor: cOrtuWhite,
                                 hintText: 'Alamat',
-                                contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                                contentPadding: const EdgeInsets.only(
+                                    left: 14.0, bottom: 8.0, top: 8.0),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(color: cOrtuWhite),
                                   borderRadius: BorderRadius.circular(10),

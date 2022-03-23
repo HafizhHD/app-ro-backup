@@ -15,7 +15,9 @@ class ConfigRKContactPage extends StatefulWidget {
   final String name;
   final String email;
 
-  ConfigRKContactPage({Key? key, required this.title, required this.name, required this.email}) : super(key: key);
+  ConfigRKContactPage(
+      {Key? key, required this.title, required this.name, required this.email})
+      : super(key: key);
 }
 
 class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
@@ -31,15 +33,20 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
       var json = jsonDecode(response.body);
       if (json['resultCode'] == 'OK') {
         List<BlacklistedContact> blackListed = [];
-        final resBL = await MediaRepository().fetchBlacklistedContact(widget.email);
+        final resBL =
+            await MediaRepository().fetchBlacklistedContact(widget.email);
         print('isi response fetch blacklisted contact : ${resBL.body}');
         if (resBL.statusCode == 200) {
           final List blacklistedJson = jsonDecode(resBL.body)['contacts'];
-          blackListed = blacklistedJson.map((e) => BlacklistedContact.fromJson(e)).toList();
+          blackListed = blacklistedJson
+              .map((e) => BlacklistedContact.fromJson(e))
+              .toList();
         }
         List tempContact = json['contacts'][0]['contacts'];
         if (tempContact.length > 0) {
-          List<Contact> data = tempContact.map((model) => Contact.fromJson(model, blackListed)).toList();
+          List<Contact> data = tempContact
+              .map((model) => Contact.fromJson(model, blackListed))
+              .toList();
           data.sort((a, b) {
             var aName = a.name;
             var bName = b.name;
@@ -69,7 +76,8 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
   }
 
   Future onBlacklistContact(String name, String phone) async {
-    Response response = await MediaRepository().blackListContactAdd(widget.email, name, phone, "");
+    Response response = await MediaRepository()
+        .blackListContactAdd(widget.email, name, phone, "");
     return response;
   }
 
@@ -79,10 +87,10 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
       backgroundColor: cPrimaryBg,
       appBar: AppBar(
         centerTitle: true,
-        title: Text(widget.name, style: TextStyle(color: cOrtuWhite)),
+        title: Text(widget.name, style: TextStyle(color: cOrtuBlack)),
         backgroundColor: cPrimaryBg,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
+          icon: Icon(Icons.arrow_back_ios, color: cOrtuBlack),
           onPressed: () => Navigator.of(context).pop(),
         ),
         elevation: 0,
@@ -95,7 +103,10 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
           children: [
             WSearchBar(
               fOnChanged: (v) {
-                searchContactList = contactList.where((e) => e.name.toLowerCase().contains(v.toLowerCase()) == true).toList();
+                searchContactList = contactList
+                    .where((e) =>
+                        e.name.toLowerCase().contains(v.toLowerCase()) == true)
+                    .toList();
                 setState(() {});
               },
             ),
@@ -105,25 +116,34 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                   future: fContactList,
                   builder: (context, AsyncSnapshot<List<Contact>> snapshot) {
                     if (!snapshot.hasData) return wProgressIndicator();
-                    if ((snapshot.data ?? []).length <= 0) return Center(child: Text('Data kontak kosong', style: TextStyle(color: cOrtuWhite)));
+                    if ((snapshot.data ?? []).length <= 0)
+                      return Center(
+                          child: Text('Data kontak kosong',
+                              style: TextStyle(color: cOrtuBlack)));
 
                     return ListView.builder(
                         itemCount: searchContactList.length,
                         itemBuilder: (ctx, index) {
                           final dataContact = searchContactList[index];
                           return Container(
-                            key: Key('${dataContact.name}+${dataContact.phone}'),
+                            key:
+                                Key('${dataContact.name}+${dataContact.phone}'),
                             padding: EdgeInsets.all(10),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Flexible(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text(dataContact.name, style: TextStyle(color: cOrtuWhite, fontWeight: FontWeight.bold)),
+                                      Text(dataContact.name,
+                                          style: TextStyle(
+                                              color: cOrtuBlack,
+                                              fontWeight: FontWeight.bold)),
                                       SizedBox(height: 10),
-                                      Text(dataContact.phone, style: TextStyle(color: cOrtuWhite)),
+                                      Text(dataContact.phone,
+                                          style: TextStyle(color: cOrtuBlack)),
                                     ],
                                   ),
                                 ),
@@ -131,7 +151,7 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     // IconButton(
-                                    //   color: cOrtuWhite,
+                                    //   color: cOrtuBlack,
                                     //   icon: Icon(Icons.notifications_active_outlined),
                                     //   onPressed: () {
                                     //     setState(() {});
@@ -139,23 +159,35 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                                     // ),
                                     Text(
                                       dataContact.blacklist ? 'Dipantau' : '',
-                                      style: TextStyle(color: cOrtuWhite),
+                                      style: TextStyle(color: cOrtuBlack),
                                     ),
                                     IconButton(
-                                      color: cOrtuWhite,
+                                      color: cOrtuBlack,
                                       icon: Icon(
-                                        dataContact.blacklist ? Icons.remove_red_eye : Icons.remove_red_eye_outlined,
-                                        color: dataContact.blacklist ? cOrtuBlue : cOrtuWhite,
+                                        dataContact.blacklist
+                                            ? Icons.remove_red_eye
+                                            : Icons.remove_red_eye_outlined,
+                                        color: dataContact.blacklist
+                                            ? cOrtuBlue
+                                            : cOrtuBlack,
                                       ),
                                       onPressed: () async {
                                         showLoadingOverlay();
-                                        final response = await onBlacklistContact(dataContact.name, dataContact.phone);
+                                        final response =
+                                            await onBlacklistContact(
+                                                dataContact.name,
+                                                dataContact.phone);
                                         if (response.statusCode == 200) {
                                           await fetchContact();
-                                          showToastSuccess(ctx: context, successText: 'Berhasil watchlist kontak ${dataContact.name}');
+                                          showToastSuccess(
+                                              ctx: context,
+                                              successText:
+                                                  'Berhasil watchlist kontak ${dataContact.name}');
                                         } else {
                                           showToastFailed(
-                                              ctx: context, failedText: 'Gagal memblokir kontak ${dataContact.name}. Silahkan coba lagi.');
+                                              ctx: context,
+                                              failedText:
+                                                  'Gagal memblokir kontak ${dataContact.name}. Silahkan coba lagi.');
                                         }
                                         closeOverlay();
                                       },

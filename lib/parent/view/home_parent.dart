@@ -193,12 +193,12 @@ class _HomeParentPageState extends State<HomeParentPage> {
                   Text(
                     '$title',
                     style: TextStyle(
-                        fontWeight: FontWeight.bold, color: cOrtuWhite),
+                        fontWeight: FontWeight.bold, color: cOrtuBlack),
                   ),
                   Text(
                     '$content',
                     softWrap: true,
-                    style: TextStyle(color: cOrtuWhite),
+                    style: TextStyle(color: cOrtuBlack),
                     maxLines: 4,
                     overflow: TextOverflow.ellipsis,
                   )
@@ -755,6 +755,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
               padding: EdgeInsets.all(10.0),
               child: InkWell(
                 onTap: () async {
+                  Navigator.of(context, rootNavigator: true).pop();
                   final res = await Navigator.push(
                     context,
                     MaterialPageRoute<Object>(
@@ -764,7 +765,6 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                   );
                   print('Add Child Response: $res');
                   if (res.toString().toLowerCase() == 'addchild') onAddChild();
-                  Navigator.pop(context);
                 },
                 child: Image.asset('assets/images/invitation_anak.png'),
               ),
@@ -773,6 +773,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
               padding: EdgeInsets.all(10.0),
               child: InkWell(
                 onTap: () async {
+                  Navigator.of(context, rootNavigator: true).pop();
                   final res = await Navigator.push(
                     context,
                     MaterialPageRoute<Object>(
@@ -782,7 +783,6 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                   );
                   print('Add Child Response: $res');
                   if (res.toString().toLowerCase() == 'addchild') onAddChild();
-                  Navigator.pop(context);
                 },
                 child: Image.asset('assets/images/invitation_parent.png'),
               ),

@@ -81,7 +81,8 @@ class AddonCard extends StatelessWidget {
               children: [
                 Text(
                   '$title',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: cOrtuWhite),
+                  style:
+                      TextStyle(fontWeight: FontWeight.bold, color: cOrtuBlack),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -89,7 +90,7 @@ class AddonCard extends StatelessWidget {
                   child: IconButton(
                     icon: Icon(
                       Icons.info_outline,
-                      color: cOrtuWhite,
+                      color: cOrtuBlack,
                     ),
                     onPressed: onTapInfo,
                   ),

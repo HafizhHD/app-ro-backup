@@ -12,9 +12,10 @@ import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:ruangkeluarga/login/login.dart';
 
-
 class SetupPermissionPage extends StatefulWidget {
-  SetupPermissionPage({Key? key, this.email = '', this.name = '', this.userType = 'child'}) : super(key: key);
+  SetupPermissionPage(
+      {Key? key, this.email = '', this.name = '', this.userType = 'child'})
+      : super(key: key);
 
   final String email;
   final String name;
@@ -38,7 +39,8 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
           content: SingleChildScrollView(
             child: ListBody(
               children: const <Widget>[
-                Text('Aplikasi $appName membutuhkan ijin akses anda untuk dapat berjalan dengan baik.'),
+                Text(
+                    'Aplikasi $appName membutuhkan ijin akses anda untuk dapat berjalan dengan baik.'),
               ],
             ),
           ),
@@ -78,7 +80,8 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
             children: [
               Container(
                 color: cPrimaryBg,
-                padding: EdgeInsets.only(top: 30.0, left: 20.0, right: 20.0, bottom: 10),
+                padding: EdgeInsets.only(
+                    top: 30.0, left: 20.0, right: 20.0, bottom: 10),
                 // margin: EdgeInsets.only(bottom: 10),
                 // height: 80,
                 child: Column(
@@ -88,11 +91,14 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   children: [
                     Text(
                       'Hi, ${widget.name}',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: cOrtuWhite),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: cOrtuBlack),
                     ),
                     Text(
                       'Aplikasi $appName memerlukan beberapa ijin untuk mengakses data yang dibutuhkan:',
-                      style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                      style: TextStyle(fontSize: 16, color: cOrtuBlack),
                     )
                   ],
                 ),
@@ -128,8 +134,9 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                                   )),
                           (Route<dynamic> route) => false,
                         );
-                      }
-                      else Navigator.of(context).push(leftTransitionRoute(ParentMain()));
+                      } else
+                        Navigator.of(context)
+                            .push(leftTransitionRoute(ParentMain()));
                     } else {
                       _showMyDialog();
                     }
@@ -160,23 +167,17 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
             SwitchListTile.adaptive(
               tileColor: cOrtuGrey,
               title: Text('Lokasi'),
-              subtitle: Text('Aplikasi Ruang ORTU by ASIA mengumpulkan data lokasi untuk mengaktifkan "Pantau Lokasi Anak", "Riwayat Lokasi Anak", "ETA" dan "Pesan Darurat" bahkan jika aplikasi ditutup atau tidak digunakan.\n'+
-
+              subtitle: Text('Aplikasi Ruang ORTU by ASIA mengumpulkan data lokasi untuk mengaktifkan "Pantau Lokasi Anak", "Riwayat Lokasi Anak", "ETA" dan "Pesan Darurat" bahkan jika aplikasi ditutup atau tidak digunakan.\n' +
                   '\nLokasi adalah  informasi tempat/posisi berdasarkan lokasi ponsel. Lokasi yang diperlukan dan dikumpulkan berupa Geolokasi dan nama tempat.\n'
-
-                  '\nAplikasi Ruang ORTU by ASIA memungkinkan orang tua dalam memantau lokasi anak.\n'
-
-                  '\nAplikasi Ruang ORTU by ASIA mengumpulkan data dan informasi lokasi perangkat anak sehingga dapat ditampilkan pada dasbor Aplikasi orang tua. ETA Orang tua dapat diketahui oleh Aplikasi anak.\n'
-
-                  '\nFitur Lokasi yang digunakan dalam aplikasi Ruang ORTU by ASIA menggunakan Software Development Kit dari google. Pengguna dapat melihat permission yang digunakan dan memerlukan persetujuan dari pengguna untuk mengaktifkan fitur lokasi.\n'
-
-                  '\nAplikasi Ruang ORTU by ASIA selalu meminta akses lokasi bahkan saat aplikasi tidak digunakan untuk memberikan informasi lokasi yang tepat kepada orangtua dan memastikan mereka berada di lokasi yang aman, meskipun anak tidak mengaktifkan aplikasi Ruang ORTU by ASIA di perangkat mereka.\n'
-
-                  '\nCara Kerja Lokasi pada Perangkat :\n'
-                  'Apliaski anak akan mengirimkan lokasi kepada orang Aplikasi orang tua dan Aplikasi orang tua akan mengirimkan lokasi pada anak.\n'
-                  'Orang tua dan anak akan saling berbagi informasi lokasi\n'
-                  'Orang tua dapat melihat keberadaan anak dan riwayat perjalanannya pada menu pantau lokasi.\n'
-                  'Pada saat darurat anak dapat mengirimkan lokasi dan video pada orang tua.'),
+                      '\nAplikasi Ruang ORTU by ASIA memungkinkan orang tua dalam memantau lokasi anak.\n'
+                      '\nAplikasi Ruang ORTU by ASIA mengumpulkan data dan informasi lokasi perangkat anak sehingga dapat ditampilkan pada dasbor Aplikasi orang tua. ETA Orang tua dapat diketahui oleh Aplikasi anak.\n'
+                      '\nFitur Lokasi yang digunakan dalam aplikasi Ruang ORTU by ASIA menggunakan Software Development Kit dari google. Pengguna dapat melihat permission yang digunakan dan memerlukan persetujuan dari pengguna untuk mengaktifkan fitur lokasi.\n'
+                      '\nAplikasi Ruang ORTU by ASIA selalu meminta akses lokasi bahkan saat aplikasi tidak digunakan untuk memberikan informasi lokasi yang tepat kepada orangtua dan memastikan mereka berada di lokasi yang aman, meskipun anak tidak mengaktifkan aplikasi Ruang ORTU by ASIA di perangkat mereka.\n'
+                      '\nCara Kerja Lokasi pada Perangkat :\n'
+                      'Apliaski anak akan mengirimkan lokasi kepada orang Aplikasi orang tua dan Aplikasi orang tua akan mengirimkan lokasi pada anak.\n'
+                      'Orang tua dan anak akan saling berbagi informasi lokasi\n'
+                      'Orang tua dapat melihat keberadaan anak dan riwayat perjalanannya pada menu pantau lokasi.\n'
+                      'Pada saat darurat anak dapat mengirimkan lokasi dan video pada orang tua.'),
               value: _locationPermission,
               onChanged: (val) async {
                 var _permissionStatus = await Permission.location.status;
@@ -184,10 +185,12 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   final s = Stopwatch()..start();
                   _permissionStatus = await Permission.location.request();
                   s.stop();
-                  if (s.elapsedMilliseconds < _waitDelay && _permissionStatus.isPermanentlyDenied) {
+                  if (s.elapsedMilliseconds < _waitDelay &&
+                      _permissionStatus.isPermanentlyDenied) {
                     await Get.dialog(AlertDialog(
                       title: Text('Akses ditolak'),
-                      content: Text('Akses untuk lokasi telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
+                      content: Text(
+                          'Akses untuk lokasi telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
                       actions: [
                         TextButton(
                             onPressed: () async {
@@ -203,8 +206,10 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                 _locationPermission = _permissionStatus.isGranted;
                 setState(() {});
               },
-              contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
+              contentPadding:
+                  EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(15))),
             ),
             SizedBox(height: 10),
           ],

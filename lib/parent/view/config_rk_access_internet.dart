@@ -4,14 +4,18 @@ import 'package:ruangkeluarga/global/global.dart';
 
 class RKConfigAccessInternetPage extends StatefulWidget {
   @override
-  _RKConfigAccessInternetPageState createState() => _RKConfigAccessInternetPageState();
+  _RKConfigAccessInternetPageState createState() =>
+      _RKConfigAccessInternetPageState();
   final String title;
   final String name;
 
-  RKConfigAccessInternetPage({Key? key, required this.title, required this.name}) : super(key: key);
+  RKConfigAccessInternetPage(
+      {Key? key, required this.title, required this.name})
+      : super(key: key);
 }
 
-class _RKConfigAccessInternetPageState extends State<RKConfigAccessInternetPage> {
+class _RKConfigAccessInternetPageState
+    extends State<RKConfigAccessInternetPage> {
   bool _switchValueFilter = true;
   bool _switchValueSafeSearch = true;
   bool _switchValuePorno = true;
@@ -24,10 +28,10 @@ class _RKConfigAccessInternetPageState extends State<RKConfigAccessInternetPage>
         backgroundColor: cPrimaryBg,
         appBar: AppBar(
           centerTitle: true,
-          title: Text(widget.name, style: TextStyle(color: cOrtuWhite)),
+          title: Text(widget.name, style: TextStyle(color: cOrtuBlack)),
           backgroundColor: cPrimaryBg,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
+            icon: Icon(Icons.arrow_back_ios, color: cOrtuBlack),
             onPressed: () => Navigator.of(context).pop(),
           ),
           elevation: 0,
@@ -48,7 +52,10 @@ class _RKConfigAccessInternetPageState extends State<RKConfigAccessInternetPage>
                       child: Text(
                         'Akses Internet',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: cOrtuWhite, fontSize: 20, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: cOrtuBlack,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                     WSearchBar(
@@ -60,14 +67,14 @@ class _RKConfigAccessInternetPageState extends State<RKConfigAccessInternetPage>
                       padding: EdgeInsets.all(5),
                       child: Divider(
                         thickness: 1,
-                        color: cOrtuWhite,
+                        color: cOrtuBlack,
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         'Membatasi konten-konten yang tidak sesuai dengan norma.',
-                        style: TextStyle(color: cOrtuWhite),
+                        style: TextStyle(color: cOrtuBlack),
                       ),
                     ),
                     Flexible(
@@ -84,7 +91,8 @@ class _RKConfigAccessInternetPageState extends State<RKConfigAccessInternetPage>
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text('Narkoba$index'),
-                                IconButton(onPressed: () {}, icon: Icon(Icons.close)),
+                                IconButton(
+                                    onPressed: () {}, icon: Icon(Icons.close)),
                               ],
                             ),
                           );
@@ -96,7 +104,7 @@ class _RKConfigAccessInternetPageState extends State<RKConfigAccessInternetPage>
                       padding: const EdgeInsets.only(left: 10),
                       child: Text(
                         'Daftarkan Kata Kunci',
-                        style: TextStyle(color: cOrtuWhite),
+                        style: TextStyle(color: cOrtuBlack),
                       ),
                     ),
                     SizedBox(height: 10),
@@ -108,8 +116,10 @@ class _RKConfigAccessInternetPageState extends State<RKConfigAccessInternetPage>
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.white,
-                        hintText: 'Tulis kata kunci dan pisahkan dengan tanda koma',
-                        contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                        hintText:
+                            'Tulis kata kunci dan pisahkan dengan tanda koma',
+                        contentPadding: const EdgeInsets.only(
+                            left: 14.0, bottom: 8.0, top: 8.0),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.white),
                           borderRadius: BorderRadius.circular(10),

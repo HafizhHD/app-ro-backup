@@ -29,11 +29,13 @@ class SplashInfo3 extends StatelessWidget {
                       child: Hero(
                         tag: 'carousel',
                         child: Container(
-                          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height / 1.8),
+                          constraints: BoxConstraints(
+                              maxHeight:
+                                  MediaQuery.of(context).size.height / 1.8),
                           margin: EdgeInsets.all(20),
                           width: double.infinity,
                           decoration: BoxDecoration(
-                              color: cOrtuWhite,
+                              color: cOrtuBlack,
                               borderRadius: BorderRadius.all(borderRadiusSize),
                               image: DecorationImage(
                                 image: assetImg,
@@ -49,7 +51,7 @@ class SplashInfo3 extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 20,
-                        color: cOrtuWhite,
+                        color: cOrtuBlack,
                       ),
                     ),
                   ],
@@ -65,10 +67,13 @@ class SplashInfo3 extends StatelessWidget {
                     child: IconButton(
                       iconSize: 50,
                       icon: Container(
-                        decoration: BoxDecoration(color: cAccentButton, shape: BoxShape.circle),
-                        child: Icon(Icons.arrow_forward_rounded, color: cPrimaryBg),
+                        decoration: BoxDecoration(
+                            color: cAccentButton, shape: BoxShape.circle),
+                        child: Icon(Icons.arrow_forward_rounded,
+                            color: cPrimaryBg),
                       ),
-                      onPressed: () => Navigator.of(context).push(leftTransitionRoute(SplashInfo4())),
+                      onPressed: () => Navigator.of(context)
+                          .push(leftTransitionRoute(SplashInfo4())),
                     ),
                   ),
                 ),

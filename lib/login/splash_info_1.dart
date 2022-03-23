@@ -27,16 +27,18 @@ class SplashInfo1 extends StatelessWidget {
                       child: Hero(
                         tag: 'carousel',
                         child: Container(
-                          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height / 1.8),
+                          constraints: BoxConstraints(
+                              maxHeight:
+                                  MediaQuery.of(context).size.height / 1.8),
                           margin: EdgeInsets.all(20),
                           width: double.infinity,
                           decoration: BoxDecoration(
-                              color: cOrtuWhite,
-                              borderRadius: BorderRadius.all(borderRadiusSize),
-                              image: DecorationImage(
-                                image: assetImg,
-                                fit: BoxFit.cover,
-                              ),
+                            color: cOrtuBlack,
+                            borderRadius: BorderRadius.all(borderRadiusSize),
+                            image: DecorationImage(
+                              image: assetImg,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                       ),
@@ -48,7 +50,7 @@ class SplashInfo1 extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 20,
-                        color: cOrtuWhite,
+                        color: cOrtuBlack,
                       ),
                     ),
                   ],
@@ -64,10 +66,13 @@ class SplashInfo1 extends StatelessWidget {
                     child: IconButton(
                       iconSize: 50,
                       icon: Container(
-                        decoration: BoxDecoration(color: cOrtuOrange, shape: BoxShape.circle),
-                        child: Icon(Icons.arrow_forward_rounded, color: cPrimaryBg),
+                        decoration: BoxDecoration(
+                            color: cOrtuOrange, shape: BoxShape.circle),
+                        child: Icon(Icons.arrow_forward_rounded,
+                            color: cPrimaryBg),
                       ),
-                      onPressed: () => Navigator.of(context).push(leftTransitionRoute(SplashInfo2())),
+                      onPressed: () => Navigator.of(context)
+                          .push(leftTransitionRoute(SplashInfo2())),
                     ),
                   ),
                 ),
@@ -88,7 +93,7 @@ Widget linearProgressBar(double value) {
       tag: 'info_progress',
       child: LinearProgressIndicator(
         value: value,
-        backgroundColor: cOrtuWhite,
+        backgroundColor: cOrtuBlack,
         color: cOrtuBlue,
       ),
     ),

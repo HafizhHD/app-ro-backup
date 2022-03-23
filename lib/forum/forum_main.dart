@@ -20,9 +20,9 @@ class ForumMain extends GetView<FeedController> {
               style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: cOrtuWhite)),
-          Text('Selamat datang di forum Ruang Ortu By ASIA.',
-              style: TextStyle(color: cOrtuWhite)),
+                  color: cOrtuBlack)),
+          Text('Selamat datang di forum $appName.',
+              style: TextStyle(color: cOrtuBlack)),
           Container(
             padding: EdgeInsets.only(top: 10, bottom: 10),
             child: WSearchBar(
@@ -47,7 +47,7 @@ class ForumMain extends GetView<FeedController> {
                           if (builderCtrl.listSearchContent.length == 0)
                             return Center(
                                 child: Text('Tidak ada konten',
-                                    style: TextStyle(color: cOrtuWhite)));
+                                    style: TextStyle(color: cOrtuBlack)));
                           else
                             return ListView.separated(
                               controller: builderCtrl.scrollController,
@@ -77,7 +77,7 @@ class ForumMain extends GetView<FeedController> {
   }
 
   Widget feedContainer(ContentModel data) {
-    final textColor = cOrtuWhite;
+    final textColor = cOrtuBlack;
     return InkWell(
         child: Container(
           margin: EdgeInsets.only(top: 5, bottom: 5),
@@ -204,7 +204,7 @@ class ForumMain extends GetView<FeedController> {
                   : addonName.length >= 12
                       ? '${addonName.substring(0, 9)}...'
                       : addonName,
-              style: TextStyle(fontSize: 10, color: cOrtuWhite),
+              style: TextStyle(fontSize: 10, color: cOrtuBlack),
             ),
           )
         ],

@@ -13,12 +13,15 @@ import 'package:http/http.dart';
 class RKConfigLimitDevicePage extends StatefulWidget {
   // List<charts.Series> seriesList;
   @override
-  _RKConfigLimitDevicePageState createState() => _RKConfigLimitDevicePageState();
+  _RKConfigLimitDevicePageState createState() =>
+      _RKConfigLimitDevicePageState();
   final String title;
   final String name;
   final String email;
 
-  RKConfigLimitDevicePage({Key? key, required this.title, required this.name, required this.email}) : super(key: key);
+  RKConfigLimitDevicePage(
+      {Key? key, required this.title, required this.name, required this.email})
+      : super(key: key);
 }
 
 class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
@@ -63,7 +66,9 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
   }
 
   Future<Response> onSaveSchedule(String status) async {
-    final type = selectedScheduleType == 0 ? ScheduleType.harian : ScheduleType.terjadwal;
+    final type = selectedScheduleType == 0
+        ? ScheduleType.harian
+        : ScheduleType.terjadwal;
     List<String> listSelectedDays = [];
     if (type == ScheduleType.harian) {
       selectedDay.forEach((key, value) {
@@ -86,7 +91,9 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
   }
 
   Future<Response> onUpdateSchedule(String status, String id) async {
-    final type = selectedScheduleType == 0 ? ScheduleType.harian : ScheduleType.terjadwal;
+    final type = selectedScheduleType == 0
+        ? ScheduleType.harian
+        : ScheduleType.terjadwal;
     List<String> listSelectedDays = [];
     if (type == ScheduleType.harian) {
       selectedDay.forEach((key, value) {
@@ -121,10 +128,10 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
       backgroundColor: cPrimaryBg,
       appBar: AppBar(
         centerTitle: true,
-        title: Text(widget.name, style: TextStyle(color: cOrtuWhite)),
+        title: Text(widget.name, style: TextStyle(color: cOrtuBlack)),
         backgroundColor: cPrimaryBg,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
+          icon: Icon(Icons.arrow_back_ios, color: cOrtuBlack),
           onPressed: () => Navigator.of(context).pop(),
         ),
         elevation: 0,
@@ -137,7 +144,10 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
           children: [
             WSearchBar(
               fOnChanged: (v) {
-                searchlistSchedule = listSchedule.where((e) => e.scheduleName!.toLowerCase().contains(v.toLowerCase())).toList();
+                searchlistSchedule = listSchedule
+                    .where((e) =>
+                        e.scheduleName!.toLowerCase().contains(v.toLowerCase()))
+                    .toList();
               },
             ),
             //dropDown
@@ -146,17 +156,18 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
               width: MediaQuery.of(context).size.width / 2,
               child: Divider(
                 thickness: 1,
-                color: cOrtuWhite,
+                color: cOrtuBlack,
               ),
             ),
             Flexible(
               child: FutureBuilder(
                   future: fListSchedule,
-                  builder: (context, AsyncSnapshot<List<DeviceUsageSchedules>> snapshot) {
+                  builder: (context,
+                      AsyncSnapshot<List<DeviceUsageSchedules>> snapshot) {
                     if (!snapshot.hasData) return wProgressIndicator();
 
                     /*final listSchedule = snapshot.data ?? [];
-                    if (listSchedule.length <= 0) return Center(child: Text('List jadwal kosong', style: TextStyle(color: cOrtuWhite)));*/
+                    if (listSchedule.length <= 0) return Center(child: Text('List jadwal kosong', style: TextStyle(color: cOrtuBlack)));*/
 
                     return ListView.builder(
                         itemCount: searchlistSchedule.length,
@@ -168,9 +179,12 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                               Container(
                                 margin: EdgeInsets.all(5),
                                 padding: EdgeInsets.all(5).copyWith(left: 10),
-                                decoration: BoxDecoration(color: Colors.grey.shade700, borderRadius: BorderRadius.circular(10)),
+                                decoration: BoxDecoration(
+                                    color: Colors.grey.shade700,
+                                    borderRadius: BorderRadius.circular(10)),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Flexible(
@@ -178,32 +192,42 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                         margin: EdgeInsets.all(5),
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             RichText(
                                               text: TextSpan(
                                                 text: schedule.scheduleName,
-                                                style: TextStyle(color: cOrtuWhite),
+                                                style: TextStyle(
+                                                    color: cOrtuBlack),
                                                 children: <TextSpan>[
                                                   TextSpan(
-                                                    text: '   ${schedule.scheduleType.toEnumString()}',
+                                                    text:
+                                                        '   ${schedule.scheduleType.toEnumString()}',
                                                     style: TextStyle(
                                                       color: Colors.white30,
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
                                                   ),
                                                 ],
                                               ),
                                             ),
                                             SizedBox(height: 5),
-                                            if (schedule.scheduleDescription != null && schedule.scheduleDescription != '')
+                                            if (schedule.scheduleDescription !=
+                                                    null &&
+                                                schedule.scheduleDescription !=
+                                                    '')
                                               Flexible(
                                                 child: Padding(
-                                                  padding: EdgeInsets.only(bottom: 5),
+                                                  padding: EdgeInsets.only(
+                                                      bottom: 5),
                                                   child: Text(
                                                     '${schedule.scheduleDescription}',
-                                                    style: TextStyle(color: cOrtuWhite),
-                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                        color: cOrtuBlack),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                     maxLines: 2,
                                                   ),
                                                 ),
@@ -211,7 +235,8 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                             Flexible(
                                               child: Text(
                                                 '${schedule.deviceUsageStartTime} - ${schedule.deviceUsageEndTime}',
-                                                style: TextStyle(color: cOrtuWhite),
+                                                style: TextStyle(
+                                                    color: cOrtuBlack),
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 2,
                                               ),
@@ -225,20 +250,36 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                         IconButton(
                                             onPressed: () async {
                                               showLoadingOverlay();
-                                              final status = schedule.status?.toLowerCase() == 'aktif';
-                                              final response = await MediaRepository().scheduleUpdateStatus(status ? '' : 'Aktif', schedule.id!);
+                                              final status = schedule.status
+                                                      ?.toLowerCase() ==
+                                                  'aktif';
+                                              final response =
+                                                  await MediaRepository()
+                                                      .scheduleUpdateStatus(
+                                                          status ? '' : 'Aktif',
+                                                          schedule.id!);
                                               if (response.statusCode == 200) {
                                                 await fetchListSchedule();
                                                 closeOverlay();
-                                                showToastSuccess(ctx: context, successText: 'Berhasil Ubah Status Jadwal Penggunaan!');
+                                                showToastSuccess(
+                                                    ctx: context,
+                                                    successText:
+                                                        'Berhasil Ubah Status Jadwal Penggunaan!');
                                               } else {
                                                 closeOverlay();
-                                                showToastFailed(ctx: context, failedText: 'Gagal Ubah Status Jadwal Penggunaan!');
+                                                showToastFailed(
+                                                    ctx: context,
+                                                    failedText:
+                                                        'Gagal Ubah Status Jadwal Penggunaan!');
                                               }
                                             },
                                             icon: Icon(
                                               Icons.radio_button_checked,
-                                              color: schedule.status?.toLowerCase() == 'aktif' ? cOrtuBlue : cOrtuWhite,
+                                              color: schedule.status
+                                                          ?.toLowerCase() ==
+                                                      'aktif'
+                                                  ? cOrtuBlue
+                                                  : cOrtuBlack,
                                             )),
                                         IconButton(
                                             onPressed: () {
@@ -246,24 +287,33 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                             },
                                             icon: Icon(
                                               Icons.edit,
-                                              color: cOrtuWhite,
+                                              color: cOrtuBlack,
                                             )),
                                         IconButton(
                                             onPressed: () async {
                                               showLoadingOverlay();
-                                              final response = await MediaRepository().scheduleRemove(schedule.id!);
+                                              final response =
+                                                  await MediaRepository()
+                                                      .scheduleRemove(
+                                                          schedule.id!);
                                               if (response.statusCode == 200) {
                                                 await fetchListSchedule();
                                                 closeOverlay();
-                                                showToastSuccess(ctx: context, successText: 'Berhasil Menghapus Jadwal Penggunaan!');
+                                                showToastSuccess(
+                                                    ctx: context,
+                                                    successText:
+                                                        'Berhasil Menghapus Jadwal Penggunaan!');
                                               } else {
                                                 closeOverlay();
-                                                showToastFailed(ctx: context, failedText: 'Gagal Menghapus Jadwal Penggunaan!');
+                                                showToastFailed(
+                                                    ctx: context,
+                                                    failedText:
+                                                        'Gagal Menghapus Jadwal Penggunaan!');
                                               }
                                             },
                                             icon: Icon(
                                               Icons.close,
-                                              color: cOrtuWhite,
+                                              color: cOrtuBlack,
                                             )),
                                       ],
                                     ),
@@ -359,9 +409,12 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                             children: [
                               AppBar(
                                 backgroundColor: Colors.transparent,
-                                title: Text('${hasData ? 'Ubah' : 'Tambah'} Jadwal Penggunaan', style: TextStyle(color: cOrtuWhite)),
+                                title: Text(
+                                    '${hasData ? 'Ubah' : 'Tambah'} Jadwal Penggunaan',
+                                    style: TextStyle(color: cOrtuBlack)),
                                 leading: IconButton(
-                                  icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
+                                  icon: Icon(Icons.arrow_back_ios,
+                                      color: cOrtuBlack),
                                   onPressed: () {
                                     Navigator.pop(context);
                                   },
@@ -371,7 +424,8 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                               Container(
                                 padding: EdgeInsets.all(10),
                                 child: TextField(
-                                  style: TextStyle(fontSize: 16.0, color: Colors.black),
+                                  style: TextStyle(
+                                      fontSize: 16.0, color: Colors.black),
                                   keyboardType: TextInputType.text,
                                   minLines: 1,
                                   maxLines: 1,
@@ -380,13 +434,16 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                     filled: true,
                                     fillColor: Colors.white,
                                     hintText: 'Judul Jadwal',
-                                    contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                                    contentPadding: const EdgeInsets.only(
+                                        left: 14.0, bottom: 8.0, top: 8.0),
                                     focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.white),
+                                      borderSide:
+                                          BorderSide(color: Colors.white),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     enabledBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.white),
+                                      borderSide:
+                                          BorderSide(color: Colors.white),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                   ),
@@ -395,7 +452,8 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                               Container(
                                 padding: EdgeInsets.all(10),
                                 child: TextField(
-                                  style: TextStyle(fontSize: 16.0, color: Colors.black),
+                                  style: TextStyle(
+                                      fontSize: 16.0, color: Colors.black),
                                   keyboardType: TextInputType.multiline,
                                   minLines: 3,
                                   maxLines: 6,
@@ -404,20 +462,24 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                     filled: true,
                                     fillColor: Colors.white,
                                     hintText: 'Deskripsi Jadwal',
-                                    contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                                    contentPadding: const EdgeInsets.only(
+                                        left: 14.0, bottom: 8.0, top: 8.0),
                                     focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.white),
+                                      borderSide:
+                                          BorderSide(color: Colors.white),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     enabledBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.white),
+                                      borderSide:
+                                          BorderSide(color: Colors.white),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                padding: EdgeInsets.only(left: 10, right: 10, top: 20),
+                                padding: EdgeInsets.only(
+                                    left: 10, right: 10, top: 20),
                                 width: MediaQuery.of(context).size.width,
                                 child: ToggleBar(
                                   initialValue: selectedScheduleType,
@@ -429,8 +491,10 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                       sStartDateTime = '00:00';
                                       sEndDateTime = '00:00';
                                     } else {
-                                      sStartDateTime = dateFormat_EDMYHM(DateTime.now());
-                                      sEndDateTime = dateFormat_EDMYHM(DateTime.now());
+                                      sStartDateTime =
+                                          dateFormat_EDMYHM(DateTime.now());
+                                      sEndDateTime =
+                                          dateFormat_EDMYHM(DateTime.now());
                                     }
                                     setState(() {});
                                     sbSetState(() {});
@@ -438,7 +502,9 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                 ),
                               ),
                               Flexible(
-                                child: selectedScheduleType == 0 ? harianPicker(sbSetState) : jadwalPicker(sbSetState),
+                                child: selectedScheduleType == 0
+                                    ? harianPicker(sbSetState)
+                                    : jadwalPicker(sbSetState),
                               ),
                             ],
                           );
@@ -449,28 +515,42 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                         child: FlatButton(
                           height: 50,
                           minWidth: 300,
-                          shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15.0)),
+                          shape: new RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(15.0)),
                           onPressed: () async {
                             showLoadingOverlay();
                             if (hasData) {
-                              final response = await onUpdateSchedule('aktif', data.id!);
+                              final response =
+                                  await onUpdateSchedule('aktif', data.id!);
                               if (response.statusCode == 200) {
                                 closeOverlay();
                                 closeOverlay();
-                                showToastSuccess(ctx: context, successText: 'Berhasil Ubah Jadwal Penggunaan!');
+                                showToastSuccess(
+                                    ctx: context,
+                                    successText:
+                                        'Berhasil Ubah Jadwal Penggunaan!');
                                 await fetchListSchedule();
                               } else {
-                                showToastFailed(ctx: context, failedText: 'Gagal Ubah Jadwal Penggunaan!');
+                                showToastFailed(
+                                    ctx: context,
+                                    failedText:
+                                        'Gagal Ubah Jadwal Penggunaan!');
                               }
                             } else {
                               final response = await onSaveSchedule('aktif');
                               if (response.statusCode == 200) {
                                 closeOverlay();
                                 closeOverlay();
-                                showToastSuccess(ctx: context, successText: 'Berhasil Tambah Jadwal Penggunaan!');
+                                showToastSuccess(
+                                    ctx: context,
+                                    successText:
+                                        'Berhasil Tambah Jadwal Penggunaan!');
                                 await fetchListSchedule();
                               } else {
-                                showToastFailed(ctx: context, failedText: 'Gagal Tambah Jadwal Penggunaan!');
+                                showToastFailed(
+                                    ctx: context,
+                                    failedText:
+                                        'Gagal Tambah Jadwal Penggunaan!');
                               }
                             }
                           },
@@ -506,9 +586,13 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                 child: ListTile(
                   title: Text(
                     'Jam mulai',
-                    style: TextStyle(color: cOrtuWhite),
+                    style: TextStyle(color: cOrtuBlack),
                   ),
-                  subtitle: Text(sStartDateTime, style: TextStyle(color: cOrtuWhite, fontSize: 30, fontWeight: FontWeight.bold)),
+                  subtitle: Text(sStartDateTime,
+                      style: TextStyle(
+                          color: cOrtuBlack,
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold)),
                   onTap: () async {
                     final res = await timePickerModal();
                     sStartDateTime = res;
@@ -521,9 +605,13 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                 child: ListTile(
                   title: Text(
                     'Jam selesai',
-                    style: TextStyle(color: cOrtuWhite),
+                    style: TextStyle(color: cOrtuBlack),
                   ),
-                  subtitle: Text(sEndDateTime, style: TextStyle(color: cOrtuWhite, fontSize: 30, fontWeight: FontWeight.bold)),
+                  subtitle: Text(sEndDateTime,
+                      style: TextStyle(
+                          color: cOrtuBlack,
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold)),
                   onTap: () async {
                     final res = await timePickerModal();
                     sEndDateTime = res;
@@ -545,7 +633,8 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                       selected: selectedDay[weekdayToDayName(0)]!,
                       onTap: () {
                         setState(() {
-                          selectedDay[weekdayToDayName(0)] = !(selectedDay[weekdayToDayName(0)] ?? false);
+                          selectedDay[weekdayToDayName(0)] =
+                              !(selectedDay[weekdayToDayName(0)] ?? false);
                         });
                         sbSetState(() {});
                       }),
@@ -554,7 +643,8 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                       selected: selectedDay[weekdayToDayName(1)]!,
                       onTap: () {
                         setState(() {
-                          selectedDay[weekdayToDayName(1)] = !(selectedDay[weekdayToDayName(1)] ?? false);
+                          selectedDay[weekdayToDayName(1)] =
+                              !(selectedDay[weekdayToDayName(1)] ?? false);
                         });
                         sbSetState(() {});
                       }),
@@ -563,7 +653,8 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                       selected: selectedDay[weekdayToDayName(2)]!,
                       onTap: () {
                         setState(() {
-                          selectedDay[weekdayToDayName(2)] = !(selectedDay[weekdayToDayName(2)] ?? false);
+                          selectedDay[weekdayToDayName(2)] =
+                              !(selectedDay[weekdayToDayName(2)] ?? false);
                         });
                         sbSetState(() {});
                       }),
@@ -572,7 +663,8 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                       selected: selectedDay[weekdayToDayName(3)]!,
                       onTap: () {
                         setState(() {
-                          selectedDay[weekdayToDayName(3)] = !(selectedDay[weekdayToDayName(3)] ?? false);
+                          selectedDay[weekdayToDayName(3)] =
+                              !(selectedDay[weekdayToDayName(3)] ?? false);
                         });
                         sbSetState(() {});
                       }),
@@ -581,7 +673,8 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                       selected: selectedDay[weekdayToDayName(4)]!,
                       onTap: () {
                         setState(() {
-                          selectedDay[weekdayToDayName(4)] = !(selectedDay[weekdayToDayName(4)] ?? false);
+                          selectedDay[weekdayToDayName(4)] =
+                              !(selectedDay[weekdayToDayName(4)] ?? false);
                         });
                         sbSetState(() {});
                       }),
@@ -590,7 +683,8 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                       selected: selectedDay[weekdayToDayName(5)]!,
                       onTap: () {
                         setState(() {
-                          selectedDay[weekdayToDayName(5)] = !(selectedDay[weekdayToDayName(5)] ?? false);
+                          selectedDay[weekdayToDayName(5)] =
+                              !(selectedDay[weekdayToDayName(5)] ?? false);
                         });
                         sbSetState(() {});
                       }),
@@ -599,7 +693,8 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                       selected: selectedDay[weekdayToDayName(6)]!,
                       onTap: () {
                         setState(() {
-                          selectedDay[weekdayToDayName(6)] = !(selectedDay[weekdayToDayName(6)] ?? false);
+                          selectedDay[weekdayToDayName(6)] =
+                              !(selectedDay[weekdayToDayName(6)] ?? false);
                         });
                         sbSetState(() {});
                       }),
@@ -612,10 +707,13 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
     );
   }
 
-  Widget dayButton({required bool selected, required String dayText, required Function() onTap}) {
+  Widget dayButton(
+      {required bool selected,
+      required String dayText,
+      required Function() onTap}) {
     return InkWell(
       child: CircleAvatar(
-        backgroundColor: selected ? cOrtuBlue : cOrtuWhite,
+        backgroundColor: selected ? cOrtuBlue : cOrtuBlack,
         child: Text('$dayText', style: TextStyle(color: cPrimaryBg)),
       ),
       onTap: onTap,
@@ -637,9 +735,14 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                   style: TextStyle(color: cOrtuGrey),
                 ),
               ),
-              subtitle: Text(sStartDateTime, style: TextStyle(color: cOrtuWhite, fontSize: 25, fontWeight: FontWeight.bold)),
+              subtitle: Text(sStartDateTime,
+                  style: TextStyle(
+                      color: cOrtuBlack,
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold)),
               onTap: () async {
-                final res = await timePickerModal(mode: CupertinoDatePickerMode.dateAndTime);
+                final res = await timePickerModal(
+                    mode: CupertinoDatePickerMode.dateAndTime);
                 sStartDateTime = res;
                 setState(() {});
                 sbSetState(() {});
@@ -656,9 +759,14 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                   style: TextStyle(color: cOrtuGrey),
                 ),
               ),
-              subtitle: Text(sEndDateTime, style: TextStyle(color: cOrtuWhite, fontSize: 25, fontWeight: FontWeight.bold)),
+              subtitle: Text(sEndDateTime,
+                  style: TextStyle(
+                      color: cOrtuBlack,
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold)),
               onTap: () async {
-                final res = await timePickerModal(mode: CupertinoDatePickerMode.dateAndTime);
+                final res = await timePickerModal(
+                    mode: CupertinoDatePickerMode.dateAndTime);
                 sEndDateTime = res;
                 setState(() {});
                 sbSetState(() {});
@@ -670,7 +778,8 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
     );
   }
 
-  Future<String> timePickerModal({CupertinoDatePickerMode mode = CupertinoDatePickerMode.time}) async {
+  Future<String> timePickerModal(
+      {CupertinoDatePickerMode mode = CupertinoDatePickerMode.time}) async {
     String newTime = '00:00';
     final res = await showModalBottomSheet(
         context: context,

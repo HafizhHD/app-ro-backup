@@ -20,8 +20,11 @@ class JadwalPage extends StatelessWidget {
                     padding: EdgeInsets.all(5),
                     child: ListTile(
                       tileColor: cOrtuBlue,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      title: Align(alignment: Alignment.centerLeft, child: Icon(Icons.calendar_today_outlined)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      title: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Icon(Icons.calendar_today_outlined)),
                       subtitle: Text('Hari ini'),
                       trailing: Text(
                         '2',
@@ -34,9 +37,12 @@ class JadwalPage extends StatelessWidget {
                   child: Container(
                     padding: EdgeInsets.all(5),
                     child: ListTile(
-                      tileColor: cOrtuWhite,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      title: Align(alignment: Alignment.centerLeft, child: Icon(Icons.calendar_today_outlined)),
+                      tileColor: cOrtuBlack,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      title: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Icon(Icons.calendar_today_outlined)),
                       subtitle: Text('Terjadwal'),
                       trailing: Text(
                         '3',
@@ -54,16 +60,16 @@ class JadwalPage extends StatelessWidget {
                 children: [
                   Text(
                     'Seluruh Keluarga',
-                    style: TextStyle(color: cOrtuWhite),
+                    style: TextStyle(color: cOrtuBlack),
                   ),
-                  Icon(Icons.keyboard_arrow_down, color: cOrtuWhite),
+                  Icon(Icons.keyboard_arrow_down, color: cOrtuBlack),
                 ],
               ),
             ),
             Container(
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: cOrtuWhite,
+                color: cOrtuBlack,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
@@ -80,7 +86,8 @@ class JadwalPage extends StatelessWidget {
               padding: EdgeInsets.only(top: 20, bottom: 10),
               child: ListTile(
                 tileColor: cOrtuBlue,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
                 leading: Icon(Icons.circle),
                 title: Text('Belajar Online Ruang ORTU by ASIA'),
                 subtitle: Text('HKB PGO'),
@@ -89,8 +96,9 @@ class JadwalPage extends StatelessWidget {
             Container(
               padding: EdgeInsets.only(top: 10, bottom: 10),
               child: ListTile(
-                tileColor: cOrtuWhite,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                tileColor: cOrtuBlack,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
                 leading: Icon(Icons.circle),
                 title: Text('Menyapu Taman'),
                 subtitle: Text('Tugas Harian'),

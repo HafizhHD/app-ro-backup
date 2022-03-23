@@ -93,8 +93,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
         _showToastSuccess();
         await prefs.setBool(isPrefLogin, true);
         closeOverlay();
-        Navigator.pushReplacement(
-            context,
+        Navigator.of(context).pushReplacement(
             MaterialPageRoute(
                 builder: (ctx) => InviteChildQR(
                     allData: allData,
@@ -192,7 +191,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text('Buat Profile'),
+          title: Text('Buat Profile', style: TextStyle(color: cOrtuBlack)),
           leading: SizedBox(),
           actions: [
             IconButton(
@@ -277,11 +276,11 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                               contentPadding: const EdgeInsets.only(
                                   left: 14.0, bottom: 8.0, top: 8.0),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
+                                borderSide: BorderSide(color: cOrtuBlack),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
+                                borderSide: BorderSide(color: cOrtuBlack),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
@@ -317,11 +316,11 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                               contentPadding: const EdgeInsets.only(
                                   left: 14.0, bottom: 8.0, top: 8.0),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
+                                borderSide: BorderSide(color: cOrtuBlack),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
+                                borderSide: BorderSide(color: cOrtuBlack),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
@@ -377,7 +376,16 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                                     decoration: InputDecoration(
                                       contentPadding: const EdgeInsets.only(
                                           left: 14.0, bottom: 8.0, top: 8.0),
-                                      border: InputBorder.none,
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide:
+                                            BorderSide(color: cOrtuBlack),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide:
+                                            BorderSide(color: cOrtuBlack),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
                                       hintText: birthDateString == ''
                                           ? "- Pilih Tanggal -"
                                           : birthDateString,
@@ -558,14 +566,14 @@ class InviteChildQR extends StatelessWidget {
               SizedBox(height: 20),
               Text(
                 'Di Ponsel\n',
-                style: TextStyle(fontSize: 35, color: cOrtuWhite),
+                style: TextStyle(fontSize: 35, color: cOrtuBlack),
                 textAlign: TextAlign.center,
               ),
               Text(
                 'Gunakan Camera Atau Aplikasi QR' +
                     '\nScan QR Code Di Bawah ini' +
                     '\nDan Klik Link Yang Anda Terima',
-                style: TextStyle(fontSize: 20, color: cOrtuWhite, height: 1.5),
+                style: TextStyle(fontSize: 20, color: cOrtuBlack, height: 1.5),
                 textAlign: TextAlign.center,
               ),
               Flexible(
