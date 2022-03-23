@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
@@ -93,10 +94,28 @@ class MediaRepository {
       String imgByte,
       String birthDate) async {
     var url = _rkService.baseUrl + '/user/register';
+
+    var deviceFullInfo = "Unknown";
+    DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidDeviceInfo = await deviceInfoPlugin.androidInfo;
+      deviceFullInfo =
+          '${androidDeviceInfo.manufacturer} ${androidDeviceInfo.model}, Android ${androidDeviceInfo.version.release}';
+      print('Ini info androidnya: $deviceFullInfo');
+    } else if (Platform.isIOS) {
+      IosDeviceInfo iosDeviceInfo = await deviceInfoPlugin.iosInfo;
+      deviceFullInfo =
+          '${iosDeviceInfo.localizedModel} ${iosDeviceInfo.name}, iOS ${iosDeviceInfo.systemVersion}';
+      print('Ini info iosnya: $deviceFullInfo');
+    }
     Map<String, dynamic> json = {
       "emailUser": "$email",
       "name": "$name",
-      "devices": {"device": "Android", "fcmToken": "$token", "versi": "1.0"},
+      "devices": {
+        "device": "$deviceFullInfo",
+        "fcmToken": "$token",
+        "versi": "1.0"
+      },
       "photo": "$photo",
       "phoneNumber": "$nohp",
       "address": "$alamat",
