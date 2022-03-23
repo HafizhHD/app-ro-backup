@@ -161,16 +161,16 @@ class _AkunEditPageState extends State<AkunEditPage> {
                             decoration: InputDecoration(
                               errorStyle: TextStyle(color: cOrtuOrange),
                               filled: true,
-                              fillColor: cOrtuBlack,
+                              fillColor: cOrtuWhite,
                               hintText: 'Nama Lengkap',
                               contentPadding: const EdgeInsets.only(
                                   left: 14.0, bottom: 8.0, top: 8.0),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: cOrtuWhite),
+                                borderSide: BorderSide(color: cOrtuButton),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: cOrtuWhite),
+                                borderSide: BorderSide(color: cOrtuButton),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
@@ -198,11 +198,11 @@ class _AkunEditPageState extends State<AkunEditPage> {
                               contentPadding: const EdgeInsets.only(
                                   left: 14.0, bottom: 8.0, top: 8.0),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: cOrtuWhite),
+                                borderSide: BorderSide(color: cOrtuButton),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: cOrtuWhite),
+                                borderSide: BorderSide(color: cOrtuButton),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
@@ -229,11 +229,11 @@ class _AkunEditPageState extends State<AkunEditPage> {
                               contentPadding: const EdgeInsets.only(
                                   left: 14.0, bottom: 8.0, top: 8.0),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: cOrtuWhite),
+                                borderSide: BorderSide(color: cOrtuButton),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: cOrtuWhite),
+                                borderSide: BorderSide(color: cOrtuButton),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
@@ -336,11 +336,11 @@ class _AkunEditPageState extends State<AkunEditPage> {
                               contentPadding: const EdgeInsets.only(
                                   left: 14.0, bottom: 8.0, top: 8.0),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: cOrtuWhite),
+                                borderSide: BorderSide(color: cOrtuButton),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: cOrtuWhite),
+                                borderSide: BorderSide(color: cOrtuButton),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),

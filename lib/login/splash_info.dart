@@ -36,7 +36,7 @@ class SplashInfo extends StatelessWidget {
                       'Aplikasi Untuk Keluarga',
                       style: TextStyle(
                         fontSize: 20,
-                        color: cOrtuBlack,
+                        color: cOrtuText,
                       ),
                     ),
                   ],

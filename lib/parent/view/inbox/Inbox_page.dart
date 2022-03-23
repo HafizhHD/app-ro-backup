@@ -23,7 +23,7 @@ class InboxPage extends StatelessWidget {
                 ? _body(context, controller)
                 : Center(
                     child: Text('Inbox Kosong',
-                        style: TextStyle(color: cOrtuBlack)),
+                        style: TextStyle(color: cOrtuText)),
                   ),
           ),
         ),

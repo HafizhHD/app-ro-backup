@@ -39,7 +39,7 @@ class FeedPage extends GetView<FeedController> {
                                     : Colors.transparent,
                                 child: roundAddonAvatar(
                                     imgUrl: builderCtrl
-                                        .listCoBrand[index].thumbnail ??
+                                            .listCoBrand[index].thumbnail ??
                                         'assets/images/hkbpgo.png',
                                     // imgUrl: 'assets/images/hkbpgo.png',
                                     addonName:
@@ -90,7 +90,7 @@ class FeedPage extends GetView<FeedController> {
                           if (builderCtrl.listSearchContent.length == 0)
                             return Center(
                                 child: Text('Tidak ada konten',
-                                    style: TextStyle(color: cOrtuWhite)));
+                                    style: TextStyle(color: cOrtuText)));
                           else
                             return ListView.separated(
                               controller: builderCtrl.scrollController,
@@ -120,7 +120,7 @@ class FeedPage extends GetView<FeedController> {
   }
 
   Widget feedContainer(ContentModel data) {
-    final textColor = cOrtuWhite;
+    final textColor = cOrtuText;
     return InkWell(
         child: Container(
           margin: EdgeInsets.only(top: 5, bottom: 5),
@@ -218,10 +218,9 @@ class FeedPage extends GetView<FeedController> {
   }
 
   Widget roundAddonAvatar(
-      {
-        required String imgUrl,
-        required String addonName,
-        bool isSelected = false}) {
+      {required String imgUrl,
+      required String addonName,
+      bool isSelected = false}) {
     var dataImage = imgUrl.split(",");
     Uint8List _bytesImage;
     _bytesImage = dataImage.length > 1
@@ -248,7 +247,7 @@ class FeedPage extends GetView<FeedController> {
                   : addonName.length >= 12
                       ? '${addonName.substring(0, 9)}...'
                       : addonName,
-              style: TextStyle(fontSize: 10, color: cOrtuWhite),
+              style: TextStyle(fontSize: 10, color: cOrtuText),
             ),
           )
         ],

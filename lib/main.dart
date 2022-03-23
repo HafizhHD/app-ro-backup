@@ -194,7 +194,10 @@ void callbackBackgroundService() async {
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: cPrimaryBg, statusBarIconBrightness: Brightness.dark));
+      statusBarColor: cPrimaryBg,
+      statusBarIconBrightness: appName == 'Ruang ORTU by ASIA'
+          ? Brightness.light
+          : Brightness.dark));
 
   await runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -251,7 +254,7 @@ class MyApp extends StatelessWidget {
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeData.light().copyWith(primaryColor: cOrtuBlue),
+        theme: ThemeData.light().copyWith(primaryColor: cOrtuInkWell),
         home: MyHomePage(),
       ),
     );

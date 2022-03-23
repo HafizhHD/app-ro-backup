@@ -98,11 +98,11 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                          color: cOrtuBlack),
+                          color: cOrtuText),
                     ),
                     Text(
                       'Aplikasi $appName memerlukan beberapa izin untuk mengakses data yang dibutuhkan:',
-                      style: TextStyle(fontSize: 16, color: cOrtuBlack),
+                      style: TextStyle(fontSize: 16, color: cOrtuText),
                     )
                   ],
                 ),

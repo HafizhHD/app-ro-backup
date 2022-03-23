@@ -28,10 +28,10 @@ class _RKConfigAccessInternetPageState
         backgroundColor: cPrimaryBg,
         appBar: AppBar(
           centerTitle: true,
-          title: Text(widget.name, style: TextStyle(color: cOrtuBlack)),
+          title: Text(widget.name, style: TextStyle(color: cOrtuText)),
           backgroundColor: cPrimaryBg,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: cOrtuBlack),
+            icon: Icon(Icons.arrow_back_ios, color: cOrtuText),
             onPressed: () => Navigator.of(context).pop(),
           ),
           elevation: 0,
@@ -53,7 +53,7 @@ class _RKConfigAccessInternetPageState
                         'Akses Internet',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: cOrtuBlack,
+                            color: cOrtuText,
                             fontSize: 20,
                             fontWeight: FontWeight.bold),
                       ),
@@ -67,14 +67,14 @@ class _RKConfigAccessInternetPageState
                       padding: EdgeInsets.all(5),
                       child: Divider(
                         thickness: 1,
-                        color: cOrtuBlack,
+                        color: cOrtuText,
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         'Membatasi konten-konten yang tidak sesuai dengan norma.',
-                        style: TextStyle(color: cOrtuBlack),
+                        style: TextStyle(color: cOrtuText),
                       ),
                     ),
                     Flexible(
@@ -104,7 +104,7 @@ class _RKConfigAccessInternetPageState
                       padding: const EdgeInsets.only(left: 10),
                       child: Text(
                         'Daftarkan Kata Kunci',
-                        style: TextStyle(color: cOrtuBlack),
+                        style: TextStyle(color: cOrtuText),
                       ),
                     ),
                     SizedBox(height: 10),

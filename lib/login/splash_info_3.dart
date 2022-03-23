@@ -35,7 +35,7 @@ class SplashInfo3 extends StatelessWidget {
                           margin: EdgeInsets.all(20),
                           width: double.infinity,
                           decoration: BoxDecoration(
-                              color: cOrtuBlack,
+                              color: cOrtuText,
                               borderRadius: BorderRadius.all(borderRadiusSize),
                               image: DecorationImage(
                                 image: assetImg,
@@ -51,7 +51,7 @@ class SplashInfo3 extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 20,
-                        color: cOrtuBlack,
+                        color: cOrtuText,
                       ),
                     ),
                   ],

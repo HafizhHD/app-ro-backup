@@ -123,20 +123,20 @@ class _ParentMainState extends State<ParentMain> {
           appBar: AppBar(
             elevation: 0,
             backgroundColor: cPrimaryBg,
-            iconTheme: IconThemeData(color: cOrtuBlack),
+            iconTheme: IconThemeData(color: cOrtuText),
             actions: <Widget>[
               // IconButton(
               //   onPressed: () {},
               //   icon: Icon(
               //     Icons.notifications,
-              //     color: cOrtuBlack,
+              //     color: cOrtuText,
               //   ),
               // ),
               // IconButton(
               //   onPressed: () {},
               //   icon: Icon(
               //     Icons.mail_outline,
-              //     color: cOrtuBlack,
+              //     color: cOrtuText,
               //   ),
               // ),
               IconButton(
@@ -145,7 +145,7 @@ class _ParentMainState extends State<ParentMain> {
                 },
                 icon: Icon(
                   Icons.help,
-                  color: cOrtuBlack,
+                  color: cOrtuText,
                 ),
               )
             ],
@@ -290,7 +290,7 @@ class IconWithLabel extends StatelessWidget {
     required this.defaultIcon,
     required this.label,
     required this.onPressed,
-    this.defaultColor: cOrtuBlack,
+    this.defaultColor: cOrtuText,
     this.activeColor: cOrtuDarkBlue,
     this.isSelected: false,
   });

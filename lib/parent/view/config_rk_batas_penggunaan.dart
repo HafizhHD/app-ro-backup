@@ -162,10 +162,10 @@ class _RKConfigBatasPenggunaanPageState
       backgroundColor: cPrimaryBg,
       appBar: AppBar(
         centerTitle: true,
-        title: Text(widget.name, style: TextStyle(color: cOrtuBlack)),
+        title: Text(widget.name, style: TextStyle(color: cOrtuText)),
         backgroundColor: cPrimaryBg,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: cOrtuBlack),
+          icon: Icon(Icons.arrow_back_ios, color: cOrtuText),
           onPressed: () => Navigator.of(context).pop(),
         ),
         elevation: 0,
@@ -198,7 +198,7 @@ class _RKConfigBatasPenggunaanPageState
                     if (listApps.length <= 0)
                       return Center(
                         child: Text('List aplikasi kosong',
-                            style: TextStyle(color: cOrtuBlack)),
+                            style: TextStyle(color: cOrtuText)),
                       );
                     listApps.sort((a, b) => a.appName!.compareTo(b.appName!));
 
@@ -256,7 +256,7 @@ class _RKConfigBatasPenggunaanPageState
                                       Flexible(
                                         child: Text(
                                           app.appName ?? '',
-                                          style: TextStyle(color: cOrtuBlack),
+                                          style: TextStyle(color: cOrtuText),
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -286,7 +286,7 @@ class _RKConfigBatasPenggunaanPageState
                                             Icons.access_time,
                                             color: timeLimit > 0
                                                 ? cOrtuBlue
-                                                : cOrtuBlack,
+                                                : cOrtuText,
                                           )),
                                     ],
                                   ),

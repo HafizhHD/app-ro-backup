@@ -193,12 +193,12 @@ class _HomeParentPageState extends State<HomeParentPage> {
                   Text(
                     '$title',
                     style: TextStyle(
-                        fontWeight: FontWeight.bold, color: cOrtuBlack),
+                        fontWeight: FontWeight.bold, color: cOrtuText),
                   ),
                   Text(
                     '$content',
                     softWrap: true,
-                    style: TextStyle(color: cOrtuBlack),
+                    style: TextStyle(color: cOrtuText),
                     maxLines: 4,
                     overflow: TextOverflow.ellipsis,
                   )

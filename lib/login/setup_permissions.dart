@@ -270,11 +270,11 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                          color: cOrtuBlack),
+                          color: cOrtuText),
                     ),
                     Text(
                       'Aplikasi $appName memerlukan beberapa izin untuk mengakses data yang dibutuhkan:',
-                      style: TextStyle(fontSize: 16, color: cOrtuBlack),
+                      style: TextStyle(fontSize: 16, color: cOrtuText),
                     )
                   ],
                 ),
@@ -371,14 +371,14 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
             child: Column(children: [
               Text('Kontak',
                   style: TextStyle(
-                      color: cOrtuBlack,
+                      color: cOrtuText,
                       fontSize: 25,
                       fontWeight: FontWeight.bold)),
               // Padding(
               //     padding: EdgeInsets.all(100),
               //     child: Text('Gambar',
               //         style: TextStyle(
-              //             backgroundColor: cOrtuBlack, fontSize: 20))),
+              //             backgroundColor: cOrtuText, fontSize: 20))),
               Padding(
                   padding: EdgeInsets.all(20),
                   child: Image.asset('assets/images/icon/phonebook.png',
@@ -387,7 +387,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   padding: EdgeInsets.only(bottom: 10),
                   child: Text(
                       'Kami membutuhkan akses kontak pada perangkat anak untuk memonitoring kontak anak.',
-                      style: TextStyle(color: cOrtuBlack))),
+                      style: TextStyle(color: cOrtuText))),
               SwitchListTile.adaptive(
                 tileColor: cOrtuGrey,
                 title: Text('Kontak'),
@@ -433,7 +433,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
             child: Column(children: [
               Text('Kamera',
                   style: TextStyle(
-                      color: cOrtuBlack,
+                      color: cOrtuText,
                       fontSize: 25,
                       fontWeight: FontWeight.bold)),
               Padding(
@@ -444,7 +444,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   padding: EdgeInsets.only(bottom: 10),
                   child: Text(
                       'Kami membutuhkan akses kamera pada perangkat anak untuk mengirimkan rekaman video SOS.',
-                      style: TextStyle(color: cOrtuBlack))),
+                      style: TextStyle(color: cOrtuText))),
               SwitchListTile.adaptive(
                 tileColor: cOrtuGrey,
                 title: Text('Kamera'),
@@ -487,7 +487,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
             child: Column(children: [
               Text('Audio',
                   style: TextStyle(
-                      color: cOrtuBlack,
+                      color: cOrtuText,
                       fontSize: 25,
                       fontWeight: FontWeight.bold)),
               Padding(
@@ -498,7 +498,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   padding: EdgeInsets.only(bottom: 10),
                   child: Text(
                       'Kami membutuhkan akses microphone pada perangkat anak untuk mengirimkan rekaman suara ketika SOS.',
-                      style: TextStyle(color: cOrtuBlack))),
+                      style: TextStyle(color: cOrtuText))),
               SwitchListTile.adaptive(
                 tileColor: cOrtuGrey,
                 title: Text('Audio'),
@@ -541,7 +541,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
             child: Column(children: [
               Text('Media Penyimpanan',
                   style: TextStyle(
-                      color: cOrtuBlack,
+                      color: cOrtuText,
                       fontSize: 25,
                       fontWeight: FontWeight.bold)),
               Padding(
@@ -552,7 +552,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   padding: EdgeInsets.only(bottom: 10),
                   child: Text(
                       'Kami membutuhkan akses media penyimpanan untuk menyimpan foto profile Anda.',
-                      style: TextStyle(color: cOrtuBlack))),
+                      style: TextStyle(color: cOrtuText))),
               SwitchListTile.adaptive(
                 tileColor: cOrtuGrey,
                 title: Text('Media Penyimpanan'),
@@ -595,7 +595,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
             child: Column(children: [
               Text('Window Alert',
                   style: TextStyle(
-                      color: cOrtuBlack,
+                      color: cOrtuText,
                       fontSize: 25,
                       fontWeight: FontWeight.bold)),
               Padding(
@@ -606,7 +606,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   padding: EdgeInsets.only(bottom: 10),
                   child: Text(
                       'Kami membutuhkan akses window alert untuk memberikan informasi aplikasi yang dibatasi orang tua.',
-                      style: TextStyle(color: cOrtuBlack))),
+                      style: TextStyle(color: cOrtuText))),
               SwitchListTile.adaptive(
                 tileColor: cOrtuGrey,
                 title: Text('Window Alert'),
@@ -685,7 +685,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
             child: Column(children: [
               Text('Penggunaan Aplikasi',
                   style: TextStyle(
-                      color: cOrtuBlack,
+                      color: cOrtuText,
                       fontSize: 25,
                       fontWeight: FontWeight.bold)),
               Padding(
@@ -696,7 +696,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   padding: EdgeInsets.only(bottom: 10),
                   child: Text(
                       'Kami membutuhkan akses data aplikasi pada perangkat anak untuk memonitoring penggunaan aplikasi/game anak.',
-                      style: TextStyle(color: cOrtuBlack))),
+                      style: TextStyle(color: cOrtuText))),
               SwitchListTile.adaptive(
                 tileColor: cOrtuGrey,
                 title: Text('Penggunaan Aplikasi'),
@@ -731,7 +731,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
             child: Column(children: [
               Text('Kunci Layar',
                   style: TextStyle(
-                      color: cOrtuBlack,
+                      color: cOrtuText,
                       fontSize: 25,
                       fontWeight: FontWeight.bold)),
               Padding(
@@ -742,7 +742,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   padding: EdgeInsets.only(bottom: 10),
                   child: Text(
                       'Kami membutuhkan akses kunci layar pada perangkat anak untuk memonitoring penggunaan aplikasi/game anak.',
-                      style: TextStyle(color: cOrtuBlack))),
+                      style: TextStyle(color: cOrtuText))),
               SwitchListTile.adaptive(
                 tileColor: cOrtuGrey,
                 title: Text('Kunci Layar'),
@@ -772,7 +772,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
             child: Column(children: [
               Text('Lokasi',
                   style: TextStyle(
-                      color: cOrtuBlack,
+                      color: cOrtuText,
                       fontSize: 25,
                       fontWeight: FontWeight.bold)),
               Padding(
@@ -784,14 +784,14 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   child: Column(children: [
                     Text(
                         'Aplikasi Keluarga HKBP mengumpulkan data lokasi untuk mengaktifkan "Pantau Lokasi Anak", "Riwayat Lokasi Anak", "ETA" dan "Pesan Darurat".',
-                        style: TextStyle(color: cOrtuBlack)),
+                        style: TextStyle(color: cOrtuText)),
                     InkWell(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Text(
                             "Lihat Selengkapnya",
-                            style: TextStyle(color: cOrtuBlue),
+                            style: TextStyle(color: cOrtuInkWell),
                           ),
                         ],
                       ),
@@ -826,7 +826,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                 //       children: [
                 //         Text(
                 //           readMore == true ? "Show less..." : "Show more...",
-                //           style: TextStyle(color: cOrtuBlue),
+                //           style: TextStyle(color: cOrtuInkWell),
                 //         ),
                 //       ],
                 //     ),
@@ -879,7 +879,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text('Tidak bisa dinyalakan? Lihat caranya di sini.',
-                        style: TextStyle(color: cOrtuBlue)),
+                        style: TextStyle(color: cOrtuInkWell)),
                   ],
                 ),
                 onTap: () async {

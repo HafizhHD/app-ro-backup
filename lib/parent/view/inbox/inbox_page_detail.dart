@@ -173,10 +173,10 @@ class _InboxDetailState extends State<InboxDetail> {
       backgroundColor: cPrimaryBg,
       appBar: AppBar(
         centerTitle: true,
-        title: Text("Notifikasi SOS", style: TextStyle(color: cOrtuWhite)),
+        title: Text("Notifikasi SOS", style: TextStyle(color: cOrtuText)),
         backgroundColor: Colors.red[900],
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
+          icon: Icon(Icons.arrow_back_ios, color: cOrtuText),
           onPressed: () => Navigator.of(context).pop(),
         ),
         elevation: 0,
@@ -198,12 +198,12 @@ class _InboxDetailState extends State<InboxDetail> {
                         Flexible(
                           child: Text(
                               dateFormat_EDMYHM(widget.inboxNotif.createAt),
-                              style: TextStyle(color: cOrtuWhite)),
+                              style: TextStyle(color: cOrtuText)),
                         ),
                         Row(
                           children: [
                             IconButton(
-                              color: cOrtuWhite,
+                              color: cOrtuText,
                               icon: Icon(Icons.directions),
                               onPressed: () async {
                                 showLoadingOverlay();
@@ -248,10 +248,10 @@ class _InboxDetailState extends State<InboxDetail> {
                             children: [
                                 Text('ETA: $etaDuration',
                                     style: TextStyle(
-                                        fontSize: 20, color: cOrtuWhite)),
+                                        fontSize: 20, color: cOrtuText)),
                                 Text('Distance: $etaDistance',
                                     style: TextStyle(
-                                        fontSize: 20, color: cOrtuWhite))
+                                        fontSize: 20, color: cOrtuText))
                               ])
                         : Container(),
                     Container(
@@ -260,12 +260,12 @@ class _InboxDetailState extends State<InboxDetail> {
                         _myLocationPlace != ''
                             ? 'Dikirim oleh ${widget.inboxNotif.message.childEmail!} \nNama lokasi: $_myLocationPlace'
                             : '',
-                        style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                        style: TextStyle(fontSize: 16, color: cOrtuText),
                       ),
                     ),
                     // Divider(
                     //   thickness: 1,
-                    //   color: cOrtuWhite,
+                    //   color: cOrtuText,
                     // ),
                     // Container(
                     //   margin: EdgeInsets.all(10.0),
@@ -274,7 +274,7 @@ class _InboxDetailState extends State<InboxDetail> {
                     //     children: [
                     //       Text(
                     //         'Timeline',
-                    //         style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                    //         style: TextStyle(fontSize: 16, color: cOrtuText),
                     //       ),
                     //       SizedBox(width: 10),
                     //       Flexible(
@@ -300,7 +300,7 @@ class _InboxDetailState extends State<InboxDetail> {
                     //                     DatePickerEntryMode.calendarOnly,
                     //                 builder: (ctx, child) {
                     //                   return Theme(
-                    //                     data: ThemeData.dark(),
+                    //                     data: cOrtuTheme,
                     //                     child: child!,
                     //                   );
                     //                 });
@@ -326,7 +326,7 @@ class _InboxDetailState extends State<InboxDetail> {
                     // ),
                     Divider(
                       thickness: 1,
-                      color: cOrtuWhite,
+                      color: cOrtuText,
                     ),
                     // Flexible(
                     //   child: ListView.builder(
@@ -336,16 +336,16 @@ class _InboxDetailState extends State<InboxDetail> {
                     //       return ListTile(
                     //         title: Text(
                     //           data.location.place,
-                    //           style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                    //           style: TextStyle(fontSize: 16, color: cOrtuText),
                     //         ),
                     //         // isThreeLine: true,
                     //         // subtitle: Text(
                     //         //   'on Jln $index where in indonesia',
-                    //         //   style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                    //         //   style: TextStyle(fontSize: 16, color: cOrtuText),
                     //         // ),
                     //         trailing: Text(
                     //           data.dateHistory,
-                    //           style: TextStyle(fontSize: 16, color: cOrtuWhite),
+                    //           style: TextStyle(fontSize: 16, color: cOrtuText),
                     //         ),
                     //         onTap: () async {
                     //           _myLocationPlace = data.location.place;

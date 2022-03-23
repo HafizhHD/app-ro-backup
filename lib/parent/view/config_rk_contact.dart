@@ -87,10 +87,10 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
       backgroundColor: cPrimaryBg,
       appBar: AppBar(
         centerTitle: true,
-        title: Text(widget.name, style: TextStyle(color: cOrtuBlack)),
+        title: Text(widget.name, style: TextStyle(color: cOrtuText)),
         backgroundColor: cPrimaryBg,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: cOrtuBlack),
+          icon: Icon(Icons.arrow_back_ios, color: cOrtuText),
           onPressed: () => Navigator.of(context).pop(),
         ),
         elevation: 0,
@@ -119,7 +119,7 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                     if ((snapshot.data ?? []).length <= 0)
                       return Center(
                           child: Text('Data kontak kosong',
-                              style: TextStyle(color: cOrtuBlack)));
+                              style: TextStyle(color: cOrtuText)));
 
                     return ListView.builder(
                         itemCount: searchContactList.length,
@@ -139,11 +139,11 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                                     children: [
                                       Text(dataContact.name,
                                           style: TextStyle(
-                                              color: cOrtuBlack,
+                                              color: cOrtuText,
                                               fontWeight: FontWeight.bold)),
                                       SizedBox(height: 10),
                                       Text(dataContact.phone,
-                                          style: TextStyle(color: cOrtuBlack)),
+                                          style: TextStyle(color: cOrtuText)),
                                     ],
                                   ),
                                 ),
@@ -151,7 +151,7 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     // IconButton(
-                                    //   color: cOrtuBlack,
+                                    //   color: cOrtuText,
                                     //   icon: Icon(Icons.notifications_active_outlined),
                                     //   onPressed: () {
                                     //     setState(() {});
@@ -159,17 +159,17 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                                     // ),
                                     Text(
                                       dataContact.blacklist ? 'Dipantau' : '',
-                                      style: TextStyle(color: cOrtuBlack),
+                                      style: TextStyle(color: cOrtuText),
                                     ),
                                     IconButton(
-                                      color: cOrtuBlack,
+                                      color: cOrtuText,
                                       icon: Icon(
                                         dataContact.blacklist
                                             ? Icons.remove_red_eye
                                             : Icons.remove_red_eye_outlined,
                                         color: dataContact.blacklist
                                             ? cOrtuBlue
-                                            : cOrtuBlack,
+                                            : cOrtuText,
                                       ),
                                       onPressed: () async {
                                         showLoadingOverlay();

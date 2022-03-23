@@ -37,9 +37,9 @@ class WSearchBar extends StatelessWidget {
   final String hintText;
   WSearchBar(
       {this.fOnChanged,
-        this.fOnSubmitted,
-        this.tecController,
-        this.hintText = "Cari"});
+      this.fOnSubmitted,
+      this.tecController,
+      this.hintText = "Cari"});
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +56,7 @@ class WSearchBar extends StatelessWidget {
           // ),
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(left: 20),
+              padding: EdgeInsets.only(left: 20, right: 20),
               child: Theme(
                 data: ThemeData.light(),
                 child: TextField(
@@ -65,8 +65,15 @@ class WSearchBar extends StatelessWidget {
                     controller: tecController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
-                      border: InputBorder.none,
                       hintText: hintText,
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: cOrtuButton),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: cOrtuButton),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       // hintStyle: TextStyle(fontSize: SizeConfig.dFontSizeFixMedium),
                     ),
                     style: TextStyle(

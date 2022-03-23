@@ -149,10 +149,10 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
       appBar: AppBar(
         centerTitle: true,
         title:
-            Text('Blok Aplikasi / Games', style: TextStyle(color: cOrtuBlack)),
+            Text('Blok Aplikasi / Games', style: TextStyle(color: cOrtuText)),
         backgroundColor: cPrimaryBg,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: cOrtuBlack),
+          icon: Icon(Icons.arrow_back_ios, color: cOrtuText),
           onPressed: () => Navigator.of(context).pop(),
         ),
         elevation: 0,
@@ -185,7 +185,7 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
                     if (listApps.length <= 0)
                       return Center(
                           child: Text('List aplikasi kosong',
-                              style: TextStyle(color: cOrtuBlack)));
+                              style: TextStyle(color: cOrtuText)));
                     return ListView.builder(
                         itemCount: appListSearch.length,
                         itemBuilder: (ctx, index) {
@@ -218,7 +218,7 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
                                   Flexible(
                                     child: Text(
                                       app.appName ?? '',
-                                      style: TextStyle(color: cOrtuBlack),
+                                      style: TextStyle(color: cOrtuText),
                                     ),
                                   ),
                                 ],
@@ -231,7 +231,7 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
                                     style: TextStyle(
                                         color: app.blacklist ?? false
                                             ? cOrtuBlue
-                                            : cOrtuBlack),
+                                            : cOrtuText),
                                   ),
                                   IconButton(
                                       onPressed: () async {
@@ -263,7 +263,7 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
                                         Icons.app_blocking,
                                         color: app.blacklist ?? false
                                             ? cOrtuBlue
-                                            : cOrtuBlack,
+                                            : cOrtuText,
                                       ))
                                 ],
                               ),

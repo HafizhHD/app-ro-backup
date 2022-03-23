@@ -37,7 +37,7 @@ class JadwalPage extends StatelessWidget {
                   child: Container(
                     padding: EdgeInsets.all(5),
                     child: ListTile(
-                      tileColor: cOrtuBlack,
+                      tileColor: cOrtuText,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
                       title: Align(
@@ -60,16 +60,16 @@ class JadwalPage extends StatelessWidget {
                 children: [
                   Text(
                     'Seluruh Keluarga',
-                    style: TextStyle(color: cOrtuBlack),
+                    style: TextStyle(color: cOrtuText),
                   ),
-                  Icon(Icons.keyboard_arrow_down, color: cOrtuBlack),
+                  Icon(Icons.keyboard_arrow_down, color: cOrtuText),
                 ],
               ),
             ),
             Container(
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: cOrtuBlack,
+                color: cOrtuText,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
@@ -96,7 +96,7 @@ class JadwalPage extends StatelessWidget {
             Container(
               padding: EdgeInsets.only(top: 10, bottom: 10),
               child: ListTile(
-                tileColor: cOrtuBlack,
+                tileColor: cOrtuText,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
                 leading: Icon(Icons.circle),

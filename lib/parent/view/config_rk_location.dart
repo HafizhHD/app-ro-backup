@@ -253,10 +253,10 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
       backgroundColor: cPrimaryBg,
       appBar: AppBar(
         centerTitle: true,
-        title: Text(widget.name, style: TextStyle(color: cOrtuBlack)),
+        title: Text(widget.name, style: TextStyle(color: cOrtuText)),
         backgroundColor: cPrimaryBg,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: cOrtuBlack),
+          icon: Icon(Icons.arrow_back_ios, color: cOrtuText),
           onPressed: () => Navigator.of(context).pop(),
         ),
         elevation: 0,
@@ -277,12 +277,12 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                       children: [
                         Flexible(
                           child: Text('Update Lokasi: 1 menit lalu',
-                              style: TextStyle(color: cOrtuBlack)),
+                              style: TextStyle(color: cOrtuText)),
                         ),
                         Row(
                           children: [
                             IconButton(
-                              color: cOrtuBlack,
+                              color: cOrtuText,
                               icon: Icon(Icons.directions),
                               onPressed: () async {
                                 showLoadingOverlay();
@@ -291,7 +291,7 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                               },
                             ),
                             IconButton(
-                              color: cOrtuBlack,
+                              color: cOrtuText,
                               icon: Icon(Icons.my_location),
                               onPressed: () async {
                                 showLoadingOverlay();
@@ -339,10 +339,10 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                             children: [
                                 Text('ETA: $etaDuration',
                                     style: TextStyle(
-                                        fontSize: 20, color: cOrtuBlack)),
+                                        fontSize: 20, color: cOrtuText)),
                                 Text('Distance: $etaDistance',
                                     style: TextStyle(
-                                        fontSize: 20, color: cOrtuBlack))
+                                        fontSize: 20, color: cOrtuText))
                               ])
                         : Container(),
                     Container(
@@ -351,12 +351,12 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                         _myLocationPlace != ''
                             ? 'Nama lokasi: $_myLocationPlace'
                             : '',
-                        style: TextStyle(fontSize: 16, color: cOrtuBlack),
+                        style: TextStyle(fontSize: 16, color: cOrtuText),
                       ),
                     ),
                     Divider(
                       thickness: 1,
-                      color: cOrtuBlack,
+                      color: cOrtuText,
                     ),
                     Container(
                       margin: EdgeInsets.all(10.0),
@@ -365,7 +365,7 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                         children: [
                           Text(
                             'Timeline',
-                            style: TextStyle(fontSize: 16, color: cOrtuBlack),
+                            style: TextStyle(fontSize: 16, color: cOrtuText),
                           ),
                           SizedBox(width: 10),
                           Flexible(
@@ -392,7 +392,7 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                                         DatePickerEntryMode.calendarOnly,
                                     builder: (ctx, child) {
                                       return Theme(
-                                        data: ThemeData.dark(),
+                                        data: cOrtuTheme,
                                         child: child!,
                                       );
                                     });
@@ -418,7 +418,7 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                     ),
                     Divider(
                       thickness: 1,
-                      color: cOrtuBlack,
+                      color: cOrtuText,
                     ),
                     Flexible(
                       child: ListView.builder(
@@ -428,16 +428,16 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                           return ListTile(
                             title: Text(
                               data.location.place,
-                              style: TextStyle(fontSize: 16, color: cOrtuBlack),
+                              style: TextStyle(fontSize: 16, color: cOrtuText),
                             ),
                             // isThreeLine: true,
                             // subtitle: Text(
                             //   'on Jln $index where in indonesia',
-                            //   style: TextStyle(fontSize: 16, color: cOrtuBlack),
+                            //   style: TextStyle(fontSize: 16, color: cOrtuText),
                             // ),
                             trailing: Text(
                               data.dateHistory,
-                              style: TextStyle(fontSize: 16, color: cOrtuBlack),
+                              style: TextStyle(fontSize: 16, color: cOrtuText),
                             ),
                             onTap: () async {
                               showEta = false;

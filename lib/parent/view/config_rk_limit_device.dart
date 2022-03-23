@@ -128,10 +128,10 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
       backgroundColor: cPrimaryBg,
       appBar: AppBar(
         centerTitle: true,
-        title: Text(widget.name, style: TextStyle(color: cOrtuBlack)),
+        title: Text(widget.name, style: TextStyle(color: cOrtuText)),
         backgroundColor: cPrimaryBg,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: cOrtuBlack),
+          icon: Icon(Icons.arrow_back_ios, color: cOrtuText),
           onPressed: () => Navigator.of(context).pop(),
         ),
         elevation: 0,
@@ -156,7 +156,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
               width: MediaQuery.of(context).size.width / 2,
               child: Divider(
                 thickness: 1,
-                color: cOrtuBlack,
+                color: cOrtuText,
               ),
             ),
             Flexible(
@@ -167,7 +167,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                     if (!snapshot.hasData) return wProgressIndicator();
 
                     /*final listSchedule = snapshot.data ?? [];
-                    if (listSchedule.length <= 0) return Center(child: Text('List jadwal kosong', style: TextStyle(color: cOrtuBlack)));*/
+                    if (listSchedule.length <= 0) return Center(child: Text('List jadwal kosong', style: TextStyle(color: cOrtuText)));*/
 
                     return ListView.builder(
                         itemCount: searchlistSchedule.length,
@@ -198,8 +198,8 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                             RichText(
                                               text: TextSpan(
                                                 text: schedule.scheduleName,
-                                                style: TextStyle(
-                                                    color: cOrtuBlack),
+                                                style:
+                                                    TextStyle(color: cOrtuText),
                                                 children: <TextSpan>[
                                                   TextSpan(
                                                     text:
@@ -225,7 +225,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                                   child: Text(
                                                     '${schedule.scheduleDescription}',
                                                     style: TextStyle(
-                                                        color: cOrtuBlack),
+                                                        color: cOrtuText),
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     maxLines: 2,
@@ -235,8 +235,8 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                             Flexible(
                                               child: Text(
                                                 '${schedule.deviceUsageStartTime} - ${schedule.deviceUsageEndTime}',
-                                                style: TextStyle(
-                                                    color: cOrtuBlack),
+                                                style:
+                                                    TextStyle(color: cOrtuText),
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 2,
                                               ),
@@ -279,7 +279,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                                           ?.toLowerCase() ==
                                                       'aktif'
                                                   ? cOrtuBlue
-                                                  : cOrtuBlack,
+                                                  : cOrtuText,
                                             )),
                                         IconButton(
                                             onPressed: () {
@@ -287,7 +287,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                             },
                                             icon: Icon(
                                               Icons.edit,
-                                              color: cOrtuBlack,
+                                              color: cOrtuText,
                                             )),
                                         IconButton(
                                             onPressed: () async {
@@ -313,7 +313,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                             },
                                             icon: Icon(
                                               Icons.close,
-                                              color: cOrtuBlack,
+                                              color: cOrtuText,
                                             )),
                                       ],
                                     ),
@@ -411,10 +411,10 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                 backgroundColor: Colors.transparent,
                                 title: Text(
                                     '${hasData ? 'Ubah' : 'Tambah'} Jadwal Penggunaan',
-                                    style: TextStyle(color: cOrtuBlack)),
+                                    style: TextStyle(color: cOrtuText)),
                                 leading: IconButton(
                                   icon: Icon(Icons.arrow_back_ios,
-                                      color: cOrtuBlack),
+                                      color: cOrtuText),
                                   onPressed: () {
                                     Navigator.pop(context);
                                   },
@@ -586,11 +586,11 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                 child: ListTile(
                   title: Text(
                     'Jam mulai',
-                    style: TextStyle(color: cOrtuBlack),
+                    style: TextStyle(color: cOrtuText),
                   ),
                   subtitle: Text(sStartDateTime,
                       style: TextStyle(
-                          color: cOrtuBlack,
+                          color: cOrtuText,
                           fontSize: 30,
                           fontWeight: FontWeight.bold)),
                   onTap: () async {
@@ -605,11 +605,11 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                 child: ListTile(
                   title: Text(
                     'Jam selesai',
-                    style: TextStyle(color: cOrtuBlack),
+                    style: TextStyle(color: cOrtuText),
                   ),
                   subtitle: Text(sEndDateTime,
                       style: TextStyle(
-                          color: cOrtuBlack,
+                          color: cOrtuText,
                           fontSize: 30,
                           fontWeight: FontWeight.bold)),
                   onTap: () async {
@@ -713,7 +713,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
       required Function() onTap}) {
     return InkWell(
       child: CircleAvatar(
-        backgroundColor: selected ? cOrtuBlue : cOrtuBlack,
+        backgroundColor: selected ? cOrtuBlue : cOrtuText,
         child: Text('$dayText', style: TextStyle(color: cPrimaryBg)),
       ),
       onTap: onTap,
@@ -737,7 +737,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
               ),
               subtitle: Text(sStartDateTime,
                   style: TextStyle(
-                      color: cOrtuBlack,
+                      color: cOrtuText,
                       fontSize: 25,
                       fontWeight: FontWeight.bold)),
               onTap: () async {
@@ -761,7 +761,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
               ),
               subtitle: Text(sEndDateTime,
                   style: TextStyle(
-                      color: cOrtuBlack,
+                      color: cOrtuText,
                       fontSize: 25,
                       fontWeight: FontWeight.bold)),
               onTap: () async {

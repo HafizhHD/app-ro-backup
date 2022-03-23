@@ -46,13 +46,8 @@ class _ChildMainState extends State<ChildMain> {
 
   static Future<void> startAppUsagePeriodic() async {
     await BackgroundServiceNew.oneShot(
-      const Duration(minutes: 3),
-      12302,
-      callback,
-      wakeup: true,
-      exact: true,
-      rescheduleOnReboot: true
-    );
+        const Duration(minutes: 3), 12302, callback,
+        wakeup: true, exact: true, rescheduleOnReboot: true);
   }
 
   static Future<void> callback() async {
@@ -77,27 +72,27 @@ class _ChildMainState extends State<ChildMain> {
           appBar: AppBar(
             elevation: 0,
             backgroundColor: cPrimaryBg,
-            iconTheme: IconThemeData(color: cOrtuBlack),
+            iconTheme: IconThemeData(color: cOrtuText),
             actions: <Widget>[
               // IconButton(
               //   onPressed: () {},
               //   icon: Icon(
               //     Icons.notifications,
-              //     color: cOrtuBlack,
+              //     color: cOrtuText,
               //   ),
               // ),
               // IconButton(
               //   onPressed: () {},
               //   icon: Icon(
               //     Icons.mail_outline,
-              //     color: cOrtuBlack,
+              //     color: cOrtuText,
               //   ),
               // ),
               IconButton(
                 onPressed: () {},
                 icon: Icon(
                   Icons.help,
-                  color: cOrtuBlack,
+                  color: cOrtuText,
                 ),
               )
             ],
@@ -221,8 +216,8 @@ class IconWithLabel extends StatelessWidget {
     required this.defaultIcon,
     required this.label,
     required this.onPressed,
-    this.defaultColor: cOrtuBlack,
-    this.activeColor: cOrtuBlue,
+    this.defaultColor: cOrtuText,
+    this.activeColor: cOrtuDarkBlue,
     this.isSelected: false,
   });
 

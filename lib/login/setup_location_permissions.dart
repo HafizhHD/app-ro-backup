@@ -94,11 +94,11 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                          color: cOrtuBlack),
+                          color: cOrtuText),
                     ),
                     Text(
                       'Aplikasi $appName memerlukan beberapa ijin untuk mengakses data yang dibutuhkan:',
-                      style: TextStyle(fontSize: 16, color: cOrtuBlack),
+                      style: TextStyle(fontSize: 16, color: cOrtuText),
                     )
                   ],
                 ),

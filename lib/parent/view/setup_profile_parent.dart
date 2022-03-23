@@ -242,11 +242,11 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                                 contentPadding: const EdgeInsets.only(
                                     left: 14.0, bottom: 8.0, top: 8.0),
                                 focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: cOrtuWhite),
+                                  borderSide: BorderSide(color: cOrtuButton),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: cOrtuWhite),
+                                  borderSide: BorderSide(color: cOrtuButton),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
@@ -274,11 +274,11 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                                 contentPadding: const EdgeInsets.only(
                                     left: 14.0, bottom: 8.0, top: 8.0),
                                 focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: cOrtuWhite),
+                                  borderSide: BorderSide(color: cOrtuButton),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: cOrtuWhite),
+                                  borderSide: BorderSide(color: cOrtuButton),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
@@ -305,11 +305,11 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                                 contentPadding: const EdgeInsets.only(
                                     left: 14.0, bottom: 8.0, top: 8.0),
                                 focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: cOrtuWhite),
+                                  borderSide: BorderSide(color: cOrtuButton),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: cOrtuWhite),
+                                  borderSide: BorderSide(color: cOrtuButton),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
@@ -413,11 +413,11 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                                 contentPadding: const EdgeInsets.only(
                                     left: 14.0, bottom: 8.0, top: 8.0),
                                 focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: cOrtuWhite),
+                                  borderSide: BorderSide(color: cOrtuButton),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: cOrtuWhite),
+                                  borderSide: BorderSide(color: cOrtuButton),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),

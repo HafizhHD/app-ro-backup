@@ -202,11 +202,11 @@ class _DetailChildPageState extends State<DetailChildPage> {
         backgroundColor: cPrimaryBg,
         appBar: AppBar(
           centerTitle: true,
-          title: Text(widget.name, style: TextStyle(color: cOrtuBlack)),
+          title: Text(widget.name, style: TextStyle(color: cOrtuText)),
           backgroundColor: cPrimaryBg,
           iconTheme: IconThemeData(color: Colors.grey.shade700),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: cOrtuBlack),
+            icon: Icon(Icons.arrow_back_ios, color: cOrtuText),
             onPressed: () => Navigator.of(context).pop(),
           ),
           elevation: 0,
@@ -228,12 +228,12 @@ class _DetailChildPageState extends State<DetailChildPage> {
                       wDailyAverageChart(),
                       Divider(
                         thickness: 1,
-                        color: cOrtuBlack,
+                        color: cOrtuText,
                       ),
                       wKontrolInstant(),
                       Divider(
                         thickness: 1,
-                        color: cOrtuBlack,
+                        color: cOrtuText,
                       ),
                       wKontroldanKonfigurasi(),
                     ],
@@ -267,7 +267,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: cOrtuBlack),
+                      color: cOrtuText),
                 ),
                 Transform(
                   alignment: Alignment.center,
@@ -284,7 +284,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
             margin: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
             child: Text(
               '$content',
-              style: TextStyle(color: cOrtuBlack),
+              style: TextStyle(color: cOrtuText),
             ),
           ),
         ],
@@ -303,7 +303,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: cOrtuBlack)),
+                    color: cOrtuText)),
           ),
           wKontrolKonfigurasiContent(
             title: 'Lokasi',
@@ -442,7 +442,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: cOrtuBlack)),
+                    color: cOrtuText)),
           ),
           (_loadingLockScreen)
               ? Container(
@@ -453,7 +453,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                       Container(
                         child: Text(
                           'Mode Kunci Layar',
-                          style: TextStyle(fontSize: 16, color: cOrtuBlack),
+                          style: TextStyle(fontSize: 16, color: cOrtuText),
                         ),
                       ),
                       Container(
@@ -485,7 +485,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                               child: Text(
                                 'Mode Asuh',
                                 style:
-                                    TextStyle(fontSize: 16, color: cOrtuBlack),
+                                    TextStyle(fontSize: 16, color: cOrtuText),
                               ),
                             ),
                             Container(
@@ -512,7 +512,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                       ),
                       if (_switchModeAsuh)
                         Theme(
-                          data: ThemeData.dark(),
+                          data: cOrtuTheme,
                           child: Container(
                             child: Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -545,7 +545,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                                           fontWeight: FontWeight.bold,
                                           color: _switchLevel == _switch
                                               ? cOrtuBlue
-                                              : cOrtuBlack),
+                                              : cOrtuText),
                                     ),
                                     subtitle: Text(
                                       (e['description'] != null)
@@ -555,7 +555,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                                       style: TextStyle(
                                           color: _switchLevel == _switch
                                               ? cOrtuBlue
-                                              : cOrtuBlack),
+                                              : cOrtuText),
                                     ),
                                   );
                                 }).toList()),
@@ -580,7 +580,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
             margin: EdgeInsets.all(10.0),
             child: Text(
               'Daily Average',
-              style: TextStyle(fontSize: 16, color: cOrtuBlack),
+              style: TextStyle(fontSize: 16, color: cOrtuText),
             ),
           ),
           Container(
@@ -590,7 +590,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: cOrtuBlack,
+                color: cOrtuText,
               ),
             ),
           ),
@@ -623,7 +623,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
             child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text('Update today $dateToday',
-                    style: TextStyle(fontSize: 14, color: cOrtuBlack))),
+                    style: TextStyle(fontSize: 14, color: cOrtuText))),
           ),
         ],
       ),
@@ -672,7 +672,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                 margin: EdgeInsets.all(5),
                 child: Text(
                     '${point.x} : ${point.y ~/ 1}h ${((point.y - (point.y ~/ 1)) * 60) ~/ 1}m',
-                    style: TextStyle(color: cOrtuBlack)));
+                    style: TextStyle(color: cOrtuText)));
           },
           header: ''),
     );

@@ -191,7 +191,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text('Buat Profile', style: TextStyle(color: cOrtuBlack)),
+          title: Text('Buat Profile', style: TextStyle(color: cOrtuText)),
           leading: SizedBox(),
           actions: [
             IconButton(
@@ -276,11 +276,11 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                               contentPadding: const EdgeInsets.only(
                                   left: 14.0, bottom: 8.0, top: 8.0),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: cOrtuBlack),
+                                borderSide: BorderSide(color: cOrtuButton),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: cOrtuBlack),
+                                borderSide: BorderSide(color: cOrtuButton),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
@@ -316,11 +316,11 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                               contentPadding: const EdgeInsets.only(
                                   left: 14.0, bottom: 8.0, top: 8.0),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: cOrtuBlack),
+                                borderSide: BorderSide(color: cOrtuButton),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: cOrtuBlack),
+                                borderSide: BorderSide(color: cOrtuButton),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
@@ -378,12 +378,12 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                                           left: 14.0, bottom: 8.0, top: 8.0),
                                       focusedBorder: OutlineInputBorder(
                                         borderSide:
-                                            BorderSide(color: cOrtuBlack),
+                                            BorderSide(color: cOrtuButton),
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       enabledBorder: UnderlineInputBorder(
                                         borderSide:
-                                            BorderSide(color: cOrtuBlack),
+                                            BorderSide(color: cOrtuButton),
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       hintText: birthDateString == ''
@@ -566,14 +566,14 @@ class InviteChildQR extends StatelessWidget {
               SizedBox(height: 20),
               Text(
                 'Di Ponsel\n',
-                style: TextStyle(fontSize: 35, color: cOrtuBlack),
+                style: TextStyle(fontSize: 35, color: cOrtuText),
                 textAlign: TextAlign.center,
               ),
               Text(
                 'Gunakan Camera Atau Aplikasi QR' +
                     '\nScan QR Code Di Bawah ini' +
                     '\nDan Klik Link Yang Anda Terima',
-                style: TextStyle(fontSize: 20, color: cOrtuBlack, height: 1.5),
+                style: TextStyle(fontSize: 20, color: cOrtuText, height: 1.5),
                 textAlign: TextAlign.center,
               ),
               Flexible(

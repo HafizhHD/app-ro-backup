@@ -4,12 +4,15 @@ import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
 
 void closeOpenDialogs() {
-  if ((Get.isBottomSheetOpen ?? false) || (Get.isDialogOpen ?? false) || Get.isOverlaysOpen || (Get.isSnackbarOpen ?? false)) Get.back();
+  if ((Get.isBottomSheetOpen ?? false) ||
+      (Get.isDialogOpen ?? false) ||
+      Get.isOverlaysOpen ||
+      (Get.isSnackbarOpen ?? false)) Get.back();
 }
 
 void showSnackbar(
   String pText, {
-  Color bgColor = cOrtuBlue,
+  Color bgColor = cOrtuInkWell,
   Duration pShowDuration = const Duration(seconds: 4),
   SnackPosition position = SnackPosition.BOTTOM,
 }) {
@@ -36,7 +39,9 @@ void showSnackbar(
   );
 }
 
-void showSnackbarSuccessWithTap(String pText, {required Function() fOnTap, Duration pShowDuration = const Duration(seconds: 5)}) {
+void showSnackbarSuccessWithTap(String pText,
+    {required Function() fOnTap,
+    Duration pShowDuration = const Duration(seconds: 5)}) {
   closeOpenDialogs();
   Get.snackbar(
     "", //title
@@ -51,7 +56,7 @@ void showSnackbarSuccessWithTap(String pText, {required Function() fOnTap, Durat
           )),
     ),
     snackPosition: SnackPosition.BOTTOM,
-    backgroundColor: cOrtuWhite,
+    backgroundColor: cOrtuForm,
     colorText: Colors.white,
     messageText: SizedBox(),
     // icon: Padding(
@@ -77,7 +82,8 @@ void showSnackbarSuccessWithTap(String pText, {required Function() fOnTap, Durat
   );
 }
 
-void showToastSuccess({required String successText, required BuildContext ctx}) {
+void showToastSuccess(
+    {required String successText, required BuildContext ctx}) {
   FToast().init(ctx).showToast(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
@@ -92,7 +98,9 @@ void showToastSuccess({required String successText, required BuildContext ctx}) 
               SizedBox(
                 width: 12.0,
               ),
-              Flexible(child: Text(successText, style: TextStyle(color: Colors.white, fontSize: 12))),
+              Flexible(
+                  child: Text(successText,
+                      style: TextStyle(color: Colors.white, fontSize: 12))),
             ],
           ),
         ),
@@ -116,7 +124,8 @@ void showToastFailed({required String failedText, required BuildContext ctx}) {
               SizedBox(
                 width: 12.0,
               ),
-              Text(failedText, style: TextStyle(color: Colors.white, fontSize: 12)),
+              Text(failedText,
+                  style: TextStyle(color: Colors.white, fontSize: 12)),
             ],
           ),
         ),
@@ -126,25 +135,27 @@ void showToastFailed({required String failedText, required BuildContext ctx}) {
 
   showToastFailed({required String failedText, required BuildContext ctx}) {
     FToast().init(ctx).showToast(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(25.0),
-          color: Colors.redAccent,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.close, color: Colors.white),
-            SizedBox(
-              width: 12.0,
+          child: Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(25.0),
+              color: Colors.redAccent,
             ),
-            Text(failedText, style: TextStyle(color: Colors.white, fontSize: 12)),
-          ],
-        ),
-      ),
-      gravity: ToastGravity.BOTTOM,
-      toastDuration: Duration(seconds: 2),
-    );
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.close, color: Colors.white),
+                SizedBox(
+                  width: 12.0,
+                ),
+                Text(failedText,
+                    style: TextStyle(color: Colors.white, fontSize: 12)),
+              ],
+            ),
+          ),
+          gravity: ToastGravity.BOTTOM,
+          toastDuration: Duration(seconds: 2),
+        );
   }
 }

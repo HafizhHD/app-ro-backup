@@ -222,7 +222,7 @@ class _LoginState extends State<LoginPage> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20,
-                    color: cOrtuBlack,
+                    color: cOrtuText,
                   ),
                 ),
               ),
@@ -233,8 +233,8 @@ class _LoginState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Checkbox(
-                        side: BorderSide(color: cOrtuBlack),
-                        activeColor: cOrtuBlack,
+                        side: BorderSide(color: cOrtuText),
+                        activeColor: cOrtuText,
                         checkColor: cPrimaryBg,
                         value: _okPolicy,
                         onChanged: (value) {
@@ -246,34 +246,34 @@ class _LoginState extends State<LoginPage> {
                         child: RichText(
                           text: TextSpan(
                             text: 'Saya telah membaca dan menyetujui \n',
-                            style: TextStyle(color: cOrtuBlack),
+                            style: TextStyle(color: cOrtuText),
                             children: <TextSpan>[
                               TextSpan(
                                 recognizer: _onTapPP,
                                 text: 'Kebijakan Privasi',
                                 style: TextStyle(
-                                  color: cOrtuBlue,
+                                  color: cOrtuInkWell,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               TextSpan(
                                 text: ' dan ',
                                 style: TextStyle(
-                                  color: cOrtuBlack,
+                                  color: cOrtuText,
                                 ),
                               ),
                               TextSpan(
                                 recognizer: _onTapTOC,
                                 text: 'Syarat dan Ketentuan',
                                 style: TextStyle(
-                                  color: cOrtuBlue,
+                                  color: cOrtuInkWell,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               TextSpan(
                                 text: '\ndari $appName',
                                 style: TextStyle(
-                                  color: cOrtuBlack,
+                                  color: cOrtuText,
                                 ),
                               ),
                             ],
@@ -301,7 +301,7 @@ class _LoginState extends State<LoginPage> {
                     title: Text('Sign in with Google',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: _okPolicy ? cPrimaryBg : cOrtuWhite)),
+                            color: _okPolicy ? cPrimaryBg : cOrtuButton)),
                     onTap: _okPolicy
                         ? () async {
                             showLoadingOverlay();
