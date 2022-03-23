@@ -196,8 +196,8 @@ void main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: cPrimaryBg,
       statusBarIconBrightness: appName == 'Ruang ORTU by ASIA'
-          ? Brightness.light
-          : Brightness.dark));
+          ? Brightness.dark
+          : Brightness.light));
 
   await runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
