@@ -7,8 +7,10 @@ import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:ruangkeluarga/global/global.dart';
 
 ContentType ContentTypeFromString(String input) {
+  print('ini jenis contentnyaaaaa: ${input.trim().toLowerCase()}');
   if (input.trim().toLowerCase() == 'video') return ContentType.video;
   if (input.trim().toLowerCase() == 'image') return ContentType.image;
+  if (input.trim().toLowerCase() == 'pdf') return ContentType.pdf;
   return ContentType.artikel;
 }
 
@@ -66,11 +68,10 @@ class CoBrandModel {
   String? thumbnail;
 
   CoBrandModel(
-      {
-        required this.id,
-        required this.email,
-        required this.name,
-        this.thumbnail});
+      {required this.id,
+      required this.email,
+      required this.name,
+      this.thumbnail});
   factory CoBrandModel.fromJson(Map<String, dynamic> json) {
     return CoBrandModel(
         id: json["_id"],

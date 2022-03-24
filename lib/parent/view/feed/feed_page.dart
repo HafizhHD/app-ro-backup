@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_controller.dart';
+import 'package:ruangkeluarga/parent/view/feed/feed_pdf.dart';
 import 'package:ruangkeluarga/utils/rk_webview.dart';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -101,7 +102,8 @@ class FeedPage extends GetView<FeedController> {
                               itemBuilder: (context, index) =>
                                   index < builderCtrl.listSearchContent.length
                                       ? feedContainer(
-                                          builderCtrl.listSearchContent[index])
+                                          builderCtrl.listSearchContent[index],
+                                          context)
                                       : builderCtrl.isThereMore
                                           ? wProgressIndicator()
                                           : Container(),
@@ -119,7 +121,7 @@ class FeedPage extends GetView<FeedController> {
     );
   }
 
-  Widget feedContainer(ContentModel data) {
+  Widget feedContainer(ContentModel data, BuildContext context) {
     final textColor = cOrtuText;
     return InkWell(
         child: Container(
@@ -171,6 +173,9 @@ class FeedPage extends GetView<FeedController> {
           } else if (data.contentType == ContentType.video) {
             showContent(data.contents, data.contentName, '',
                 data.contentDescription, data.contentSource);
+          } else if (data.contentType == ContentType.pdf) {
+            Navigator.push(
+                context, leftTransitionRoute(FeedPdf(contentModel: data)));
           } else {
             showContent(
                 data.contents, data.contentName, '', '', data.contentSource);

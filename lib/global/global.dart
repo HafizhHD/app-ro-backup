@@ -30,13 +30,15 @@ const AppIconPathRO_x4 = 'assets/images/ruangortu-icon_4.png';
 const AppIconPathORTU = 'assets/images/asia/logo-asia.png';
 const currentAppIconPath = AppIconPathORTU;
 
-const ApkDownloadURL = 'https://drive.google.com/drive/folders/1U5V9ZbUel3O0kNBw96O4TY0m7TrLnTwe?usp=sharing';
-const ApkDownloadURL_ORTU = 'https://play.google.com/store/apps/details?id=com.byasia.ruangortu';
+const ApkDownloadURL =
+    'https://drive.google.com/drive/folders/1U5V9ZbUel3O0kNBw96O4TY0m7TrLnTwe?usp=sharing';
+const ApkDownloadURL_ORTU =
+    'https://play.google.com/store/apps/details?id=com.byasia.ruangortu';
 
 final urlPP = 'https://ruangortu.id/toc/privacy_policy_bahasa.html';
 final urlTOC = 'https://ruangortu.id/toc/toc_bahasa.html';
 final urlFAQ = 'https://ruangortu.id/toc/faq_bahasa.html';
-enum ContentType { video, image, artikel }
+enum ContentType { video, image, artikel, pdf }
 
 Future<bool> childNeedPermission() async {
   final locationHandler = await Permission.location.status;
@@ -49,5 +51,8 @@ Future<bool> childNeedPermission() async {
   print('Permision Status camera : $cameraHandler');
   print('Permision Status microphone : $audioHandler');
   // print('Permision Status sms : $smsHandler');
-  return locationHandler.isDenied || contactHandler.isDenied || cameraHandler.isDenied || audioHandler.isDenied;
+  return locationHandler.isDenied ||
+      contactHandler.isDenied ||
+      cameraHandler.isDenied ||
+      audioHandler.isDenied;
 }
