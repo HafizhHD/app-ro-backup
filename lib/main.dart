@@ -271,7 +271,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Get.put(ChildController());
     Get.put(ParentController());
     Get.put(RKServiceController());
-    // Get.put(FeedController());
+    Get.put(FeedController());
   }
 
   @override
