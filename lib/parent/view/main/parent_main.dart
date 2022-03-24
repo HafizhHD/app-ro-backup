@@ -164,7 +164,7 @@ class _ParentMainState extends State<ParentMain> {
                 () => FloatingActionButton(
                   elevation: 0,
                   backgroundColor: controller.bottomNavIndex == 2
-                      ? cOrtuDarkBlue
+                      ? cOrtuOrange
                       : Colors.black54,
                   child: Container(
                     margin: EdgeInsets.all(8),
@@ -290,8 +290,8 @@ class IconWithLabel extends StatelessWidget {
     required this.defaultIcon,
     required this.label,
     required this.onPressed,
-    this.defaultColor: cOrtuText,
-    this.activeColor: cOrtuDarkBlue,
+    this.defaultColor: cOrtuWhite,
+    this.activeColor: cOrtuOrange,
     this.isSelected: false,
   });
 
