@@ -1,9 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:internet_file/internet_file.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_controller.dart';
 import 'package:html/parser.dart' show parse;
@@ -21,11 +25,20 @@ class FeedPdf extends StatefulWidget {
 class _FeedPdfState extends State<FeedPdf> {
   bool _isLoading = true;
   late PdfControllerPinch pdfPinchController;
+  late var toBeDownloaded;
+  static const int _initialPage = 1;
+  int _actualPageNumber = _initialPage, _allPagesCount = 0;
 
   @override
   void initState() {
-    super.initState();
     loadDocument();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    pdfPinchController.dispose();
+    super.dispose();
   }
 
   loadDocument() {
@@ -37,16 +50,18 @@ class _FeedPdfState extends State<FeedPdf> {
       if (urlData.substring(0, 4) == 'data') {
         urlData = urlData.split(';base64,')[1];
         Uint8List bytes = base64.decode(urlData);
-        pdfPinchController =
-            PdfControllerPinch(document: PdfDocument.openData(bytes));
+        toBeDownloaded = bytes;
       } else {
         Uri uriUri = Uri.parse(urlData);
         if (uriUri.queryParameters['url'] != null)
           urlData = uriUri.queryParameters['url']!;
-        pdfPinchController = PdfControllerPinch(
-          document: PdfDocument.openData(InternetFile.get(urlData)),
-        );
+        toBeDownloaded = InternetFile.get(urlData);
       }
+
+      pdfPinchController = PdfControllerPinch(
+        document: PdfDocument.openData(toBeDownloaded),
+      );
+      setState(() => _isLoading = false);
     } else {
       // contentData = document.getElementsByTagName('object');
       // print('panjang contentData: ${contentData.length}');
@@ -58,66 +73,92 @@ class _FeedPdfState extends State<FeedPdf> {
       pdfPinchController = PdfControllerPinch(
           document: PdfDocument.openData(InternetFile.get(
               'http://www.africau.edu/images/default/sample.pdf')));
+      setState(() => _isLoading = false);
     }
-
-    setState(() => _isLoading = false);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: cOrtuBlue,
-        title: Text(widget.contentModel.contentName),
-      ),
+          backgroundColor: cOrtuBlue,
+          title: Text(widget.contentModel.contentName),
+          actions: <Widget>[
+            FlatButton(
+                color: Colors.transparent,
+                child: Icon(Icons.navigate_before, color: cOrtuWhite),
+                onPressed: () {
+                  pdfPinchController.previousPage(
+                      duration: Duration(milliseconds: 100),
+                      curve: Curves.ease);
+                }),
+            Container(
+              alignment: Alignment.center,
+              child: Text(
+                '$_actualPageNumber/$_allPagesCount',
+                style: const TextStyle(fontSize: 22),
+              ),
+            ),
+            FlatButton(
+                color: Colors.transparent,
+                child: Icon(Icons.navigate_next, color: cOrtuWhite),
+                onPressed: () {
+                  pdfPinchController.nextPage(
+                      duration: Duration(milliseconds: 100),
+                      curve: Curves.ease);
+                }),
+            // FlatButton(
+            //     color: Colors.transparent,
+            //     child: Icon(Icons.download, color: cOrtuWhite),
+            //     onPressed: () async {
+            //       Directory? directory = await getExternalStorageDirectory();
+            //       if (!(toBeDownloaded is Uint8List)) {
+            //         var x = await toBeDownloaded;
+            //         toBeDownloaded = x;
+            //       }
+            //       if (directory != null) {
+            //         File fileDef = File('${directory.path}/download.pdf');
+            //         await fileDef.create(recursive: true);
+            //         Uint8List bytes1 = toBeDownloaded;
+            //         await fileDef.writeAsBytes(bytes1);
+            //         Fluttertoast.showToast(
+            //             msg:
+            //                 'PDF ini berhasil diunduh ke folder ${directory.path}',
+            //             toastLength: Toast.LENGTH_LONG,
+            //             gravity: ToastGravity.BOTTOM,
+            //             timeInSecForIosWeb: 5,
+            //             backgroundColor: Colors.green,
+            //             textColor: Colors.white,
+            //             fontSize: 16.0);
+            //       } else {
+            //         Fluttertoast.showToast(
+            //             msg:
+            //                 'PDF ini gagal diunduh. Ponsel berbasis iOS tidak mendukung fitur ini.',
+            //             toastLength: Toast.LENGTH_LONG,
+            //             gravity: ToastGravity.BOTTOM,
+            //             timeInSecForIosWeb: 5,
+            //             backgroundColor: Colors.red,
+            //             textColor: Colors.white,
+            //             fontSize: 16.0);
+            //       }
+            //     }),
+          ]),
       body: Center(
           child: _isLoading
               ? Center(child: CircularProgressIndicator())
-              : // Pdf view with re-render pdf texture on zoom (not loose quality on zoom)
-// Not supported on windows
-              PdfViewPinch(
+              : PdfViewPinch(
                   controller: pdfPinchController,
-                )
-          //uncomment below line to preload all pages
-          // lazyLoad: false,
-          // uncomment below line to scroll vertically
-          // scrollDirection: Axis.vertical,
-
-          //uncomment below code to replace bottom navigation with your own
-          /* navigationBuilder:
-                          (context, page, totalPages, jumpToPage, animateToPage) {
-                        return ButtonBar(
-                          alignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            IconButton(
-                              icon: Icon(Icons.first_page),
-                              onPressed: () {
-                                jumpToPage()(page: 0);
-                              },
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.arrow_back),
-                              onPressed: () {
-                                animateToPage(page: page - 2);
-                              },
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.arrow_forward),
-                              onPressed: () {
-                                animateToPage(page: page);
-                              },
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.last_page),
-                              onPressed: () {
-                                jumpToPage(page: totalPages - 1);
-                              },
-                            ),
-                          ],
-                        );
-                      }, */
-
-          ),
+                  onDocumentLoaded: (document) {
+                    setState(() {
+                      _allPagesCount = document.pagesCount;
+                    });
+                  },
+                  onPageChanged: (page) {
+                    setState(() {
+                      _actualPageNumber = page;
+                    });
+                  },
+                )),
     );
   }
 }

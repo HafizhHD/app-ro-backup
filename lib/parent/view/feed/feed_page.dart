@@ -7,7 +7,8 @@ import 'package:ruangkeluarga/utils/rk_webview.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 
-class FeedPage extends GetView<FeedController> {
+class FeedPage extends StatelessWidget {
+  final controller = Get.find<FeedController>();
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
