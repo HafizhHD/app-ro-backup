@@ -21,30 +21,34 @@ class ForumMain extends GetView<FeedController> {
                   fontSize: 20, fontWeight: FontWeight.bold, color: cOrtuText)),
           Text('Selamat datang di forum $appName.',
               style: TextStyle(color: cOrtuText)),
-          Container(
-            padding: EdgeInsets.only(top: 10, bottom: 10),
-            child: WSearchBar(
-                hintText: 'Search by name',
-                fOnSubmitted: (text) {
-                  controller.setSearchData(text);
-                },
-                tecController: TextEditingController(text: controller.search)),
-          ),
+          // Container(
+          //   padding: EdgeInsets.only(top: 10, bottom: 10),
+          //   child: WSearchBar(
+          //       hintText: 'Search by name',
+          //       fOnSubmitted: (text) {
+          //         controller.setSearchData(text);
+          //       },
+          //       tecController: TextEditingController(text: controller.search)),
+          // ),
           Flexible(
             flex: 4,
             child: FutureBuilder<bool>(
                 future: controller.fGetListContent,
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData) return wProgressIndicator();
+                  // if (!snapshot.hasData) return wProgressIndicator();
+                  if (!snapshot.hasData)
+                    return Center(
+                        child: Text('Coming Soon',
+                            style: TextStyle(color: cOrtuText)));
                   return RefreshIndicator(
                     onRefresh: () => controller.getContents(refresh: true),
                     child: Container(
                       padding: EdgeInsets.all(5),
                       child: GetBuilder<FeedController>(
                         builder: (builderCtrl) {
-                          if (builderCtrl.listSearchContent.length == 0)
+                          if (builderCtrl.listSearchContent.length >= 0)
                             return Center(
-                                child: Text('Tidak ada konten',
+                                child: Text('Coming Soon',
                                     style: TextStyle(color: cOrtuText)));
                           else
                             return ListView.separated(
