@@ -47,7 +47,8 @@ class ParentDrawer extends StatelessWidget {
                               alignment: Alignment.bottomLeft,
                               child: Text(
                                 '$userName',
-                                style: TextStyle(color: Colors.white, fontSize: 18),
+                                style:
+                                    TextStyle(color: cOrtuText, fontSize: 18),
                               ),
                             ),
                           ),
@@ -56,7 +57,7 @@ class ParentDrawer extends StatelessWidget {
                               alignment: Alignment.bottomLeft,
                               child: Text(
                                 '$userMail',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(color: cOrtuText),
                               ),
                             ),
                           )
@@ -119,7 +120,8 @@ class ParentDrawer extends StatelessWidget {
                 ),
                 ListTile(
                   title: Text('Keluar'),
-                  leading: Icon(Icons.exit_to_app_outlined, color: Colors.black),
+                  leading:
+                      Icon(Icons.exit_to_app_outlined, color: Colors.black),
                   onTap: () => logUserOut(),
                 )
               ],

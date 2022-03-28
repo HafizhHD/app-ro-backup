@@ -25,7 +25,7 @@ class FeedPdf extends StatefulWidget {
 class _FeedPdfState extends State<FeedPdf> {
   bool _isLoading = true;
   late PdfControllerPinch pdfPinchController;
-  late var toBeDownloaded;
+  late Uint8List toBeDownloaded;
   static const int _initialPage = 1;
   int _actualPageNumber = _initialPage, _allPagesCount = 0;
 
@@ -41,7 +41,7 @@ class _FeedPdfState extends State<FeedPdf> {
     super.dispose();
   }
 
-  loadDocument() {
+  loadDocument() async {
     var document = parse(widget.contentModel.contents);
     List contentData = document.getElementsByTagName('iframe');
     var urlData = '';
@@ -55,7 +55,7 @@ class _FeedPdfState extends State<FeedPdf> {
         Uri uriUri = Uri.parse(urlData);
         if (uriUri.queryParameters['url'] != null)
           urlData = uriUri.queryParameters['url']!;
-        toBeDownloaded = InternetFile.get(urlData);
+        toBeDownloaded = await InternetFile.get(urlData);
       }
 
       pdfPinchController = PdfControllerPinch(
@@ -111,11 +111,11 @@ class _FeedPdfState extends State<FeedPdf> {
             //     color: Colors.transparent,
             //     child: Icon(Icons.download, color: cOrtuWhite),
             //     onPressed: () async {
-            //       Directory? directory = await getExternalStorageDirectory();
-            //       if (!(toBeDownloaded is Uint8List)) {
-            //         var x = await toBeDownloaded;
-            //         toBeDownloaded = x;
+            //       var storage = await Permission.storage.status;
+            //       if (!storage.isGranted) {
+            //         await Permission.storage.request();
             //       }
+            //       Directory? directory = await getExternalStorageDirectory();
             //       if (directory != null) {
             //         File fileDef = File('${directory.path}/download.pdf');
             //         await fileDef.create(recursive: true);
@@ -132,8 +132,7 @@ class _FeedPdfState extends State<FeedPdf> {
             //             fontSize: 16.0);
             //       } else {
             //         Fluttertoast.showToast(
-            //             msg:
-            //                 'PDF ini gagal diunduh. Ponsel berbasis iOS tidak mendukung fitur ini.',
+            //             msg: 'PDF ini gagal diunduh.',
             //             toastLength: Toast.LENGTH_LONG,
             //             gravity: ToastGravity.BOTTOM,
             //             timeInSecForIosWeb: 5,

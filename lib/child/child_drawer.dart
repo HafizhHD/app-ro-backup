@@ -44,7 +44,8 @@ class ChildDrawer extends StatelessWidget {
                               alignment: Alignment.bottomLeft,
                               child: Text(
                                 '$childName',
-                                style: TextStyle(color: Colors.white, fontSize: 18),
+                                style:
+                                    TextStyle(color: cOrtuText, fontSize: 18),
                               ),
                             ),
                           ),
@@ -53,7 +54,7 @@ class ChildDrawer extends StatelessWidget {
                               alignment: Alignment.bottomLeft,
                               child: Text(
                                 '$childEmail',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(color: cOrtuText),
                               ),
                             ),
                           )
