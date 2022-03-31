@@ -35,7 +35,7 @@ class _CameraAppState extends State<CameraApp> with TickerProviderStateMixin {
   );
 
   void initAsync() async {
-    controller = CameraController(cameras[0], ResolutionPreset.max);
+    controller = CameraController(cameras[0], ResolutionPreset.high);
     controller.initialize().then((_) {
       if (!mounted) {
         return;
