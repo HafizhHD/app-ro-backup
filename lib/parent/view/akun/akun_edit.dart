@@ -64,14 +64,14 @@ class _AkunEditPageState extends State<AkunEditPage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('Edit Profile'),
+          title: Text('Edit Profile', style: TextStyle(color: cOrtuWhite)),
           elevation: 0,
           systemOverlayStyle: SystemUiOverlayStyle.dark,
-          backgroundColor: cPrimaryBg,
+          backgroundColor: cTopBg,
         ),
         backgroundColor: cPrimaryBg,
         body: Container(
-          padding: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 5),
+          padding: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 5, top: 5),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -126,7 +126,7 @@ class _AkunEditPageState extends State<AkunEditPage> {
                                       )
                                     : Container(
                                         decoration: BoxDecoration(
-                                          color: cOrtuBlue,
+                                          color: cAsiaBlue,
                                           borderRadius: BorderRadius.all(
                                               borderRadiusSize),
                                         ),
@@ -178,7 +178,7 @@ class _AkunEditPageState extends State<AkunEditPage> {
                         ),
                       ),
                       Container(
-                        margin: const EdgeInsets.only(top: 10.0, bottom: 10),
+                        margin: const EdgeInsets.only(top: 2, bottom: 2),
                         width: MediaQuery.of(context).size.width,
                         child: Theme(
                           data: Theme.of(context)
@@ -210,7 +210,7 @@ class _AkunEditPageState extends State<AkunEditPage> {
                         ),
                       ),
                       Container(
-                        margin: const EdgeInsets.only(top: 10.0, bottom: 10),
+                        margin: const EdgeInsets.only(top: 2, bottom: 2),
                         width: MediaQuery.of(context).size.width,
                         child: Theme(
                           data: Theme.of(context)
@@ -243,7 +243,7 @@ class _AkunEditPageState extends State<AkunEditPage> {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Container(
-                          margin: const EdgeInsets.only(top: 10.0),
+                          margin: const EdgeInsets.only(top: 5.0),
                           child: Text(
                             'Tanggal Lahir (opsional)',
                             style: TextStyle(color: cOrtuGrey),
@@ -251,7 +251,7 @@ class _AkunEditPageState extends State<AkunEditPage> {
                         ),
                       ),
                       Container(
-                        margin: const EdgeInsets.only(top: 10.0, bottom: 10),
+                        margin: const EdgeInsets.only(top: 2, bottom: 2),
                         decoration: BoxDecoration(
                           color: cOrtuWhite,
                           borderRadius: BorderRadius.circular(10),
@@ -317,7 +317,7 @@ class _AkunEditPageState extends State<AkunEditPage> {
                         ),
                       ),
                       Container(
-                        margin: const EdgeInsets.only(top: 10.0, bottom: 10),
+                        margin: const EdgeInsets.only(top: 2, bottom: 2),
                         width: MediaQuery.of(context).size.width,
                         child: Theme(
                           data: Theme.of(context)
@@ -349,7 +349,7 @@ class _AkunEditPageState extends State<AkunEditPage> {
                       ),
                       if (widget.isParent)
                         Theme(
-                          data: ThemeData.dark(),
+                          data: ThemeData.light(),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
@@ -359,7 +359,7 @@ class _AkunEditPageState extends State<AkunEditPage> {
                                   leading: Radio<GenderCharacter>(
                                     value: GenderCharacter.Ayah,
                                     groupValue: widget.parentGender,
-                                    activeColor: cOrtuBlue,
+                                    activeColor: cAsiaBlue,
                                     onChanged: (GenderCharacter? value) {
                                       setState(
                                           () => widget.parentGender = value);
@@ -373,7 +373,7 @@ class _AkunEditPageState extends State<AkunEditPage> {
                                   leading: Radio<GenderCharacter>(
                                     value: GenderCharacter.Bunda,
                                     groupValue: widget.parentGender,
-                                    activeColor: cOrtuBlue,
+                                    activeColor: cAsiaBlue,
                                     onChanged: (GenderCharacter? value) {
                                       setState(
                                           () => widget.parentGender = value);
@@ -443,7 +443,7 @@ class _AkunEditPageState extends State<AkunEditPage> {
                                 }
                               }
                             : null,
-                        color: cOrtuBlue,
+                        color: cAsiaBlue,
                         child: Text(
                           "SIMPAN",
                           style: TextStyle(

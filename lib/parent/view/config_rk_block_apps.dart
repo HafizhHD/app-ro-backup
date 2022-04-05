@@ -149,15 +149,16 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
       appBar: AppBar(
         centerTitle: true,
         title:
-            Text('Blok Aplikasi / Games', style: TextStyle(color: cOrtuText)),
-        backgroundColor: cPrimaryBg,
+            Text('Blok Aplikasi / Games', style: TextStyle(color: cOrtuWhite)),
+        backgroundColor: cTopBg,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: cOrtuText),
+          icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
           onPressed: () => Navigator.of(context).pop(),
         ),
         elevation: 0,
       ),
       body: Container(
+        margin: EdgeInsets.only(top: 5, bottom: 5),
         padding: EdgeInsets.only(left: 15, right: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -186,90 +187,99 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
                       return Center(
                           child: Text('List aplikasi kosong',
                               style: TextStyle(color: cOrtuText)));
-                    return ListView.builder(
-                        itemCount: appListSearch.length,
-                        itemBuilder: (ctx, index) {
-                          final app = appListSearch[index];
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Row(
+                    return Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: cOrtuLightGrey),
+                        child: ListView.separated(
+                            separatorBuilder: (ctx, idx) =>
+                                Divider(height: 1, color: cOrtuWhite),
+                            itemCount: appListSearch.length,
+                            itemBuilder: (ctx, index) {
+                              final app = appListSearch[index];
+                              return Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  app.appIcons != null && app.appIcons != ''
-                                      ? Container(
-                                          margin: EdgeInsets.all(5)
-                                              .copyWith(right: 10),
-                                          child: Image.network(
-                                            app.appIcons ?? '',
-                                            height: 50,
-                                            fit: BoxFit.contain,
-                                          ))
-                                      : Container(
-                                          margin: EdgeInsets.all(5)
-                                              .copyWith(right: 10),
-                                          color: cOrtuBlue,
-                                          height: 50,
-                                          child: Center(
-                                            child: Icon(Icons.photo),
-                                          ),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      app.appIcons != null && app.appIcons != ''
+                                          ? Container(
+                                              margin: EdgeInsets.all(5)
+                                                  .copyWith(right: 10),
+                                              child: Image.network(
+                                                app.appIcons ?? '',
+                                                height: 50,
+                                                fit: BoxFit.contain,
+                                              ))
+                                          : Container(
+                                              margin: EdgeInsets.all(5)
+                                                  .copyWith(right: 10),
+                                              color: cAsiaBlue,
+                                              height: 50,
+                                              child: Center(
+                                                child: Icon(Icons.photo),
+                                              ),
+                                            ),
+                                      Flexible(
+                                        child: Text(
+                                          app.appName ?? '',
+                                          style: TextStyle(color: cOrtuText),
                                         ),
-                                  Flexible(
-                                    child: Text(
-                                      app.appName ?? '',
-                                      style: TextStyle(color: cOrtuText),
-                                    ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        app.blacklist ?? false ? 'ON' : 'OFF',
+                                        style: TextStyle(
+                                            color: app.blacklist ?? false
+                                                ? cAsiaBlue
+                                                : cOrtuText),
+                                      ),
+                                      IconButton(
+                                          onPressed: () async {
+                                            showLoadingOverlay();
+                                            final response;
+                                            if (app.blacklist == false)
+                                              response = await blockApp(
+                                                  app.packageId!,
+                                                  app.appCategory);
+                                            else
+                                              response = await unBlockApp(
+                                                  app.packageId!,
+                                                  app.appCategory);
+                                            if (response.statusCode == 200) {
+                                              fAppList = fetchAppList();
+                                              setState(() {});
+                                              closeOverlay();
+                                              showToastSuccess(
+                                                  ctx: context,
+                                                  successText:
+                                                      "Berhasil memblokir aplikasi ${app.appName}");
+                                            } else {
+                                              closeOverlay();
+                                              showToastFailed(
+                                                  ctx: context,
+                                                  failedText:
+                                                      "Gagal memblokir aplikasi ${app.appName}. Terjadi kesalahan server");
+                                            }
+                                          },
+                                          icon: Icon(
+                                            Icons.app_blocking,
+                                            color: app.blacklist ?? false
+                                                ? cAsiaBlue
+                                                : cOrtuText,
+                                          ))
+                                    ],
                                   ),
                                 ],
-                              ),
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    app.blacklist ?? false ? 'ON' : 'OFF',
-                                    style: TextStyle(
-                                        color: app.blacklist ?? false
-                                            ? cOrtuBlue
-                                            : cOrtuText),
-                                  ),
-                                  IconButton(
-                                      onPressed: () async {
-                                        showLoadingOverlay();
-                                        final response;
-                                        if (app.blacklist == false)
-                                          response = await blockApp(
-                                              app.packageId!, app.appCategory);
-                                        else
-                                          response = await unBlockApp(
-                                              app.packageId!, app.appCategory);
-                                        if (response.statusCode == 200) {
-                                          fAppList = fetchAppList();
-                                          setState(() {});
-                                          closeOverlay();
-                                          showToastSuccess(
-                                              ctx: context,
-                                              successText:
-                                                  "Berhasil memblokir aplikasi ${app.appName}");
-                                        } else {
-                                          closeOverlay();
-                                          showToastFailed(
-                                              ctx: context,
-                                              failedText:
-                                                  "Gagal memblokir aplikasi ${app.appName}. Terjadi kesalahan server");
-                                        }
-                                      },
-                                      icon: Icon(
-                                        Icons.app_blocking,
-                                        color: app.blacklist ?? false
-                                            ? cOrtuBlue
-                                            : cOrtuText,
-                                      ))
-                                ],
-                              ),
-                            ],
-                          );
-                        });
+                              );
+                            }));
                   }),
             ),
           ],

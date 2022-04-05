@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
 
 class AppsListScreen extends StatefulWidget {
@@ -14,7 +15,9 @@ class _AppsListScreenState extends State<AppsListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Installed applications'),
+        backgroundColor: cTopBg,
+        title:
+            Text('Installed Applications', style: TextStyle(color: cOrtuWhite)),
         actions: <Widget>[
           PopupMenuButton<String>(
             itemBuilder: (BuildContext context) {
@@ -56,8 +59,8 @@ class _AppsListScreenContent extends StatelessWidget {
 
   const _AppsListScreenContent(
       {Key? key,
-        this.includeSystemApps: true,
-        this.onlyAppsWithLaunchIntent: true})
+      this.includeSystemApps: true,
+      this.onlyAppsWithLaunchIntent: true})
       : super(key: key);
 
   @override
@@ -82,9 +85,9 @@ class _AppsListScreenContent extends StatelessWidget {
                       ListTile(
                         leading: app is ApplicationWithIcon
                             ? CircleAvatar(
-                          backgroundImage: MemoryImage(app.icon),
-                          backgroundColor: Colors.white,
-                        )
+                                backgroundImage: MemoryImage(app.icon),
+                                backgroundColor: Colors.white,
+                              )
                             : null,
                         onTap: () => onAppClicked(context, app),
                         title: Text('${app.appName} (${app.packageName})'),

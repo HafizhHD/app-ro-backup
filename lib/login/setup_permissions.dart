@@ -182,7 +182,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   onPressed: () async {
                     await openAppSettings();
                   },
-                  color: cOrtuBlue,
+                  color: cAsiaBlue,
                   child: Text(
                     "Buka Info Aplikasi",
                     style: TextStyle(
@@ -335,7 +335,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                           _cameraPermission &&
                           _audioPermission &&
                           _kunciLayar
-                      ? cOrtuBlue
+                      ? cAsiaBlue
                       : Color.fromARGB(255, 80, 80, 80),
                   child: Text(
                     "LANJUT KE HOME",
@@ -363,6 +363,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
   }
 
   Widget checkAllPermission() {
+    final screenHeight = MediaQuery.of(context).size.height;
     return PageView(
       controller: pageController,
       children: <Widget>[
@@ -382,7 +383,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
               Padding(
                   padding: EdgeInsets.all(20),
                   child: Image.asset('assets/images/icon/phonebook.png',
-                      height: 250, fit: BoxFit.fill)),
+                      height: screenHeight / 4, fit: BoxFit.fill)),
               Padding(
                   padding: EdgeInsets.only(bottom: 10),
                   child: Text(
@@ -439,7 +440,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
               Padding(
                   padding: EdgeInsets.all(20),
                   child: Image.asset('assets/images/icon/camera.png',
-                      height: 250, fit: BoxFit.fill)),
+                      height: screenHeight / 4, fit: BoxFit.fill)),
               Padding(
                   padding: EdgeInsets.only(bottom: 10),
                   child: Text(
@@ -493,7 +494,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
               Padding(
                   padding: EdgeInsets.all(20),
                   child: Image.asset('assets/images/icon/mic.png',
-                      height: 250, fit: BoxFit.fill)),
+                      height: screenHeight / 4, fit: BoxFit.fill)),
               Padding(
                   padding: EdgeInsets.only(bottom: 10),
                   child: Text(
@@ -547,7 +548,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
               Padding(
                   padding: EdgeInsets.all(20),
                   child: Image.asset('assets/images/icon/folderdocs.png',
-                      height: 250, fit: BoxFit.fill)),
+                      height: screenHeight / 4, fit: BoxFit.fill)),
               Padding(
                   padding: EdgeInsets.only(bottom: 10),
                   child: Text(
@@ -601,7 +602,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
               Padding(
                   padding: EdgeInsets.all(20),
                   child: Image.asset('assets/images/icon/layershapes.png',
-                      height: 250, fit: BoxFit.fill)),
+                      height: screenHeight / 4, fit: BoxFit.fill)),
               Padding(
                   padding: EdgeInsets.only(bottom: 10),
                   child: Text(
@@ -691,7 +692,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
               Padding(
                   padding: EdgeInsets.all(20),
                   child: Image.asset('assets/images/icon/phoneapps.png',
-                      height: 250, fit: BoxFit.fill)),
+                      height: screenHeight / 4, fit: BoxFit.fill)),
               Padding(
                   padding: EdgeInsets.only(bottom: 10),
                   child: Text(
@@ -737,7 +738,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
               Padding(
                   padding: EdgeInsets.all(20),
                   child: Image.asset('assets/images/icon/locklayer.png',
-                      height: 250, fit: BoxFit.fill)),
+                      height: screenHeight / 4, fit: BoxFit.fill)),
               Padding(
                   padding: EdgeInsets.only(bottom: 10),
                   child: Text(
@@ -778,7 +779,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
               Padding(
                   padding: EdgeInsets.all(20),
                   child: Image.asset('assets/images/icon/pinround.png',
-                      height: 250, fit: BoxFit.fill)),
+                      height: screenHeight / 4, fit: BoxFit.fill)),
               Padding(
                   padding: EdgeInsets.only(bottom: 10),
                   child: Column(children: [

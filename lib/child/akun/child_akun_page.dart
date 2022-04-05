@@ -153,11 +153,11 @@ class ChildAkunPage extends StatelessWidget {
                     ? Container(
                         margin: EdgeInsets.all(5),
                         decoration: BoxDecoration(
-                          color: cOrtuBlue,
+                          color: cAsiaBlue,
                           borderRadius: BorderRadius.circular(15.0),
                         ),
                         child: Center(
-                            child: Icon(Icons.add_a_photo,
+                            child: Icon(Icons.person,
                                 color: cPrimaryBg, size: 50)),
                       )
                     : Container(
@@ -216,7 +216,7 @@ class ChildAkunPage extends StatelessWidget {
           onPressed: () {
             Get.back(result: false);
           },
-          child: Text('Batal', style: TextStyle(color: cOrtuBlue)),
+          child: Text('Batal', style: TextStyle(color: cAsiaBlue)),
         ),
         TextButton(
           onPressed: () async {
@@ -235,7 +235,7 @@ class ChildAkunPage extends StatelessWidget {
                   ctx: Get.context!,
                   failedText: 'Gagal menghapus anak dengan nama $childName');
           },
-          child: Text('Hapus', style: TextStyle(color: cOrtuBlue)),
+          child: Text('Hapus', style: TextStyle(color: cAsiaBlue)),
         ),
       ],
     ));

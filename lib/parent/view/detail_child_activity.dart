@@ -52,7 +52,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
   late Future<List<Application>> apps;
 
   List<AppUsages> listAppUsage = [], listAppUsageWeekly = [];
-  String avgData = '0s', averageTimeWeekly = '0s';
+  String avgData = '0s', averageTimeWeekly = '0s', totalTimeWeekly = '0s';
   String lastUpdated = '';
 
   SharedPreferences? prefs;
@@ -493,6 +493,8 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
     listAppUsageWeekly = parentController.mapChildActivity[widget.email] ?? [];
     averageTimeWeekly =
         parentController.mapChildScreentime[widget.email] ?? '0s';
+    totalTimeWeekly =
+        parentController.mapChildScreentimeTotal[widget.email] ?? '0s';
     listAppUsage.forEach((e) {
       e.appUsagesDetail.forEach((f) {
         f.duration = 0;
@@ -513,11 +515,11 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
   Widget build(BuildContext context) {
     AppBar appBar = AppBar(
       centerTitle: true,
-      title: Text(widget.name, style: TextStyle(color: cOrtuText)),
-      backgroundColor: cPrimaryBg,
+      title: Text(widget.name, style: TextStyle(color: cOrtuWhite)),
+      backgroundColor: cTopBg,
       iconTheme: IconThemeData(color: Colors.grey.shade700),
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios, color: cOrtuText),
+        icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
         onPressed: () => Navigator.of(context).pop(),
       ),
       elevation: 0,
@@ -532,6 +534,9 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 ToggleBar(
+                    labelTextStyle: TextStyle(fontWeight: FontWeight.bold),
+                    textColor: cOrtuLightGrey,
+                    selectedTextColor: cAsiaBlue,
                     labels: ['Mingguan', 'Harian'],
                     onSelectionUpdated: (index) {
                       if (index == 0)
@@ -575,7 +580,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               Container(
                 margin: EdgeInsets.only(
                     top: 20.0, left: 20.0, right: 20.0, bottom: 10.0),
-                child: Text('MOST USED',
+                child: Text('Most Used Apps',
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -585,6 +590,9 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
           ),
           Flexible(
             child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: cOrtuLightGrey),
               height: 400,
               margin: EdgeInsets.all(10.0),
               child: type == 'week' ? onMostWeekData() : onMostDay(),
@@ -597,6 +605,8 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
 
   Widget chartDetail(String type, updateChart) {
     return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10), color: cOrtuLightGrey),
       width: MediaQuery.of(context).size.width,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -605,7 +615,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
           Container(
             margin: EdgeInsets.all(10.0),
             child: Text(
-              type == 'week' ? 'Rata-rata Mingguan' : 'Rata-rata Harian',
+              type == 'week' ? 'Daily Average' : 'Total Usage Today',
               style: TextStyle(fontSize: 16, color: cOrtuText),
             ),
           ),
@@ -632,11 +642,11 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                      'Update today ${lastUpdated != '' ? lastUpdated : widget.lastUpdate}',
+                      'Updated today ${lastUpdated != '' ? lastUpdated : widget.lastUpdate}',
                       style: TextStyle(fontSize: 14, color: cOrtuText)),
                   TextButton(
                       style: TextButton.styleFrom(
-                          textStyle: TextStyle(fontSize: 14, color: cOrtuBlue)),
+                          textStyle: TextStyle(fontSize: 14, color: cAsiaBlue)),
                       onPressed: () async {
                         showLoadingOverlay();
                         await updateChart();
@@ -682,7 +692,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
 
     List<ColumnSeries<DailyAverage, String>> _columnData = [
       ColumnSeries<DailyAverage, String>(
-        color: cOrtuBlue,
+        color: cAsiaBlue,
         borderColor: Colors.red,
         trackColor: Colors.teal,
         dataSource: desktopSalesData,
@@ -732,7 +742,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
 
     List<ColumnSeries<DailyAverage, String>> _columnData = [
       ColumnSeries<DailyAverage, String>(
-        color: cOrtuBlue,
+        color: cAsiaBlue,
         borderColor: Colors.red,
         trackColor: Colors.teal,
         dataSource: weeklyData,

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -191,7 +192,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text('Buat Profile', style: TextStyle(color: cOrtuText)),
+          title: Text('Buat Profile', style: TextStyle(color: cOrtuWhite)),
           leading: SizedBox(),
           actions: [
             IconButton(
@@ -200,12 +201,13 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                 },
                 icon: Icon(Icons.close))
           ],
-          backgroundColor: cPrimaryBg,
+          backgroundColor: cTopBg,
           elevation: 0,
         ),
         backgroundColor: cPrimaryBg,
         body: Container(
-          margin: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20),
+          margin: const EdgeInsets.only(
+              left: 20.0, right: 20.0, bottom: 20, top: 5),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -239,7 +241,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                                     height: screenSize.height / 3,
                                     width: double.infinity,
                                     decoration: BoxDecoration(
-                                      color: cOrtuBlue,
+                                      color: cAsiaBlue,
                                       borderRadius:
                                           BorderRadius.all(borderRadiusSize),
                                     ),
@@ -434,7 +436,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                                 onInviteChild();
                               }
                             : null,
-                        color: cOrtuBlue,
+                        color: cAsiaBlue,
                         child: Text(
                           "LANJUTKAN",
                           style: TextStyle(
@@ -558,89 +560,160 @@ class InviteChildQR extends StatelessWidget {
       color: cPrimaryBg,
       child: SafeArea(
         child: Container(
-          padding: EdgeInsets.all(5),
+          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(height: 20),
-              Text(
-                'Di Ponsel\n',
-                style: TextStyle(fontSize: 35, color: cOrtuText),
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                'Gunakan Camera Atau Aplikasi QR' +
-                    '\nScan QR Code Di Bawah ini' +
-                    '\nDan Klik Link Yang Anda Terima',
-                style: TextStyle(fontSize: 20, color: cOrtuText, height: 1.5),
-                textAlign: TextAlign.center,
-              ),
-              Flexible(
-                child: Center(
-                  child: Container(
-                    height: MediaQuery.of(context).size.height / 2.5,
-                    color: Colors.white,
-                    margin: EdgeInsets.all(30),
-                    padding: EdgeInsets.all(10),
-                    child: Align(
-                        alignment: Alignment.center,
-                        child: QrImage(data: ApkDownloadURL_ORTU)),
-                  ),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                        text: 'Untuk menghubungkan ke perangkat anak,',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    TextSpan(
+                        text:
+                            '\nscan QR berikut di perangkat anak untuk aktivasi & download aplikasi '),
+                    TextSpan(text: appName)
+                  ],
+                  style: TextStyle(fontSize: 16, color: cOrtuText),
                 ),
+                textAlign: TextAlign.justify,
               ),
               Container(
-                margin: EdgeInsets.all(20),
-                child: FlatButton(
-                  height: 50,
-                  minWidth: 300,
-                  shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(15.0),
-                  ),
-                  onPressed: () {
-                    onReInviteChild(
-                        allData,
-                        showToastSuccess != null
-                            ? showToastSuccess
-                            : _showToastSuccess,
-                        showToastFailed != null
-                            ? showToastFailed
-                            : _showToastFailed,
-                        prefs);
-                  },
-                  color: cOrtuBlue,
-                  child: Text(
-                    "Kirim Ulang Email Aktivasi",
-                    style: TextStyle(
-                      fontFamily: 'Raleway',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                ),
+                height: MediaQuery.of(context).size.height / 3,
+                color: Colors.white,
+                margin: EdgeInsets.all(5),
+                padding: EdgeInsets.all(5),
+                child: Align(
+                    alignment: Alignment.center,
+                    child: QrImage(data: ApkDownloadURL_ORTU)),
               ),
-              Container(
-                margin: EdgeInsets.all(20),
-                child: FlatButton(
-                  height: 50,
-                  minWidth: 300,
-                  shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(15.0),
-                  ),
-                  onPressed: () async {
-                    Navigator.pop(context, 'AddChild');
-                  },
-                  color: cOrtuBlue,
-                  child: Text(
-                    "LANJUT KE HOME",
-                    style: TextStyle(
-                      fontFamily: 'Raleway',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                ),
-              ),
+              Text('Atau dengan cara kedua',
+                  style: TextStyle(fontSize: 16, color: cOrtuText)),
+              RichText(
+                  text: TextSpan(children: [
+                    TextSpan(
+                        text: 'Periksa Email anak Anda ',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    TextSpan(text: 'lalu '),
+                    TextSpan(
+                        text: 'klik Aktivasi ',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    TextSpan(
+                        text: '& download aplikasi ' +
+                            appName +
+                            ' di perangkat anak Anda')
+                  ], style: TextStyle(fontSize: 16, color: cOrtuText)),
+                  textAlign: TextAlign.justify),
+              Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        RichText(
+                            text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                      text:
+                                          'Belum mendapatkan email aktivasi?\n'),
+                                  TextSpan(
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {
+                                          onReInviteChild(
+                                              allData,
+                                              showToastSuccess != null
+                                                  ? showToastSuccess
+                                                  : _showToastSuccess,
+                                              showToastFailed != null
+                                                  ? showToastFailed
+                                                  : _showToastFailed,
+                                              prefs);
+                                        },
+                                      text: 'Kirim Ulang',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: cOrtuInkWell))
+                                ],
+                                style:
+                                    TextStyle(fontSize: 14, color: cOrtuText)),
+                            textAlign: TextAlign.justify),
+                        Container(
+                          margin: EdgeInsets.all(10),
+                          child: FlatButton(
+                            height: 50,
+                            minWidth: 300,
+                            shape: new RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(15.0),
+                            ),
+                            onPressed: () async {
+                              Navigator.pop(context, 'AddChild');
+                            },
+                            color: cAsiaBlue,
+                            child: Text(
+                              "KEMBALI KE HOME",
+                              style: TextStyle(
+                                color: cOrtuWhite,
+                                fontFamily: 'Raleway',
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20.0,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ])),
+              // Container(
+              //   margin: EdgeInsets.all(10),
+              //   child: FlatButton(
+              //     height: 50,
+              //     minWidth: 300,
+              //     shape: new RoundedRectangleBorder(
+              //       borderRadius: new BorderRadius.circular(15.0),
+              //     ),
+              //     onPressed: () {
+              //       onReInviteChild(
+              //           allData,
+              //           showToastSuccess != null
+              //               ? showToastSuccess
+              //               : _showToastSuccess,
+              //           showToastFailed != null
+              //               ? showToastFailed
+              //               : _showToastFailed,
+              //           prefs);
+              //     },
+              //     color: cOrtuBlue,
+              //     child: Text(
+              //       "Kirim Ulang Email Aktivasi",
+              //       style: TextStyle(
+              //         fontFamily: 'Raleway',
+              //         fontWeight: FontWeight.bold,
+              //         fontSize: 20.0,
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              // Container(
+              //   margin: EdgeInsets.all(10),
+              //   child: FlatButton(
+              //     height: 50,
+              //     minWidth: 300,
+              //     shape: new RoundedRectangleBorder(
+              //       borderRadius: new BorderRadius.circular(15.0),
+              //     ),
+              //     onPressed: () async {
+              //       Navigator.pop(context, 'AddChild');
+              //     },
+              //     color: cOrtuBlue,
+              //     child: Text(
+              //       "KEMBALI KE HOME",
+              //       style: TextStyle(
+              //         fontFamily: 'Raleway',
+              //         fontWeight: FontWeight.bold,
+              //         fontSize: 20.0,
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),

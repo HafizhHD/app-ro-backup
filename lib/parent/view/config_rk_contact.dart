@@ -87,16 +87,16 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
       backgroundColor: cPrimaryBg,
       appBar: AppBar(
         centerTitle: true,
-        title: Text(widget.name, style: TextStyle(color: cOrtuText)),
-        backgroundColor: cPrimaryBg,
+        title: Text(widget.title, style: TextStyle(color: cOrtuWhite)),
+        backgroundColor: cTopBg,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: cOrtuText),
+          icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
           onPressed: () => Navigator.of(context).pop(),
         ),
         elevation: 0,
       ),
       body: Container(
-        padding: EdgeInsets.only(left: 15, right: 10),
+        padding: EdgeInsets.only(left: 15, right: 10, top: 5),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -121,83 +121,93 @@ class _ConfigRKContactPageState extends State<ConfigRKContactPage> {
                           child: Text('Data kontak kosong',
                               style: TextStyle(color: cOrtuText)));
 
-                    return ListView.builder(
-                        itemCount: searchContactList.length,
-                        itemBuilder: (ctx, index) {
-                          final dataContact = searchContactList[index];
-                          return Container(
-                            key:
-                                Key('${dataContact.name}+${dataContact.phone}'),
-                            padding: EdgeInsets.all(10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Flexible(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(dataContact.name,
-                                          style: TextStyle(
-                                              color: cOrtuText,
-                                              fontWeight: FontWeight.bold)),
-                                      SizedBox(height: 10),
-                                      Text(dataContact.phone,
-                                          style: TextStyle(color: cOrtuText)),
-                                    ],
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
+                    return Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: cOrtuLightGrey),
+                        child: ListView.separated(
+                            separatorBuilder: (ctx, idx) =>
+                                Divider(height: 1, color: cOrtuWhite),
+                            itemCount: searchContactList.length,
+                            itemBuilder: (ctx, index) {
+                              final dataContact = searchContactList[index];
+                              return Container(
+                                key: Key(
+                                    '${dataContact.name}+${dataContact.phone}'),
+                                padding: EdgeInsets.all(10),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    // IconButton(
-                                    //   color: cOrtuText,
-                                    //   icon: Icon(Icons.notifications_active_outlined),
-                                    //   onPressed: () {
-                                    //     setState(() {});
-                                    //   },
-                                    // ),
-                                    Text(
-                                      dataContact.blacklist ? 'Dipantau' : '',
-                                      style: TextStyle(color: cOrtuText),
-                                    ),
-                                    IconButton(
-                                      color: cOrtuText,
-                                      icon: Icon(
-                                        dataContact.blacklist
-                                            ? Icons.remove_red_eye
-                                            : Icons.remove_red_eye_outlined,
-                                        color: dataContact.blacklist
-                                            ? cOrtuBlue
-                                            : cOrtuText,
+                                    Flexible(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(dataContact.name,
+                                              style: TextStyle(
+                                                  color: cOrtuText,
+                                                  fontWeight: FontWeight.bold)),
+                                          SizedBox(height: 10),
+                                          Text(dataContact.phone,
+                                              style:
+                                                  TextStyle(color: cOrtuText)),
+                                        ],
                                       ),
-                                      onPressed: () async {
-                                        showLoadingOverlay();
-                                        final response =
-                                            await onBlacklistContact(
-                                                dataContact.name,
-                                                dataContact.phone);
-                                        if (response.statusCode == 200) {
-                                          await fetchContact();
-                                          showToastSuccess(
-                                              ctx: context,
-                                              successText:
-                                                  'Berhasil watchlist kontak ${dataContact.name}');
-                                        } else {
-                                          showToastFailed(
-                                              ctx: context,
-                                              failedText:
-                                                  'Gagal memblokir kontak ${dataContact.name}. Silahkan coba lagi.');
-                                        }
-                                        closeOverlay();
-                                      },
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        // IconButton(
+                                        //   color: cOrtuText,
+                                        //   icon: Icon(Icons.notifications_active_outlined),
+                                        //   onPressed: () {
+                                        //     setState(() {});
+                                        //   },
+                                        // ),
+                                        Text(
+                                          dataContact.blacklist
+                                              ? 'Dipantau'
+                                              : '',
+                                          style: TextStyle(color: cOrtuText),
+                                        ),
+                                        IconButton(
+                                          color: cOrtuText,
+                                          icon: Icon(
+                                            dataContact.blacklist
+                                                ? Icons.remove_red_eye
+                                                : Icons.remove_red_eye_outlined,
+                                            color: dataContact.blacklist
+                                                ? cAsiaBlue
+                                                : cOrtuText,
+                                          ),
+                                          onPressed: () async {
+                                            showLoadingOverlay();
+                                            final response =
+                                                await onBlacklistContact(
+                                                    dataContact.name,
+                                                    dataContact.phone);
+                                            if (response.statusCode == 200) {
+                                              await fetchContact();
+                                              showToastSuccess(
+                                                  ctx: context,
+                                                  successText:
+                                                      'Berhasil watchlist kontak ${dataContact.name}');
+                                            } else {
+                                              showToastFailed(
+                                                  ctx: context,
+                                                  failedText:
+                                                      'Gagal memblokir kontak ${dataContact.name}. Silahkan coba lagi.');
+                                            }
+                                            closeOverlay();
+                                          },
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
-                              ],
-                            ),
-                          );
-                        });
+                              );
+                            }));
                   }),
             ),
           ],

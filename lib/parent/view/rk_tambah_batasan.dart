@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/rk_setting_time_app_limit.dart';
 
 class RKTambahBatasan extends StatelessWidget {
@@ -17,7 +18,9 @@ class RKTambahBatasanPage extends StatefulWidget {
   final String name;
   final String email;
 
-  RKTambahBatasanPage({Key? key, required this.title, required this.name, required this.email}) : super(key: key);
+  RKTambahBatasanPage(
+      {Key? key, required this.title, required this.name, required this.email})
+      : super(key: key);
 }
 
 class _RKTambahBatasanPageState extends State<RKTambahBatasanPage> {
@@ -32,8 +35,8 @@ class _RKTambahBatasanPageState extends State<RKTambahBatasanPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Pilih Kategori', style: TextStyle(color: Colors.grey.shade700)),
-          backgroundColor: Colors.white70,
+          title: Text('Pilih Kategori', style: TextStyle(color: cOrtuWhite)),
+          backgroundColor: cTopBg,
           iconTheme: IconThemeData(color: Colors.grey.shade700),
           actions: <Widget>[
             GestureDetector(
@@ -42,13 +45,18 @@ class _RKTambahBatasanPageState extends State<RKTambahBatasanPage> {
                 child: Align(
                   child: Text(
                     'Lanjut',
-                    style: TextStyle(color: Color(0xffFF018786), fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Color(0xffFF018786),
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
               onTap: () {
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => RKSettingAppLimitPage(title: widget.title, name: dataName, email: widget.email)));
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => RKSettingAppLimitPage(
+                        title: widget.title,
+                        name: dataName,
+                        email: widget.email)));
               },
             ),
             /*IconButton(onPressed: () {}, icon: Icon(

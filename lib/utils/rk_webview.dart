@@ -38,7 +38,7 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: cPrimaryBg,
+        backgroundColor: cTopBg,
         centerTitle: true,
         title: Text(widget.title),
       ),
@@ -76,18 +76,18 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
       else
         fileHtmlContents =
             "<!DOCTYPE html> <html> <body style=\"white-space: pre-line;\"> " +
-            widget.contents +
-            "<br/>" +
-            "<h2>" +
-            widget.title +
-            "</h2>" +
-            "<h4>Source: " +
-            widget.source +
-            "</h4>" +
-            widget.description +
-            "</body></html>";
+                widget.contents +
+                "<br/>" +
+                "<h2>" +
+                widget.title +
+                "</h2>" +
+                "<h4>Source: " +
+                widget.source +
+                "</h4>" +
+                widget.description +
+                "</body></html>";
       _webViewController.loadUrl(Uri.dataFromString(fileHtmlContents,
-          mimeType: 'text/html', encoding: Encoding.getByName('utf-8'))
+              mimeType: 'text/html', encoding: Encoding.getByName('utf-8'))
           .toString());
     }
   }
@@ -147,4 +147,3 @@ void showUrl(String url, title) {
     transitionCurve: Curves.decelerate,
   );
 }
-

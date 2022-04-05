@@ -28,10 +28,10 @@ class _RKConfigAccessInternetPageState
         backgroundColor: cPrimaryBg,
         appBar: AppBar(
           centerTitle: true,
-          title: Text(widget.name, style: TextStyle(color: cOrtuText)),
-          backgroundColor: cPrimaryBg,
+          title: Text(widget.title, style: TextStyle(color: cOrtuWhite)),
+          backgroundColor: cTopBg,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: cOrtuText),
+            icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
             onPressed: () => Navigator.of(context).pop(),
           ),
           elevation: 0,
@@ -145,7 +145,7 @@ class _RKConfigAccessInternetPageState
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  color: cOrtuBlue,
+                  color: cAsiaBlue,
                   child: Text(
                     "DAFTAR",
                     style: TextStyle(

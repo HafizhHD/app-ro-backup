@@ -64,15 +64,17 @@ class _ChildMainState extends State<ChildMain> {
 
   @override
   Widget build(BuildContext context) {
+    final menuTitle = ['Discover', 'Add-On', 'Home', 'Jadwal', 'Akun', 'Forum'];
     return SafeArea(
       child: WillPopScope(
         onWillPop: () async => onWillCloseApp(),
         child: Scaffold(
           backgroundColor: cPrimaryBg,
           appBar: AppBar(
+            title: Text(menuTitle[controller.bottomNavIndex]),
             elevation: 0,
-            backgroundColor: cPrimaryBg,
-            iconTheme: IconThemeData(color: cOrtuText),
+            backgroundColor: cTopBg,
+            iconTheme: IconThemeData(color: cOrtuWhite),
             actions: <Widget>[
               // IconButton(
               //   onPressed: () {},
@@ -92,12 +94,12 @@ class _ChildMainState extends State<ChildMain> {
                 onPressed: () {},
                 icon: Icon(
                   Icons.help,
-                  color: cOrtuText,
+                  color: cOrtuWhite,
                 ),
               )
             ],
           ),
-          drawer: ChildDrawer(widget.childName, widget.childEmail),
+          // drawer: ChildDrawer(widget.childName, widget.childEmail),
           body:
               Obx(() => ChosenPage(bottomNavIndex: controller.bottomNavIndex)),
           bottomNavigationBar: _bottomAppBar(),
@@ -108,9 +110,8 @@ class _ChildMainState extends State<ChildMain> {
               width: 80,
               child: FloatingActionButton(
                 elevation: 0,
-                backgroundColor: controller.bottomNavIndex == 2
-                    ? Colors.blueGrey
-                    : Colors.black54,
+                backgroundColor:
+                    controller.bottomNavIndex == 2 ? cOrtuOrange : cAsiaBlue,
                 child: Container(
                   margin: EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -120,7 +121,9 @@ class _ChildMainState extends State<ChildMain> {
                     ),
                   ),
                 ),
-                onPressed: () => controller.setBottomNavIndex(2),
+                onPressed: () => setState(() {
+                  controller.setBottomNavIndex(2);
+                }),
               ),
             ),
           ),
@@ -135,7 +138,7 @@ class _ChildMainState extends State<ChildMain> {
     return Obx(
       () => BottomAppBar(
         elevation: 0,
-        color: Colors.black54,
+        color: cAsiaBlue,
         shape: CircularNotchedRectangle(),
         notchMargin: 6.0,
         child: Row(
@@ -146,7 +149,9 @@ class _ChildMainState extends State<ChildMain> {
                 activeIcon: Icons.home_filled,
                 label: 'Discover',
                 isSelected: controller.bottomNavIndex == 0,
-                onPressed: () => controller.setBottomNavIndex(0)),
+                onPressed: () => setState(() {
+                      controller.setBottomNavIndex(0);
+                    })),
             // IconWithLabel(
             //     defaultIcon: Icons.cloud_download_outlined,
             //     activeIcon: Icons.cloud_download,
@@ -171,7 +176,9 @@ class _ChildMainState extends State<ChildMain> {
                 activeIcon: Icons.person,
                 label: 'Akun',
                 isSelected: controller.bottomNavIndex == 4,
-                onPressed: () => controller.setBottomNavIndex(4)),
+                onPressed: () => setState(() {
+                      controller.setBottomNavIndex(4);
+                    })),
           ],
         ),
       ),
@@ -216,8 +223,8 @@ class IconWithLabel extends StatelessWidget {
     required this.defaultIcon,
     required this.label,
     required this.onPressed,
-    this.defaultColor: cOrtuText,
-    this.activeColor: cOrtuDarkBlue,
+    this.defaultColor: cOrtuWhite,
+    this.activeColor: cOrtuOrange,
     this.isSelected: false,
   });
 

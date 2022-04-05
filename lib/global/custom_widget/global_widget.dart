@@ -45,7 +45,7 @@ class WSearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: cOrtuWhite, borderRadius: BorderRadius.circular(10)),
+          color: cOrtuLightGrey, borderRadius: BorderRadius.circular(10)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -66,12 +66,12 @@ class WSearchBar extends StatelessWidget {
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
                       hintText: hintText,
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: cOrtuButton),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: cOrtuButton),
+                        borderSide: BorderSide(color: Colors.transparent),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       // hintStyle: TextStyle(fontSize: SizeConfig.dFontSizeFixMedium),
@@ -90,7 +90,7 @@ class WSearchBar extends StatelessWidget {
 }
 
 Widget roElevatedButton(
-    {Color cColor = cOrtuBlue,
+    {Color cColor = cAsiaBlue,
     double radius = 10,
     required Widget text,
     required Function()? onPress}) {
@@ -158,7 +158,7 @@ void logUserOut() {
       actions: <Widget>[
         TextButton(
           onPressed: () => Get.back(),
-          child: const Text('Cancel', style: TextStyle(color: cOrtuBlue)),
+          child: const Text('Cancel', style: TextStyle(color: cAsiaBlue)),
         ),
         TextButton(
           onPressed: () async {
@@ -174,7 +174,7 @@ void logUserOut() {
               (route) => false,
             );
           },
-          child: const Text('OK', style: TextStyle(color: cOrtuBlue)),
+          child: const Text('OK', style: TextStyle(color: cAsiaBlue)),
         ),
       ],
     ),

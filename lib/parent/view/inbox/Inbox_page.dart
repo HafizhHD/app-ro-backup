@@ -10,12 +10,12 @@ class InboxPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: cPrimaryBg,
-        appBar: AppBar(
-          backgroundColor: cPrimaryBg,
-          title: Text('Inbox'),
-          elevation: 0,
-        ),
+        // backgroundColor: cPrimaryBg,
+        // appBar: AppBar(
+        //   backgroundColor: cTopBg,
+        //   title: Text('Inbox', style: TextStyle(color: cOrtuWhite)),
+        //   elevation: 0,
+        // ),
         body: GetBuilder<ParentController>(
           builder: (controller) => RefreshIndicator(
             onRefresh: () => controller.getInboxNotif(),

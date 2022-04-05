@@ -162,15 +162,16 @@ class _RKConfigBatasPenggunaanPageState
       backgroundColor: cPrimaryBg,
       appBar: AppBar(
         centerTitle: true,
-        title: Text(widget.name, style: TextStyle(color: cOrtuText)),
-        backgroundColor: cPrimaryBg,
+        title: Text(widget.title, style: TextStyle(color: cOrtuWhite)),
+        backgroundColor: cTopBg,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: cOrtuText),
+          icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
           onPressed: () => Navigator.of(context).pop(),
         ),
         elevation: 0,
       ),
       body: Container(
+        margin: EdgeInsets.only(top: 5, bottom: 5),
         padding: EdgeInsets.only(left: 15, right: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -187,6 +188,7 @@ class _RKConfigBatasPenggunaanPageState
               },
             ),
             //dropDown
+            SizedBox(height: 5),
             Flexible(
               child: FutureBuilder<List<AppListWithIcons>>(
                   future: fListApps,
@@ -202,99 +204,110 @@ class _RKConfigBatasPenggunaanPageState
                       );
                     listApps.sort((a, b) => a.appName!.compareTo(b.appName!));
 
-                    return ListView.builder(
-                        itemCount: appListSearch.length,
-                        itemBuilder: (ctx, index) {
-                          final app = appListSearch[index];
-                          final int timeLimit =
-                              mapUsageDataApp[app.packageId] ?? 0;
-                          var limitTime = "0hrs";
-                          int limitHour = 0;
-                          if (timeLimit >= 60) {
-                            limitHour = timeLimit ~/ 60;
-                          }
-                          int limitMinute = timeLimit % 60;
-                          if (limitHour > 0) {
-                            if (limitMinute > 0) {
-                              limitTime =
-                                  "${limitHour}hrs ${limitMinute}min\nSetiap Hari";
-                            } else {
-                              limitTime = "${limitHour}hrs\nSetiap Hari";
-                            }
-                          } else {
-                            limitTime = "${limitMinute}min\nSetiap Hari";
-                          }
+                    return Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: cOrtuLightGrey),
+                        child: ListView.separated(
+                            separatorBuilder: (ctx, idx) =>
+                                Divider(height: 1, color: cOrtuWhite),
+                            itemCount: appListSearch.length,
+                            itemBuilder: (ctx, index) {
+                              final app = appListSearch[index];
+                              final int timeLimit =
+                                  mapUsageDataApp[app.packageId] ?? 0;
+                              var limitTime = "0hrs";
+                              int limitHour = 0;
+                              if (timeLimit >= 60) {
+                                limitHour = timeLimit ~/ 60;
+                              }
+                              int limitMinute = timeLimit % 60;
+                              if (limitHour > 0) {
+                                if (limitMinute > 0) {
+                                  limitTime =
+                                      "${limitHour}hrs ${limitMinute}min\nSetiap Hari";
+                                } else {
+                                  limitTime = "${limitHour}hrs\nSetiap Hari";
+                                }
+                              } else {
+                                limitTime = "${limitMinute}min\nSetiap Hari";
+                              }
 
-                          return Container(
-                            padding: EdgeInsets.all(5),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Flexible(
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      app.appIcons != null && app.appIcons != ''
-                                          ? Container(
-                                              margin: EdgeInsets.all(5)
-                                                  .copyWith(right: 10),
-                                              child: Image.network(
-                                                app.appIcons ?? '',
-                                                height: 50,
-                                                fit: BoxFit.contain,
-                                              ))
-                                          : Container(
-                                              margin: EdgeInsets.all(5)
-                                                  .copyWith(right: 10),
-                                              color: cOrtuBlue,
-                                              height: 50,
-                                              child: Center(
-                                                child: Icon(Icons.photo),
+                              return Container(
+                                padding: EdgeInsets.all(5),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Flexible(
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          app.appIcons != null &&
+                                                  app.appIcons != ''
+                                              ? Container(
+                                                  margin: EdgeInsets.all(5)
+                                                      .copyWith(right: 10),
+                                                  child: Image.network(
+                                                    app.appIcons ?? '',
+                                                    height: 50,
+                                                    fit: BoxFit.contain,
+                                                  ))
+                                              : Container(
+                                                  margin: EdgeInsets.all(5)
+                                                      .copyWith(right: 10),
+                                                  color: cAsiaBlue,
+                                                  height: 50,
+                                                  child: Center(
+                                                    child: Icon(Icons.photo),
+                                                  ),
+                                                ),
+                                          Flexible(
+                                            child: Text(
+                                              app.appName ?? '',
+                                              style:
+                                                  TextStyle(color: cOrtuText),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(width: 5),
+                                    Flexible(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          if (timeLimit > 0)
+                                            Flexible(
+                                              child: Text(
+                                                limitTime,
+                                                textAlign: TextAlign.right,
+                                                style:
+                                                    TextStyle(color: cAsiaBlue),
                                               ),
                                             ),
-                                      Flexible(
-                                        child: Text(
-                                          app.appName ?? '',
-                                          style: TextStyle(color: cOrtuText),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
+                                          IconButton(
+                                              onPressed: () {
+                                                addUsageLimitBottomSheet(
+                                                    app, timeLimit);
+                                              },
+                                              icon: Icon(
+                                                Icons.access_time,
+                                                color: timeLimit > 0
+                                                    ? cAsiaBlue
+                                                    : cOrtuText,
+                                              )),
+                                        ],
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
-                                SizedBox(width: 5),
-                                Flexible(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      if (timeLimit > 0)
-                                        Flexible(
-                                          child: Text(
-                                            limitTime,
-                                            textAlign: TextAlign.right,
-                                            style: TextStyle(color: cOrtuBlue),
-                                          ),
-                                        ),
-                                      IconButton(
-                                          onPressed: () {
-                                            addUsageLimitBottomSheet(
-                                                app, timeLimit);
-                                          },
-                                          icon: Icon(
-                                            Icons.access_time,
-                                            color: timeLimit > 0
-                                                ? cOrtuBlue
-                                                : cOrtuText,
-                                          )),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        });
+                              );
+                            }));
                   }),
             ),
           ],
@@ -315,7 +328,7 @@ class _RKConfigBatasPenggunaanPageState
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   AppBar(
-                    backgroundColor: cOrtuBlue,
+                    backgroundColor: cAsiaBlue,
                     centerTitle: true,
                     title: Text('Ubah Batas Penggunaan',
                         style: TextStyle(color: cPrimaryBg)),

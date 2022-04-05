@@ -27,7 +27,7 @@ class FeedPage extends StatelessWidget {
                   return Container(
                     constraints: BoxConstraints(
                       maxHeight: screenSize.height / 7,
-                      maxWidth: screenSize.width - 20,
+                      maxWidth: screenSize.width,
                     ),
                     child: ListView.builder(
                       shrinkWrap: true,
@@ -37,9 +37,11 @@ class FeedPage extends StatelessWidget {
                         return InkWell(
                             child: Card(
                                 color: builderCtrl.selectedCoBrand == index
-                                    ? cOrtuBlue
-                                    : Colors.transparent,
+                                    ? cAsiaBlue
+                                    : cPrimaryBg,
+                                shadowColor: cPrimaryBg,
                                 child: roundAddonAvatar(
+                                    screenSize: screenSize,
                                     imgUrl: builderCtrl
                                             .listCoBrand[index].thumbnail ??
                                         'assets/images/hkbpgo.png',
@@ -224,7 +226,8 @@ class FeedPage extends StatelessWidget {
   }
 
   Widget roundAddonAvatar(
-      {required String imgUrl,
+      {required Size screenSize,
+      required String imgUrl,
       required String addonName,
       bool isSelected = false}) {
     var dataImage = imgUrl.split(",");
@@ -235,26 +238,28 @@ class FeedPage extends StatelessWidget {
     Image image = Image.memory(_bytesImage);
     return Container(
       //color: isSelected ? cOrtuBlue : Colors.transparent,
-      margin: EdgeInsets.all(10),
+      width: screenSize.width / 6,
+      alignment: Alignment.center,
+      margin: EdgeInsets.all(5),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           CircleAvatar(
-            radius: 30,
+            radius: screenSize.height / 28,
             backgroundImage: imgUrl == 'assets/images/hkbpgo.png'
                 ? AssetImage('$imgUrl')
                 : image.image,
           ),
           Padding(
-            padding: EdgeInsets.only(top: 10),
+            padding: EdgeInsets.only(top: 5),
             child: Text(
-              addonName == null
-                  ? ''
-                  : addonName.length >= 12
-                      ? '${addonName.substring(0, 9)}...'
-                      : addonName,
-              style: TextStyle(fontSize: 10, color: cOrtuText),
-            ),
+                addonName == null
+                    ? ''
+                    : addonName.length >= 24
+                        ? '${addonName.substring(0, 20)}...'
+                        : addonName,
+                style: TextStyle(fontSize: 9, color: cOrtuText),
+                textAlign: TextAlign.center),
           )
         ],
       ),

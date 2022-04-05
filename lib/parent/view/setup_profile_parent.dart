@@ -143,7 +143,7 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
       child: Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            title: Text('Buat Profile'),
+            title: Text('Buat Profile', style: TextStyle(color: cOrtuWhite)),
             leading: SizedBox(),
             actions: [
               IconButton(
@@ -153,7 +153,7 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                   },
                   icon: Icon(Icons.close))
             ],
-            backgroundColor: cPrimaryBg,
+            backgroundColor: cTopBg,
             elevation: 0,
           ),
           backgroundColor: cPrimaryBg,
@@ -202,7 +202,7 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                                           height: screenSize.height / 3,
                                           width: double.infinity,
                                           decoration: BoxDecoration(
-                                            color: cOrtuBlue,
+                                            color: cAsiaBlue,
                                             borderRadius: BorderRadius.all(
                                                 borderRadiusSize),
                                           ),
@@ -435,7 +435,7 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                                   leading: Radio<GenderCharacter>(
                                     value: GenderCharacter.Ayah,
                                     groupValue: _character,
-                                    activeColor: cOrtuBlue,
+                                    activeColor: cAsiaBlue,
                                     onChanged: (GenderCharacter? value) {
                                       setState(() => _character = value);
                                     },
@@ -448,7 +448,7 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                                   leading: Radio<GenderCharacter>(
                                     value: GenderCharacter.Bunda,
                                     groupValue: _character,
-                                    activeColor: cOrtuBlue,
+                                    activeColor: cAsiaBlue,
                                     onChanged: (GenderCharacter? value) {
                                       setState(() => _character = value);
                                     },
@@ -477,7 +477,7 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                                   onRegister();
                                 }
                               : null,
-                          color: cOrtuBlue,
+                          color: cAsiaBlue,
                           child: Text(
                             "LANJUTKAN",
                             style: TextStyle(

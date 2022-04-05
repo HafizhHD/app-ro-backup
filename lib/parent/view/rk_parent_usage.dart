@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ruangkeluarga/global/global.dart';
 
 class ParentUsage extends StatelessWidget {
   @override
@@ -14,7 +15,8 @@ class ParentUsagePage extends StatefulWidget {
   @override
   _ParentUsagePageState createState() => _ParentUsagePageState();
 
-  ParentUsagePage({Key? key, required this.name, required this.email}) : super(key: key);
+  ParentUsagePage({Key? key, required this.name, required this.email})
+      : super(key: key);
 }
 
 class _ParentUsagePageState extends State<ParentUsagePage> {
@@ -22,8 +24,9 @@ class _ParentUsagePageState extends State<ParentUsagePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Penggunaan Aplikasi', style: TextStyle(color: Colors.grey.shade700)),
-          backgroundColor: Colors.white70,
+          title:
+              Text('Penggunaan Aplikasi', style: TextStyle(color: cOrtuWhite)),
+          backgroundColor: cTopBg,
           iconTheme: IconThemeData(color: Colors.grey.shade700),
         ),
         backgroundColor: Colors.grey[300],

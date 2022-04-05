@@ -253,10 +253,10 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
       backgroundColor: cPrimaryBg,
       appBar: AppBar(
         centerTitle: true,
-        title: Text(widget.name, style: TextStyle(color: cOrtuText)),
-        backgroundColor: cPrimaryBg,
+        title: Text(widget.name, style: TextStyle(color: cOrtuWhite)),
+        backgroundColor: cTopBg,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: cOrtuText),
+          icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
           onPressed: () => Navigator.of(context).pop(),
         ),
         elevation: 0,
@@ -276,7 +276,7 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Flexible(
-                          child: Text('Update Lokasi: 1 menit lalu',
+                          child: Text('Lokasi Update: 1 menit lalu',
                               style: TextStyle(color: cOrtuText)),
                         ),
                         Row(
@@ -354,12 +354,15 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                         style: TextStyle(fontSize: 16, color: cOrtuText),
                       ),
                     ),
-                    Divider(
-                      thickness: 1,
-                      color: cOrtuText,
-                    ),
+                    // Divider(
+                    //   thickness: 1,
+                    //   color: cOrtuText,
+                    // ),
                     Container(
-                      margin: EdgeInsets.all(10.0),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: cOrtuLightGrey),
+                      padding: EdgeInsets.all(10.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -375,7 +378,7 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                                 maxLines: 2,
                                 textAlign: TextAlign.right,
                                 style:
-                                    TextStyle(fontSize: 16, color: cOrtuBlue),
+                                    TextStyle(fontSize: 16, color: cAsiaBlue),
                               ),
                               onTap: () async {
                                 showLoadingOverlay();
@@ -418,10 +421,18 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                     ),
                     Divider(
                       thickness: 1,
-                      color: cOrtuText,
+                      color: cOrtuWhite,
                     ),
                     Flexible(
-                      child: ListView.builder(
+                        child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: listLocationChild.length > 0
+                              ? cOrtuLightGrey
+                              : cOrtuWhite),
+                      child: ListView.separated(
+                        separatorBuilder: (ctx, idx) =>
+                            Divider(height: 1, color: cOrtuWhite),
                         itemCount: listLocationChild.length,
                         itemBuilder: (context, index) {
                           final data = listLocationChild[index];
@@ -460,7 +471,7 @@ class _RKConfigLocationPageState extends State<RKConfigLocationPage> {
                           );
                         },
                       ),
-                    ),
+                    )),
                   ],
                 ));
           }),

@@ -202,17 +202,17 @@ class _DetailChildPageState extends State<DetailChildPage> {
         backgroundColor: cPrimaryBg,
         appBar: AppBar(
           centerTitle: true,
-          title: Text(widget.name, style: TextStyle(color: cOrtuText)),
-          backgroundColor: cPrimaryBg,
+          title: Text(widget.name, style: TextStyle(color: cOrtuWhite)),
+          backgroundColor: cTopBg,
           iconTheme: IconThemeData(color: Colors.grey.shade700),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: cOrtuText),
+            icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
             onPressed: () => Navigator.of(context).pop(),
           ),
           elevation: 0,
         ),
         body: Container(
-          padding: EdgeInsets.only(left: 10, right: 10),
+          padding: EdgeInsets.all(10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -226,14 +226,38 @@ class _DetailChildPageState extends State<DetailChildPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       wDailyAverageChart(),
-                      Divider(
-                        thickness: 1,
-                        color: cOrtuText,
+                      Container(
+                        margin: EdgeInsets.only(bottom: 10, left: 15),
+                        child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Updated today $dateToday',
+                                style:
+                                    TextStyle(fontSize: 14, color: cOrtuText))),
+                      ),
+                      // Divider(
+                      //   thickness: 1,
+                      //   color: cOrtuText,
+                      // ),
+                      Container(
+                        margin: EdgeInsets.all(10.0),
+                        child: Text('MODE ASUH INSTANT',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: cOrtuText)),
                       ),
                       wKontrolInstant(),
-                      Divider(
-                        thickness: 1,
-                        color: cOrtuText,
+                      // Divider(
+                      //   thickness: 1,
+                      //   color: cOrtuText,
+                      // ),
+                      Container(
+                        margin: EdgeInsets.all(10.0),
+                        child: Text('FUNGSI KONTROL',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: cOrtuText)),
                       ),
                       wKontroldanKonfigurasi(),
                     ],
@@ -294,17 +318,12 @@ class _DetailChildPageState extends State<DetailChildPage> {
 
   Widget wKontroldanKonfigurasi() {
     return Container(
+      margin: EdgeInsets.all(5),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10), color: cOrtuLightGrey),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            margin: EdgeInsets.all(10.0),
-            child: Text('Kontrol dan Konfigurasi',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: cOrtuText)),
-          ),
           wKontrolKonfigurasiContent(
             title: 'Lokasi',
             content:
@@ -433,17 +452,12 @@ class _DetailChildPageState extends State<DetailChildPage> {
 
   Widget wKontrolInstant() {
     return Container(
+      margin: EdgeInsets.all(5),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10), color: cOrtuLightGrey),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            margin: EdgeInsets.all(10.0),
-            child: Text('Kontrol Instant',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: cOrtuText)),
-          ),
           (_loadingLockScreen)
               ? Container(
                   margin: EdgeInsets.all(10.0),
@@ -458,7 +472,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                       ),
                       Container(
                         child: CupertinoSwitch(
-                          activeColor: cOrtuBlue,
+                          activeColor: cAsiaBlue,
                           value: _switchLockScreen,
                           onChanged: (value) {
                             fetchUpdateModeLock(!_switchLockScreen);
@@ -490,7 +504,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                             ),
                             Container(
                               child: CupertinoSwitch(
-                                activeColor: cOrtuBlue,
+                                activeColor: cAsiaBlue,
                                 value: _switchModeAsuh,
                                 onChanged: (value) async {
                                   prefs = await SharedPreferences.getInstance();
@@ -525,7 +539,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                                     leading: Radio<int>(
                                       value: _switch,
                                       groupValue: _switchLevel,
-                                      activeColor: cOrtuBlue,
+                                      activeColor: cAsiaBlue,
                                       onChanged: (int? value) {
                                         setState(() {
                                           _loadingGetData = true;
@@ -544,7 +558,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                           color: _switchLevel == _switch
-                                              ? cOrtuBlue
+                                              ? cAsiaBlue
                                               : cOrtuText),
                                     ),
                                     subtitle: Text(
@@ -554,7 +568,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                                       textAlign: TextAlign.justify,
                                       style: TextStyle(
                                           color: _switchLevel == _switch
-                                              ? cOrtuBlue
+                                              ? cAsiaBlue
                                               : cOrtuText),
                                     ),
                                   );
@@ -571,6 +585,9 @@ class _DetailChildPageState extends State<DetailChildPage> {
 
   Widget wDailyAverageChart() {
     return Container(
+      margin: EdgeInsets.all(5),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10), color: cOrtuLightGrey),
       width: MediaQuery.of(context).size.width,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -600,9 +617,13 @@ class _DetailChildPageState extends State<DetailChildPage> {
             child: _chartDailyAverage(),
           ),
           TextButton(
-            child: Text(
-              'Detail Penggunaan',
-              style: TextStyle(color: cOrtuBlue),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Lihat Detail Penggunaan',
+                    style: TextStyle(color: cAsiaBlue)),
+                Icon(Icons.arrow_forward, color: cAsiaBlue),
+              ],
             ),
             onPressed: () => Navigator.of(context)
                 .push(MaterialPageRoute(
@@ -617,13 +638,6 @@ class _DetailChildPageState extends State<DetailChildPage> {
               });
               getModeAsuh();
             }),
-          ),
-          Container(
-            margin: EdgeInsets.only(bottom: 10, left: 15),
-            child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Update today $dateToday',
-                    style: TextStyle(fontSize: 14, color: cOrtuText))),
           ),
         ],
       ),
@@ -643,7 +657,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
 
     List<ColumnSeries<DailyAverage, String>> _columnData = [
       ColumnSeries<DailyAverage, String>(
-        color: cOrtuBlue,
+        color: cAsiaBlue,
         borderColor: Colors.red,
         trackColor: Colors.teal,
         dataSource: weeklyData,

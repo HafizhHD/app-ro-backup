@@ -115,15 +115,17 @@ class _ParentMainState extends State<ParentMain> {
 
   @override
   Widget build(BuildContext context) {
+    final menuTitle = ['Discover', 'Inbox', 'Home', 'Jadwal', 'Akun', 'Forum'];
     return SafeArea(
       child: WillPopScope(
         onWillPop: () async => onWillCloseApp(),
         child: Scaffold(
           backgroundColor: cPrimaryBg,
           appBar: AppBar(
+            title: Text(menuTitle[controller.bottomNavIndex]),
             elevation: 0,
-            backgroundColor: cPrimaryBg,
-            iconTheme: IconThemeData(color: cOrtuText),
+            backgroundColor: cTopBg,
+            iconTheme: IconThemeData(color: cOrtuWhite),
             actions: <Widget>[
               // IconButton(
               //   onPressed: () {},
@@ -145,13 +147,13 @@ class _ParentMainState extends State<ParentMain> {
                 },
                 icon: Icon(
                   Icons.help,
-                  color: cOrtuText,
+                  color: cOrtuWhite,
                 ),
               )
             ],
           ),
-          drawer: ParentDrawer(
-              userMail: controller.emailUser, userName: controller.userName),
+          // drawer: ParentDrawer(
+          //     userMail: controller.emailUser, userName: controller.userName),
           body:
               Obx(() => ChosenPage(bottomNavIndex: controller.bottomNavIndex)),
           bottomNavigationBar: _bottomAppBar(),
@@ -162,21 +164,22 @@ class _ParentMainState extends State<ParentMain> {
               width: 70,
               child: Obx(
                 () => FloatingActionButton(
-                  elevation: 0,
-                  backgroundColor: controller.bottomNavIndex == 2
-                      ? cOrtuOrange
-                      : Colors.black54,
-                  child: Container(
-                    margin: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(currentAppIconPath),
-                        fit: BoxFit.contain,
+                    elevation: 0,
+                    backgroundColor: controller.bottomNavIndex == 2
+                        ? cOrtuOrange
+                        : cAsiaBlue,
+                    child: Container(
+                      margin: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(currentAppIconPath),
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
-                  ),
-                  onPressed: () => controller.setBottomNavIndex(2),
-                ),
+                    onPressed: () => setState(() {
+                          controller.setBottomNavIndex(2);
+                        })),
               ),
             ),
           ),
@@ -191,7 +194,7 @@ class _ParentMainState extends State<ParentMain> {
     return Obx(
       () => BottomAppBar(
         elevation: 0,
-        color: Colors.black54,
+        color: cAsiaBlue,
         shape: CircularNotchedRectangle(),
         notchMargin: 6.0,
         child: Row(
@@ -202,7 +205,9 @@ class _ParentMainState extends State<ParentMain> {
                 activeIcon: Icons.home_filled,
                 label: 'Discover',
                 isSelected: controller.bottomNavIndex == 0,
-                onPressed: () => controller.setBottomNavIndex(0)),
+                onPressed: () => setState(() {
+                      controller.setBottomNavIndex(0);
+                    })),
             Obx(
               () => Badge(
                 position: BadgePosition.topEnd(end: 0),
@@ -218,7 +223,9 @@ class _ParentMainState extends State<ParentMain> {
                     activeIcon: Icons.mail,
                     label: 'Inbox',
                     isSelected: controller.bottomNavIndex == 1,
-                    onPressed: () => controller.setBottomNavIndex(1)),
+                    onPressed: () => setState(() {
+                          controller.setBottomNavIndex(1);
+                        })),
               ),
             ),
             SizedBox(width: Get.width / 5), // The dummy child
@@ -233,13 +240,17 @@ class _ParentMainState extends State<ParentMain> {
                 activeIcon: Icons.person,
                 label: 'Akun',
                 isSelected: controller.bottomNavIndex == 4,
-                onPressed: () => controller.setBottomNavIndex(4)),
+                onPressed: () => setState(() {
+                      controller.setBottomNavIndex(4);
+                    })),
             IconWithLabel(
                 defaultIcon: Icons.forum_outlined,
                 activeIcon: Icons.forum,
                 label: 'Forum',
                 isSelected: controller.bottomNavIndex == 5,
-                onPressed: () => controller.setBottomNavIndex(5)),
+                onPressed: () => setState(() {
+                      controller.setBottomNavIndex(5);
+                    })),
             // onPressed: () => showFAQ()),
           ],
         ),

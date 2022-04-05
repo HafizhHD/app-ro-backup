@@ -44,41 +44,37 @@ class HomeChild extends StatelessWidget {
 
     return SingleChildScrollView(
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-              constraints: BoxConstraints(
-                  maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
+              // constraints: BoxConstraints(
+              //     maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
               child: Obx(
-                () => FutureBuilder<bool>(
-                    future: childController.fParentProfile.value,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData && snapshot.data!)
-                        return ListView.builder(
-                            // physics: NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            scrollDirection:
-                                Axis.horizontal,
-                            itemCount:
-                                childController.otherParentProfile.length + 1,
-                            itemBuilder: (BuildContext context, int index) {
-                              final screenSize = MediaQuery.of(context).size;
-                              final thisParent = index == 0
-                                  ? childController.parentProfile
-                                  : childController
-                                      .otherParentProfile[index - 1];
-                              return Container(
-                                // constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
-                                child:
-                                    CardWithBottomSheet(parentData: thisParent),
-                              );
-                            });
-                      //CardWithBottomSheet(parentData: childController.parentProfile);
-                      return Container(
-                          padding: EdgeInsets.all(10),
-                          child: shimmerUserCard());
-                    }),
-              )),
+            () => FutureBuilder<bool>(
+                future: childController.fParentProfile.value,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData && snapshot.data!)
+                    return ListView.builder(
+                        physics: ClampingScrollPhysics(),
+                        shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        itemCount:
+                            childController.otherParentProfile.length + 1,
+                        itemBuilder: (BuildContext context, int index) {
+                          final screenSize = MediaQuery.of(context).size;
+                          final thisParent = index == 0
+                              ? childController.parentProfile
+                              : childController.otherParentProfile[index - 1];
+                          return Container(
+                            // constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
+                            child: CardWithBottomSheet(
+                                parentData: thisParent, parentIndex: index),
+                          );
+                        });
+                  //CardWithBottomSheet(parentData: childController.parentProfile);
+                  return Container(
+                      padding: EdgeInsets.all(10), child: shimmerUserCard());
+                }),
+          )),
         ],
       ),
     );
@@ -87,7 +83,8 @@ class HomeChild extends StatelessWidget {
 
 class CardWithBottomSheet extends StatelessWidget {
   final ParentProfile parentData;
-  CardWithBottomSheet({required this.parentData});
+  final int parentIndex;
+  CardWithBottomSheet({required this.parentData, required this.parentIndex});
 
   @override
   Widget build(BuildContext context) {
@@ -95,14 +92,20 @@ class CardWithBottomSheet extends StatelessWidget {
     final double paddingValue = 8;
     final bool hasPhoto =
         parentData.imgPhoto != null && parentData.imgPhoto != '';
+    final colorVariant = [
+      Color(0x99990000),
+      Color(0x99009900),
+      Color(0x99000099)
+    ];
 
     return Container(
       margin: EdgeInsets.all(paddingValue),
       width: screenSize.width - paddingValue * 2,
       decoration: BoxDecoration(
-        color: cOrtuBlue,
+        color: colorVariant[parentIndex],
         borderRadius: BorderRadius.circular(15.0),
       ),
+      constraints: BoxConstraints(maxHeight: screenSize.height * 0.3),
       child: Stack(
         children: [
           hasPhoto
@@ -133,138 +136,231 @@ class CardWithBottomSheet extends StatelessWidget {
                   child: Container(
                     child: Icon(
                       Icons.person,
-                      size: 200,
-                      color: cPrimaryBg,
+                      size: 100,
+                      color: cOrtuWhite,
                     ),
                   ),
                 ),
           Align(
+              alignment: Alignment.topLeft,
+              child: Container(
+                  margin: EdgeInsets.only(left: 20, top: 20),
+                  child: Text(
+                      '${parentData.name} (${parentData.parentStatus.toEnumString()})',
+                      style: TextStyle(
+                          color: cOrtuWhite,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold)))),
+          Align(
             alignment: Alignment.bottomCenter,
-            child: DraggableScrollableSheet(
-              expand: false,
-              initialChildSize: 0.2,
-              minChildSize: 0.2,
-              maxChildSize: 0.6,
-              builder:
-                  (BuildContext context, ScrollController scrollController) {
-                return Container(
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: Colors.black54,
-                    borderRadius: BorderRadius.circular(15),
+            child: Container(
+                width: screenSize.width / 2,
+                margin:
+                    EdgeInsets.only(left: 15, right: 15, top: 5, bottom: 20),
+                child: FlatButton(
+                  height: 35,
+                  shape: new RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(10.0),
                   ),
-                  width: screenSize.width,
-                  child: NotificationListener(
-                    //buat hilangin clamp scroll android
-                    onNotification:
-                        (OverscrollIndicatorNotification overscroll) {
-                      overscroll.disallowGlow();
-                      return true;
-                    },
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Center(
-                          child: Container(
-                            margin: EdgeInsets.only(top: 2),
-                            width: screenSize.width / 6,
-                            height: 5,
-                            decoration: BoxDecoration(
-                                color: cOrtuGrey,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15))),
-                          ),
-                        ),
-                        Flexible(
-                          child: SingleChildScrollView(
-                            controller: scrollController,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  margin:
-                                      EdgeInsets.only(left: 10.0, right: 10),
-                                  child: Text(
-                                    '${parentData.name}',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Center(
-                                  child: Container(
-                                      height: 60,
-                                      width: screenSize.width / 2,
-                                      margin: EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                        color: Colors.red,
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(30)),
-                                      ),
-                                      child: Container(
-                                        margin: EdgeInsets.all(10),
-                                        child: roElevatedButton(
-                                            cColor: Colors.white,
-                                            radius: 20,
-                                            text: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Container(
-                                                  child: Align(
-                                                    alignment:
-                                                        Alignment.centerLeft,
-                                                    child: Icon(
-                                                      Icons.add_ic_call,
-                                                      color: Colors.red,
-                                                    ),
-                                                  ),
-                                                ),
-                                                Container(
-                                                  margin: EdgeInsets.only(
-                                                      left: 10.0),
-                                                  child: Align(
-                                                    alignment:
-                                                        Alignment.centerRight,
-                                                    child: Text(
-                                                      'SOS',
-                                                      style: TextStyle(
-                                                          color: Colors.red,
-                                                          fontSize: 18,
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            onPress: () {
-                                              // Navigator.of(context).push(MaterialPageRoute(builder: (context) => SOSRecordVideoPage()));
-                                              Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          CameraApp()));
-                                            }),
-                                      )),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                  onPressed: () async {
+                    await Future(() {
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => CameraApp()));
+                    });
+                  },
+                  color: Colors.red,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Icon(
+                        Icons.add_ic_call,
+                        color: cOrtuWhite,
+                      ),
+                      Text(
+                        'Rekam SOS',
+                        style: TextStyle(
+                            color: cOrtuWhite,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
                   ),
-                );
-              },
-            ),
+                )),
+            //         Container(
+            // height: 60,
+            // width: screenSize.width / 2,
+            // margin: EdgeInsets.all(10),
+            // decoration: BoxDecoration(
+            //   color: Colors.red,
+            //   borderRadius: BorderRadius.all(Radius.circular(30)),
+            // ),
+            // child: Container(
+            //   margin: EdgeInsets.all(10),
+            //   child: roElevatedButton(
+            //       cColor: Colors.white,
+            //       radius: 20,
+            //       text: Row(
+            //         mainAxisSize: MainAxisSize.min,
+            //         mainAxisAlignment: MainAxisAlignment.center,
+            //         children: [
+            //           Container(
+            //             child: Align(
+            //               alignment: Alignment.centerLeft,
+            //               child: Icon(
+            //                 Icons.add_ic_call,
+            //                 color: Colors.red,
+            //               ),
+            //             ),
+            //           ),
+            //           Container(
+            //             margin: EdgeInsets.only(left: 10.0),
+            //             child: Align(
+            //               alignment: Alignment.centerRight,
+            //               child: Text(
+            //                 'SOS',
+            //                 style: TextStyle(
+            //                     color: Colors.red,
+            //                     fontSize: 18,
+            //                     fontWeight: FontWeight.bold),
+            //               ),
+            //             ),
+            //           )
+            //         ],
+            //       ),
+            //       onPress: () {
+            //         // Navigator.of(context).push(MaterialPageRoute(builder: (context) => SOSRecordVideoPage()));
+            //         Navigator.of(context).push(MaterialPageRoute(
+            //             builder: (context) => CameraApp()));
+            //       }),
+            // )),
           ),
+          // Align(
+          //   alignment: Alignment.bottomCenter,
+          //   child: DraggableScrollableSheet(
+          //     expand: false,
+          //     initialChildSize: 0.2,
+          //     minChildSize: 0.2,
+          //     maxChildSize: 0.6,
+          //     builder:
+          //         (BuildContext context, ScrollController scrollController) {
+          //       return Container(
+          //         padding: EdgeInsets.all(5),
+          //         decoration: BoxDecoration(
+          //           color: Colors.black54,
+          //           borderRadius: BorderRadius.circular(15),
+          //         ),
+          //         width: screenSize.width,
+          //         child: NotificationListener(
+          //           //buat hilangin clamp scroll android
+          //           onNotification:
+          //               (OverscrollIndicatorNotification overscroll) {
+          //             overscroll.disallowGlow();
+          //             return true;
+          //           },
+          //           child: Column(
+          //             mainAxisSize: MainAxisSize.min,
+          //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //             children: [
+          //               Center(
+          //                 child: Container(
+          //                   margin: EdgeInsets.only(top: 2),
+          //                   width: screenSize.width / 6,
+          //                   height: 5,
+          //                   decoration: BoxDecoration(
+          //                       color: cOrtuGrey,
+          //                       borderRadius:
+          //                           BorderRadius.all(Radius.circular(15))),
+          //                 ),
+          //               ),
+          //               Flexible(
+          //                 child: SingleChildScrollView(
+          //                   controller: scrollController,
+          //                   child: Column(
+          //                     mainAxisSize: MainAxisSize.min,
+          //                     crossAxisAlignment: CrossAxisAlignment.start,
+          //                     children: [
+          //                       Container(
+          //                         margin:
+          //                             EdgeInsets.only(left: 10.0, right: 10),
+          //                         child: Text(
+          //                           '${parentData.name} (${parentData.parentStatus.toEnumString()})',
+          //                           maxLines: 1,
+          //                           overflow: TextOverflow.ellipsis,
+          //                           textAlign: TextAlign.left,
+          //                           style: TextStyle(
+          //                               color: Colors.white,
+          //                               fontSize: 24,
+          //                               fontWeight: FontWeight.bold),
+          //                         ),
+          //                       ),
+          //                       Center(
+          //                         child: Container(
+          //                             height: 60,
+          //                             width: screenSize.width / 2,
+          //                             margin: EdgeInsets.all(10),
+          //                             decoration: BoxDecoration(
+          //                               color: Colors.red,
+          //                               borderRadius: BorderRadius.all(
+          //                                   Radius.circular(30)),
+          //                             ),
+          //                             child: Container(
+          //                               margin: EdgeInsets.all(10),
+          //                               child: roElevatedButton(
+          //                                   cColor: Colors.white,
+          //                                   radius: 20,
+          //                                   text: Row(
+          //                                     mainAxisSize: MainAxisSize.min,
+          //                                     mainAxisAlignment:
+          //                                         MainAxisAlignment.center,
+          //                                     children: [
+          //                                       Container(
+          //                                         child: Align(
+          //                                           alignment:
+          //                                               Alignment.centerLeft,
+          //                                           child: Icon(
+          //                                             Icons.add_ic_call,
+          //                                             color: Colors.red,
+          //                                           ),
+          //                                         ),
+          //                                       ),
+          //                                       Container(
+          //                                         margin: EdgeInsets.only(
+          //                                             left: 10.0),
+          //                                         child: Align(
+          //                                           alignment:
+          //                                               Alignment.centerRight,
+          //                                           child: Text(
+          //                                             'SOS',
+          //                                             style: TextStyle(
+          //                                                 color: Colors.red,
+          //                                                 fontSize: 18,
+          //                                                 fontWeight:
+          //                                                     FontWeight.bold),
+          //                                           ),
+          //                                         ),
+          //                                       )
+          //                                     ],
+          //                                   ),
+          //                                   onPress: () {
+          //                                     // Navigator.of(context).push(MaterialPageRoute(builder: (context) => SOSRecordVideoPage()));
+          //                                     Navigator.of(context).push(
+          //                                         MaterialPageRoute(
+          //                                             builder: (context) =>
+          //                                                 CameraApp()));
+          //                                   }),
+          //                             )),
+          //                       ),
+          //                     ],
+          //                   ),
+          //                 ),
+          //               ),
+          //             ],
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //   ),
+          // ),
         ],
       ),
     );

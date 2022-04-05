@@ -173,10 +173,10 @@ class _InboxDetailState extends State<InboxDetail> {
       backgroundColor: cPrimaryBg,
       appBar: AppBar(
         centerTitle: true,
-        title: Text("Notifikasi SOS", style: TextStyle(color: cOrtuText)),
+        title: Text("Notifikasi SOS", style: TextStyle(color: cOrtuWhite)),
         backgroundColor: Colors.red[900],
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: cOrtuText),
+          icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
           onPressed: () => Navigator.of(context).pop(),
         ),
         elevation: 0,

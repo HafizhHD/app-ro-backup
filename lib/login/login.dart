@@ -288,7 +288,7 @@ class _LoginState extends State<LoginPage> {
                   margin: const EdgeInsets.all(10).copyWith(bottom: 50),
                   width: screenSize.width / 1.5,
                   decoration: BoxDecoration(
-                    color: _okPolicy ? cOrtuBlue : cDisabled,
+                    color: _okPolicy ? cAsiaBlue : cDisabled,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: ListTile(

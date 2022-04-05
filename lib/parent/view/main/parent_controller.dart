@@ -41,6 +41,7 @@ class ParentController extends GetxController {
   Map<String, List<AppUsages>> mapChildActivity = {},
       mapChildActivityDaily = {};
   Map<String, String> mapChildScreentime = {},
+      mapChildScreentimeTotal = {},
       mapChildScreentimeGaming = {},
       mapChildScreentimeSocial = {},
       mapChildScreentimeDaily = {};
@@ -226,7 +227,7 @@ class ParentController extends GetxController {
           onPressed: () {
             Get.back(result: false);
           },
-          child: Text('Batal', style: TextStyle(color: cOrtuBlue)),
+          child: Text('Batal', style: TextStyle(color: cAsiaBlue)),
         ),
         TextButton(
           onPressed: () async {
@@ -243,7 +244,7 @@ class ParentController extends GetxController {
               showToastFailed(
                   ctx: Get.context!, failedText: 'Gagal menghapus notifikasi');
           },
-          child: Text('Hapus', style: TextStyle(color: cOrtuBlue)),
+          child: Text('Hapus', style: TextStyle(color: cAsiaBlue)),
         ),
       ],
     ));
@@ -300,11 +301,14 @@ class ParentController extends GetxController {
               });
             });
           }
-          mapChildScreentime[child.email!] = setAverageDaily(seconds ~/ 1000);
+          mapChildScreentime[child.email!] =
+              setAverageDaily(seconds / DateTime.now().weekday ~/ 1000);
+          mapChildScreentimeTotal[child.email!] =
+              setAverageDaily(seconds ~/ 1000);
           mapChildScreentimeGaming[child.email!] =
-              setAverageDaily(secondsGaming ~/ 1000);
+              setAverageDaily(secondsGaming / DateTime.now().weekday ~/ 1000);
           mapChildScreentimeSocial[child.email!] =
-              setAverageDaily(secondsSocial ~/ 1000);
+              setAverageDaily(secondsSocial / DateTime.now().weekday ~/ 1000);
           update();
         }
       });

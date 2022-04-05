@@ -141,7 +141,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                       _showMyDialog();
                     }
                   },
-                  color: cOrtuBlue,
+                  color: cAsiaBlue,
                   child: Text(
                     "LANJUT KE HOME",
                     style: TextStyle(

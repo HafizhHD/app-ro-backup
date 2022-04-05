@@ -35,7 +35,7 @@ class _CameraAppState extends State<CameraApp> with TickerProviderStateMixin {
   );
 
   void initAsync() async {
-    controller = CameraController(cameras[0], ResolutionPreset.high);
+    controller = CameraController(cameras[0], ResolutionPreset.medium);
     controller.initialize().then((_) {
       if (!mounted) {
         return;
@@ -107,13 +107,13 @@ class _CameraAppState extends State<CameraApp> with TickerProviderStateMixin {
             children: [
               Flexible(
                 child: Container(
-                    margin: EdgeInsets.all(10),
+                    margin: EdgeInsets.all(0),
                     // decoration: BoxDecoration(
                     //   borderRadius: BorderRadius.all(Radius.circular(15)),
                     // ),
                     child: !finishRecording
                         ? ClipRRect(
-                            borderRadius: BorderRadius.circular(15.0),
+                            borderRadius: BorderRadius.circular(1.0),
                             child: CameraPreview(
                               controller,
                               child: cancelSOSCountDown > 0 &&
@@ -134,10 +134,11 @@ class _CameraAppState extends State<CameraApp> with TickerProviderStateMixin {
                         : ScaleTransition(
                             scale: _animation,
                             child: Container(
+                                margin: EdgeInsets.all(10),
                                 padding: EdgeInsets.all(20),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(15.0),
-                                    color: cOrtuWhite),
+                                    color: cAsiaBlue),
                                 child: Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
@@ -148,34 +149,32 @@ class _CameraAppState extends State<CameraApp> with TickerProviderStateMixin {
                                           padding: EdgeInsets.all(15),
                                           decoration: BoxDecoration(
                                               shape: BoxShape.circle,
-                                              color: Colors.green),
-                                          child: Text('\u2713',
-                                              style: TextStyle(
-                                                  fontSize: 60,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: cOrtuWhite),
-                                              textAlign: TextAlign.center)),
+                                              color: cOrtuWhite),
+                                          child: Icon(Icons.check_sharp,
+                                              color: cAsiaBlue, size: 40)),
                                       Text(
                                           'KAMI SUDAH MENGHUBUNGI ORANGTUA KAMU',
                                           style: TextStyle(
+                                              color: cOrtuWhite,
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold),
                                           textAlign: TextAlign.center),
                                       Text(
                                           'Orangtua kamu sudah dihubungi tentang situasi kamu dan mengirimkan lokasi kamu berada saat ini. Mereka sedang menuju ke tempat kamu.',
+                                          style: TextStyle(color: cOrtuWhite),
                                           textAlign: TextAlign.justify),
                                       RichText(
                                           text: TextSpan(
                                               text: 'Jangan Panik. ',
                                               style: TextStyle(
-                                                  color: Colors.red,
+                                                  color: cOrtuWhite,
                                                   fontWeight: FontWeight.bold),
                                               children: <TextSpan>[
                                                 TextSpan(
                                                     text:
                                                         'Ingat, panik tidak akan membantu apapun. Panik adalah musuhmu dalam melawan perlombaan waktu ini.',
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: cOrtuWhite,
                                                         fontWeight:
                                                             FontWeight.normal))
                                               ]),
@@ -184,14 +183,14 @@ class _CameraAppState extends State<CameraApp> with TickerProviderStateMixin {
                                           text: TextSpan(
                                               text: 'Tetap tenang. ',
                                               style: TextStyle(
-                                                  color: Colors.red,
+                                                  color: cOrtuWhite,
                                                   fontWeight: FontWeight.bold),
                                               children: <TextSpan>[
                                                 TextSpan(
                                                     text:
                                                         'Sangat penting untuk tetap tenang saat ini. Semua akan baik-baik saja jika kita tetap tenang dalam situasi apapun.',
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: cOrtuWhite,
                                                         fontWeight:
                                                             FontWeight.normal)),
                                               ]),
@@ -203,9 +202,10 @@ class _CameraAppState extends State<CameraApp> with TickerProviderStateMixin {
                                             ElevatedButton(
                                                 child: Text('Kirim Ulang',
                                                     style: TextStyle(
+                                                        color: cAsiaBlue,
                                                         fontSize: 16)),
                                                 style: ElevatedButton.styleFrom(
-                                                    primary: cOrtuBlue,
+                                                    primary: cOrtuWhite,
                                                     padding:
                                                         EdgeInsets.all(20)),
                                                 onPressed: (() {
@@ -220,9 +220,10 @@ class _CameraAppState extends State<CameraApp> with TickerProviderStateMixin {
                                             ElevatedButton(
                                                 child: Text('Tutup',
                                                     style: TextStyle(
+                                                        color: cAsiaBlue,
                                                         fontSize: 16)),
                                                 style: ElevatedButton.styleFrom(
-                                                    primary: cOrtuBlue,
+                                                    primary: cOrtuWhite,
                                                     padding:
                                                         EdgeInsets.all(20)),
                                                 onPressed: (() =>
@@ -230,34 +231,59 @@ class _CameraAppState extends State<CameraApp> with TickerProviderStateMixin {
                                           ])
                                     ])))),
               ),
-              Container(
-                height: 50,
-                margin: EdgeInsets.all(10),
-                child: !finishRecording
-                    ? roElevatedButton(
-                        cColor: Colors.white,
-                        radius: 50,
-                        text: Text(
-                          cancelSOSCountDown > 0
-                              ? 'Batalkan SOS ($cancelSOSCountDown)'
-                              : 'Merekam SOS ($startSOSCountDown)',
-                          style: TextStyle(
-                              color: Colors.red,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        onPress: cancelSOSCountDown > 0
-                            ? () async {
-                                // showLoadingOverlay();
-                                // await controller.stopVideoRecording();
-                                // closeOverlay();
-                                // controller.dispose();
-                                Navigator.pop(context);
-                              }
-                            : null,
-                      )
-                    : Container(),
-              )
+              !finishRecording
+                  ? Container(
+                      height: 50,
+                      margin: EdgeInsets.only(left: 10, right: 10),
+                      // child: !finishRecording
+                      //     ? roElevatedButton(
+                      //         cColor: Colors.white,
+                      //         radius: 50,
+                      //         text: Text(
+                      //           cancelSOSCountDown > 0
+                      //               ? 'Batalkan SOS ($cancelSOSCountDown)'
+                      //               : 'Merekam SOS ($startSOSCountDown)',
+                      //           style: TextStyle(
+                      //               color: Colors.red,
+                      //               fontSize: 18,
+                      //               fontWeight: FontWeight.bold),
+                      //         ),
+                      //         onPress: cancelSOSCountDown > 0
+                      //             ? () async {
+                      //                 // showLoadingOverlay();
+                      //                 // await controller.stopVideoRecording();
+                      //                 // closeOverlay();
+                      //                 // controller.dispose();
+                      //                 Navigator.pop(context);
+                      //               }
+                      //             : null,
+                      //       )
+                      //     : Container(),
+                      child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                                flex: 7,
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Tetap tenang!',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold)),
+                                      Text(
+                                          'Rekam video sekitar kamu untuk dikirimkan ke orangtua.')
+                                    ])),
+                            Expanded(
+                                flex: 3,
+                                child: Text('${startSOSCountDown}s',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 30),
+                                    textAlign: TextAlign.center))
+                          ]))
+                  : SizedBox.shrink()
               // Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               //   Container(
               //     padding: EdgeInsets.only(left: 10, right: 10),

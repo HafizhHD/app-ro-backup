@@ -81,8 +81,9 @@ class _FeedPdfState extends State<FeedPdf> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: cOrtuBlue,
-          title: Text(widget.contentModel.contentName),
+          backgroundColor: cTopBg,
+          title: Text(widget.contentModel.contentName,
+              style: TextStyle(color: cOrtuWhite)),
           actions: <Widget>[
             FlatButton(
                 color: Colors.transparent,

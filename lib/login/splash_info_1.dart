@@ -94,7 +94,7 @@ Widget linearProgressBar(double value) {
       child: LinearProgressIndicator(
         value: value,
         backgroundColor: cOrtuText,
-        color: cOrtuBlue,
+        color: cAsiaBlue,
       ),
     ),
   );

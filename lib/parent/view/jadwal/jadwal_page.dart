@@ -19,7 +19,7 @@ class JadwalPage extends StatelessWidget {
                   child: Container(
                     padding: EdgeInsets.all(5),
                     child: ListTile(
-                      tileColor: cOrtuBlue,
+                      tileColor: cAsiaBlue,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
                       title: Align(
@@ -85,7 +85,7 @@ class JadwalPage extends StatelessWidget {
             Container(
               padding: EdgeInsets.only(top: 20, bottom: 10),
               child: ListTile(
-                tileColor: cOrtuBlue,
+                tileColor: cAsiaBlue,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
                 leading: Icon(Icons.circle),

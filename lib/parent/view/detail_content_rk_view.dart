@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ruangkeluarga/global/global.dart';
 
 class DetailContentRKView extends StatelessWidget {
   @override
@@ -23,8 +24,8 @@ class _DetailContentRKPageState extends State<DetailContentRKPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title, style: TextStyle(color: Colors.grey.shade700)),
-        backgroundColor: Colors.white70,
+        title: Text(widget.title, style: TextStyle(color: cOrtuWhite)),
+        backgroundColor: cTopBg,
         iconTheme: IconThemeData(color: Colors.grey.shade700),
       ),
       backgroundColor: Colors.grey[200],
@@ -50,7 +51,8 @@ class _DetailContentRKPageState extends State<DetailContentRKPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    margin: EdgeInsets.only(top: 20.0, left: 10.0, right: 10.0, bottom: 10.0),
+                    margin: EdgeInsets.only(
+                        top: 20.0, left: 10.0, right: 10.0, bottom: 10.0),
                     child: Text(
                       '7 Step to Good Digital Parenting',
                       style: TextStyle(fontSize: 20, color: Colors.black),

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:ruangkeluarga/application_event.dart';
+import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
 
 class AppsEventsScreen extends StatefulWidget {
@@ -19,17 +20,18 @@ class _AppsEventsScreenState extends State<AppsEventsScreen> {
 
     _subscription =
         DeviceApps.listenToAppsChanges().listen((ApplicationEvent event) {
-          setState(() {
-            _events.add(event);
-          });
-        });
+      setState(() {
+        _events.add(event);
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Applications events'),
+        backgroundColor: cTopBg,
+        title: Text('Applications events', style: TextStyle(color: cOrtuWhite)),
       ),
       body: Stack(
         alignment: Alignment.center,

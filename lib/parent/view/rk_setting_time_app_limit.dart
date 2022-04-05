@@ -3,6 +3,7 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
+import 'package:ruangkeluarga/global/global_colors.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 
 class RKSettingAppLimit extends StatelessWidget {
@@ -20,7 +21,9 @@ class RKSettingAppLimitPage extends StatefulWidget {
   final String name;
   final String email;
 
-  RKSettingAppLimitPage({Key? key, required this.title, required this.name, required this.email}) : super(key: key);
+  RKSettingAppLimitPage(
+      {Key? key, required this.title, required this.name, required this.email})
+      : super(key: key);
 }
 
 class _RKSettingAppLimitPageState extends State<RKSettingAppLimitPage> {
@@ -42,7 +45,8 @@ class _RKSettingAppLimitPageState extends State<RKSettingAppLimitPage> {
         SizedBox(
           width: 12.0,
         ),
-        Text("Maaf, simpan limit usage gagal.\nSilahkan coba kembali", style: TextStyle(color: Colors.white, fontSize: 12)),
+        Text("Maaf, simpan limit usage gagal.\nSilahkan coba kembali",
+            style: TextStyle(color: Colors.white, fontSize: 12)),
       ],
     ),
   );
@@ -60,7 +64,8 @@ class _RKSettingAppLimitPageState extends State<RKSettingAppLimitPage> {
         SizedBox(
           width: 12.0,
         ),
-        Text("Tambah batas penggunaan berhasil.", style: TextStyle(color: Colors.white, fontSize: 12)),
+        Text("Tambah batas penggunaan berhasil.",
+            style: TextStyle(color: Colors.white, fontSize: 12)),
       ],
     ),
   );
@@ -84,7 +89,8 @@ class _RKSettingAppLimitPageState extends State<RKSettingAppLimitPage> {
   }
 
   void onSaveTimeLimit(BuildContext context) async {
-    Response response = await MediaRepository().addLimitUsage(widget.email, widget.name, timeLimiteSet, 'Aktif');
+    Response response = await MediaRepository()
+        .addLimitUsage(widget.email, widget.name, timeLimiteSet, 'Aktif');
     if (response.statusCode == 200) {
       _showToastSuccess();
       Navigator.pop(context, true);
@@ -106,8 +112,8 @@ class _RKSettingAppLimitPageState extends State<RKSettingAppLimitPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.name, style: TextStyle(color: Colors.grey.shade700)),
-        backgroundColor: Colors.white70,
+        title: Text(widget.title, style: TextStyle(color: cOrtuWhite)),
+        backgroundColor: cTopBg,
         iconTheme: IconThemeData(color: Colors.grey.shade700),
         actions: <Widget>[
           GestureDetector(
@@ -116,7 +122,8 @@ class _RKSettingAppLimitPageState extends State<RKSettingAppLimitPage> {
               child: Align(
                 child: Text(
                   'Tambah',
-                  style: TextStyle(color: Color(0xffFF018786), fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Color(0xffFF018786), fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -153,7 +160,10 @@ class _RKSettingAppLimitPageState extends State<RKSettingAppLimitPage> {
                       margin: EdgeInsets.only(left: 10.0),
                       child: Text(
                         'Time',
-                        style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                     GestureDetector(
@@ -161,27 +171,41 @@ class _RKSettingAppLimitPageState extends State<RKSettingAppLimitPage> {
                         margin: EdgeInsets.only(right: 10.0),
                         child: Text(
                           '$timeSet',
-                          style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                       onTap: () {
                         var outputFormat = DateFormat('H:m');
-                        DatePicker.showTimePicker(context, showTitleActions: true, onChanged: (date) {
-                          print('change $date in time zone ' + date.timeZoneOffset.inHours.toString());
+                        DatePicker.showTimePicker(context,
+                            showTitleActions: true, onChanged: (date) {
+                          print('change $date in time zone ' +
+                              date.timeZoneOffset.inHours.toString());
                         }, onConfirm: (date) {
                           print('confirm ${outputFormat.format(date)}');
                           setState(() {
-                            timeLimitHourSet = int.parse(outputFormat.format(date).split(":")[0]) * 60;
-                            timeLimiteSet = timeLimitHourSet + int.parse(outputFormat.format(date).split(":")[1]);
+                            timeLimitHourSet = int.parse(
+                                    outputFormat.format(date).split(":")[0]) *
+                                60;
+                            timeLimiteSet = timeLimitHourSet +
+                                int.parse(
+                                    outputFormat.format(date).split(":")[1]);
                             print('confirm ${outputFormat.format(date)}');
-                            if (int.parse(outputFormat.format(date).split(":")[1]) == 0) {
-                              timeSet = "${outputFormat.format(date).split(":")[0]}jam, Setiap Hari";
+                            if (int.parse(
+                                    outputFormat.format(date).split(":")[1]) ==
+                                0) {
+                              timeSet =
+                                  "${outputFormat.format(date).split(":")[0]}jam, Setiap Hari";
                             } else {
                               timeSet =
                                   "${int.parse(outputFormat.format(date).split(":")[0])}jam${int.parse(outputFormat.format(date).split(":")[1])}min, Setiap Hari";
                             }
                           });
-                        }, currentTime: outputFormat.parse(outputFormat.format(DateTime.now())));
+                        },
+                            currentTime: outputFormat
+                                .parse(outputFormat.format(DateTime.now())));
                       },
                     )
                   ],
@@ -191,10 +215,12 @@ class _RKSettingAppLimitPageState extends State<RKSettingAppLimitPage> {
             Container(
               margin: EdgeInsets.all(10.0),
               width: MediaQuery.of(context).size.width,
-              child: Text('Batas penggunaan gadget akan di aktifkan ke semua device yang terhubung kedalam email ini'),
+              child: Text(
+                  'Batas penggunaan gadget akan di aktifkan ke semua device yang terhubung kedalam email ini'),
             ),
             Container(
-              margin: EdgeInsets.only(top: 50.0, left: 10.0, right: 10.0, bottom: 5.0),
+              margin: EdgeInsets.only(
+                  top: 50.0, left: 10.0, right: 10.0, bottom: 5.0),
               width: MediaQuery.of(context).size.width,
               child: Text(
                 'Kategori, Aplikasi dan Website',
@@ -214,7 +240,10 @@ class _RKSettingAppLimitPageState extends State<RKSettingAppLimitPage> {
                       margin: EdgeInsets.only(left: 10.0),
                       child: Text(
                         '${widget.name}',
-                        style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
