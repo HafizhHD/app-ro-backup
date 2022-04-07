@@ -71,6 +71,9 @@ class _HomeParentPageState extends State<HomeParentPage> {
     emailUser = prefs.getString(rkEmailUser)!;
     if (prefs.getString("rkChildName") != null) {
       childName = prefs.getString("rkChildName")!;
+      setState(() {
+        flag = true;
+      });
     }
 
     setState(() {});
@@ -164,6 +167,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done)
             return wProgressIndicator();
+
           return RefreshIndicator(
               onRefresh: () async {
                 await parentController.getParentChildData();
@@ -202,6 +206,29 @@ class _HomeParentPageState extends State<HomeParentPage> {
                     //     ),
                     //   ),
                     // ),
+                    flag == false
+                        ? SizedBox.shrink()
+                        : Padding(
+                            padding: EdgeInsets.only(left: 10, right: 10),
+                            child: Expanded(
+                                child: TextButton(
+                                    style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                                cAsiaBlue)),
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Icon(Icons.add_circle_rounded,
+                                              color: cOrtuWhite),
+                                          Text('Tambah Anggota',
+                                              style:
+                                                  TextStyle(color: cOrtuWhite))
+                                        ]),
+                                    onPressed: () async {
+                                      showSelectUserType(context);
+                                    }))),
                     _childDataLayout(),
                     // Flexible(
                     //   flex: 2,
@@ -287,7 +314,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
             builder: (BuildContext context, AsyncSnapshot<List<Child>> data) {
               if (!data.hasData) return wProgressIndicator();
               childsList = data.data!;
-
+              flag = childsList.length > 0;
               if (childsList.length == 0) {
                 return Container(
                   margin: const EdgeInsets.only(
@@ -393,52 +420,31 @@ class _HomeParentPageState extends State<HomeParentPage> {
               } else {
                 return Container(
                     child: Column(children: [
-                  Padding(
-                      padding: EdgeInsets.only(left: 10, right: 10),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text('Data Perangkat yang Terhubung:'),
-                            TextButton(
-                                style: ButtonStyle(
-                                    backgroundColor:
-                                        MaterialStateProperty.all(cAsiaBlue)),
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Icon(Icons.add_circle_rounded,
-                                          color: cOrtuWhite),
-                                      Text('Tambah Anggota',
-                                          style: TextStyle(color: cOrtuWhite))
-                                    ]),
-                                onPressed: () async {
-                                  showSelectUserType(context);
-                                })
-                          ])),
-                  ListView.builder(
-                      // physics: NeverScrollableScrollPhysics(),
-                      physics: ClampingScrollPhysics(),
-                      shrinkWrap: true,
-                      scrollDirection: Axis.vertical, //Keluarga HKBP kebawah
-                      itemCount: childsList.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        parentController.setModeAsuh(
-                            childsList[index].childOfNumber ?? 0, 1);
-                        final screenSize = MediaQuery.of(context).size;
-                        final thisChild = childsList[index];
-                        return Container(
-                          margin: EdgeInsets.only(top: 10, bottom: 10),
-                          // constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
-                          child: ChildCardWithBottomSheet(
-                              childData: thisChild,
-                              childIndex: index,
-                              prefs: prefs,
-                              onAddChild: () {
-                                parentController.getParentChildData();
-                              }),
-                        );
-                      })
+                  Container(
+                      child: ListView.builder(
+                          // physics: NeverScrollableScrollPhysics(),
+                          physics: ClampingScrollPhysics(),
+                          shrinkWrap: true,
+                          scrollDirection:
+                              Axis.vertical, //Keluarga HKBP kebawah
+                          itemCount: childsList.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            parentController.setModeAsuh(
+                                childsList[index].childOfNumber ?? 0, 1);
+                            final screenSize = MediaQuery.of(context).size;
+                            final thisChild = childsList[index];
+                            return Container(
+                              margin: EdgeInsets.only(top: 10, bottom: 10),
+                              // constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
+                              child: ChildCardWithBottomSheet(
+                                  childData: thisChild,
+                                  childIndex: index,
+                                  prefs: prefs,
+                                  onAddChild: () {
+                                    parentController.getParentChildData();
+                                  }),
+                            );
+                          }))
                 ]));
               }
             });

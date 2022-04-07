@@ -154,8 +154,9 @@ class _ParentMainState extends State<ParentMain> {
           ),
           // drawer: ParentDrawer(
           //     userMail: controller.emailUser, userName: controller.userName),
-          body:
-              Obx(() => ChosenPage(bottomNavIndex: controller.bottomNavIndex)),
+          body: Obx(() => ChosenPage(
+              bottomNavIndex: controller.bottomNavIndex,
+              emailUser: controller.emailUser)),
           bottomNavigationBar: _bottomAppBar(),
           floatingActionButton: Visibility(
             visible: !showKeyboard(context),
@@ -261,13 +262,14 @@ class _ParentMainState extends State<ParentMain> {
 
 class ChosenPage extends StatelessWidget {
   final bottomNavIndex;
-  ChosenPage({this.bottomNavIndex});
+  final String emailUser;
+  ChosenPage({this.bottomNavIndex, required this.emailUser});
 
   @override
   Widget build(BuildContext context) {
     switch (bottomNavIndex) {
       case 0:
-        return new FeedPage();
+        return new FeedPage(emailUser);
       case 1:
         Get.find<ParentController>().getInboxNotif();
         return new InboxPage();

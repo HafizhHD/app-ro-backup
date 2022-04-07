@@ -121,20 +121,7 @@ class ForumMain extends GetView<FeedController> {
             ],
           ),
         ),
-        onTap: () {
-          if (data.contentType == ContentType.artikel) {
-            String imgData = '';
-            imgData = data.contentThumbnail!;
-            showContent(data.contents, data.contentName, imgData, '',
-                data.contentSource);
-          } else if (data.contentType == ContentType.video) {
-            showContent(data.contents, data.contentName, '',
-                data.contentDescription, data.contentSource);
-          } else {
-            showContent(
-                data.contents, data.contentName, '', '', data.contentSource);
-          }
-        });
+        onTap: () {});
   }
 
   Widget imgContainer(String imgUrl) {

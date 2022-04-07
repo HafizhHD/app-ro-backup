@@ -723,7 +723,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                 margin: EdgeInsets.all(5),
                 child: Text(
                     '${point.x} : ${point.y ~/ 1}m ${((point.y - (point.y ~/ 1)) * 60) ~/ 1}s',
-                    style: TextStyle(color: cOrtuText)));
+                    style: TextStyle(color: cOrtuWhite)));
           },
           header: ''),
     );
@@ -771,7 +771,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                 margin: EdgeInsets.all(5),
                 child: Text(
                     '${point.x} : ${point.y ~/ 1}h ${((point.y - (point.y ~/ 1)) * 60) ~/ 1}m',
-                    style: TextStyle(color: cOrtuText)));
+                    style: TextStyle(color: cOrtuWhite)));
           },
           header: ''),
     );
@@ -840,14 +840,18 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                   subtitle: Row(
                     children: <Widget>[
                       Container(
-                        width: (app.duration / appList[0].duration) * 180,
+                        width: (app.duration / appList[0].duration) *
+                            MediaQuery.of(context).size.width /
+                            2.5,
                         height: 5,
                         margin: EdgeInsets.only(right: 10.0),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10.0),
                             color: Color(0xffFF018786)),
                       ),
-                      Text(usageData, style: TextStyle(color: cOrtuText))
+                      Flexible(
+                          child: Text(usageData,
+                              style: TextStyle(color: cOrtuText, fontSize: 12)))
                     ],
                   ),
                 );
@@ -921,14 +925,18 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                   subtitle: Row(
                     children: <Widget>[
                       Container(
-                        width: (app.duration / appList[0].duration) * 180,
+                        width: (app.duration / appList[0].duration) *
+                            MediaQuery.of(context).size.width /
+                            2.5,
                         height: 5,
                         margin: EdgeInsets.only(right: 10.0),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10.0),
                             color: Color(0xffFF018786)),
                       ),
-                      Text(usageData, style: TextStyle(color: cOrtuText))
+                      Flexible(
+                          child: Text(usageData,
+                              style: TextStyle(color: cOrtuText, fontSize: 12)))
                     ],
                   ),
                 );

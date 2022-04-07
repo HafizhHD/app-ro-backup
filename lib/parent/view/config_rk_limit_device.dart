@@ -29,6 +29,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
   TextEditingController cDesc = TextEditingController();
   String sStartDateTime = '00:00';
   String sEndDateTime = '00:00';
+  int scheduleLength = 0;
 
   Map<String, bool> selectedDay = {
     weekdayToDayName(0): false,
@@ -55,6 +56,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
       final List data = json['deviceUsageSchedules'];
       final res = data.map((e) => DeviceUsageSchedules.fromJson(e)).toList();
       setState(() {
+        scheduleLength = res.length;
         listSchedule = res;
         searchlistSchedule = res;
       });
@@ -263,7 +265,12 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                               ),
                                             Flexible(
                                               child: Text(
-                                                '${schedule.deviceUsageStartTime} - ${schedule.deviceUsageEndTime}',
+                                                (schedule.scheduleType
+                                                                .toEnumString() !=
+                                                            'harian'
+                                                        ? ''
+                                                        : '${schedule.deviceUsageDays!.join(", ")} ') +
+                                                    '${schedule.deviceUsageStartTime} - ${schedule.deviceUsageEndTime}',
                                                 style: TextStyle(
                                                     color: cOrtuWhite),
                                                 overflow: TextOverflow.ellipsis,
@@ -365,13 +372,15 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: cAsiaBlue,
-        child: Icon(Icons.add, color: cPrimaryBg),
-        onPressed: () {
-          addEditScheduleDialog(null);
-        },
-      ),
+      floatingActionButton: scheduleLength > 0
+          ? FloatingActionButton(
+              backgroundColor: cAsiaBlue,
+              child: Icon(Icons.add, color: cPrimaryBg),
+              onPressed: () {
+                addEditScheduleDialog(null);
+              },
+            )
+          : null,
     );
   }
 
@@ -627,7 +636,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                   subtitle: Text(sStartDateTime,
                       style: TextStyle(
                           color: cOrtuText,
-                          fontSize: 30,
+                          fontSize: 25,
                           fontWeight: FontWeight.bold)),
                   onTap: () async {
                     final res = await timePickerModal();
@@ -646,7 +655,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                   subtitle: Text(sEndDateTime,
                       style: TextStyle(
                           color: cOrtuText,
-                          fontSize: 30,
+                          fontSize: 25,
                           fontWeight: FontWeight.bold)),
                   onTap: () async {
                     final res = await timePickerModal();
@@ -660,7 +669,7 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
           ),
           Flexible(
             child: Container(
-              padding: EdgeInsets.only(top: 20, bottom: 10),
+              padding: EdgeInsets.only(top: 5, bottom: 5),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -737,7 +746,35 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                 ],
               ),
             ),
-          )
+          ),
+          Flexible(
+              child: Container(
+                  margin: EdgeInsets.only(top: 10),
+                  child: Text(
+                      'Jadwal: ' +
+                          (selectedDay[weekdayToDayName(0)] == true
+                              ? '${weekdayToDayName(0)}, '
+                              : '') +
+                          (selectedDay[weekdayToDayName(1)] == true
+                              ? '${weekdayToDayName(1)}, '
+                              : '') +
+                          (selectedDay[weekdayToDayName(2)] == true
+                              ? '${weekdayToDayName(2)}, '
+                              : '') +
+                          (selectedDay[weekdayToDayName(3)] == true
+                              ? '${weekdayToDayName(3)}, '
+                              : '') +
+                          (selectedDay[weekdayToDayName(4)] == true
+                              ? '${weekdayToDayName(4)}, '
+                              : '') +
+                          (selectedDay[weekdayToDayName(5)] == true
+                              ? '${weekdayToDayName(5)}, '
+                              : '') +
+                          (selectedDay[weekdayToDayName(6)] == true
+                              ? '${weekdayToDayName(6)} '
+                              : '') +
+                          'Pukul $sStartDateTime-$sEndDateTime',
+                      style: TextStyle(fontWeight: FontWeight.bold))))
         ],
       ),
     );

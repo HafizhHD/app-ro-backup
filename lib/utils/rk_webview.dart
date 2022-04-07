@@ -6,6 +6,8 @@ import 'package:ruangkeluarga/global/global.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:convert';
 
+import '../parent/view/feed/feed_comment.dart';
+
 class RKWebViewDialog extends StatefulWidget {
   final String url;
   final String title;
@@ -13,6 +15,8 @@ class RKWebViewDialog extends StatefulWidget {
   final String image;
   final String description;
   final String source;
+  final String contentId;
+  final String emailUser;
 
   RKWebViewDialog(
       {required this.url,
@@ -20,7 +24,9 @@ class RKWebViewDialog extends StatefulWidget {
       this.contents = '',
       this.image = '',
       this.description = '',
-      this.source = ''});
+      this.source = '',
+      this.contentId = '',
+      this.emailUser = ''});
 
   @override
   _RKWebViewDialogState createState() => _RKWebViewDialogState();
@@ -37,20 +43,30 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: cTopBg,
-        centerTitle: true,
-        title: Text(widget.title),
-      ),
-      body: WebView(
-        initialUrl: widget.url,
-        javascriptMode: JavascriptMode.unrestricted,
-        onWebViewCreated: (WebViewController webViewController) {
-          _webViewController = webViewController;
-          loadAsset();
-        },
-      ),
-    );
+        appBar: AppBar(
+          backgroundColor: cTopBg,
+          centerTitle: true,
+          title: Text(widget.title),
+        ),
+        body: WebView(
+          initialUrl: widget.url,
+          javascriptMode: JavascriptMode.unrestricted,
+          onWebViewCreated: (WebViewController webViewController) {
+            _webViewController = webViewController;
+            loadAsset();
+          },
+        ),
+        floatingActionButton: widget.contentId != ''
+            ? FloatingActionButton(
+                child: Icon(Icons.forum_sharp, color: cAsiaBlue),
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => FeedComment(
+                          emailUser: widget.emailUser,
+                          contentId: widget.contentId,
+                          contentName: widget.title)));
+                })
+            : null);
   }
 
   loadAsset() async {
@@ -123,16 +139,18 @@ void showFAQ() {
   );
 }
 
-void showContent(String contents, title, image, desc, source) {
+void showContent(context, String emailUser, String contentId, String contents,
+    title, image, desc, source) {
   Get.dialog(
     RKWebViewDialog(
-      url: "",
-      title: title,
-      contents: contents,
-      image: image,
-      description: desc,
-      source: source,
-    ),
+        url: "",
+        title: title,
+        contents: contents,
+        image: image,
+        description: desc,
+        source: source,
+        contentId: contentId,
+        emailUser: emailUser),
     transitionCurve: Curves.decelerate,
   );
 }

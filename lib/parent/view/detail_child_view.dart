@@ -686,7 +686,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                 margin: EdgeInsets.all(5),
                 child: Text(
                     '${point.x} : ${point.y ~/ 1}h ${((point.y - (point.y ~/ 1)) * 60) ~/ 1}m',
-                    style: TextStyle(color: cOrtuText)));
+                    style: TextStyle(color: cOrtuWhite)));
           },
           header: ''),
     );

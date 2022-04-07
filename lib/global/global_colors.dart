@@ -9,6 +9,7 @@ const cAsiaBlue = Color(0xFF3d99e2);
 const cOrtuOrange = Color(0xFFffb703);
 const cOrtuGrey = Color(0xFFdddddd);
 const cOrtuLightGrey = Color(0xFFf5f5f5);
+const cOrtuDarkGrey = Color(0xFF888888);
 const cOrtuWhite = Color(0xFFffffff);
 
 const cPrimaryBg =

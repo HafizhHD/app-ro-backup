@@ -8,6 +8,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 class FeedPage extends StatelessWidget {
+  FeedPage(this.emailUser);
+  final String emailUser;
   final controller = Get.find<FeedController>();
   @override
   Widget build(BuildContext context) {
@@ -171,17 +173,26 @@ class FeedPage extends StatelessWidget {
           if (data.contentType == ContentType.artikel) {
             String imgData = '';
             imgData = data.contentThumbnail!;
-            showContent(data.contents, data.contentName, imgData, '',
-                data.contentSource);
+            showContent(context, emailUser, data.id, data.contents,
+                data.contentName, imgData, '', data.contentSource);
           } else if (data.contentType == ContentType.video) {
-            showContent(data.contents, data.contentName, '',
-                data.contentDescription, data.contentSource);
+            showContent(
+                context,
+                emailUser,
+                data.id,
+                data.contents,
+                data.contentName,
+                '',
+                data.contentDescription,
+                data.contentSource);
           } else if (data.contentType == ContentType.pdf) {
             Navigator.push(
-                context, leftTransitionRoute(FeedPdf(contentModel: data)));
+                context,
+                leftTransitionRoute(
+                    FeedPdf(contentModel: data, emailUser: emailUser)));
           } else {
-            showContent(
-                data.contents, data.contentName, '', '', data.contentSource);
+            showContent(context, emailUser, data.id, data.contents,
+                data.contentName, '', '', data.contentSource);
           }
         });
   }

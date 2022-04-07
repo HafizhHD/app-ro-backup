@@ -13,6 +13,7 @@ import 'package:ruangkeluarga/main.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_page.dart';
 import 'package:ruangkeluarga/parent/view/jadwal/jadwal_page.dart';
 import 'package:ruangkeluarga/utils/background_service_new.dart';
+import 'package:ruangkeluarga/utils/rk_webview.dart';
 
 import '../main.dart';
 
@@ -91,7 +92,9 @@ class _ChildMainState extends State<ChildMain> {
               //   ),
               // ),
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  showFAQ();
+                },
                 icon: Icon(
                   Icons.help,
                   color: cOrtuWhite,
@@ -100,8 +103,9 @@ class _ChildMainState extends State<ChildMain> {
             ],
           ),
           // drawer: ChildDrawer(widget.childName, widget.childEmail),
-          body:
-              Obx(() => ChosenPage(bottomNavIndex: controller.bottomNavIndex)),
+          body: Obx(() => ChosenPage(
+              bottomNavIndex: controller.bottomNavIndex,
+              emailUser: controller.childEmail)),
           bottomNavigationBar: _bottomAppBar(),
           floatingActionButton: Visibility(
             visible: !showKeyboard(context),
@@ -188,13 +192,14 @@ class _ChildMainState extends State<ChildMain> {
 
 class ChosenPage extends StatelessWidget {
   final bottomNavIndex;
-  ChosenPage({this.bottomNavIndex});
+  final String emailUser;
+  ChosenPage({this.bottomNavIndex, required this.emailUser});
 
   @override
   Widget build(BuildContext context) {
     switch (bottomNavIndex) {
       case 0:
-        return new FeedPage();
+        return new FeedPage(emailUser);
       case 1:
       // return new AddonPage();
       case 2:

@@ -5,26 +5,30 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pdfx/pdfx.dart';
+// import 'package:pdfx/pdfx.dart';
+import 'package:native_pdf_view/native_pdf_view.dart';
 import 'package:internet_file/internet_file.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/parent/view/feed/feed_comment.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_controller.dart';
 import 'package:html/parser.dart' show parse;
 import 'dart:core';
 
 class FeedPdf extends StatefulWidget {
+  final String emailUser;
   final ContentModel contentModel;
 
   @override
   _FeedPdfState createState() => _FeedPdfState();
 
-  FeedPdf({Key? key, required this.contentModel}) : super(key: key);
+  FeedPdf({Key? key, required this.emailUser, required this.contentModel})
+      : super(key: key);
 }
 
 class _FeedPdfState extends State<FeedPdf> {
   bool _isLoading = true;
-  late PdfControllerPinch pdfPinchController;
+  late PdfController pdfController;
   late Uint8List toBeDownloaded;
   static const int _initialPage = 1;
   int _actualPageNumber = _initialPage, _allPagesCount = 0;
@@ -37,7 +41,7 @@ class _FeedPdfState extends State<FeedPdf> {
 
   @override
   void dispose() {
-    pdfPinchController.dispose();
+    pdfController.dispose();
     super.dispose();
   }
 
@@ -58,7 +62,7 @@ class _FeedPdfState extends State<FeedPdf> {
         toBeDownloaded = await InternetFile.get(urlData);
       }
 
-      pdfPinchController = PdfControllerPinch(
+      pdfController = PdfController(
         document: PdfDocument.openData(toBeDownloaded),
       );
       setState(() => _isLoading = false);
@@ -70,8 +74,8 @@ class _FeedPdfState extends State<FeedPdf> {
       // Uint8List bytes = base64.decode(urlData);
       // pdfPinchController =
       //     PdfControllerPinch(document: PdfDocument.openData(bytes));
-      pdfPinchController = PdfControllerPinch(
-          document: PdfDocument.openData(InternetFile.get(
+      pdfController = PdfController(
+          document: PdfDocument.openData(await InternetFile.get(
               'http://www.africau.edu/images/default/sample.pdf')));
       setState(() => _isLoading = false);
     }
@@ -89,7 +93,7 @@ class _FeedPdfState extends State<FeedPdf> {
                 color: Colors.transparent,
                 child: Icon(Icons.navigate_before, color: cOrtuWhite),
                 onPressed: () {
-                  pdfPinchController.previousPage(
+                  pdfController.previousPage(
                       duration: Duration(milliseconds: 100),
                       curve: Curves.ease);
                 }),
@@ -104,7 +108,7 @@ class _FeedPdfState extends State<FeedPdf> {
                 color: Colors.transparent,
                 child: Icon(Icons.navigate_next, color: cOrtuWhite),
                 onPressed: () {
-                  pdfPinchController.nextPage(
+                  pdfController.nextPage(
                       duration: Duration(milliseconds: 100),
                       curve: Curves.ease);
                 }),
@@ -146,8 +150,8 @@ class _FeedPdfState extends State<FeedPdf> {
       body: Center(
           child: _isLoading
               ? Center(child: CircularProgressIndicator())
-              : PdfViewPinch(
-                  controller: pdfPinchController,
+              : PdfView(
+                  controller: pdfController,
                   onDocumentLoaded: (document) {
                     setState(() {
                       _allPagesCount = document.pagesCount;
@@ -159,6 +163,20 @@ class _FeedPdfState extends State<FeedPdf> {
                     });
                   },
                 )),
+      floatingActionButton: FloatingActionButton(
+          elevation: 0,
+          focusElevation: 0,
+          hoverElevation: 0,
+          highlightElevation: 0,
+          backgroundColor: Colors.transparent,
+          child: Icon(Icons.forum_sharp, color: cAsiaBlue),
+          onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => FeedComment(
+                    emailUser: widget.emailUser,
+                    contentId: widget.contentModel.id,
+                    contentName: widget.contentModel.contentName)));
+          }),
     );
   }
 }

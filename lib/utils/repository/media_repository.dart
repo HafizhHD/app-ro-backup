@@ -742,6 +742,60 @@ class MediaRepository {
     return response;
   }
 
+  Future<Response> addContentComment(
+      String contentId, String emailUser, String comment) async {
+    var url = _rkService.baseUrl + '/cobrand/commentContentAdd';
+    print('addContentComment');
+    Map<String, dynamic> json = {
+      "contentId": contentId,
+      "emailUser": emailUser,
+      "comment": comment,
+      "replies": {},
+      "status": "active"
+    };
+    print('param comment add: $json');
+    Response response = await post(Uri.parse(url),
+        headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> editContentComment(String id, String comment) async {
+    var url = _rkService.baseUrl + '/cobrand/commentContentUpdate';
+    print('editContentComment');
+    Map<String, dynamic> json = {
+      "whereKeyValues": {"_id": id},
+      "newValues": {"comment": comment}
+    };
+    print('param comment edit: $json');
+    Response response = await post(Uri.parse(url),
+        headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> deleteContentComment(String id) async {
+    var url = _rkService.baseUrl + '/cobrand/commentContentRemove';
+    print('deleteContentComment');
+    Map<String, dynamic> json = {
+      "whereKeyValues": {"_id": id}
+    };
+    print('param comment delete: $json');
+    Response response = await post(Uri.parse(url),
+        headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> fetchContentComment(String contentId) async {
+    var url = _rkService.baseUrl + '/cobrand/commentContentFilter';
+    print('fetchContentComment');
+    Map<String, dynamic> json = {
+      "whereKeyValues": {"contentId": "$contentId"}
+    };
+    print('param comment filter: $json');
+    Response response = await post(Uri.parse(url),
+        headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
   Future<Response> getLocationMatrix(
       List<double> origin, List<double> destination, String apiKey) async {
     var url = 'https://api.openrouteservice.org/v2/matrix/driving-car';
