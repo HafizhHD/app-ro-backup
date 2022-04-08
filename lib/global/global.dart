@@ -35,9 +35,9 @@ const ApkDownloadURL =
 const ApkDownloadURL_ORTU =
     'https://play.google.com/store/apps/details?id=com.byasia.ruangortu';
 
-final urlPP = 'https://ruangortu.id/toc/privacy_policy_bahasa.html';
-final urlTOC = 'https://ruangortu.id/toc/toc_bahasa.html';
-final urlFAQ = 'https://ruangortu.id/toc/faq_bahasa.html';
+final urlPP = 'https://asia.ruangortu.id/toc/privacy_policy_bahasa.html';
+final urlTOC = 'https://asia.ruangortu.id/toc/toc_bahasa.html';
+final urlFAQ = 'https://asia.ruangortu.id/toc/faq_bahasa.html';
 enum ContentType { video, image, artikel, pdf }
 
 Future<bool> childNeedPermission() async {
