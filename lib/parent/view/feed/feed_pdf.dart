@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
 // import 'package:pdfx/pdfx.dart';
+import 'package:http/http.dart' as http;
 import 'package:native_pdf_view/native_pdf_view.dart';
 import 'package:internet_file/internet_file.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -59,7 +60,8 @@ class _FeedPdfState extends State<FeedPdf> {
         Uri uriUri = Uri.parse(urlData);
         if (uriUri.queryParameters['url'] != null)
           urlData = uriUri.queryParameters['url']!;
-        toBeDownloaded = await InternetFile.get(urlData);
+        http.Response responseData = await http.get(Uri.parse(urlData));
+        toBeDownloaded = responseData.bodyBytes;
       }
 
       pdfController = PdfController(
@@ -74,9 +76,10 @@ class _FeedPdfState extends State<FeedPdf> {
       // Uint8List bytes = base64.decode(urlData);
       // pdfPinchController =
       //     PdfControllerPinch(document: PdfDocument.openData(bytes));
-      pdfController = PdfController(
-          document: PdfDocument.openData(await InternetFile.get(
-              'http://www.africau.edu/images/default/sample.pdf')));
+      http.Response responseData = await http
+          .get(Uri.parse('http://www.africau.edu/images/default/sample.pdf'));
+      pdfController =
+          PdfController(document: PdfDocument.openData(responseData.bodyBytes));
       setState(() => _isLoading = false);
     }
   }

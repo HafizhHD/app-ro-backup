@@ -230,7 +230,9 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                               text: TextSpan(
                                                 text: schedule.scheduleName,
                                                 style: TextStyle(
-                                                    color: cOrtuWhite),
+                                                    color: cOrtuWhite,
+                                                    fontWeight:
+                                                        FontWeight.bold),
                                                 children: <TextSpan>[
                                                   TextSpan(
                                                     text:
@@ -256,7 +258,10 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                                   child: Text(
                                                     '${schedule.scheduleDescription}',
                                                     style: TextStyle(
-                                                        color: cOrtuWhite),
+                                                      color: cOrtuWhite,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     maxLines: 2,
@@ -272,7 +277,8 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
                                                         : '${schedule.deviceUsageDays!.join(", ")} ') +
                                                     '${schedule.deviceUsageStartTime} - ${schedule.deviceUsageEndTime}',
                                                 style: TextStyle(
-                                                    color: cOrtuWhite),
+                                                    color: cOrtuWhite,
+                                                    fontSize: 12),
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 2,
                                               ),
@@ -420,6 +426,54 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
     data.deviceUsageDays?.forEach((element) => selectedDay[element] = true);
 
     setState(() {});
+  }
+
+  String previewJadwal() {
+    String res = '';
+    bool setiap = false;
+    for (int i = 0; i <= 6; i++) {
+      if (selectedDay[weekdayToDayName(i)] == true) {
+        if (setiap == false) {
+          res += 'Setiap ';
+          setiap = true;
+        }
+        if (i == 0)
+          res += weekdayToDayName(i);
+        else {
+          if (selectedDay[weekdayToDayName(i - 1)] == false) {
+            res += weekdayToDayName(i);
+            if (i == 6) res += ', ';
+          } else {
+            if (i == 1) {
+              res += '-';
+              if (selectedDay[weekdayToDayName(i + 1)] == false)
+                res += weekdayToDayName(i);
+            } else {
+              if (selectedDay[weekdayToDayName(i - 2)] == false) {
+                res += '-';
+                if (i == 6)
+                  res += '${weekdayToDayName(i)}, ';
+                else {
+                  if (selectedDay[weekdayToDayName(i + 1)] == false)
+                    res += weekdayToDayName(i);
+                }
+              } else {
+                if (i == 6)
+                  res += '${weekdayToDayName(i)}, ';
+                else if (selectedDay[weekdayToDayName(i + 1)] == false)
+                  res += weekdayToDayName(i);
+                ;
+              }
+            }
+          }
+        }
+      } else {
+        if (i > 0) {
+          if (selectedDay[weekdayToDayName(i - 1)] == true) res += ', ';
+        }
+      }
+    }
+    return res;
   }
 
   void addEditScheduleDialog(DeviceUsageSchedules? data) {
@@ -747,34 +801,16 @@ class _RKConfigLimitDevicePageState extends State<RKConfigLimitDevicePage> {
               ),
             ),
           ),
-          Flexible(
+          Align(
+              alignment: Alignment.topLeft,
               child: Container(
                   margin: EdgeInsets.only(top: 10),
                   child: Text(
-                      'Jadwal: ' +
-                          (selectedDay[weekdayToDayName(0)] == true
-                              ? '${weekdayToDayName(0)}, '
-                              : '') +
-                          (selectedDay[weekdayToDayName(1)] == true
-                              ? '${weekdayToDayName(1)}, '
-                              : '') +
-                          (selectedDay[weekdayToDayName(2)] == true
-                              ? '${weekdayToDayName(2)}, '
-                              : '') +
-                          (selectedDay[weekdayToDayName(3)] == true
-                              ? '${weekdayToDayName(3)}, '
-                              : '') +
-                          (selectedDay[weekdayToDayName(4)] == true
-                              ? '${weekdayToDayName(4)}, '
-                              : '') +
-                          (selectedDay[weekdayToDayName(5)] == true
-                              ? '${weekdayToDayName(5)}, '
-                              : '') +
-                          (selectedDay[weekdayToDayName(6)] == true
-                              ? '${weekdayToDayName(6)} '
-                              : '') +
+                      'Perangkat anak terkunci:\n' +
+                          previewJadwal() +
                           'Pukul $sStartDateTime-$sEndDateTime',
-                      style: TextStyle(fontWeight: FontWeight.bold))))
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.start)))
         ],
       ),
     );

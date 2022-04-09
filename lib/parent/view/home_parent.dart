@@ -169,93 +169,64 @@ class _HomeParentPageState extends State<HomeParentPage> {
             return wProgressIndicator();
 
           return RefreshIndicator(
-              onRefresh: () async {
-                await parentController.getParentChildData();
-              },
-              child: SingleChildScrollView(
-                physics: AlwaysScrollableScrollPhysics(),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    // Flexible(
-                    //   flex: 1,
-                    //   child: Container(
-                    //     margin: const EdgeInsets.all(10.0), //Same as `blurRadius` i guess
-                    //     child: ListView.builder(
-                    //       padding: EdgeInsets.all(5.0),
-                    //       shrinkWrap: false,
-                    //       scrollDirection: Axis.horizontal,
-                    //       itemCount: 2,
-                    //       itemBuilder: (BuildContext context, int index) => Card(
-                    //         shape: RoundedRectangleBorder(
-                    //           borderRadius: BorderRadius.circular(10.0),
-                    //         ),
-                    //         child: GestureDetector(
-                    //           child: Row(
-                    //             children: [
-                    //               Container(
-                    //                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0)),
-                    //                 // child: Center(child: Text('Dummy Card Text', style: TextStyle(color: Colors.black)))
-                    //                 child: Image.asset('assets/images/hkbpgo.png'),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //           onTap: () => parentController.setBottomNavIndex(1),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    flag == false
-                        ? SizedBox.shrink()
-                        : Padding(
-                            padding: EdgeInsets.only(left: 10, right: 10),
-                            child: Expanded(
-                                child: TextButton(
-                                    style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all(
-                                                cAsiaBlue)),
-                                    child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          Icon(Icons.add_circle_rounded,
-                                              color: cOrtuWhite),
-                                          Text('Tambah Anggota',
-                                              style:
-                                                  TextStyle(color: cOrtuWhite))
-                                        ]),
-                                    onPressed: () async {
-                                      showSelectUserType(context);
-                                    }))),
-                    _childDataLayout(),
-                    // Flexible(
-                    //   flex: 2,
-                    //   child: ListView.builder(
-                    //     physics: BouncingScrollPhysics(),
-                    //     scrollDirection: Axis.horizontal,
-                    //     itemCount: _ids.length,
-                    //     itemBuilder: (BuildContext context, int position) {
-                    //       return Container(
-                    //         width: screenSize.width / 2,
-                    //         height: screenSize.height / 4,
-                    //         color: Colors.transparent,
-                    //         margin: const EdgeInsets.all(10),
-                    //         child: _coBrandContent(
-                    //           _ids[position],
-                    //           'Title Here',
-                    //           'Content: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                    //           () {},
-                    //           screenSize.height / 4 / 2,
-                    //         ),
-                    //       );
-                    //     },
-                    //   ),
-                    // ),
-                  ],
-                ),
-              ));
+            onRefresh: () async {
+              await parentController.getParentChildData();
+            },
+            child:
+                // Flexible(
+                //   flex: 1,
+                //   child: Container(
+                //     margin: const EdgeInsets.all(10.0), //Same as `blurRadius` i guess
+                //     child: ListView.builder(
+                //       padding: EdgeInsets.all(5.0),
+                //       shrinkWrap: false,
+                //       scrollDirection: Axis.horizontal,
+                //       itemCount: 2,
+                //       itemBuilder: (BuildContext context, int index) => Card(
+                //         shape: RoundedRectangleBorder(
+                //           borderRadius: BorderRadius.circular(10.0),
+                //         ),
+                //         child: GestureDetector(
+                //           child: Row(
+                //             children: [
+                //               Container(
+                //                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0)),
+                //                 // child: Center(child: Text('Dummy Card Text', style: TextStyle(color: Colors.black)))
+                //                 child: Image.asset('assets/images/hkbpgo.png'),
+                //               ),
+                //             ],
+                //           ),
+                //           onTap: () => parentController.setBottomNavIndex(1),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                _childDataLayout(),
+            // Flexible(
+            //   flex: 2,
+            //   child: ListView.builder(
+            //     physics: BouncingScrollPhysics(),
+            //     scrollDirection: Axis.horizontal,
+            //     itemCount: _ids.length,
+            //     itemBuilder: (BuildContext context, int position) {
+            //       return Container(
+            //         width: screenSize.width / 2,
+            //         height: screenSize.height / 4,
+            //         color: Colors.transparent,
+            //         margin: const EdgeInsets.all(10),
+            //         child: _coBrandContent(
+            //           _ids[position],
+            //           'Title Here',
+            //           'Content: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+            //           () {},
+            //           screenSize.height / 4 / 2,
+            //         ),
+            //       );
+            //     },
+            //   ),
+            // ),
+          );
         });
   }
 
@@ -419,33 +390,67 @@ class _HomeParentPageState extends State<HomeParentPage> {
                 );
               } else {
                 return Container(
-                    child: Column(children: [
-                  Container(
-                      child: ListView.builder(
-                          // physics: NeverScrollableScrollPhysics(),
-                          physics: ClampingScrollPhysics(),
-                          shrinkWrap: true,
-                          scrollDirection:
-                              Axis.vertical, //Keluarga HKBP kebawah
-                          itemCount: childsList.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            parentController.setModeAsuh(
-                                childsList[index].childOfNumber ?? 0, 1);
-                            final screenSize = MediaQuery.of(context).size;
-                            final thisChild = childsList[index];
-                            return Container(
-                              margin: EdgeInsets.only(top: 10, bottom: 10),
-                              // constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
-                              child: ChildCardWithBottomSheet(
-                                  childData: thisChild,
-                                  childIndex: index,
-                                  prefs: prefs,
-                                  onAddChild: () {
-                                    parentController.getParentChildData();
-                                  }),
-                            );
-                          }))
-                ]));
+                    margin: EdgeInsets.only(top: 10),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          flag == false
+                              ? SizedBox.shrink()
+                              : Container(
+                                  padding: EdgeInsets.only(left: 10, right: 10),
+                                  child: Container(
+                                      child: TextButton(
+                                          style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStateProperty.all(
+                                                      cAsiaBlue)),
+                                          child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceAround,
+                                              children: [
+                                                Icon(Icons.add_circle_rounded,
+                                                    color: cOrtuWhite),
+                                                Text('Tambah Anggota',
+                                                    style: TextStyle(
+                                                        color: cOrtuWhite,
+                                                        fontSize: 16))
+                                              ]),
+                                          onPressed: () async {
+                                            showSelectUserType(context);
+                                          }))),
+                          Expanded(
+                              child: Container(
+                                  child: ListView.builder(
+                                      // physics: NeverScrollableScrollPhysics(),
+                                      physics: ClampingScrollPhysics(),
+                                      shrinkWrap: true,
+                                      scrollDirection:
+                                          Axis.vertical, //Keluarga HKBP kebawah
+                                      itemCount: childsList.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        parentController.setModeAsuh(
+                                            childsList[index].childOfNumber ??
+                                                0,
+                                            1);
+                                        final screenSize =
+                                            MediaQuery.of(context).size;
+                                        final thisChild = childsList[index];
+                                        return Container(
+                                          margin: EdgeInsets.only(
+                                              top: 10, bottom: 10),
+                                          // constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
+                                          child: ChildCardWithBottomSheet(
+                                              childData: thisChild,
+                                              childIndex: index,
+                                              prefs: prefs,
+                                              onAddChild: () {
+                                                parentController
+                                                    .getParentChildData();
+                                              }),
+                                        );
+                                      })))
+                        ]));
               }
             });
       },

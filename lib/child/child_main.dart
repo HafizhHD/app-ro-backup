@@ -107,32 +107,32 @@ class _ChildMainState extends State<ChildMain> {
               bottomNavIndex: controller.bottomNavIndex,
               emailUser: controller.childEmail)),
           bottomNavigationBar: _bottomAppBar(),
-          floatingActionButton: Visibility(
-            visible: !showKeyboard(context),
-            child: SizedBox(
-              height: 80,
-              width: 80,
-              child: FloatingActionButton(
-                elevation: 0,
-                backgroundColor:
-                    controller.bottomNavIndex == 2 ? cOrtuOrange : cAsiaBlue,
-                child: Container(
-                  margin: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(currentAppIconPath),
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-                onPressed: () => setState(() {
-                  controller.setBottomNavIndex(2);
-                }),
-              ),
-            ),
-          ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
+          // floatingActionButton: Visibility(
+          //   visible: !showKeyboard(context),
+          //   child: SizedBox(
+          //     height: 80,
+          //     width: 80,
+          //     child: FloatingActionButton(
+          //       elevation: 0,
+          //       backgroundColor:
+          //           controller.bottomNavIndex == 2 ? cOrtuOrange : cAsiaBlue,
+          //       child: Container(
+          //         margin: EdgeInsets.all(8),
+          //         decoration: BoxDecoration(
+          //           image: DecorationImage(
+          //             image: AssetImage(currentAppIconPath),
+          //             fit: BoxFit.contain,
+          //           ),
+          //         ),
+          //       ),
+          //       onPressed: () => setState(() {
+          //         controller.setBottomNavIndex(2);
+          //       }),
+          //     ),
+          //   ),
+          // ),
+          // floatingActionButtonLocation:
+          //     FloatingActionButtonLocation.centerDocked,
         ),
       ),
     );
@@ -149,8 +149,8 @@ class _ChildMainState extends State<ChildMain> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             IconWithLabel(
-                defaultIcon: Icons.home_outlined,
-                activeIcon: Icons.home_filled,
+                defaultIcon: Icons.menu_book_outlined,
+                activeIcon: Icons.menu_book,
                 label: 'Discover',
                 isSelected: controller.bottomNavIndex == 0,
                 onPressed: () => setState(() {
@@ -162,13 +162,13 @@ class _ChildMainState extends State<ChildMain> {
             //     label: 'Addon',
             //     isSelected: controller.bottomNavIndex == 1,
             //     onPressed: () => controller.setBottomNavIndex(1)),
-            // IconWithLabel(
-            //     defaultIcon: Icons.mail_outline,
-            //     activeIcon: Icons.mail,
-            //     label: 'Addon',
-            //     isSelected: controller.bottomNavIndex == 1,
-            //     onPressed: () => controller.setBottomNavIndex(1)),
-            SizedBox(width: Get.width / 5), // The dummy child
+            IconWithLabel(
+                defaultIcon: Icons.home_outlined,
+                activeIcon: Icons.home,
+                label: 'Home',
+                isSelected: controller.bottomNavIndex == 2,
+                onPressed: () => controller.setBottomNavIndex(2)),
+            // SizedBox(width: Get.width / 5), // The dummy child
             // IconWithLabel(
             //     defaultIcon: Icons.calendar_today_outlined,
             //     activeIcon: Icons.calendar_today,
@@ -240,6 +240,7 @@ class IconWithLabel extends StatelessWidget {
       child: InkWell(
         onTap: onPressed,
         child: Container(
+          width: MediaQuery.of(context).size.width / 6,
           margin: EdgeInsets.all(2),
           padding: EdgeInsets.all(4),
           child: Column(

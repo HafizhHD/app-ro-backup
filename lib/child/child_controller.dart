@@ -486,64 +486,64 @@ class ChildController extends GetxController {
     // }
   }
 
-  Future<Map<String, int>> getDurationAppForeground() async {
-    final DateTime endDate = new DateTime.now();
-    final DateTime startDate = endDate.subtract(Duration(
-        hours: DateTime.now().hour,
-        minutes: DateTime.now().minute,
-        seconds: DateTime.now().second));
-    final List<EventUsageInfo> infoList =
-        await UsageStats.queryEvents(startDate, endDate);
-    Map<String, List<List<int>>> infoList3 = {};
-    String packageName = "";
-    infoList.forEach((e) {
-      int eventType = int.parse(e.eventType!);
-      int eventTime = int.parse(e.timeStamp!);
-      if (eventType == 1) packageName = e.packageName!;
-      var array = [eventType, eventTime];
-      if (infoList3.containsKey(e.packageName)) {
-        infoList3[e.packageName]!.add(array);
-      } else {
-        List<List<int>> eventPair = [];
-        eventPair.add(array);
-        infoList3[e.packageName!] = eventPair;
-      }
-    });
-    int duration = 0;
-    int startTime = -1;
-    int lastType = -1;
-    infoList3.forEach((app, e) {
-      print(app);
-      if (app == packageName) {
-        e.asMap().forEach((i, val) {
-          if (val[0] == 1 || val[0] == 2) {
-            if ((val[0] == 2) && (lastType != 2)) {
-              if (i == 0) {
-                duration += val[1] - startDate.millisecondsSinceEpoch as int;
-                startTime = -1;
-              } else {
-                duration += val[1] - startTime as int;
-                startTime = -1;
-              }
-              lastType = val[0];
-            } else if (val[0] == 1 && lastType != 1) {
-              if (i == e.length - 1) {
-                duration +=
-                    DateTime.now().millisecondsSinceEpoch - val[1] as int;
-                startTime = -1;
-              } else
-                startTime = val[1];
+  // Future<Map<String, int>> getDurationAppForeground() async {
+  //   final DateTime endDate = new DateTime.now();
+  //   final DateTime startDate = endDate.subtract(Duration(
+  //       hours: DateTime.now().hour,
+  //       minutes: DateTime.now().minute,
+  //       seconds: DateTime.now().second));
+  //   final List<EventUsageInfo> infoList =
+  //       await UsageStats.queryEvents(startDate, endDate);
+  //   Map<String, List<List<int>>> infoList3 = {};
+  //   String packageName = "";
+  //   infoList.forEach((e) {
+  //     int eventType = int.parse(e.eventType!);
+  //     int eventTime = int.parse(e.timeStamp!);
+  //     if (eventType == 1) packageName = e.packageName!;
+  //     var array = [eventType, eventTime];
+  //     if (infoList3.containsKey(e.packageName)) {
+  //       infoList3[e.packageName]!.add(array);
+  //     } else {
+  //       List<List<int>> eventPair = [];
+  //       eventPair.add(array);
+  //       infoList3[e.packageName!] = eventPair;
+  //     }
+  //   });
+  //   int duration = 0;
+  //   int startTime = -1;
+  //   int lastType = -1;
+  //   infoList3.forEach((app, e) {
+  //     print(app);
+  //     if (app == packageName) {
+  //       e.asMap().forEach((i, val) {
+  //         if (val[0] == 1 || val[0] == 2) {
+  //           if ((val[0] == 2) && (lastType != 2)) {
+  //             if (i == 0) {
+  //               duration += val[1] - startDate.millisecondsSinceEpoch as int;
+  //               startTime = -1;
+  //             } else {
+  //               duration += val[1] - startTime as int;
+  //               startTime = -1;
+  //             }
+  //             lastType = val[0];
+  //           } else if (val[0] == 1 && lastType != 1) {
+  //             if (i == e.length - 1) {
+  //               duration +=
+  //                   DateTime.now().millisecondsSinceEpoch - val[1] as int;
+  //               startTime = -1;
+  //             } else
+  //               startTime = val[1];
 
-              lastType = val[0];
-            }
-          }
-        });
-      }
-    });
-    Map<String, int> data = {};
-    data[packageName] = duration;
-    return (data);
-  }
+  //             lastType = val[0];
+  //           }
+  //         }
+  //       });
+  //     }
+  //   });
+  //   Map<String, int> data = {};
+  //   data[packageName] = duration;
+  //   return (data);
+  // }
 
   void getAppUsageData() async {
     try {

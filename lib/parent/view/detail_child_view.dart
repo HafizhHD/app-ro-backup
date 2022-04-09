@@ -789,6 +789,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
   Future<List<dynamic>> fetchListModeAsuhh() async {
     var response = await MediaRepository().fetchListModeAsuh(widget.email);
     if (response.statusCode == 200) {
+      print('Fetch mode asuh: ${response.body}');
       var json = jsonDecode(response.body);
       if (json['resultCode'] == 'OK') {
         if (json['modeAsuh'].length > 0) {

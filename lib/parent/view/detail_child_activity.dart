@@ -718,11 +718,11 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
           builder: (dynamic data, dynamic point, dynamic series, int pointIndex,
               int seriesIndex) {
             print(
-                '${point.x} : ${point.y ~/ 1}m ${((point.y - (point.y ~/ 1)) * 60) ~/ 1}s');
+                'Pukul ${point.x}: ${point.y ~/ 1}m ${((point.y - (point.y ~/ 1)) * 60) ~/ 1}s');
             return Container(
                 margin: EdgeInsets.all(5),
                 child: Text(
-                    '${point.x} : ${point.y ~/ 1}m ${((point.y - (point.y ~/ 1)) * 60) ~/ 1}s',
+                    'Pukul ${point.x}: ${point.y ~/ 1}m ${((point.y - (point.y ~/ 1)) * 60) ~/ 1}s',
                     style: TextStyle(color: cOrtuWhite)));
           },
           header: ''),
@@ -766,11 +766,11 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
           builder: (dynamic data, dynamic point, dynamic series, int pointIndex,
               int seriesIndex) {
             print(
-                '${point.x} : ${point.y ~/ 1}h ${((point.y - (point.y ~/ 1)) * 60) ~/ 1}m');
+                '${point.x}: ${point.y ~/ 1}h ${((point.y - (point.y ~/ 1)) * 60) ~/ 1}m');
             return Container(
                 margin: EdgeInsets.all(5),
                 child: Text(
-                    '${point.x} : ${point.y ~/ 1}h ${((point.y - (point.y ~/ 1)) * 60) ~/ 1}m',
+                    '${point.x}: ${point.y ~/ 1}h ${((point.y - (point.y ~/ 1)) * 60) ~/ 1}m',
                     style: TextStyle(color: cOrtuWhite)));
           },
           header: ''),

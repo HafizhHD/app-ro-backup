@@ -158,34 +158,34 @@ class _ParentMainState extends State<ParentMain> {
               bottomNavIndex: controller.bottomNavIndex,
               emailUser: controller.emailUser)),
           bottomNavigationBar: _bottomAppBar(),
-          floatingActionButton: Visibility(
-            visible: !showKeyboard(context),
-            child: SizedBox(
-              height: 70,
-              width: 70,
-              child: Obx(
-                () => FloatingActionButton(
-                    elevation: 0,
-                    backgroundColor: controller.bottomNavIndex == 2
-                        ? cOrtuOrange
-                        : cAsiaBlue,
-                    child: Container(
-                      margin: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(currentAppIconPath),
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                    onPressed: () => setState(() {
-                          controller.setBottomNavIndex(2);
-                        })),
-              ),
-            ),
-          ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
+          // floatingActionButton: Visibility(
+          //   visible: !showKeyboard(context),
+          //   child: SizedBox(
+          //     height: 70,
+          //     width: 70,
+          //     child: Obx(
+          //       () => FloatingActionButton(
+          //           elevation: 0,
+          //           backgroundColor: controller.bottomNavIndex == 2
+          //               ? cOrtuOrange
+          //               : cAsiaBlue,
+          //           child: Container(
+          //             margin: EdgeInsets.all(8),
+          //             decoration: BoxDecoration(
+          //               image: DecorationImage(
+          //                 image: AssetImage(currentAppIconPath),
+          //                 fit: BoxFit.contain,
+          //               ),
+          //             ),
+          //           ),
+          //           onPressed: () => setState(() {
+          //                 controller.setBottomNavIndex(2);
+          //               })),
+          //     ),
+          //   ),
+          // ),
+          // floatingActionButtonLocation:
+          //     FloatingActionButtonLocation.centerDocked,
         ),
       ),
     );
@@ -202,8 +202,8 @@ class _ParentMainState extends State<ParentMain> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             IconWithLabel(
-                defaultIcon: Icons.home_outlined,
-                activeIcon: Icons.home_filled,
+                defaultIcon: Icons.menu_book_outlined,
+                activeIcon: Icons.menu_book,
                 label: 'Discover',
                 isSelected: controller.bottomNavIndex == 0,
                 onPressed: () => setState(() {
@@ -229,7 +229,12 @@ class _ParentMainState extends State<ParentMain> {
                         })),
               ),
             ),
-            SizedBox(width: Get.width / 5), // The dummy child
+            IconWithLabel(
+                defaultIcon: Icons.home_outlined,
+                activeIcon: Icons.home,
+                label: 'Home',
+                isSelected: controller.bottomNavIndex == 2,
+                onPressed: () => controller.setBottomNavIndex(2)),
             // IconWithLabel(
             //     defaultIcon: Icons.calendar_today_outlined,
             //     activeIcon: Icons.calendar_today,
@@ -315,6 +320,7 @@ class IconWithLabel extends StatelessWidget {
       child: InkWell(
         onTap: onPressed,
         child: Container(
+          width: MediaQuery.of(context).size.width / 6,
           margin: EdgeInsets.all(2),
           padding: EdgeInsets.all(4),
           child: Column(

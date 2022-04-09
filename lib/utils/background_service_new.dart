@@ -77,7 +77,7 @@ class BackgroundServiceNew {
   static const String _channelName =
       'com.ruangkeluargamobile/android_service_background';
   static const MethodChannel _channel =
-  MethodChannel(_channelName, JSONMethodCodec());
+      MethodChannel(_channelName, JSONMethodCodec());
   /*static bool _isShowingWindow = false;
   static bool _isUpdatedWindow = false;
   static SystemWindowPrefMode prefMode = SystemWindowPrefMode.OVERLAY;*/
@@ -159,15 +159,15 @@ class BackgroundServiceNew {
   /// Returns a [Future] that resolves to `true` on success and `false` on
   /// failure.
   static Future<bool> oneShot(
-      Duration delay,
-      int id,
-      Function callback, {
-        bool alarmClock = false,
-        bool allowWhileIdle = false,
-        bool exact = false,
-        bool wakeup = false,
-        bool rescheduleOnReboot = false,
-      }) =>
+    Duration delay,
+    int id,
+    Function callback, {
+    bool alarmClock = false,
+    bool allowWhileIdle = false,
+    bool exact = false,
+    bool wakeup = false,
+    bool rescheduleOnReboot = false,
+  }) =>
       oneShotAt(
         _now().add(delay),
         id,
@@ -220,15 +220,15 @@ class BackgroundServiceNew {
   /// Returns a [Future] that resolves to `true` on success and `false` on
   /// failure.
   static Future<bool> oneShotAt(
-      DateTime time,
-      int id,
-      Function callback, {
-        bool alarmClock = false,
-        bool allowWhileIdle = false,
-        bool exact = false,
-        bool wakeup = false,
-        bool rescheduleOnReboot = false,
-      }) async {
+    DateTime time,
+    int id,
+    Function callback, {
+    bool alarmClock = false,
+    bool allowWhileIdle = false,
+    bool exact = false,
+    bool wakeup = false,
+    bool rescheduleOnReboot = false,
+  }) async {
     // ignore: inference_failure_on_function_return_type
     assert(callback is Function() || callback is Function(int));
     assert(id.bitLength < 32);
@@ -291,22 +291,22 @@ class BackgroundServiceNew {
   /// Returns a [Future] that resolves to `true` on success and `false` on
   /// failure.
   static Future<bool> periodic(
-      Duration duration,
-      int id,
-      Function callback, {
-        DateTime? startAt,
-        bool allowWhileIdle = false,
-        bool exact = false,
-        bool wakeup = false,
-        bool rescheduleOnReboot = false,
-      }) async {
+    Duration duration,
+    int id,
+    Function callback, {
+    DateTime? startAt,
+    bool allowWhileIdle = false,
+    bool exact = false,
+    bool wakeup = false,
+    bool rescheduleOnReboot = false,
+  }) async {
     // ignore: inference_failure_on_function_return_type
     assert(callback is Function() || callback is Function(int));
     assert(id.bitLength < 32);
     final now = _now().millisecondsSinceEpoch;
     final period = duration.inMilliseconds;
     final first =
-    startAt != null ? startAt.millisecondsSinceEpoch : now + period;
+        startAt != null ? startAt.millisecondsSinceEpoch : now + period;
     final handle = _getCallbackHandle(callback);
     if (handle == null) {
       return false;
@@ -337,46 +337,59 @@ class BackgroundServiceNew {
   }
 
   static Future<void> cekAppLaunch(currentApp) async {
-    try{
+    try {
       // print("cekAppLaunch..");
-      if(await AplikasiDB.instance.checkDataAplikasi()) {
+      if (await AplikasiDB.instance.checkDataAplikasi()) {
         var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
         // print("dataAplikasiDb : "+dataAplikasiDb.toString());
         print("dataAplikasiDb..");
         if (dataAplikasiDb != null) {
           //jika lock membahayakan hidde source dibawah ini sampai if selanjutnya
-          if(dataAplikasiDb['modekunciLayar'] != null && dataAplikasiDb['modekunciLayar'] == 'true'){
+          if (dataAplikasiDb['modekunciLayar'] != null &&
+              dataAplikasiDb['modekunciLayar'] == 'true') {
             print('mode kunci layar = ' + dataAplikasiDb['modekunciLayar']);
-            new MethodChannel('com.ruangkeluargamobile/android_service_background', JSONMethodCodec()).invokeMethod('lockDeviceChils', {'data':'data'});
-          }else if(dataAplikasiDb['kunciLayar'] != null) {
-            List<dynamic> res = jsonDecode(dataAplikasiDb['kunciLayar']).map((e) => e).toList();
-            if (res.length>0){
+            new MethodChannel(
+                    'com.ruangkeluargamobile/android_service_background',
+                    JSONMethodCodec())
+                .invokeMethod('lockDeviceChils', {'data': 'data'});
+          } else if (dataAplikasiDb['kunciLayar'] != null) {
+            List<dynamic> res =
+                jsonDecode(dataAplikasiDb['kunciLayar']).map((e) => e).toList();
+            if (res.length > 0) {
               bool cekScheduleLayar = false;
-              for(var i =0; i<res.length; i++){
-                DeviceUsageSchedules dataUsage = DeviceUsageSchedules.fromJson(res[i]);
-                if(dataUsage.status.toString().toLowerCase() == 'aktif'){
-                  if(dataUsage.scheduleType == ScheduleType.harian){
-                    var ss = dataUsage.deviceUsageDays!.where((element) => element.toString() == dateFormat_EEEE());
-                    int ad = dataUsage.deviceUsageDays!.indexWhere((element) => element.toString() == dateFormat_EEEE());
-                    if ((ss.length > 0)||(ad > 0)) {
+              for (var i = 0; i < res.length; i++) {
+                DeviceUsageSchedules dataUsage =
+                    DeviceUsageSchedules.fromJson(res[i]);
+                if (dataUsage.status.toString().toLowerCase() == 'aktif') {
+                  if (dataUsage.scheduleType == ScheduleType.harian) {
+                    var ss = dataUsage.deviceUsageDays!.where(
+                        (element) => element.toString() == dateFormat_EEEE());
+                    int ad = dataUsage.deviceUsageDays!.indexWhere(
+                        (element) => element.toString() == dateFormat_EEEE());
+                    if ((ss.length > 0) || (ad > 0)) {
                       print("jadwal harian ada");
-                      String deviceUsageDays = dataUsage.deviceUsageDays!.where((element) => element.toString() == dateFormat_EEEE()).last;
+                      String deviceUsageDays = dataUsage.deviceUsageDays!
+                          .where((element) =>
+                              element.toString() == dateFormat_EEEE())
+                          .last;
                       if (deviceUsageDays != null) {
                         if (dataUsage.deviceUsageStartTime != null &&
                             dataUsage.deviceUsageEndTime != null) {
                           final format = new DateFormat("yyyy-MM-dd HH:mm");
                           DateTime startTime = format.parse(
                               DateFormat("yyyy-MM-dd")
-                                  .format(DateTime.now())
-                                  .toString() + ' ' +
+                                      .format(DateTime.now())
+                                      .toString() +
+                                  ' ' +
                                   dataUsage.deviceUsageStartTime.toString());
                           DateTime endTime = format.parse(
                               DateFormat("yyyy-MM-dd")
-                                  .format(DateTime.now())
-                                  .toString() + ' ' +
+                                      .format(DateTime.now())
+                                      .toString() +
+                                  ' ' +
                                   dataUsage.deviceUsageEndTime.toString());
-                          DateTime now = format.parse(format.format(DateTime
-                              .now()));
+                          DateTime now =
+                              format.parse(format.format(DateTime.now()));
                           if (now.isAfter(startTime) && now.isBefore(endTime)) {
                             print("LOCK LAYAR HARIAN : " + now.toString());
                             cekScheduleLayar = true;
@@ -384,46 +397,69 @@ class BackgroundServiceNew {
                         }
                       }
                     } else {
-                      print("jadwal harian tidak ada " + ad.toString() + "  ss =" + ss.toString() );
+                      print("jadwal harian tidak ada " +
+                          ad.toString() +
+                          "  ss =" +
+                          ss.toString());
                     }
-                  }else if(dataUsage.scheduleType == ScheduleType.terjadwal){
-                    if(dataUsage.deviceUsageStartTime != null && dataUsage.deviceUsageEndTime != null){
-                      try{
+                  } else if (dataUsage.scheduleType == ScheduleType.terjadwal) {
+                    if (dataUsage.deviceUsageStartTime != null &&
+                        dataUsage.deviceUsageEndTime != null) {
+                      try {
                         final format = new DateFormat("dd MMMM yyyy HH:mm");
-                        DateTime startTime = format.parse(dataUsage.deviceUsageStartTime!.split(',  ')[1]);
-                        DateTime endTime = format.parse(dataUsage.deviceUsageEndTime!.split(',  ')[1]);
-                        DateTime now = format.parse(format.format(DateTime.now()));
-                        if(now.isAfter(startTime) && now.isBefore(endTime)){
-                          print("LOCK LAYAR SCHEDULE : "+now.toString());
+                        DateTime startTime = format.parse(
+                            dataUsage.deviceUsageStartTime!.split(',  ')[1]);
+                        DateTime endTime = format.parse(
+                            dataUsage.deviceUsageEndTime!.split(',  ')[1]);
+                        DateTime now =
+                            format.parse(format.format(DateTime.now()));
+                        if (now.isAfter(startTime) && now.isBefore(endTime)) {
+                          print("LOCK LAYAR SCHEDULE : " + now.toString());
                           cekScheduleLayar = true;
                         }
-                      }catch(e){}
+                      } catch (e) {}
                     }
                   }
                 }
               }
-              if(cekScheduleLayar){
-                new MethodChannel('com.ruangkeluargamobile/android_service_background', JSONMethodCodec()).invokeMethod('lockDeviceChils', {'data':'data'});
-              }else{
-                if(dataAplikasiDb['dataAplikasi'] != null) {
-                  List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(jsonDecode(dataAplikasiDb['dataAplikasi']).map((x) => AplikasiDataUsage.fromJson(x)));
-                  List<AplikasiDataUsage> dataTrue = values.where((element) => element.blacklist == 'true' || element.limit != '0').toList();
+              if (cekScheduleLayar) {
+                new MethodChannel(
+                        'com.ruangkeluargamobile/android_service_background',
+                        JSONMethodCodec())
+                    .invokeMethod('lockDeviceChils', {'data': 'data'});
+              } else {
+                if (dataAplikasiDb['dataAplikasi'] != null) {
+                  List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(
+                      jsonDecode(dataAplikasiDb['dataAplikasi'])
+                          .map((x) => AplikasiDataUsage.fromJson(x)));
+                  List<AplikasiDataUsage> dataTrue = values
+                      .where((element) =>
+                          element.blacklist == 'true' || element.limit != '0')
+                      .toList();
                   if (dataTrue != null && dataTrue.length > 0) {
-                    ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
+                    ListAplikasiDataUsage listAplikasiDataUsage =
+                        new ListAplikasiDataUsage(data: dataTrue);
                     if (Platform.isAndroid) {
                       // print("Data To Method: " + listAplikasiDataUsage.toJson().toString());
-                      Map<String, dynamic> data = listAplikasiDataUsage.toJson();
+                      Map<String, dynamic> data =
+                          listAplikasiDataUsage.toJson();
                       data['currentApp'] = currentApp;
                       _channel.invokeMethod('startServiceCheckApp', data);
                     }
                   }
                 }
               }
-            }else if(dataAplikasiDb['dataAplikasi'] != null) {
-              List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(jsonDecode(dataAplikasiDb['dataAplikasi']).map((x) => AplikasiDataUsage.fromJson(x)));
-              List<AplikasiDataUsage> dataTrue = values.where((element) => element.blacklist == 'true' || element.limit != '0').toList();
+            } else if (dataAplikasiDb['dataAplikasi'] != null) {
+              List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(
+                  jsonDecode(dataAplikasiDb['dataAplikasi'])
+                      .map((x) => AplikasiDataUsage.fromJson(x)));
+              List<AplikasiDataUsage> dataTrue = values
+                  .where((element) =>
+                      element.blacklist == 'true' || element.limit != '0')
+                  .toList();
               if (dataTrue != null && dataTrue.length > 0) {
-                ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
+                ListAplikasiDataUsage listAplikasiDataUsage =
+                    new ListAplikasiDataUsage(data: dataTrue);
                 if (Platform.isAndroid) {
                   Map<String, dynamic> data = listAplikasiDataUsage.toJson();
                   data['currentApp'] = currentApp;
@@ -432,11 +468,17 @@ class BackgroundServiceNew {
                 }
               }
             }
-          }else if(dataAplikasiDb['dataAplikasi'] != null) {
-            List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(jsonDecode(dataAplikasiDb['dataAplikasi']).map((x) => AplikasiDataUsage.fromJson(x)));
-            List<AplikasiDataUsage> dataTrue = values.where((element) => element.blacklist == 'true' || element.limit != '0').toList();
+          } else if (dataAplikasiDb['dataAplikasi'] != null) {
+            List<AplikasiDataUsage> values = List<AplikasiDataUsage>.from(
+                jsonDecode(dataAplikasiDb['dataAplikasi'])
+                    .map((x) => AplikasiDataUsage.fromJson(x)));
+            List<AplikasiDataUsage> dataTrue = values
+                .where((element) =>
+                    element.blacklist == 'true' || element.limit != '0')
+                .toList();
             if (dataTrue != null && dataTrue.length > 0) {
-              ListAplikasiDataUsage listAplikasiDataUsage = new ListAplikasiDataUsage(data: dataTrue);
+              ListAplikasiDataUsage listAplikasiDataUsage =
+                  new ListAplikasiDataUsage(data: dataTrue);
               if (Platform.isAndroid) {
                 // print("Data To Method : " + listAplikasiDataUsage.toJson().toString());
                 Map<String, dynamic> data = listAplikasiDataUsage.toJson();
@@ -447,7 +489,7 @@ class BackgroundServiceNew {
           }
         }
       }
-    }catch(e){
+    } catch (e) {
       print('error cekAppLaunch: ' + e.toString());
     }
   }

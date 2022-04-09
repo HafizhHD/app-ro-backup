@@ -33,7 +33,8 @@ class AkunPage extends StatelessWidget {
                       phone: parentData.phone,
                       alamat: parentData.address,
                       birthDate: parentData.birdDate,
-                      isParent: parentData.parentStatus.toEnumString()),
+                      isParent: parentData.parentStatus.toEnumString(),
+                      mainParent: parentData.parentStatus.toEnumString()),
                   Flexible(
                     child: ListView.builder(
                       shrinkWrap: true,
@@ -53,6 +54,7 @@ class AkunPage extends StatelessWidget {
                             phone: spouseData.phone ?? '',
                             alamat: spouseData.address ?? '',
                             birthDate: spouseData.birdDate,
+                            mainParent: parentData.parentStatus.toEnumString(),
                             isParent:
                                 parentData.parentStatus.toEnumString() == 'Ayah'
                                     ? 'Bunda'
@@ -78,7 +80,8 @@ class AkunPage extends StatelessWidget {
                             id: childData.id,
                             phone: childData.phone ?? '',
                             alamat: childData.address ?? '',
-                            birthDate: childData.birdDate);
+                            birthDate: childData.birdDate,
+                            mainParent: parentData.parentStatus.toEnumString());
                       },
                     ),
                   ),
@@ -98,6 +101,7 @@ class AkunPage extends StatelessWidget {
   }
 
   Widget profileContainer({
+    required String mainParent,
     String isParent = '',
     String? imgUrl,
     required String name,
@@ -109,9 +113,10 @@ class AkunPage extends StatelessWidget {
   }) {
     return Dismissible(
       key: Key('$name+$email'),
-      direction:
-          isParent == '' ? DismissDirection.horizontal : DismissDirection.none,
-      confirmDismiss: isParent == ''
+      direction: isParent != mainParent
+          ? DismissDirection.horizontal
+          : DismissDirection.none,
+      confirmDismiss: isParent != mainParent
           ? (_) async {
               return await deleteChild(id, name);
             }

@@ -342,6 +342,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                     style: TextStyle(
                       fontFamily: 'Raleway',
                       fontWeight: FontWeight.bold,
+                      color: cOrtuWhite,
                       fontSize: 20.0,
                     ),
                   ),

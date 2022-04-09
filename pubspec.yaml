@@ -8,7 +8,7 @@ publish_to: 'none' # Remgoogle_mobile_ads: ^1.0.1ove this line if you wish to pu
 # flutter.versionName=0.0.31-alpha
 # flutter.versionCode=220000310A
 # versionCode: minSDK + major 00 + minor 62+ patch 01 +testing 0 + Alpha / Beta / Release
-version: 0.0.49+220000382B
+version: 0.0.53+220000382B
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -46,7 +46,7 @@ dependencies:
   fluttertoast: ^8.0.8
   flutter_app_lock: ^2.0.0
 #  flutter_background_service: ^0.1.5
-  flutter_contacts: ^1.1.2
+  flutter_contacts: ^1.1.3
   flutter_local_notifications: ^9.2.0
   flutter_notification_channel: ^2.0.0
 #  flutter_datetime_picker:
@@ -62,7 +62,7 @@ dependencies:
   permission_handler: ^8.3.0
   provider: ^6.0.2
   qr_flutter: ^4.0.0
-  shared_preferences: ^2.0.12
+  shared_preferences: ^2.0.13
   shimmer: ^2.0.0
   sliding_up_panel: ^2.0.0+1
   syncfusion_flutter_charts: ^19.4.42

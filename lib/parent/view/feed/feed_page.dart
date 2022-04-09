@@ -20,7 +20,8 @@ class FeedPage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // DIHILANGKAN DI APLIKASI KELUARGA HKBP ==
+          // ---
+          // DIHILANGKAN DI APLIKASI KELUARGA HKBP DAN ASIA SAMPAI LINE 75 ==
           FutureBuilder<bool>(
               future: controller.fGetListCoBrand,
               builder: (context, snapshot) {
@@ -72,6 +73,8 @@ class FeedPage extends StatelessWidget {
                 });
               }),
           // SAMPAI SINI ==
+          // ---
+
           Container(
             padding: EdgeInsets.only(top: 10, bottom: 10),
             child: WSearchBar(
