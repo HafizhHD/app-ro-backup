@@ -211,7 +211,7 @@ class _ParentMainState extends State<ParentMain> {
                     })),
             Obx(
               () => Badge(
-                position: BadgePosition.topEnd(end: 0),
+                position: BadgePosition.topEnd(end: 5),
                 showBadge: controller.unreadNotif > 0 ? true : false,
                 badgeContent: Text(
                   controller.unreadNotif > 99
@@ -332,8 +332,9 @@ class IconWithLabel extends StatelessWidget {
                       color: isSelected ? activeColor : defaultColor)),
               SizedBox(height: 4),
               Text(label,
-                  style:
-                      TextStyle(color: isSelected ? activeColor : defaultColor))
+                  style: TextStyle(
+                      color: isSelected ? activeColor : defaultColor,
+                      fontSize: 12))
             ],
           ),
         ),

@@ -17,6 +17,7 @@ class ParentProfile {
   final List<Child>? children;
   final List<Spouse>? spouse;
   final String? status;
+  final bool isMainParent;
 
   ParentProfile(
       {required this.id,
@@ -30,12 +31,14 @@ class ParentProfile {
       this.children,
       this.spouse,
       this.birdDate,
-      this.status});
+      this.status,
+      required this.isMainParent});
 
   factory ParentProfile.fromJson(Map<String, dynamic> json) {
     final List listChild = json['childs'] ?? [];
     final List listSpouse = json['spouse'] ?? [];
     final bdate = json['birdDate'];
+    final String parentEmail = json['parentEmail'] ?? '';
     try {
       return ParentProfile(
         id: json['_id'],
@@ -54,6 +57,7 @@ class ParentProfile {
         children: listChild.map((e) => Child.fromJson(e)).toList(),
         spouse: listSpouse.map((e) => Spouse.fromJson(e)).toList(),
         status: json['status'] as String?,
+        isMainParent: parentEmail == '',
       );
     } catch (e, s) {
       print('Error: $e');
@@ -72,6 +76,7 @@ class ParentProfile {
         children: listChild.map((e) => Child.fromJson(e)).toList(),
         spouse: listSpouse.map((e) => Spouse.fromJson(e)).toList(),
         status: json['status'] as String?,
+        isMainParent: parentEmail == '',
       );
     }
   }

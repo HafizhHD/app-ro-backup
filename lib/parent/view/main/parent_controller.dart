@@ -110,6 +110,7 @@ class ParentController extends GetxController {
     Response response =
         await MediaRepository().getParentChildData(userID ?? '');
     if (response.statusCode == 200) {
+      print('Ini json user: ${response.body}');
       final jsonUser = jsonDecode(response.body)['user'];
       if (jsonDecode(response.body)['resultCode'] == "OK") {
         parentProfile = ParentProfile.fromJson(jsonUser);

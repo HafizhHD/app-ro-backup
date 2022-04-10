@@ -258,22 +258,26 @@ class FeedPage extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircleAvatar(
-            radius: screenSize.height / 28,
-            backgroundImage: imgUrl == 'assets/images/hkbpgo.png'
-                ? AssetImage('$imgUrl')
-                : image.image,
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 5),
-            child: Text(
-                addonName == null
-                    ? ''
-                    : addonName.length >= 24
-                        ? '${addonName.substring(0, 20)}...'
-                        : addonName,
-                style: TextStyle(fontSize: 9, color: cOrtuText),
-                textAlign: TextAlign.center),
+          Expanded(
+              flex: 6,
+              child: CircleAvatar(
+                maxRadius: screenSize.height / 28,
+                backgroundImage: imgUrl == 'assets/images/hkbpgo.png'
+                    ? AssetImage('$imgUrl')
+                    : image.image,
+              )),
+          Expanded(
+            flex: 4,
+            child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                    addonName == null
+                        ? ''
+                        : addonName.length >= 24
+                            ? '${addonName.substring(0, 20)}...'
+                            : addonName,
+                    style: TextStyle(fontSize: 9, color: cOrtuText),
+                    textAlign: TextAlign.center)),
           )
         ],
       ),

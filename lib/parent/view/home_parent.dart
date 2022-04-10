@@ -567,7 +567,6 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                       builder: (BuildContext context,
                           ScrollController scrollController) {
                         return Container(
-                          padding: EdgeInsets.all(5),
                           decoration: BoxDecoration(
                             color: Colors.black54,
                             borderRadius: BorderRadius.zero,
@@ -593,8 +592,8 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                 //   ),
                                 // ),
                                 Flexible(
-                                  child: SingleChildScrollView(
-                                    controller: scrollController,
+                                  child: Container(
+                                    alignment: Alignment.center,
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       crossAxisAlignment:
@@ -613,10 +612,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                         // ),
                                         Container(
                                           margin: EdgeInsets.only(
-                                              left: 10,
-                                              top: 5,
-                                              bottom: 5,
-                                              right: 10),
+                                              left: 5, right: 10),
                                           child: childData.status ==
                                                   'invitation'
                                               ? Container(

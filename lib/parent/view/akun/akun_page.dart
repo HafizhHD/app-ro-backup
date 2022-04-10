@@ -34,7 +34,7 @@ class AkunPage extends StatelessWidget {
                       alamat: parentData.address,
                       birthDate: parentData.birdDate,
                       isParent: parentData.parentStatus.toEnumString(),
-                      mainParent: parentData.parentStatus.toEnumString()),
+                      isMainAccount: true),
                   Flexible(
                     child: ListView.builder(
                       shrinkWrap: true,
@@ -54,11 +54,11 @@ class AkunPage extends StatelessWidget {
                             phone: spouseData.phone ?? '',
                             alamat: spouseData.address ?? '',
                             birthDate: spouseData.birdDate,
-                            mainParent: parentData.parentStatus.toEnumString(),
                             isParent:
                                 parentData.parentStatus.toEnumString() == 'Ayah'
                                     ? 'Bunda'
-                                    : 'Ayah');
+                                    : 'Ayah',
+                            isMainParent: !parentData.isMainParent);
                       },
                     ),
                   ),
@@ -80,8 +80,7 @@ class AkunPage extends StatelessWidget {
                             id: childData.id,
                             phone: childData.phone ?? '',
                             alamat: childData.address ?? '',
-                            birthDate: childData.birdDate,
-                            mainParent: parentData.parentStatus.toEnumString());
+                            birthDate: childData.birdDate);
                       },
                     ),
                   ),
@@ -101,8 +100,9 @@ class AkunPage extends StatelessWidget {
   }
 
   Widget profileContainer({
-    required String mainParent,
     String isParent = '',
+    bool isMainAccount = false,
+    bool isMainParent = false,
     String? imgUrl,
     required String name,
     required String email,
@@ -113,10 +113,10 @@ class AkunPage extends StatelessWidget {
   }) {
     return Dismissible(
       key: Key('$name+$email'),
-      direction: isParent != mainParent
+      direction: isMainAccount == false && isMainParent == false
           ? DismissDirection.horizontal
           : DismissDirection.none,
-      confirmDismiss: isParent != mainParent
+      confirmDismiss: isMainAccount == false && isMainParent == false
           ? (_) async {
               return await deleteChild(id, name);
             }

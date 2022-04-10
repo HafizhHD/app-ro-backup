@@ -25,7 +25,7 @@ Linux keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugke
 
 Cara fix background service di Flutter 2.10.4 (android):
 ```
-Downgrade gradle ke 6.1.1, gradle:build ke 3.6.3, dan kotlin ke 1.6.0
+Downgrade gradle (di gradle-wrapper.properties) ke 6.1.1, gradle:build (di build.gradle) ke 3.6.3, dan kotlin ke 1.6.0
 
 Jika ada error "No version of NDK matched the requested version 20.0.5594570", download NDK versi tersebut di SDK Tools Android studio
 ```
