@@ -54,10 +54,7 @@ class AkunPage extends StatelessWidget {
                             phone: spouseData.phone ?? '',
                             alamat: spouseData.address ?? '',
                             birthDate: spouseData.birdDate,
-                            isParent:
-                                parentData.parentStatus.toEnumString() == 'Ayah'
-                                    ? 'Bunda'
-                                    : 'Ayah',
+                            isParent: spouseData.parentStatus.toEnumString(),
                             isMainParent: !parentData.isMainParent);
                       },
                     ),
