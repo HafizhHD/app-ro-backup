@@ -5,11 +5,13 @@ import 'dart:typed_data';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:ruangkeluarga/global/custom_widget/photo_image_picker.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -42,6 +44,8 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
   DateTime birthDate = DateTime.now().subtract(Duration(days: 365 * 5));
   File? _selectedImage;
 
+  ParentController parentController = Get.find<ParentController>();
+
   void setBindingData() async {
     prefs = await SharedPreferences.getInstance();
     emailUser = prefs.getString(rkEmailUser)!;
@@ -72,7 +76,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
       cAddress,
       userTypeString,
     ];
-    Response response = await MediaRepository().inviteChild(
+    http.Response response = await MediaRepository().inviteChild(
         emailUser,
         cChildEmail.text,
         cPhoneNumber.text,
@@ -442,6 +446,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                           style: TextStyle(
                             fontFamily: 'Raleway',
                             fontWeight: FontWeight.bold,
+                            color: cOrtuWhite,
                             fontSize: 20.0,
                           ),
                         ),
@@ -471,7 +476,7 @@ class InviteChildQR extends StatelessWidget {
       oAllData, oShowToastSuccess, oShowToastFailed, oPrefs) async {
     showLoadingOverlay();
     await oPrefs.setString("rkChildName", oAllData[3]!);
-    Response response =
+    http.Response response =
         await MediaRepository().sendEmailInvitation(oAllData[0], oAllData[1]);
     print('isi response invite : ${response.body}');
     if (response.statusCode == 200) {

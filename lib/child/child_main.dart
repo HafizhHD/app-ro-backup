@@ -167,7 +167,9 @@ class _ChildMainState extends State<ChildMain> {
                 activeIcon: Icons.home,
                 label: 'Home',
                 isSelected: controller.bottomNavIndex == 2,
-                onPressed: () => controller.setBottomNavIndex(2)),
+                onPressed: () => setState(() {
+                      controller.setBottomNavIndex(2);
+                    })),
             // SizedBox(width: Get.width / 5), // The dummy child
             // IconWithLabel(
             //     defaultIcon: Icons.calendar_today_outlined,
@@ -252,8 +254,9 @@ class IconWithLabel extends StatelessWidget {
                       color: isSelected ? activeColor : defaultColor)),
               SizedBox(height: 4),
               Text(label,
-                  style:
-                      TextStyle(color: isSelected ? activeColor : defaultColor))
+                  style: TextStyle(
+                      color: isSelected ? activeColor : defaultColor,
+                      fontSize: 12))
             ],
           ),
         ),

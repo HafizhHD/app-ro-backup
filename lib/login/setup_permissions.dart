@@ -382,7 +382,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
               //         style: TextStyle(
               //             backgroundColor: cOrtuText, fontSize: 20))),
               Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: EdgeInsets.all(10),
                   child: Image.asset('assets/images/icon/phonebook.png',
                       height: screenHeight / 4, fit: BoxFit.fill)),
               Padding(
@@ -425,7 +425,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   setState(() {});
                 },
                 contentPadding:
-                    EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+                    EdgeInsets.only(top: 3, bottom: 3, left: 20, right: 0),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15))),
               )
@@ -439,7 +439,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                       fontSize: 25,
                       fontWeight: FontWeight.bold)),
               Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: EdgeInsets.all(10),
                   child: Image.asset('assets/images/icon/camera.png',
                       height: screenHeight / 4, fit: BoxFit.fill)),
               Padding(
@@ -479,7 +479,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   setState(() {});
                 },
                 contentPadding:
-                    EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+                    EdgeInsets.only(top: 3, bottom: 3, left: 20, right: 0),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15))),
               )
@@ -493,7 +493,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                       fontSize: 25,
                       fontWeight: FontWeight.bold)),
               Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: EdgeInsets.all(10),
                   child: Image.asset('assets/images/icon/mic.png',
                       height: screenHeight / 4, fit: BoxFit.fill)),
               Padding(
@@ -533,7 +533,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   setState(() {});
                 },
                 contentPadding:
-                    EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+                    EdgeInsets.only(top: 3, bottom: 3, left: 20, right: 0),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15))),
               )
@@ -547,7 +547,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                       fontSize: 25,
                       fontWeight: FontWeight.bold)),
               Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: EdgeInsets.all(10),
                   child: Image.asset('assets/images/icon/folderdocs.png',
                       height: screenHeight / 4, fit: BoxFit.fill)),
               Padding(
@@ -587,7 +587,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   setState(() {});
                 },
                 contentPadding:
-                    EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+                    EdgeInsets.only(top: 3, bottom: 3, left: 20, right: 0),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15))),
               )
@@ -601,7 +601,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                       fontSize: 25,
                       fontWeight: FontWeight.bold)),
               Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: EdgeInsets.all(10),
                   child: Image.asset('assets/images/icon/layershapes.png',
                       height: screenHeight / 4, fit: BoxFit.fill)),
               Padding(
@@ -643,7 +643,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   setState(() {});
                 },
                 contentPadding:
-                    EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+                    EdgeInsets.only(top: 3, bottom: 3, left: 20, right: 0),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15))),
               )
@@ -691,7 +691,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                       fontSize: 25,
                       fontWeight: FontWeight.bold)),
               Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: EdgeInsets.all(10),
                   child: Image.asset('assets/images/icon/phoneapps.png',
                       height: screenHeight / 4, fit: BoxFit.fill)),
               Padding(
@@ -723,7 +723,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   }
                 },
                 contentPadding:
-                    EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+                    EdgeInsets.only(top: 3, bottom: 3, left: 20, right: 0),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15))),
               )
@@ -764,7 +764,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   }
                 },
                 contentPadding:
-                    EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+                    EdgeInsets.only(top: 3, bottom: 3, left: 20, right: 0),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15))),
               )
@@ -778,7 +778,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                       fontSize: 25,
                       fontWeight: FontWeight.bold)),
               Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: EdgeInsets.all(10),
                   child: Image.asset('assets/images/icon/pinround.png',
                       height: screenHeight / 4, fit: BoxFit.fill)),
               Padding(
@@ -871,7 +871,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   setState(() {});
                 },
                 contentPadding:
-                    EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
+                    EdgeInsets.only(top: 3, bottom: 3, left: 20, right: 0),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15))),
               ),

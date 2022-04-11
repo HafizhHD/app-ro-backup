@@ -22,7 +22,8 @@ class SplashInfo extends StatelessWidget {
                   children: [
                     Hero(
                         tag: 'ruangortuIcon',
-                        child: Image.asset(currentAppIconPath)),
+                        child: Image.asset(currentAppIconPath,
+                            height: MediaQuery.of(context).size.height / 2)),
                     // Text(
                     //   'Ruang ORTU by ASIA',
                     //   style: TextStyle(

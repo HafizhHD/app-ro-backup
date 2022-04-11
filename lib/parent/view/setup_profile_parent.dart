@@ -425,7 +425,7 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                           ),
                         ),
                         Theme(
-                          data: ThemeData.dark(),
+                          data: ThemeData.light(),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [

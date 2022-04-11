@@ -209,7 +209,7 @@ class ChildAkunPage extends StatelessWidget {
 
   Future<bool?> deleteChild(String childId, String childName) async {
     return Get.dialog<bool>(AlertDialog(
-      title: Text('Hapus Anak'),
+      title: Text('Hapus Akun'),
       content: Text('Yakin ingin menghapus akun $childName?'),
       actions: [
         TextButton(

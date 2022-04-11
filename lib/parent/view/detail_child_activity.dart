@@ -445,14 +445,14 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
     });
   }
 
-  Future<bool?> dataHasLoad() async {
+  Future<bool> dataHasLoad() async {
     if (mapWeeklyAppUsage.length > 0) return true;
-    return null;
+    return false;
   }
 
-  Future<bool?> dataDailyHasLoad() async {
+  Future<bool> dataDailyHasLoad() async {
     if (mapDailyAppUsage.length > 0) return true;
-    return null;
+    return false;
   }
 
   @override
@@ -783,81 +783,88 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
       if (appData.duration > 0) appList.add(appData);
     });
     appList.sort((a, b) => b.duration.compareTo(a.duration));
-    return FutureBuilder(
+    return FutureBuilder<bool>(
         future: dataHasLoad(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return wProgressIndicator();
-          return Container(
-            child: ListView.separated(
-              separatorBuilder: (ctx, idx) => Divider(height: 1),
-              itemCount: appList.length,
-              itemBuilder: (ctx, index) {
-                final app = appList[index];
-                var secs = app.duration ~/ 1000;
-                int jam = 0;
-                if (secs >= 3600) {
-                  jam = secs ~/ 3600;
-                  secs = secs - (jam * 3600);
-                }
-                int menit = 0;
-                if (secs >= 60) {
-                  menit = secs ~/ 60;
-                  secs = secs - (menit * 60);
-                }
-                int sec = secs;
-                String usageData = "0s";
-                if (jam == 0) {
-                  if (menit == 0) {
-                    usageData = "${sec.toString()}s";
-                  } else {
-                    usageData = "${menit.toString()}m ${sec.toString()}s";
+          final bool x = snapshot.data ?? false;
+          if (x == true)
+            return Container(
+              child: ListView.separated(
+                separatorBuilder: (ctx, idx) => Divider(height: 1),
+                itemCount: appList.length,
+                itemBuilder: (ctx, index) {
+                  final app = appList[index];
+                  var secs = app.duration ~/ 1000;
+                  int jam = 0;
+                  if (secs >= 3600) {
+                    jam = secs ~/ 3600;
+                    secs = secs - (jam * 3600);
                   }
-                } else {
-                  usageData = "${jam.toString()}h ${menit.toString()}m";
-                }
+                  int menit = 0;
+                  if (secs >= 60) {
+                    menit = secs ~/ 60;
+                    secs = secs - (menit * 60);
+                  }
+                  int sec = secs;
+                  String usageData = "0s";
+                  if (jam == 0) {
+                    if (menit == 0) {
+                      usageData = "${sec.toString()}s";
+                    } else {
+                      usageData = "${menit.toString()}m ${sec.toString()}s";
+                    }
+                  } else {
+                    usageData = "${jam.toString()}h ${menit.toString()}m";
+                  }
 
-                String iconUrl = app.iconUrl ?? '';
-                return ListTile(
-                  leading: app.iconUrl != null && app.iconUrl != ''
-                      ? Container(
-                          margin: EdgeInsets.all(5).copyWith(right: 10),
-                          child: Image.network(
-                            imageUrl + iconUrl,
+                  String iconUrl = app.iconUrl ?? '';
+                  return ListTile(
+                    leading: app.iconUrl != null && app.iconUrl != ''
+                        ? Container(
+                            margin: EdgeInsets.all(5).copyWith(right: 10),
+                            child: Image.network(
+                              imageUrl + iconUrl,
+                              width: 40,
+                              height: 40,
+                              fit: BoxFit.contain,
+                            ))
+                        : Container(
+                            margin: EdgeInsets.all(5).copyWith(right: 10),
+                            color: Colors.green,
                             width: 40,
                             height: 40,
-                            fit: BoxFit.contain,
-                          ))
-                      : Container(
-                          margin: EdgeInsets.all(5).copyWith(right: 10),
-                          color: Colors.green,
-                          width: 40,
-                          height: 40,
-                          child: Center(
-                            child: Icon(Icons.android),
+                            child: Center(
+                              child: Icon(Icons.android),
+                            ),
                           ),
+                    title:
+                        Text(app.appName, style: TextStyle(color: cOrtuText)),
+                    subtitle: Row(
+                      children: <Widget>[
+                        Container(
+                          width: (app.duration / appList[0].duration) *
+                              MediaQuery.of(context).size.width /
+                              2.5,
+                          height: 5,
+                          margin: EdgeInsets.only(right: 10.0),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
+                              color: Color(0xffFF018786)),
                         ),
-                  title: Text(app.appName, style: TextStyle(color: cOrtuText)),
-                  subtitle: Row(
-                    children: <Widget>[
-                      Container(
-                        width: (app.duration / appList[0].duration) *
-                            MediaQuery.of(context).size.width /
-                            2.5,
-                        height: 5,
-                        margin: EdgeInsets.only(right: 10.0),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.0),
-                            color: Color(0xffFF018786)),
-                      ),
-                      Flexible(
-                          child: Text(usageData,
-                              style: TextStyle(color: cOrtuText, fontSize: 12)))
-                    ],
-                  ),
-                );
-              },
-            ),
-          );
+                        Flexible(
+                            child: Text(usageData,
+                                style:
+                                    TextStyle(color: cOrtuText, fontSize: 12)))
+                      ],
+                    ),
+                  );
+                },
+              ),
+            );
+          else
+            return Center(
+                child: Text('Belum ada aplikasi yang digunakan minggu ini'));
         });
   }
 
@@ -868,81 +875,88 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
       if (appData.duration > 0) appList.add(appData);
     });
     appList.sort((a, b) => b.duration.compareTo(a.duration));
-    return FutureBuilder(
+    return FutureBuilder<bool>(
         future: dataDailyHasLoad(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return wProgressIndicator();
-          return Container(
-            child: ListView.separated(
-              separatorBuilder: (ctx, idx) => Divider(height: 1),
-              itemCount: appList.length,
-              itemBuilder: (ctx, index) {
-                final app = appList[index];
-                var secs = app.duration;
-                int jam = 0;
-                if (secs >= 3600) {
-                  jam = secs ~/ 3600;
-                  secs = secs - (jam * 3600);
-                }
-                int menit = 0;
-                if (secs >= 60) {
-                  menit = secs ~/ 60;
-                  secs = secs - (menit * 60);
-                }
-                int sec = secs;
-                String usageData = "0s";
-                if (jam == 0) {
-                  if (menit == 0) {
-                    usageData = "${sec.toString()}s";
-                  } else {
-                    usageData = "${menit.toString()}m ${sec.toString()}s";
+          bool x = snapshot.data ?? false;
+          if (x == true)
+            return Container(
+              child: ListView.separated(
+                separatorBuilder: (ctx, idx) => Divider(height: 1),
+                itemCount: appList.length,
+                itemBuilder: (ctx, index) {
+                  final app = appList[index];
+                  var secs = app.duration;
+                  int jam = 0;
+                  if (secs >= 3600) {
+                    jam = secs ~/ 3600;
+                    secs = secs - (jam * 3600);
                   }
-                } else {
-                  usageData = "${jam.toString()}h ${menit.toString()}m";
-                }
+                  int menit = 0;
+                  if (secs >= 60) {
+                    menit = secs ~/ 60;
+                    secs = secs - (menit * 60);
+                  }
+                  int sec = secs;
+                  String usageData = "0s";
+                  if (jam == 0) {
+                    if (menit == 0) {
+                      usageData = "${sec.toString()}s";
+                    } else {
+                      usageData = "${menit.toString()}m ${sec.toString()}s";
+                    }
+                  } else {
+                    usageData = "${jam.toString()}h ${menit.toString()}m";
+                  }
 
-                String iconUrl = app.iconUrl ?? '';
-                return ListTile(
-                  leading: app.iconUrl != null && app.iconUrl != ''
-                      ? Container(
-                          margin: EdgeInsets.all(5).copyWith(right: 10),
-                          child: Image.network(
-                            imageUrl + iconUrl,
+                  String iconUrl = app.iconUrl ?? '';
+                  return ListTile(
+                    leading: app.iconUrl != null && app.iconUrl != ''
+                        ? Container(
+                            margin: EdgeInsets.all(5).copyWith(right: 10),
+                            child: Image.network(
+                              imageUrl + iconUrl,
+                              width: 40,
+                              height: 40,
+                              fit: BoxFit.contain,
+                            ))
+                        : Container(
+                            margin: EdgeInsets.all(5).copyWith(right: 10),
+                            color: Colors.green,
                             width: 40,
                             height: 40,
-                            fit: BoxFit.contain,
-                          ))
-                      : Container(
-                          margin: EdgeInsets.all(5).copyWith(right: 10),
-                          color: Colors.green,
-                          width: 40,
-                          height: 40,
-                          child: Center(
-                            child: Icon(Icons.android),
+                            child: Center(
+                              child: Icon(Icons.android),
+                            ),
                           ),
+                    title:
+                        Text(app.appName, style: TextStyle(color: cOrtuText)),
+                    subtitle: Row(
+                      children: <Widget>[
+                        Container(
+                          width: (app.duration / appList[0].duration) *
+                              MediaQuery.of(context).size.width /
+                              2.5,
+                          height: 5,
+                          margin: EdgeInsets.only(right: 10.0),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
+                              color: Color(0xffFF018786)),
                         ),
-                  title: Text(app.appName, style: TextStyle(color: cOrtuText)),
-                  subtitle: Row(
-                    children: <Widget>[
-                      Container(
-                        width: (app.duration / appList[0].duration) *
-                            MediaQuery.of(context).size.width /
-                            2.5,
-                        height: 5,
-                        margin: EdgeInsets.only(right: 10.0),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.0),
-                            color: Color(0xffFF018786)),
-                      ),
-                      Flexible(
-                          child: Text(usageData,
-                              style: TextStyle(color: cOrtuText, fontSize: 12)))
-                    ],
-                  ),
-                );
-              },
-            ),
-          );
+                        Flexible(
+                            child: Text(usageData,
+                                style:
+                                    TextStyle(color: cOrtuText, fontSize: 12)))
+                      ],
+                    ),
+                  );
+                },
+              ),
+            );
+          else
+            return Center(
+                child: Text('Belum ada aplikasi yang digunakan hari ini'));
         });
   }
 }

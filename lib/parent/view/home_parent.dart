@@ -171,6 +171,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
           return RefreshIndicator(
             onRefresh: () async {
               await parentController.getParentChildData();
+              setState(() {});
             },
             child:
                 // Flexible(
@@ -278,183 +279,166 @@ class _HomeParentPageState extends State<HomeParentPage> {
 
   Widget _childDataLayout() {
     final screenSize = MediaQuery.of(context).size;
-    return Obx(
-      () {
-        return FutureBuilder<List<Child>>(
-            future: parentController.fChildList.value,
-            builder: (BuildContext context, AsyncSnapshot<List<Child>> data) {
-              if (!data.hasData) return wProgressIndicator();
-              childsList = data.data!;
-              flag = childsList.length > 0;
-              if (childsList.length == 0) {
-                return Container(
-                  margin: const EdgeInsets.only(
-                      left: 10.0,
-                      right: 10.0,
-                      bottom: 10.0), //Same as `blurRadius` i guess
-                  padding: EdgeInsets.all(10),
-                  constraints: BoxConstraints(
-                      maxWidth: MediaQuery.of(context).size.width - 20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.0),
-                    color: cAsiaBlue,
+
+    return FutureBuilder<List<Child>>(
+        future: parentController.fChildList.value,
+        builder: (BuildContext context, AsyncSnapshot<List<Child>> data) {
+          if (!data.hasData) return wProgressIndicator();
+          childsList = data.data!;
+          flag = childsList.length > 0;
+          if (childsList.length == 0) {
+            return Container(
+              margin: const EdgeInsets.only(
+                  left: 10.0,
+                  right: 10.0,
+                  bottom: 10.0), //Same as `blurRadius` i guess
+              padding: EdgeInsets.all(10),
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width - 20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10.0),
+                color: cAsiaBlue,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'Hanya 10 Menit!\nUntuk membuat Akun Anak Anda',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: cOrtuWhite),
+                    textAlign: TextAlign.left,
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Hanya 10 Menit!\nUntuk membuat Akun Anak Anda',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            color: cOrtuWhite),
-                        textAlign: TextAlign.left,
-                      ),
-                      Container(
-                          padding: EdgeInsets.all(5),
-                          child: Image.asset(
-                              'assets/images/icon/undraw_connection_re_lcud.png',
-                              height: 150,
-                              fit: BoxFit.fitHeight)),
-                      Container(
-                        padding: EdgeInsets.all(5),
-                        child: Text(
-                          'Hubungkan perangkat anak Anda untuk melakukan Pengawasan & Kontrol',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              color: cOrtuWhite),
-                          textAlign: TextAlign.left,
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.only(top: 10, left: 20, right: 20),
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            shape: MaterialStateProperty.all(
-                                (RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)))),
-                            backgroundColor:
-                                MaterialStateProperty.resolveWith<Color>(
-                              (Set<MaterialState> states) {
-                                if (states.contains(MaterialState.disabled))
-                                  return cDisabled;
-                                return cOrtuWhite;
-                              },
-                            ),
-                            elevation:
-                                MaterialStateProperty.resolveWith((states) {
-                              if (states.contains(MaterialState.disabled) ||
-                                  states.contains(MaterialState.pressed))
-                                return 0;
-                              if (states.contains(MaterialState.hovered))
-                                return 6;
-                              return 4;
-                            }),
-                          ),
-                          child: Text('DAFTAR AKUN ANAK ANDA',
-                              style: TextStyle(
-                                color: cAsiaBlue,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                              )),
-                          onPressed: () async {
-                            final res = await Navigator.push(
-                              context,
-                              MaterialPageRoute<Object>(
-                                  builder: (BuildContext context) =>
-                                      SetupInviteChildPage(
-                                          address: parentController
-                                              .parentProfile.address!,
-                                          userTypeStr: "child")),
-                            );
-                            print('Add Child Response: $res');
-                            if (res.toString().toLowerCase() == 'addchild')
-                              parentController.getParentChildData();
+                  Container(
+                      padding: EdgeInsets.all(5),
+                      child: Image.asset(
+                          'assets/images/icon/undraw_connection_re_lcud.png',
+                          height: 150,
+                          fit: BoxFit.fitHeight)),
+                  Container(
+                    padding: EdgeInsets.all(5),
+                    child: Text(
+                      'Hubungkan perangkat anak Anda untuk melakukan Pengawasan & Kontrol',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                          color: cOrtuWhite),
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.only(top: 10, left: 20, right: 20),
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        shape: MaterialStateProperty.all(
+                            (RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)))),
+                        backgroundColor:
+                            MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                            if (states.contains(MaterialState.disabled))
+                              return cDisabled;
+                            return cOrtuWhite;
                           },
                         ),
+                        elevation: MaterialStateProperty.resolveWith((states) {
+                          if (states.contains(MaterialState.disabled) ||
+                              states.contains(MaterialState.pressed)) return 0;
+                          if (states.contains(MaterialState.hovered)) return 6;
+                          return 4;
+                        }),
                       ),
-                      // SizedBox(height: 10),
-                      // Container(
-                      //   padding: EdgeInsets.all(10),
-                      //   child: Text(
-                      //     'waktu yang di perlukan sekitar 10 menit',
-                      //     textAlign: TextAlign.center,
-                      //   ),
-                      // ),
-                      //
-                    ],
+                      child: Text('DAFTAR AKUN ANAK ANDA',
+                          style: TextStyle(
+                            color: cAsiaBlue,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          )),
+                      onPressed: () async {
+                        final res = await Navigator.push(
+                          context,
+                          MaterialPageRoute<Object>(
+                              builder: (BuildContext context) =>
+                                  SetupInviteChildPage(
+                                      address: parentController
+                                          .parentProfile.address!,
+                                      userTypeStr: "child")),
+                        );
+                        print('Add Child Response: $res');
+                        if (res.toString().toLowerCase() == 'addchild')
+                          parentController.getParentChildData();
+                      },
+                    ),
                   ),
-                );
-              } else {
-                return Container(
-                    margin: EdgeInsets.only(top: 10),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          flag == false
-                              ? SizedBox.shrink()
-                              : Container(
-                                  padding: EdgeInsets.only(left: 10, right: 10),
-                                  child: Container(
-                                      child: TextButton(
-                                          style: ButtonStyle(
-                                              backgroundColor:
-                                                  MaterialStateProperty.all(
-                                                      cAsiaBlue)),
-                                          child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceAround,
-                                              children: [
-                                                Icon(Icons.add_circle_rounded,
-                                                    color: cOrtuWhite),
-                                                Text('Tambah Anggota',
-                                                    style: TextStyle(
-                                                        color: cOrtuWhite,
-                                                        fontSize: 16))
-                                              ]),
-                                          onPressed: () async {
-                                            showSelectUserType(context);
-                                          }))),
-                          Expanded(
+                  // SizedBox(height: 10),
+                  // Container(
+                  //   padding: EdgeInsets.all(10),
+                  //   child: Text(
+                  //     'waktu yang di perlukan sekitar 10 menit',
+                  //     textAlign: TextAlign.center,
+                  //   ),
+                  // ),
+                  //
+                ],
+              ),
+            );
+          } else {
+            return Container(
+                margin: EdgeInsets.only(top: 10),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      flag == false
+                          ? SizedBox.shrink()
+                          : Container(
+                              padding: EdgeInsets.only(left: 10, right: 10),
                               child: Container(
-                                  child: ListView.builder(
-                                      // physics: NeverScrollableScrollPhysics(),
-                                      physics: ClampingScrollPhysics(),
-                                      shrinkWrap: true,
-                                      scrollDirection:
-                                          Axis.vertical, //Keluarga HKBP kebawah
-                                      itemCount: childsList.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        parentController.setModeAsuh(
-                                            childsList[index].childOfNumber ??
-                                                0,
-                                            1);
-                                        final screenSize =
-                                            MediaQuery.of(context).size;
-                                        final thisChild = childsList[index];
-                                        return Container(
-                                          margin: EdgeInsets.only(
-                                              top: 10, bottom: 10),
-                                          // constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
-                                          child: ChildCardWithBottomSheet(
-                                              childData: thisChild,
-                                              childIndex: index,
-                                              prefs: prefs,
-                                              onAddChild: () {
-                                                parentController
-                                                    .getParentChildData();
-                                              }),
-                                        );
-                                      })))
-                        ]));
-              }
-            });
-      },
-    );
+                                  child: TextButton(
+                                      style: ButtonStyle(
+                                          backgroundColor:
+                                              MaterialStateProperty.all(
+                                                  cAsiaBlue)),
+                                      child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            Icon(Icons.add_circle_rounded,
+                                                color: cOrtuWhite),
+                                            Text('Tambah Anggota',
+                                                style: TextStyle(
+                                                    color: cOrtuWhite,
+                                                    fontSize: 16))
+                                          ]),
+                                      onPressed: () async {
+                                        showSelectUserType(context);
+                                      }))),
+                      Expanded(
+                          child: ListView.builder(
+                              // physics: NeverScrollableScrollPhysics(),
+                              physics: ClampingScrollPhysics(),
+                              shrinkWrap: true,
+                              scrollDirection:
+                                  Axis.vertical, //Keluarga HKBP kebawah
+                              itemCount: childsList.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                parentController.setModeAsuh(
+                                    childsList[index].childOfNumber ?? 0, 1);
+                                final thisChild = childsList[index];
+                                return Container(
+                                  margin: EdgeInsets.only(top: 10, bottom: 10),
+                                  // constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
+                                  child: ChildCardWithBottomSheet(
+                                      childData: thisChild,
+                                      childIndex: index,
+                                      prefs: prefs),
+                                );
+                              }))
+                    ]));
+          }
+        });
   }
 }
 
@@ -462,15 +446,11 @@ class ChildCardWithBottomSheet extends StatelessWidget {
   final Child childData;
   final int childIndex;
   final SharedPreferences prefs;
-  final Function() onAddChild;
 
   final parentController = Get.find<ParentController>();
 
   ChildCardWithBottomSheet(
-      {required this.childData,
-      required this.childIndex,
-      required this.prefs,
-      required this.onAddChild});
+      {required this.childData, required this.childIndex, required this.prefs});
 
   @override
   Widget build(BuildContext context) {
@@ -489,7 +469,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
         // margin: EdgeInsets.all(paddingValue),
         width: screenSize.width - paddingValue * 2,
         decoration: BoxDecoration(
-          color: colorVariant[childIndex],
+          color: colorVariant[childIndex % 3],
           borderRadius: childData.status == 'invitation'
               ? BorderRadius.circular(10)
               : BorderRadius.only(
@@ -567,6 +547,8 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                       builder: (BuildContext context,
                           ScrollController scrollController) {
                         return Container(
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.only(left: 5, right: 5),
                           decoration: BoxDecoration(
                             color: Colors.black54,
                             borderRadius: BorderRadius.zero,

@@ -234,7 +234,9 @@ class _ParentMainState extends State<ParentMain> {
                 activeIcon: Icons.home,
                 label: 'Home',
                 isSelected: controller.bottomNavIndex == 2,
-                onPressed: () => controller.setBottomNavIndex(2)),
+                onPressed: () => setState(() {
+                      controller.setBottomNavIndex(2);
+                    })),
             // IconWithLabel(
             //     defaultIcon: Icons.calendar_today_outlined,
             //     activeIcon: Icons.calendar_today,
