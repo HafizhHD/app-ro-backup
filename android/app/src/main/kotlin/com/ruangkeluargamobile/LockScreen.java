@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import com.asia.ruangortu.R;
+import com.byasia.ruangortu.R;
 
 import static com.ruangkeluargamobile.AlarmService.sharePref;
 

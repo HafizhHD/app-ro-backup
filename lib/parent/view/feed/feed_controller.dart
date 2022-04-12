@@ -110,7 +110,7 @@ class FeedController extends GetxController {
   }
 
   void _scrollListener() {
-    print("Ini anu: ${scrollController.position.extentAfter}");
+    // print("Ini anu: ${scrollController.position.extentAfter}");
     if (scrollController.position.extentAfter < 100 &&
         isThereMore &&
         !isWaiting) {

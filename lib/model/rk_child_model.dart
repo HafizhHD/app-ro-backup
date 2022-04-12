@@ -39,7 +39,9 @@ class Child {
         imgPhoto: json['imagePhoto'],
         phone: json['phoneNumber'] as String?,
         address: json['address'] as String?,
-        birdDate: DateTime.parse(json['birdDate']),
+        birdDate: bdate != null && bdate != ''
+            ? DateTime.parse(bdate).toUtc().toLocal()
+            : null,
         status: json['status'] as String?);
   }
 }

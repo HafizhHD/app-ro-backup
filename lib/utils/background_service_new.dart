@@ -342,7 +342,7 @@ class BackgroundServiceNew {
       if (await AplikasiDB.instance.checkDataAplikasi()) {
         var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
         // print("dataAplikasiDb : "+dataAplikasiDb.toString());
-        print("dataAplikasiDb..");
+        // print("dataAplikasiDb..");
         if (dataAplikasiDb != null) {
           //jika lock membahayakan hidde source dibawah ini sampai if selanjutnya
           if (dataAplikasiDb['modekunciLayar'] != null &&

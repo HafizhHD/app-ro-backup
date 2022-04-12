@@ -8,7 +8,7 @@ publish_to: 'none' # Remgoogle_mobile_ads: ^1.0.1ove this line if you wish to pu
 # flutter.versionName=0.0.31-alpha
 # flutter.versionCode=220000310A
 # versionCode: minSDK + major 00 + minor 62+ patch 01 +testing 0 + Alpha / Beta / Release
-version: 0.0.53+220000382B
+version: 0.0.54+220000394B
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -92,7 +92,7 @@ dev_dependencies:
   flutter_launcher_icons:
   flutter_native_splash:
   change_app_package_name: ^1.0.0
-  #flutter pub run change_app_package_name:main com.asia.ruangortu
+  #flutter pub run change_app_package_name:main com.byasia.ruangortu
 
 flutter_icons:
   android: 'launcher_icon'

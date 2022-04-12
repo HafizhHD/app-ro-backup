@@ -38,6 +38,7 @@ import static com.ruangkeluargamobile.AlarmService.blockAppAndPackageNow;
 import static com.ruangkeluargamobile.AlarmService.closeApps;
 import static com.ruangkeluargamobile.AlarmService.getForegroundApplication;
 import java.util.Iterator;
+import io.flutter.embedding.engine.loader.FlutterLoader;
 
 /**
  * An background execution abstraction which handles initializing a background isolate running a
@@ -48,7 +49,7 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
   private Context context;
   private static final String CALLBACK_HANDLE_KEY = "callback_handle";
   private static PluginRegistrantCallback pluginRegistrantCallback;
-
+  private FlutterLoader backgroundFlutterLoader;
   /**
    * The {@link MethodChannel} that connects the Android side of this plugin with the background
    * Dart isolate that was created by this plugin.
@@ -138,7 +139,7 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
               if (currentAppId != "") {
 //                System.out.println("APLIKASI CURRENT : "+ currentAppId);
 //                System.out.println("PENGGUNAAN : "+ duration.toString());
-                if(currentAppId != "com.asia.ruangortu"){
+                if(currentAppId != "com.byasia.ruangortu"){
                   for(int i = 0; i<jsonArray.length(); i++){
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     // System.out.println("cek dengan app:" + jsonObject.getString("packageId"));
@@ -265,7 +266,13 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
     this.context= context;
 
     Log.i(TAG, "Starting AlarmService...");
-    String appBundlePath = FlutterMain.findAppBundlePath(context);
+    // String appBundlePath = FlutterMain.findAppBundlePath(context);
+    if(backgroundFlutterLoader == null) backgroundFlutterLoader = new FlutterLoader();
+    if(!backgroundFlutterLoader.initialized()) {
+      backgroundFlutterLoader.startInitialization(context);
+      backgroundFlutterLoader.ensureInitializationComplete​(context, null);
+    }
+    String appBundlePath = backgroundFlutterLoader.findAppBundlePath();
     AssetManager assets = context.getAssets();
     if (appBundlePath != null && !isRunning()) {
       backgroundFlutterEngine = new FlutterEngine(context);

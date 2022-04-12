@@ -425,9 +425,9 @@ class ChildController extends GetxController {
       Response response =
           await MediaRepository().saveContacts(childEmail, contacts);
       if (response.statusCode == 200) {
-        print('isi response save contact : ${response.body}');
+        // print('isi response save contact : ${response.body}');
       } else {
-        print('isi response save contact : ${response.statusCode}');
+        // print('isi response save contact : ${response.statusCode}');
       }
       // }
     } catch (e, s) {
@@ -448,7 +448,7 @@ class ChildController extends GetxController {
 
   Future getBlackListed() async {
     final resBL = await MediaRepository().fetchBlacklistedContact(childEmail);
-    print('isi response fetch blacklisted contact : ${resBL.body}');
+    // print('isi response fetch blacklisted contact : ${resBL.body}');
     if (resBL.statusCode == 200) {
       final List blacklistedJson = jsonDecode(resBL.body)['contacts'];
       blackListed =
@@ -617,7 +617,7 @@ class ChildController extends GetxController {
         }
       });
       infoList3.forEach((app, e) {
-        print(app);
+        // print(app);
         final hasData =
             listAppLocal.where((e) => e.packageName == app).toList();
 
@@ -685,10 +685,10 @@ class ChildController extends GetxController {
             'usageHour': usageHour
           };
           usageDataList.add(temp);
-          print('nama aplikasi pada getAppUsageData: $appName');
-          print('durasinya getAppUsageData: $duration');
-          print('pair event: $e');
-          print('usage: $usageHour');
+          // print('nama aplikasi pada getAppUsageData: $appName');
+          // print('durasinya getAppUsageData: $duration');
+          // print('pair event: $e');
+          // print('usage: $usageHour');
         }
       });
 
