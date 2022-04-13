@@ -3,9 +3,11 @@ import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/akun/akun_edit.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
+import 'package:ruangkeluarga/utils/base_service/service_controller.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 
 class AkunPage extends StatelessWidget {
+  final appInfo = Get.find<RKServiceController>().appInfo;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,6 +83,9 @@ class AkunPage extends StatelessWidget {
                       },
                     ),
                   ),
+                  Container(
+                      margin: EdgeInsets.all(10),
+                      child: Text('Versi ${appInfo.version}'))
                 ],
               ),
             ),

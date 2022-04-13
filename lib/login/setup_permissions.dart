@@ -785,7 +785,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                   padding: EdgeInsets.only(bottom: 10),
                   child: Column(children: [
                     Text(
-                        'Aplikasi Keluarga HKBP mengumpulkan data lokasi untuk mengaktifkan "Pantau Lokasi Anak", "Riwayat Lokasi Anak", "ETA" dan "Pesan Darurat".',
+                        'Aplikasi $appName mengumpulkan data lokasi untuk mengaktifkan "Pantau Lokasi Anak", "Riwayat Lokasi Anak", "ETA" dan "Pesan Darurat".',
                         style: TextStyle(color: cOrtuText)),
                     InkWell(
                       child: Row(

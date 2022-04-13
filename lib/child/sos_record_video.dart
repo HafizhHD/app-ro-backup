@@ -40,7 +40,9 @@ class _CameraAppState extends State<CameraApp> with TickerProviderStateMixin {
       if (!mounted) {
         return;
       }
-      setState(() {});
+      setState(() {
+        startCancelTimer();
+      });
     });
   }
 
@@ -48,7 +50,6 @@ class _CameraAppState extends State<CameraApp> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     initAsync();
-    startCancelTimer();
   }
 
   @override
