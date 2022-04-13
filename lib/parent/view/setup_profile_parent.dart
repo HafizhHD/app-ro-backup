@@ -75,7 +75,7 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
         await prefs.setString(rkUserID, jsonUser["_id"]);
         await prefs.setBool(isPrefLogin, true);
         print('isi response register : ${response.body}');
-        if (await childNeedPermission()) {
+        if (await childNeedPermission() && jsonUser['userType'] == 'child') {
           Navigator.of(context).pushReplacement(MaterialPageRoute(
               builder: (context) => SetupPermissionPage(
                   email: jsonUser['emailUser'],
@@ -432,6 +432,8 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                               Flexible(
                                 child: ListTile(
                                   title: Text("Ayah"),
+                                  horizontalTitleGap: 0,
+                                  contentPadding: EdgeInsets.zero,
                                   leading: Radio<GenderCharacter>(
                                     value: GenderCharacter.Ayah,
                                     groupValue: _character,
@@ -445,8 +447,25 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                               Flexible(
                                 child: ListTile(
                                   title: Text("Bunda"),
+                                  horizontalTitleGap: 0,
+                                  contentPadding: EdgeInsets.zero,
                                   leading: Radio<GenderCharacter>(
                                     value: GenderCharacter.Bunda,
+                                    groupValue: _character,
+                                    activeColor: cAsiaBlue,
+                                    onChanged: (GenderCharacter? value) {
+                                      setState(() => _character = value);
+                                    },
+                                  ),
+                                ),
+                              ),
+                              Flexible(
+                                child: ListTile(
+                                  title: Text("Lainnya"),
+                                  horizontalTitleGap: 0,
+                                  contentPadding: EdgeInsets.zero,
+                                  leading: Radio<GenderCharacter>(
+                                    value: GenderCharacter.Lainnya,
                                     groupValue: _character,
                                     activeColor: cAsiaBlue,
                                     onChanged: (GenderCharacter? value) {

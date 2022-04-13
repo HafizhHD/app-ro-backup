@@ -128,7 +128,9 @@ class _HomeParentPageState extends State<HomeParentPage> {
                   );
                   print('Add Child Response: $res');
                   if (res.toString().toLowerCase() == 'addchild')
-                    parentController.getParentChildData();
+                    setState(() {
+                      parentController.getParentChildData();
+                    });
                 },
                 child: Image.asset('assets/images/invitation_anak.png'),
               ),
@@ -147,7 +149,9 @@ class _HomeParentPageState extends State<HomeParentPage> {
                   );
                   print('Add Child Response: $res');
                   if (res.toString().toLowerCase() == 'addchild')
-                    parentController.getParentChildData();
+                    setState(() {
+                      parentController.getParentChildData();
+                    });
                 },
                 child: Image.asset('assets/images/invitation_parent.png'),
               ),
@@ -288,10 +292,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
           flag = childsList.length > 0;
           if (childsList.length == 0) {
             return Container(
-              margin: const EdgeInsets.only(
-                  left: 10.0,
-                  right: 10.0,
-                  bottom: 10.0), //Same as `blurRadius` i guess
+              margin: const EdgeInsets.all(10), //Same as `blurRadius` i guess
               padding: EdgeInsets.all(10),
               constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width - 20),
@@ -369,7 +370,9 @@ class _HomeParentPageState extends State<HomeParentPage> {
                         );
                         print('Add Child Response: $res');
                         if (res.toString().toLowerCase() == 'addchild')
-                          parentController.getParentChildData();
+                          setState(() {
+                            parentController.getParentChildData();
+                          });
                       },
                     ),
                   ),
@@ -403,10 +406,11 @@ class _HomeParentPageState extends State<HomeParentPage> {
                                                   cAsiaBlue)),
                                       child: Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
+                                              MainAxisAlignment.center,
                                           children: [
                                             Icon(Icons.add_circle_rounded,
                                                 color: cOrtuWhite),
+                                            SizedBox(width: 10),
                                             Text('Tambah Anggota',
                                                 style: TextStyle(
                                                     color: cOrtuWhite,
@@ -418,7 +422,7 @@ class _HomeParentPageState extends State<HomeParentPage> {
                       Expanded(
                           child: ListView.builder(
                               // physics: NeverScrollableScrollPhysics(),
-                              physics: ClampingScrollPhysics(),
+                              physics: AlwaysScrollableScrollPhysics(),
                               shrinkWrap: true,
                               scrollDirection:
                                   Axis.vertical, //Keluarga HKBP kebawah
@@ -875,8 +879,9 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                         childData.address != null
                                             ? childData.address!
                                             : '',
-                                        'child'
-                                      ], prefs: prefs)));
+                                        'child',
+                                        ''
+                                      ], prefs: prefs, userType: 'child')));
                             });
                           },
                           color: cOrtuWhite,

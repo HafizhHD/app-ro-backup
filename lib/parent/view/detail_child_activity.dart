@@ -530,7 +530,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
         body: Container(
             padding: EdgeInsets.only(left: 10, right: 10),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 ToggleBar(
@@ -562,6 +562,35 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   chartDetail(types, updateChart),
+                                  Container(
+                                    margin: EdgeInsets.only(
+                                        bottom: 10, left: 15, right: 15),
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                              'Updated today ${lastUpdated != '' ? lastUpdated : widget.lastUpdate}',
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: cOrtuText)),
+                                          TextButton(
+                                              style: TextButton.styleFrom(
+                                                  textStyle: TextStyle(
+                                                      fontSize: 14,
+                                                      color: cAsiaBlue)),
+                                              onPressed: () async {
+                                                showLoadingOverlay();
+                                                await updateChart();
+                                                await updateChart();
+                                                closeOverlay(); //second call for actually update the chart
+                                              },
+                                              child: Row(children: [
+                                                Icon(Icons.refresh),
+                                                Text('Refresh')
+                                              ]))
+                                        ]),
+                                  ),
                                   Flexible(child: onLoadMostUsage(types))
                                 ]))))
               ],
@@ -579,7 +608,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
             children: [
               Container(
                 margin: EdgeInsets.only(
-                    top: 20.0, left: 20.0, right: 20.0, bottom: 10.0),
+                    top: 10.0, left: 20.0, right: 20.0, bottom: 5.0),
                 child: Text('Most Used Apps',
                     style: TextStyle(
                         fontSize: 18,
@@ -593,7 +622,6 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: cOrtuLightGrey),
-              height: 400,
               margin: EdgeInsets.all(10.0),
               child: type == 'week' ? onMostWeekData() : onMostDay(),
             ),
@@ -624,39 +652,41 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
             child: Text(
               type == 'week' ? averageTimeWeekly : avgData,
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: cOrtuText,
               ),
             ),
           ),
           Container(
-            margin: EdgeInsets.all(10.0),
-            height: MediaQuery.of(context).size.height / 4,
+            margin: EdgeInsets.symmetric(horizontal: 10),
+            height: MediaQuery.of(context).size.height / 4.5,
             child:
                 type == 'week' ? _chartWeeklyAverage() : _chartDailyAverage(),
           ),
-          Container(
-            margin: EdgeInsets.only(bottom: 10, left: 15, right: 15),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                      'Updated today ${lastUpdated != '' ? lastUpdated : widget.lastUpdate}',
-                      style: TextStyle(fontSize: 14, color: cOrtuText)),
-                  TextButton(
-                      style: TextButton.styleFrom(
-                          textStyle: TextStyle(fontSize: 14, color: cAsiaBlue)),
-                      onPressed: () async {
-                        showLoadingOverlay();
-                        await updateChart();
-                        await updateChart();
-                        closeOverlay(); //second call for actually update the chart
-                      },
-                      child:
-                          Row(children: [Icon(Icons.refresh), Text('Refresh')]))
-                ]),
-          ),
+          type == 'week'
+              ? Divider(color: cOrtuWhite, thickness: 1)
+              : SizedBox.shrink(),
+          type == 'week'
+              ? Container(
+                  margin:
+                      EdgeInsets.only(top: 5, bottom: 10, left: 25, right: 25),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Total Screen Time',
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: cOrtuText,
+                                fontWeight: FontWeight.bold)),
+                        Text(totalTimeWeekly,
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: cOrtuText,
+                                fontWeight: FontWeight.bold))
+                      ]),
+                )
+              : SizedBox.shrink(),
         ],
       ),
     );

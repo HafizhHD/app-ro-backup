@@ -11,70 +11,38 @@ class ForumMain extends GetView<FeedController> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     return Container(
-      padding: EdgeInsets.all(10),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text('Forum',
-              style: TextStyle(
-                  fontSize: 20, fontWeight: FontWeight.bold, color: cOrtuText)),
-          Text('Selamat datang di forum $appName.',
-              style: TextStyle(color: cOrtuText)),
-          // Container(
-          //   padding: EdgeInsets.only(top: 10, bottom: 10),
-          //   child: WSearchBar(
-          //       hintText: 'Search by name',
-          //       fOnSubmitted: (text) {
-          //         controller.setSearchData(text);
-          //       },
-          //       tecController: TextEditingController(text: controller.search)),
-          // ),
-          Flexible(
-            flex: 4,
-            child: FutureBuilder<bool>(
-                future: controller.fGetListContent,
-                builder: (context, snapshot) {
-                  // if (!snapshot.hasData) return wProgressIndicator();
-                  if (!snapshot.hasData)
-                    return Center(
-                        child: Text('Coming Soon',
-                            style: TextStyle(color: cOrtuText)));
-                  return RefreshIndicator(
-                    onRefresh: () => controller.getContents(refresh: true),
-                    child: Container(
+      margin: EdgeInsets.symmetric(
+          vertical: screenSize.height / 9, horizontal: screenSize.width / 9),
+      child: Center(
+          child: Container(
+              color: cAsiaBlue,
+              padding: EdgeInsets.all(10),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text('SEGERA HADIR',
+                        style: TextStyle(
+                            color: cOrtuWhite,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center),
+                    Container(
+                        padding: EdgeInsets.all(5),
+                        child: Image.asset(
+                            'assets/images/icon/undraw_forms_re_pkrt.png',
+                            height: 150,
+                            fit: BoxFit.fitHeight)),
+                    Container(
                       padding: EdgeInsets.all(5),
-                      child: GetBuilder<FeedController>(
-                        builder: (builderCtrl) {
-                          if (builderCtrl.listSearchContent.length >= 0)
-                            return Center(
-                                child: Text('Coming Soon',
-                                    style: TextStyle(color: cOrtuText)));
-                          else
-                            return ListView.separated(
-                              controller: builderCtrl.scrollController,
-                              shrinkWrap: true,
-                              itemCount: builderCtrl.isThereMore
-                                  ? builderCtrl.listSearchContent.length + 1
-                                  : builderCtrl.listSearchContent.length,
-                              itemBuilder: (context, index) =>
-                                  index < builderCtrl.listSearchContent.length
-                                      ? feedContainer(
-                                          builderCtrl.listSearchContent[index])
-                                      : builderCtrl.isThereMore
-                                          ? wProgressIndicator()
-                                          : Container(),
-                              separatorBuilder: (ctx, idx) =>
-                                  Divider(color: cOrtuGrey),
-                            );
-                        },
+                      child: Text(
+                        'FITUR FORUM\nMerupakan media komunikasi bagi para orangtua yang diharapkan dapat menambah pengetahuan seputar Pola Asuh Anak di Era Digital',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: cOrtuWhite),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                  );
-                }),
-          ),
-        ],
-      ),
+                  ]))),
     );
   }
 

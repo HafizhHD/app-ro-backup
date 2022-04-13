@@ -18,78 +18,93 @@ class AkunPage extends StatelessWidget {
           final spouse = parentData.spouse ?? [];
           final children = parentData.children ?? [];
 
-          return Container(
-            // color: ,
-            padding: EdgeInsets.all(5),
-            child: SingleChildScrollView(
-              physics: BouncingScrollPhysics(),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  profileContainer(
-                      id: parentData.id,
-                      imgUrl: parentData.imgPhoto,
-                      name: parentData.name,
-                      email: parentData.email,
-                      phone: parentData.phone,
-                      alamat: parentData.address,
-                      birthDate: parentData.birdDate,
-                      isParent: parentData.parentStatus.toEnumString(),
-                      isMainAccount: true),
-                  Flexible(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: spouse.length,
-                      itemBuilder: (ctx, idx) {
-                        final spouseData = spouse[idx];
-                        print('Nama: ${spouseData.name}');
-                        print('Telepon: ${spouseData.phone}');
-                        print('Alamat: ${spouseData.address}');
-                        print('Tgl. Lahir: ${spouseData.birdDate.toString()}');
-                        return profileContainer(
-                            imgUrl: spouseData.imgPhoto,
-                            name: spouseData.name ?? 'Nama Pasangan',
-                            email: spouseData.email ?? 'email@coparent.com',
-                            id: spouseData.id,
-                            phone: spouseData.phone ?? '',
-                            alamat: spouseData.address ?? '',
-                            birthDate: spouseData.birdDate,
-                            isParent: spouseData.parentStatus.toEnumString(),
-                            isMainParent: !parentData.isMainParent);
+          return Column(mainAxisSize: MainAxisSize.max, children: [
+            Expanded(
+                child: Container(
+                    // color: ,
+                    padding: EdgeInsets.all(5),
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        await ctrl.getParentChildData();
                       },
-                    ),
-                  ),
-                  Flexible(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: children.length,
-                      itemBuilder: (ctx, idx) {
-                        final childData = children[idx];
-                        print('Nama: ${childData.name}');
-                        print('Telepon: ${childData.phone}');
-                        print('Alamat: ${childData.address}');
-                        print('Tgl. Lahir: ${childData.birdDate.toString()}');
-                        return profileContainer(
-                            imgUrl: childData.imgPhoto,
-                            name: childData.name ?? 'Nama Anak',
-                            email: childData.email ?? 'email@anak.com',
-                            id: childData.id,
-                            phone: childData.phone ?? '',
-                            alamat: childData.address ?? '',
-                            birthDate: childData.birdDate);
-                      },
-                    ),
-                  ),
-                  Container(
-                      margin: EdgeInsets.all(10),
-                      child: Text('Versi ${appInfo.version}'))
-                ],
-              ),
-            ),
-          );
+                      child: SingleChildScrollView(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            profileContainer(
+                                id: parentData.id,
+                                imgUrl: parentData.imgPhoto,
+                                name: parentData.name,
+                                email: parentData.email,
+                                phone: parentData.phone,
+                                alamat: parentData.address,
+                                birthDate: parentData.birdDate,
+                                isParent:
+                                    parentData.parentStatus.toEnumString(),
+                                isMainAccount: true),
+                            Flexible(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: spouse.length,
+                                itemBuilder: (ctx, idx) {
+                                  final spouseData = spouse[idx];
+                                  print('Nama: ${spouseData.name}');
+                                  print('Telepon: ${spouseData.phone}');
+                                  print('Alamat: ${spouseData.address}');
+                                  print(
+                                      'Tgl. Lahir: ${spouseData.birdDate.toString()}');
+                                  return profileContainer(
+                                      imgUrl: spouseData.imgPhoto,
+                                      name: spouseData.name ?? 'Nama Pasangan',
+                                      email: spouseData.email ??
+                                          'email@coparent.com',
+                                      id: spouseData.id,
+                                      phone: spouseData.phone ?? '',
+                                      alamat: spouseData.address ?? '',
+                                      birthDate: spouseData.birdDate,
+                                      isParent: spouseData.parentStatus
+                                          .toEnumString(),
+                                      isMainParent: !parentData.isMainParent);
+                                },
+                              ),
+                            ),
+                            Flexible(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: children.length,
+                                itemBuilder: (ctx, idx) {
+                                  final childData = children[idx];
+                                  print('Nama: ${childData.name}');
+                                  print('Telepon: ${childData.phone}');
+                                  print('Alamat: ${childData.address}');
+                                  print(
+                                      'Tgl. Lahir: ${childData.birdDate.toString()}');
+                                  return profileContainer(
+                                      imgUrl: childData.imgPhoto,
+                                      name: childData.name ?? 'Nama Anak',
+                                      email:
+                                          childData.email ?? 'email@anak.com',
+                                      id: childData.id,
+                                      phone: childData.phone ?? '',
+                                      alamat: childData.address ?? '',
+                                      birthDate: childData.birdDate);
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ))),
+            Align(
+                alignment: Alignment.bottomLeft,
+                child: Container(
+                    margin: EdgeInsets.all(10),
+                    child: Text('Versi ${appInfo.version}')))
+          ]);
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -113,6 +128,7 @@ class AkunPage extends StatelessWidget {
     DateTime? birthDate,
     String? alamat,
   }) {
+    print('Nama: $name, isParent: $isParent');
     return Dismissible(
       key: Key('$name+$email'),
       direction: isMainAccount == false && isMainParent == false
@@ -120,7 +136,7 @@ class AkunPage extends StatelessWidget {
           : DismissDirection.none,
       confirmDismiss: isMainAccount == false && isMainParent == false
           ? (_) async {
-              return await deleteChild(id, name);
+              return await deleteChild(id, name, isParent);
             }
           : null,
       child: Container(
@@ -133,92 +149,111 @@ class AkunPage extends StatelessWidget {
         child: InkWell(
           onTap: () {
             final bool boolParent = isParent == '' ? false : true;
-            Get.to(
-              () => AkunEditPage(
-                id: id,
-                name: name,
-                email: email,
-                phoneNum: phone,
-                alamat: alamat,
-                isParent: boolParent,
-                imgUrl: imgUrl,
-                birthDate: birthDate,
-                parentGender:
-                    boolParent ? genderCharFromString(isParent) : null,
-              ),
-            );
+            if (isMainAccount == false && isMainParent == false) {
+              Get.to(
+                () => AkunEditPage(
+                  id: id,
+                  name: name,
+                  email: email,
+                  phoneNum: phone,
+                  alamat: alamat,
+                  isParent: boolParent,
+                  imgUrl: imgUrl,
+                  birthDate: birthDate,
+                  parentGender:
+                      boolParent ? genderCharFromString(isParent) : null,
+                ),
+              );
+            }
           },
           child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: 100,
-                ),
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: imgUrl == null
-                      ? Container(
-                          margin: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: cAsiaBlue,
-                            borderRadius: BorderRadius.circular(15.0),
-                          ),
-                          child: Center(
-                              child: Icon(Icons.person,
-                                  color: cPrimaryBg, size: 50)),
-                        )
-                      : Container(
-                          margin: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            image: imgUrl.contains('http')
-                                ? DecorationImage(
-                                    image: NetworkImage(imgUrl),
-                                    fit: BoxFit.cover)
-                                : DecorationImage(
-                                    image: AssetImage(imgUrl),
-                                    fit: BoxFit.cover),
-                            borderRadius: BorderRadius.circular(15.0),
-                          ),
-                        ),
-                ),
-              ),
-              Flexible(
-                child: Container(
-                  margin: EdgeInsets.all(5),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '$name',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                    child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: 100,
                       ),
-                      Text(isParent != '' ? isParent : 'Anak'),
-                      SizedBox(height: 5),
-                      Text(
-                        '$email',
-                        // style: TextStyle(fontSize: 20),
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: imgUrl == null
+                            ? Container(
+                                margin: EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  color: cAsiaBlue,
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                                child: Center(
+                                    child: Icon(Icons.person,
+                                        color: cPrimaryBg, size: 50)),
+                              )
+                            : Container(
+                                margin: EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  image: imgUrl.contains('http')
+                                      ? DecorationImage(
+                                          image: NetworkImage(imgUrl),
+                                          fit: BoxFit.cover)
+                                      : DecorationImage(
+                                          image: AssetImage(imgUrl),
+                                          fit: BoxFit.cover),
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                              ),
                       ),
-                      SizedBox(height: 5),
-                      if (phone != null)
-                        Text(
-                          '$phone',
-                          // style: TextStyle(fontSize: 20),
+                    ),
+                    Flexible(
+                      child: Container(
+                        margin: EdgeInsets.all(5),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '$name',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            Text(isParent != '' ? isParent : 'Anak'),
+                            SizedBox(height: 5),
+                            Text(
+                              '$email',
+                              // style: TextStyle(fontSize: 20),
+                            ),
+                            SizedBox(height: 5),
+                            if (phone != null)
+                              Text(
+                                '$phone',
+                                // style: TextStyle(fontSize: 20),
+                              ),
+                          ],
                         ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+                      ),
+                    ),
+                  ],
+                )),
+                isMainAccount == false && isMainParent == false
+                    ? Align(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () async {
+                              await deleteChild(id, name, isParent);
+                            }))
+                    : SizedBox.shrink()
+              ]),
         ),
       ),
     );
   }
 
-  Future<bool?> deleteChild(String childId, String childName) async {
+  Future<bool?> deleteChild(
+      String childId, String childName, String isParent) async {
+    final String userType = isParent == '' ? 'anak' : 'co-parent';
     return Get.dialog<bool>(AlertDialog(
       title: Text('Hapus Akun'),
       content: Text('Yakin ingin menghapus akun $childName?'),
@@ -240,11 +275,12 @@ class AkunPage extends StatelessWidget {
               showToastSuccess(
                   ctx: Get.context!,
                   successText:
-                      'Berhasil menghapus anak dengan nama $childName');
+                      'Berhasil menghapus $userType dengan nama $childName');
             } else
               showToastFailed(
                   ctx: Get.context!,
-                  failedText: 'Gagal menghapus anak dengan nama $childName');
+                  failedText:
+                      'Gagal menghapus $userType dengan nama $childName');
           },
           child: Text('Hapus', style: TextStyle(color: cAsiaBlue)),
         ),

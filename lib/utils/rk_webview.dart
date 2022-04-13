@@ -58,7 +58,12 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
         ),
         floatingActionButton: widget.contentId != ''
             ? FloatingActionButton(
-                child: Icon(Icons.forum_sharp, color: cAsiaBlue),
+                elevation: 0,
+                focusElevation: 0,
+                hoverElevation: 0,
+                highlightElevation: 0,
+                backgroundColor: cAsiaBlue.withOpacity(0.8),
+                child: Icon(Icons.forum_sharp, color: cOrtuWhite),
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => FeedComment(

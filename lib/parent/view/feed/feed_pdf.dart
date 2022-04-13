@@ -171,8 +171,8 @@ class _FeedPdfState extends State<FeedPdf> {
           focusElevation: 0,
           hoverElevation: 0,
           highlightElevation: 0,
-          backgroundColor: Colors.transparent,
-          child: Icon(Icons.forum_sharp, color: cAsiaBlue),
+          backgroundColor: cAsiaBlue.withOpacity(0.8),
+          child: Icon(Icons.forum_sharp, color: cOrtuWhite),
           onPressed: () {
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => FeedComment(

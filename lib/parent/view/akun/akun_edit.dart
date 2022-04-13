@@ -351,12 +351,17 @@ class _AkunEditPageState extends State<AkunEditPage> {
                         Theme(
                           data: ThemeData.light(),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            mainAxisSize: MainAxisSize.max,
                             children: [
                               Flexible(
                                 child: ListTile(
                                   title: Text("Ayah"),
+                                  horizontalTitleGap: 0,
+                                  contentPadding: EdgeInsets.zero,
                                   leading: Radio<GenderCharacter>(
+                                    materialTapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
                                     value: GenderCharacter.Ayah,
                                     groupValue: widget.parentGender,
                                     activeColor: cAsiaBlue,
@@ -370,8 +375,30 @@ class _AkunEditPageState extends State<AkunEditPage> {
                               Flexible(
                                 child: ListTile(
                                   title: Text("Bunda"),
+                                  horizontalTitleGap: 0,
+                                  contentPadding: EdgeInsets.zero,
                                   leading: Radio<GenderCharacter>(
+                                    materialTapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
                                     value: GenderCharacter.Bunda,
+                                    groupValue: widget.parentGender,
+                                    activeColor: cAsiaBlue,
+                                    onChanged: (GenderCharacter? value) {
+                                      setState(
+                                          () => widget.parentGender = value);
+                                    },
+                                  ),
+                                ),
+                              ),
+                              Flexible(
+                                child: ListTile(
+                                  title: Text("Lainnya"),
+                                  horizontalTitleGap: 0,
+                                  contentPadding: EdgeInsets.zero,
+                                  leading: Radio<GenderCharacter>(
+                                    materialTapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                    value: GenderCharacter.Lainnya,
                                     groupValue: widget.parentGender,
                                     activeColor: cAsiaBlue,
                                     onChanged: (GenderCharacter? value) {

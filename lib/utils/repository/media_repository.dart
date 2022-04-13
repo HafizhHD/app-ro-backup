@@ -48,11 +48,30 @@ class MediaRepository {
   Future<Response> userLogin(
       String email, String gToken, String fcmToken, String version) async {
     var url = _rkService.baseUrl + '/user/userLogin';
-    Map<String, String> json = {
+
+    var deviceFullInfo = "Unknown";
+    DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidDeviceInfo = await deviceInfoPlugin.androidInfo;
+      deviceFullInfo =
+          '${androidDeviceInfo.manufacturer} ${androidDeviceInfo.model}, Android ${androidDeviceInfo.version.release}';
+      print('Ini info androidnya: $deviceFullInfo');
+    } else if (Platform.isIOS) {
+      IosDeviceInfo iosDeviceInfo = await deviceInfoPlugin.iosInfo;
+      deviceFullInfo =
+          '${iosDeviceInfo.localizedModel} ${iosDeviceInfo.name}, iOS ${iosDeviceInfo.systemVersion}';
+      print('Ini info iosnya: $deviceFullInfo');
+    }
+    Map<String, dynamic> json = {
       "emailUser": "$email",
       "googleToken": "$gToken",
       "fcmToken": "$fcmToken",
       "version": "$version",
+      "devices": {
+        "device": "$deviceFullInfo",
+        "fcmToken": "$fcmToken",
+        "versi": "1.0"
+      },
       "packageId": "com.byasia.ruangortu"
     };
     print('param userLogin: $json');
@@ -145,7 +164,8 @@ class MediaRepository {
       String imgByte,
       String birthDate,
       String address,
-      String userType) async {
+      String userType,
+      String parentGender) async {
     var url = _rkService.baseUrl + '/user/invite';
     Map<String, dynamic> json = {
       "emailUser": "$email",
@@ -159,6 +179,7 @@ class MediaRepository {
       "birdDate": "$birthDate",
       "address": "$address",
       "userType": "$userType",
+      "parentStatus": parentGender,
       "packageId": "com.byasia.ruangortu"
     };
     if (imgByte != "") json["imagePhoto"] = imgByte;

@@ -32,7 +32,9 @@ class Spouse {
         phone: json['phoneNumber'] as String?,
         parentStatus: json['parentStatus'].toString().toLowerCase() == 'ayah'
             ? GenderCharacter.Ayah
-            : GenderCharacter.Bunda,
+            : (json['parentStatus'].toString().toLowerCase() == 'bunda'
+                ? GenderCharacter.Bunda
+                : GenderCharacter.Lainnya),
         status: json['status'] as String?,
         address: json['address'] as String?,
         birdDate: bdate != null && bdate != ''

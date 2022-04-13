@@ -21,9 +21,11 @@ class InboxPage extends StatelessWidget {
             onRefresh: () => controller.getInboxNotif(),
             child: controller.inboxData.length > 0
                 ? _body(context, controller)
-                : Center(
-                    child: Text('Inbox Kosong',
-                        style: TextStyle(color: cOrtuText)),
+                : SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: Center(
+                        child: Text('Inbox Kosong',
+                            style: TextStyle(color: cOrtuText))),
                   ),
           ),
         ),
@@ -35,6 +37,7 @@ class InboxPage extends StatelessWidget {
     final inbox = controller.inboxData;
     return Container(
       child: ListView.builder(
+        physics: AlwaysScrollableScrollPhysics(),
         itemCount: inbox.length,
         itemBuilder: (ctx, idx) {
           final notifData = inbox[idx];

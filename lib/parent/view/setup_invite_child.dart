@@ -39,6 +39,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
   String emailUser = '';
   String nameUser = '';
   String cAddress = '';
+  GenderCharacter? parentGender;
   late FToast fToast;
   String birthDateString = '';
   DateTime birthDate = DateTime.now().subtract(Duration(days: 365 * 5));
@@ -57,6 +58,8 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
     showLoadingOverlay();
     String status = "SD";
     String userTypeString = widget.userTypeStr!;
+    String parentStatusString =
+        parentGender != null ? parentGender!.toEnumString() : '';
     await prefs.setString("rkChildName", cChildName.text);
     final Uint8List? _imageBytes =
         _selectedImage != null ? _selectedImage!.readAsBytesSync() : null;
@@ -90,7 +93,8 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
             : "",
         birthDate.toIso8601String(),
         cAddress,
-        userTypeString);
+        userTypeString,
+        parentStatusString);
     print('isi response invite : ${response.body}');
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
@@ -104,7 +108,8 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                     allData: allData,
                     showToastSuccess: _showToastSuccess,
                     showToastFailed: _showToastFailed,
-                    prefs: prefs)),
+                    prefs: prefs,
+                    userType: userTypeString)),
             result: 'AddChild');
       } else {
         await prefs.setBool(isPrefLogin, false);
@@ -144,24 +149,30 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
     );
   }
 
-  Widget toastFailed = Container(
-    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(25.0),
-      color: Colors.redAccent,
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(Icons.close, color: Colors.white),
-        SizedBox(
-          width: 12.0,
-        ),
-        Text("Maaf, undang anak gagal.\nSilahkan coba kembali",
-            style: TextStyle(color: Colors.white, fontSize: 12)),
-      ],
-    ),
-  );
+  Widget toastFailed() {
+    String userType =
+        widget.userTypeStr != null && widget.userTypeStr == 'parent'
+            ? 'co-parent'
+            : 'anak';
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25.0),
+        color: Colors.redAccent,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.close, color: Colors.white),
+          SizedBox(
+            width: 12.0,
+          ),
+          Text("Maaf, undang $userType gagal.\nSilahkan coba kembali",
+              style: TextStyle(color: Colors.white, fontSize: 12)),
+        ],
+      ),
+    );
+  }
 
   _showToastSuccess() {
     fToast.showToast(
@@ -173,7 +184,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
 
   _showToastFailed() {
     fToast.showToast(
-      child: toastFailed,
+      child: toastFailed(),
       gravity: ToastGravity.BOTTOM,
       toastDuration: Duration(seconds: 2),
     );
@@ -418,6 +429,60 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                           ),
                         ),
                       ),
+                      if (widget.userTypeStr == 'parent')
+                        Theme(
+                          data: ThemeData.light(),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Flexible(
+                                child: ListTile(
+                                  title: Text("Ayah"),
+                                  horizontalTitleGap: 0,
+                                  contentPadding: EdgeInsets.zero,
+                                  leading: Radio<GenderCharacter>(
+                                    value: GenderCharacter.Ayah,
+                                    groupValue: parentGender,
+                                    activeColor: cAsiaBlue,
+                                    onChanged: (GenderCharacter? value) {
+                                      setState(() => parentGender = value);
+                                    },
+                                  ),
+                                ),
+                              ),
+                              Flexible(
+                                child: ListTile(
+                                  title: Text("Bunda"),
+                                  horizontalTitleGap: 0,
+                                  contentPadding: EdgeInsets.zero,
+                                  leading: Radio<GenderCharacter>(
+                                    value: GenderCharacter.Bunda,
+                                    groupValue: parentGender,
+                                    activeColor: cAsiaBlue,
+                                    onChanged: (GenderCharacter? value) {
+                                      setState(() => parentGender = value);
+                                    },
+                                  ),
+                                ),
+                              ),
+                              Flexible(
+                                child: ListTile(
+                                  title: Text("Lainnya"),
+                                  horizontalTitleGap: 0,
+                                  contentPadding: EdgeInsets.zero,
+                                  leading: Radio<GenderCharacter>(
+                                    value: GenderCharacter.Lainnya,
+                                    groupValue: parentGender,
+                                    activeColor: cAsiaBlue,
+                                    onChanged: (GenderCharacter? value) {
+                                      setState(() => parentGender = value);
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -463,13 +528,15 @@ class InviteChildQR extends StatelessWidget {
   final VoidCallback? showToastSuccess;
   final VoidCallback? showToastFailed;
   final SharedPreferences? prefs;
+  final String? userType;
 
   const InviteChildQR(
       {Key? key,
       this.allData,
       this.showToastSuccess,
       this.showToastFailed,
-      this.prefs})
+      this.prefs,
+      this.userType})
       : super(key: key);
 
   void onReInviteChild(
@@ -500,6 +567,8 @@ class InviteChildQR extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final FToast fToast = FToast().init(context);
+    final String userTypeStrings =
+        userType != null && userType == 'parent' ? 'co-parent' : 'anak';
 
     Widget toastSuccess() {
       return Container(
@@ -539,7 +608,7 @@ class InviteChildQR extends StatelessWidget {
           SizedBox(
             width: 12.0,
           ),
-          Text("Maaf, undang anak gagal.\nSilahkan coba kembali",
+          Text("Maaf, undang $userTypeStrings gagal.\nSilahkan coba kembali",
               style: TextStyle(color: Colors.white, fontSize: 12)),
         ],
       ),
@@ -567,106 +636,105 @@ class InviteChildQR extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                        text: 'Untuk menghubungkan ke perangkat anak,',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    TextSpan(
-                        text:
-                            '\nscan QR berikut di perangkat anak untuk aktivasi & download aplikasi '),
-                    TextSpan(text: appName)
-                  ],
-                  style: TextStyle(fontSize: 16, color: cOrtuText),
-                ),
-                textAlign: TextAlign.justify,
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height / 3,
-                color: Colors.white,
-                margin: EdgeInsets.all(5),
-                padding: EdgeInsets.all(5),
-                child: Align(
-                    alignment: Alignment.center,
-                    child: QrImage(data: ApkDownloadURL_ORTU)),
-              ),
-              Text('Atau dengan cara kedua',
-                  style: TextStyle(fontSize: 16, color: cOrtuText)),
-              RichText(
-                  text: TextSpan(children: [
-                    TextSpan(
-                        text: 'Periksa Email anak Anda ',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    TextSpan(text: 'lalu '),
-                    TextSpan(
-                        text: 'klik Aktivasi ',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    TextSpan(
-                        text: '& download aplikasi ' +
-                            appName +
-                            ' di perangkat anak Anda')
-                  ], style: TextStyle(fontSize: 16, color: cOrtuText)),
-                  textAlign: TextAlign.justify),
-              Align(
-                  alignment: Alignment.bottomCenter,
+              Flexible(
                   child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        RichText(
-                            text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                      text:
-                                          'Belum mendapatkan email aktivasi?\n'),
-                                  TextSpan(
-                                      recognizer: TapGestureRecognizer()
-                                        ..onTap = () {
-                                          onReInviteChild(
-                                              allData,
-                                              showToastSuccess != null
-                                                  ? showToastSuccess
-                                                  : _showToastSuccess,
-                                              showToastFailed != null
-                                                  ? showToastFailed
-                                                  : _showToastFailed,
-                                              prefs);
-                                        },
-                                      text: 'Kirim Ulang',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: cOrtuInkWell))
-                                ],
-                                style:
-                                    TextStyle(fontSize: 14, color: cOrtuText)),
-                            textAlign: TextAlign.justify),
-                        Container(
-                          margin: EdgeInsets.all(10),
-                          child: FlatButton(
-                            height: 50,
-                            minWidth: 300,
-                            shape: new RoundedRectangleBorder(
-                              borderRadius: new BorderRadius.circular(15.0),
-                            ),
-                            onPressed: () async {
-                              Navigator.pop(context, 'AddChild');
-                            },
-                            color: cAsiaBlue,
-                            child: Text(
-                              "KEMBALI KE HOME",
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                              text:
+                                  'Untuk menghubungkan ke perangkat $userTypeStrings,',
                               style: TextStyle(
-                                color: cOrtuWhite,
-                                fontFamily: 'Raleway',
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20.0,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ])),
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                          TextSpan(
+                              text:
+                                  '\nscan QR berikut di perangkat $userTypeStrings untuk aktivasi & download aplikasi ',
+                              style: TextStyle(fontSize: 16)),
+                          TextSpan(text: appName)
+                        ],
+                        style: TextStyle(color: cOrtuText),
+                      ),
+                      textAlign: TextAlign.justify,
+                    ),
+                    Container(
+                      height: MediaQuery.of(context).size.height / 3,
+                      color: Colors.white,
+                      margin: EdgeInsets.all(5),
+                      padding: EdgeInsets.all(5),
+                      child: Align(
+                          alignment: Alignment.center,
+                          child: QrImage(data: ApkDownloadURL_ORTU)),
+                    ),
+                    RichText(
+                        text: TextSpan(children: [
+                          TextSpan(text: 'Atau dengan cara kedua\n\n'),
+                          TextSpan(
+                              text: 'Periksa Email $userTypeStrings Anda ',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(text: 'lalu '),
+                          TextSpan(
+                              text: 'klik Aktivasi ',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(
+                              text: '& download aplikasi ' +
+                                  appName +
+                                  ' di perangkat $userTypeStrings Anda')
+                        ], style: TextStyle(fontSize: 16, color: cOrtuText)),
+                        textAlign: TextAlign.justify),
+                    RichText(
+                        text: TextSpan(children: [
+                          TextSpan(text: 'Belum mendapatkan email aktivasi?\n'),
+                          TextSpan(
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  onReInviteChild(
+                                      allData,
+                                      showToastSuccess != null
+                                          ? showToastSuccess
+                                          : _showToastSuccess,
+                                      showToastFailed != null
+                                          ? showToastFailed
+                                          : _showToastFailed,
+                                      prefs);
+                                },
+                              text: 'Kirim Ulang',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: cOrtuInkWell))
+                        ], style: TextStyle(fontSize: 16, color: cOrtuText)),
+                        textAlign: TextAlign.justify),
+                    SizedBox(height: 10)
+                  ])),
+              Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+                Container(
+                  margin: EdgeInsets.all(10),
+                  child: FlatButton(
+                    height: 50,
+                    minWidth: 300,
+                    shape: new RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(15.0),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context, 'AddChild');
+                    },
+                    color: cAsiaBlue,
+                    child: Text(
+                      "KEMBALI KE HOME",
+                      style: TextStyle(
+                        color: cOrtuWhite,
+                        fontFamily: 'Raleway',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0,
+                      ),
+                    ),
+                  ),
+                ),
+              ]),
               // Container(
               //   margin: EdgeInsets.all(10),
               //   child: FlatButton(

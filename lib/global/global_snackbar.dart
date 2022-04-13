@@ -124,8 +124,9 @@ void showToastFailed({required String failedText, required BuildContext ctx}) {
               SizedBox(
                 width: 12.0,
               ),
-              Text(failedText,
-                  style: TextStyle(color: Colors.white, fontSize: 12)),
+              Flexible(
+                  child: Text(failedText,
+                      style: TextStyle(color: Colors.white, fontSize: 12))),
             ],
           ),
         ),

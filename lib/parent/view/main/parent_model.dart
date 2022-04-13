@@ -53,7 +53,9 @@ class ParentProfile {
             : null,
         parentStatus: json['parentStatus'].toString().toLowerCase() == 'ayah'
             ? GenderCharacter.Ayah
-            : GenderCharacter.Bunda,
+            : (json['parentStatus'].toString().toLowerCase() == 'bunda'
+                ? GenderCharacter.Bunda
+                : GenderCharacter.Lainnya),
         children: listChild.map((e) => Child.fromJson(e)).toList(),
         spouse: listSpouse.map((e) => Spouse.fromJson(e)).toList(),
         status: json['status'] as String?,
@@ -72,7 +74,9 @@ class ParentProfile {
         userType: json['userType'],
         parentStatus: json['parentStatus'].toString().toLowerCase() == 'ayah'
             ? GenderCharacter.Ayah
-            : GenderCharacter.Bunda,
+            : (json['parentStatus'].toString().toLowerCase() == 'bunda'
+                ? GenderCharacter.Bunda
+                : GenderCharacter.Lainnya),
         children: listChild.map((e) => Child.fromJson(e)).toList(),
         spouse: listSpouse.map((e) => Spouse.fromJson(e)).toList(),
         status: json['status'] as String?,

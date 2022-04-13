@@ -18,83 +18,97 @@ class ChildAkunPage extends StatelessWidget {
           final parentData = ctrl.parentProfile;
           final otherParent = ctrl.otherParentProfile;
           final children = parentData.children ?? [];
-          return Container(
-            // color: ,
-            padding: EdgeInsets.all(5),
-            child: SingleChildScrollView(
-              physics: BouncingScrollPhysics(),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  profileContainer(
-                    id: childProfile.id,
-                    imgUrl: childProfile.imgPhoto,
-                    name: childProfile.name,
-                    email: childProfile.email,
-                    phone: childProfile.phone,
-                    alamat: childProfile.address,
-                    birthDate: childProfile.birdDate,
-                    canEdit: true,
-                  ),
-                  profileContainer(
-                    id: parentData.id,
-                    imgUrl: parentData.imgPhoto,
-                    name: parentData.name,
-                    email: parentData.email,
-                    phone: parentData.phone,
-                    alamat: parentData.address,
-                    birthDate: childProfile.birdDate,
-                    isParent: parentData.parentStatus.toEnumString(),
-                  ),
-                  Flexible(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: otherParent.length,
-                      itemBuilder: (ctx, idx) {
-                        final otherParentData = otherParent[idx];
-                        return profileContainer(
-                            id: otherParentData.id,
-                            imgUrl: otherParentData.imgPhoto,
-                            name: otherParentData.name,
-                            email: otherParentData.email,
-                            phone: otherParentData.phone,
-                            alamat: otherParentData.address,
-                            birthDate: childProfile.birdDate,
-                            isParent:
-                                otherParentData.parentStatus.toEnumString()
-                            // phone: ,
-                            );
+          return Column(mainAxisSize: MainAxisSize.max, children: [
+            Expanded(
+                child: Container(
+                    // color: ,
+                    padding: EdgeInsets.all(5),
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        await ctrl.getChildData();
+                        await ctrl.getParentData();
                       },
-                    ),
-                  ),
-                  Flexible(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: children.length,
-                      itemBuilder: (ctx, idx) {
-                        final childData = children[idx];
-                        return childData.id == childProfile.id
-                            ? SizedBox()
-                            : profileContainer(
-                                imgUrl: childData.imgPhoto,
-                                name: childData.name ?? 'Nama Anak',
-                                email: childData.email ?? 'email@anak.com',
-                                id: childData.id,
-                                // phone: ,
-                              );
-                      },
-                    ),
-                  ),
-                  Container(
-                      margin: EdgeInsets.all(10),
-                      child: Text('Versi ${appInfo.version}'))
-                ],
-              ),
-            ),
-          );
+                      child: SingleChildScrollView(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            profileContainer(
+                              id: childProfile.id,
+                              imgUrl: childProfile.imgPhoto,
+                              name: childProfile.name,
+                              email: childProfile.email,
+                              phone: childProfile.phone,
+                              alamat: childProfile.address,
+                              birthDate: childProfile.birdDate,
+                              canEdit: true,
+                            ),
+                            profileContainer(
+                              id: parentData.id,
+                              imgUrl: parentData.imgPhoto,
+                              name: parentData.name,
+                              email: parentData.email,
+                              phone: parentData.phone,
+                              alamat: parentData.address,
+                              birthDate: childProfile.birdDate,
+                              isParent: parentData.parentStatus.toEnumString(),
+                            ),
+                            Flexible(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: otherParent.length,
+                                itemBuilder: (ctx, idx) {
+                                  final otherParentData = otherParent[idx];
+                                  return profileContainer(
+                                      id: otherParentData.id,
+                                      imgUrl: otherParentData.imgPhoto,
+                                      name: otherParentData.name,
+                                      email: otherParentData.email,
+                                      phone: otherParentData.phone,
+                                      alamat: otherParentData.address,
+                                      birthDate: childProfile.birdDate,
+                                      isParent: otherParentData.parentStatus
+                                          .toEnumString()
+                                      // phone: ,
+                                      );
+                                },
+                              ),
+                            ),
+                            Flexible(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: children.length,
+                                itemBuilder: (ctx, idx) {
+                                  final childData = children[idx];
+                                  return childData.id == childProfile.id
+                                      ? SizedBox()
+                                      : profileContainer(
+                                          imgUrl: childData.imgPhoto,
+                                          name: childData.name ?? 'Nama Anak',
+                                          email: childData.email ??
+                                              'email@anak.com',
+                                          id: childData.id,
+                                          // phone: ,
+                                        );
+                                },
+                              ),
+                            ),
+                            Container(
+                                margin: EdgeInsets.all(10),
+                                child: Text('Versi ${appInfo.version}'))
+                          ],
+                        ),
+                      ),
+                    ))),
+            Align(
+                alignment: Alignment.bottomLeft,
+                child: Container(
+                    margin: EdgeInsets.all(10),
+                    child: Text('Versi ${appInfo.version}')))
+          ]);
         },
       ),
       // floatingActionButton: FloatingActionButton.extended(
