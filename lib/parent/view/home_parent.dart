@@ -392,14 +392,14 @@ class _HomeParentPageState extends State<HomeParentPage> {
             );
           } else {
             return Container(
-                margin: EdgeInsets.only(top: 10),
+                margin: EdgeInsets.only(top: 5),
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       flag == false
                           ? SizedBox.shrink()
                           : Container(
-                              padding: EdgeInsets.only(left: 10, right: 10),
+                              padding: EdgeInsets.only(left: 15, right: 15),
                               child: Container(
                                   child: TextButton(
                                       style: ButtonStyle(
@@ -434,7 +434,8 @@ class _HomeParentPageState extends State<HomeParentPage> {
                                     childsList[index].childOfNumber ?? 0, 1);
                                 final thisChild = childsList[index];
                                 return Container(
-                                  margin: EdgeInsets.only(top: 10, bottom: 10),
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 15),
                                   // constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
                                   child: ChildCardWithBottomSheet(
                                       childData: thisChild,
@@ -481,7 +482,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
               : BorderRadius.only(
                   topLeft: Radius.circular(10), topRight: Radius.circular(10)),
         ),
-        constraints: BoxConstraints(maxHeight: screenSize.height * 0.3),
+        constraints: BoxConstraints(maxHeight: screenSize.height * 0.25),
         child: Stack(
           children: [
             hasPhoto
@@ -631,15 +632,15 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                                         contentTime(
                                                             'Screen Time',
                                                             thisScreenTime ??
-                                                                '00:00'),
+                                                                '0s'),
                                                         contentTime(
                                                             'Gaming',
                                                             thisSTGaming ??
-                                                                '00:00'),
+                                                                '0s'),
                                                         contentTime(
                                                             'Social Media',
                                                             thisSTSocial ??
-                                                                '00:00'),
+                                                                '0s'),
                                                       ],
                                                     );
                                                   },
@@ -965,18 +966,18 @@ class ChildCardWithBottomSheet extends StatelessWidget {
     String timeValue,
   ) {
     return Container(
-      padding: EdgeInsets.all(2),
+      padding: EdgeInsets.symmetric(horizontal: 2),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             '$title',
-            style: TextStyle(color: Colors.white, fontSize: 15),
+            style: TextStyle(color: Colors.white, fontSize: 14),
           ),
           Text(
             '$timeValue',
             style: TextStyle(
-                color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ],
       ),

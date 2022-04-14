@@ -500,9 +500,9 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
     listAppUsage.forEach((e) {
       e.appUsagesDetail.forEach((f) {
         f.duration = 0;
-        f.usageHour!.forEach((g) {
-          print('Ini adalah time untuk ${f.appName}: ${g["durationInStamp"]}');
-        });
+        // f.usageHour!.forEach((g) {
+        //   print('Ini adalah time untuk ${f.appName}: ${g["durationInStamp"]}');
+        // });
       });
     });
     lastUpdated = now_HHmm();
@@ -530,9 +530,10 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
         backgroundColor: cPrimaryBg,
         appBar: appBar,
         body: Container(
-            padding: EdgeInsets.only(left: 10, right: 10),
+            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 ToggleBar(
@@ -547,54 +548,56 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
                         types = 'day';
                       setState(() {});
                     }),
-                RefreshIndicator(
-                    onRefresh: () async {
-                      await updateChart();
-                      await updateChart();
-                    },
-                    child: SingleChildScrollView(
-                        physics: ClampingScrollPhysics(
-                            parent: AlwaysScrollableScrollPhysics()),
-                        child: Container(
-                            height: MediaQuery.of(context).size.height -
-                                MediaQuery.of(context).padding.top * 1.5 -
-                                appBar.preferredSize.height * 2,
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  chartDetail(types, updateChart),
-                                  Container(
-                                    margin: EdgeInsets.only(
-                                        bottom: 10, left: 15, right: 15),
-                                    child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                              'Updated today ${lastUpdated != '' ? lastUpdated : widget.lastUpdate}',
-                                              style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: cOrtuText)),
-                                          TextButton(
-                                              style: TextButton.styleFrom(
-                                                  textStyle: TextStyle(
-                                                      fontSize: 14,
-                                                      color: cAsiaBlue)),
-                                              onPressed: () async {
-                                                showLoadingOverlay();
-                                                await updateChart();
-                                                await updateChart();
-                                                closeOverlay(); //second call for actually update the chart
-                                              },
-                                              child: Row(children: [
-                                                Icon(Icons.refresh),
-                                                Text('Refresh')
-                                              ]))
-                                        ]),
-                                  ),
-                                  Flexible(child: onLoadMostUsage(types))
-                                ]))))
+                Expanded(
+                    child: RefreshIndicator(
+                        onRefresh: () async {
+                          await updateChart();
+                          await updateChart();
+                        },
+                        child: CustomScrollView(
+                            physics: ClampingScrollPhysics(
+                                parent: AlwaysScrollableScrollPhysics()),
+                            slivers: [
+                              SliverFillRemaining(
+                                  child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                    chartDetail(types, updateChart),
+                                    Container(
+                                      margin: EdgeInsets.only(
+                                          bottom: 10, left: 15, right: 15),
+                                      child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                                'Updated today ${lastUpdated != '' ? lastUpdated : widget.lastUpdate}',
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: cOrtuText)),
+                                            TextButton(
+                                                style: TextButton.styleFrom(
+                                                    textStyle: TextStyle(
+                                                        fontSize: 14,
+                                                        color: cAsiaBlue)),
+                                                onPressed: () async {
+                                                  showLoadingOverlay();
+                                                  await updateChart();
+                                                  await updateChart();
+                                                  closeOverlay(); //second call for actually update the chart
+                                                },
+                                                child: Row(children: [
+                                                  Icon(Icons.refresh),
+                                                  Text('Refresh')
+                                                ]))
+                                          ]),
+                                    ),
+                                    Expanded(child: onLoadMostUsage(types))
+                                  ]))
+                            ])))
               ],
             )));
   }
@@ -609,8 +612,7 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                margin: EdgeInsets.only(
-                    top: 10.0, left: 20.0, right: 20.0, bottom: 5.0),
+                margin: EdgeInsets.only(left: 20.0, bottom: 5.0),
                 child: Text('Most Used Apps',
                     style: TextStyle(
                         fontSize: 18,
@@ -619,12 +621,12 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
               ),
             ],
           ),
-          Flexible(
+          Expanded(
             child: Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: cOrtuLightGrey),
-              margin: EdgeInsets.all(10.0),
+              margin: EdgeInsets.all(0.0),
               child: type == 'week' ? onMostWeekData() : onMostDay(),
             ),
           ),
@@ -643,14 +645,13 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            margin: EdgeInsets.all(10.0),
+            margin: EdgeInsets.only(top: 5),
             child: Text(
               type == 'week' ? 'Daily Average' : 'Total Usage Today',
               style: TextStyle(fontSize: 16, color: cOrtuText),
             ),
           ),
           Container(
-            margin: EdgeInsets.only(left: 10.0),
             child: Text(
               type == 'week' ? averageTimeWeekly : avgData,
               style: TextStyle(
@@ -662,17 +663,16 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
           ),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 10),
-            height: MediaQuery.of(context).size.height / 4.5,
+            height: MediaQuery.of(context).size.height / 5,
             child:
                 type == 'week' ? _chartWeeklyAverage() : _chartDailyAverage(),
           ),
           type == 'week'
-              ? Divider(color: cOrtuWhite, thickness: 1)
+              ? Divider(color: cOrtuWhite, thickness: 0)
               : SizedBox.shrink(),
           type == 'week'
               ? Container(
-                  margin:
-                      EdgeInsets.only(top: 5, bottom: 10, left: 25, right: 25),
+                  margin: EdgeInsets.only(bottom: 6, left: 25, right: 25),
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

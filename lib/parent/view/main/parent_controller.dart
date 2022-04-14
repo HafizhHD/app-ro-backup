@@ -296,9 +296,13 @@ class ParentController extends GetxController {
             mapChildActivity[child.email!] = listAppUsage;
             listAppUsage.forEach((appUsage) {
               appUsage.appUsagesDetail.forEach((e) {
-                seconds += e.duration;
-                if (e.appCategory == 'game') secondsGaming += e.duration;
-                if (e.appCategory == 'social') secondsSocial += e.duration;
+                e.usageHour!.forEach((f) {
+                  seconds += int.parse(f['durationInStamp']);
+                  if (e.appCategory == 'game')
+                    secondsGaming += int.parse(f['durationInStamp']);
+                  if (e.appCategory == 'social')
+                    secondsSocial += int.parse(f['durationInStamp']);
+                });
               });
             });
           }

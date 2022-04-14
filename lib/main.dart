@@ -148,7 +148,7 @@ Future<Map<String, int>> getDurationAppForeground() async {
 }
 
 void callbackBackgroundService() async {
-  print("background service on");
+  print("background service on: ${DateTime.now()}");
   SharedPreferences prefs = await SharedPreferences.getInstance();
   try {
     final result = await InternetAddress.lookup('ruangortu.id');

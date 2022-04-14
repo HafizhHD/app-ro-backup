@@ -634,6 +634,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                         )))
                 .then((value) {
               setState(() {
+                onGetUsageDataWeekly();
                 _loadingGetData = true;
               });
               getModeAsuh();
