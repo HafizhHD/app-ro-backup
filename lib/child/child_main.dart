@@ -48,7 +48,10 @@ class _ChildMainState extends State<ChildMain> {
   static Future<void> startAppUsagePeriodic() async {
     await BackgroundServiceNew.oneShot(
         const Duration(minutes: 3), 12302, callback,
-        wakeup: true, exact: true, rescheduleOnReboot: true);
+        wakeup: true,
+        exact: true,
+        allowWhileIdle: true,
+        rescheduleOnReboot: true);
   }
 
   static Future<void> callback() async {

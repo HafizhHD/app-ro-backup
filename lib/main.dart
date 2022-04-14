@@ -85,7 +85,10 @@ late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 void startServicePlatform() async {
   await BackgroundServiceNew.oneShot(
       const Duration(milliseconds: 5000), 12304, callbackBackgroundService,
-      wakeup: true, exact: true, rescheduleOnReboot: true);
+      wakeup: true,
+      exact: true,
+      allowWhileIdle: true,
+      rescheduleOnReboot: true);
 }
 
 Future<Map<String, int>> getDurationAppForeground() async {
