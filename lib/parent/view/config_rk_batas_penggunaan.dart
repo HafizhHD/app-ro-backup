@@ -118,6 +118,20 @@ class _RKConfigBatasPenggunaanPageState
           List<AppListWithIcons> data = List<AppListWithIcons>.from(
               dataList.map((model) => AppListWithIcons.fromJson(model)));
           data.sort((a, b) => a.appName!.compareTo(b.appName!));
+
+          List<AppListWithIcons> data1 = [], data2 = [];
+
+          data.forEach((e) {
+            if (e.limit != null && int.parse(e.limit!) > 0)
+              data1.add(e);
+            else
+              data2.add(e);
+          });
+          data1.sort((a, b) => a.appName!.compareTo(b.appName!));
+          data2.sort((a, b) => a.appName!.compareTo(b.appName!));
+          data1.addAll(data2);
+          data = data1;
+
           print('SetData');
           appList = data;
           appListSearch = data;
@@ -202,7 +216,6 @@ class _RKConfigBatasPenggunaanPageState
                         child: Text('List aplikasi kosong',
                             style: TextStyle(color: cOrtuText)),
                       );
-                    listApps.sort((a, b) => a.appName!.compareTo(b.appName!));
 
                     return Container(
                         decoration: BoxDecoration(

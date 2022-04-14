@@ -175,7 +175,9 @@ class _HomeParentPageState extends State<HomeParentPage> {
           return RefreshIndicator(
             onRefresh: () async {
               await parentController.getParentChildData();
-              setState(() {});
+              setState(() {
+                parentController.getWeeklyUsageStatistic();
+              });
             },
             child:
                 // Flexible(

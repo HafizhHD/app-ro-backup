@@ -474,10 +474,10 @@ class _AkunEditPageState extends State<AkunEditPage> {
                         child: Text(
                           "SIMPAN",
                           style: TextStyle(
-                            fontFamily: 'Raleway',
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20.0,
-                          ),
+                              fontFamily: 'Raleway',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20.0,
+                              color: cOrtuWhite),
                         ),
                       ),
                     ),

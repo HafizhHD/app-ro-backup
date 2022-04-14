@@ -469,6 +469,8 @@ class _DetailChildActivityPageState extends State<DetailChildActivityPage> {
     listAppUsageWeekly = parentController.mapChildActivity[widget.email] ?? [];
     averageTimeWeekly =
         parentController.mapChildScreentime[widget.email] ?? '0s';
+    totalTimeWeekly =
+        parentController.mapChildScreentimeTotal[widget.email] ?? '0s';
     listAppUsage.forEach((e) {
       e.appUsagesDetail.forEach((f) {
         f.duration = 0;

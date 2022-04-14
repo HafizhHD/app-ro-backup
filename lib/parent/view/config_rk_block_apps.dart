@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:collection/collection.dart';
 
 import 'package:http/http.dart';
 import 'package:ruangkeluarga/global/global.dart';
@@ -83,16 +84,29 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
             }
             List<AppListWithIcons> data = List<AppListWithIcons>.from(
                 dataList.map((model) => AppListWithIcons.fromJson(model)));
-            data.sort((a, b) => a.appName!.compareTo(b.appName!));
-            data.sort((a, b) {
-              if (b.blacklist!) {
-                if (a.blacklist! == b.blacklist!) {
-                  return a.appName!.compareTo(b.appName!);
-                } else
-                  return 1;
-              } else
-                return -1;
+            // data.sort((a, b) => a.appName!.compareTo(b.appName!));
+            // data.sort((a, b) {
+            //   if (b.blacklist!) {
+            //     if (a.blacklist! == b.blacklist!) {
+            //       return a.appName!.compareTo(b.appName!);
+            //     } else
+            //       return 1;
+            //   } else
+            //     return -1;
+            // });
+            List<AppListWithIcons> data1 = [], data2 = [];
+
+            data.forEach((e) {
+              if (e.blacklist! == true)
+                data1.add(e);
+              else
+                data2.add(e);
             });
+            data1.sort((a, b) => a.appName!.compareTo(b.appName!));
+            data2.sort((a, b) => a.appName!.compareTo(b.appName!));
+            data1.addAll(data2);
+            data = data1;
+
             print('SetData');
             appList = data;
             appListSearch = data;

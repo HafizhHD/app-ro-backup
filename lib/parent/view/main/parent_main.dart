@@ -13,7 +13,7 @@ import 'package:ruangkeluarga/parent/view/addon/addon_page.dart';
 import 'package:ruangkeluarga/parent/view/akun/akun_page.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_page.dart';
 import 'package:ruangkeluarga/parent/view/home_parent.dart';
-import 'package:ruangkeluarga/parent/view/inbox/Inbox_page.dart';
+import 'package:ruangkeluarga/parent/view/inbox/inbox_page.dart';
 import 'package:ruangkeluarga/parent/view/jadwal/jadwal_page.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_drawer.dart';
