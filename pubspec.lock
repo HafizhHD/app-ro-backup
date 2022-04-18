@@ -35,7 +35,7 @@ packages:
       name: async
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.8.2"
+    version: "2.8.1"
   audioplayers:
     dependency: "direct main"
     description:
@@ -98,7 +98,7 @@ packages:
       name: characters
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.0"
+    version: "1.1.0"
   charcode:
     dependency: transitive
     description:
@@ -324,12 +324,12 @@ packages:
     source: hosted
     version: "2.5.2"
   firebase_crashlytics_platform_interface:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: firebase_crashlytics_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.2.0"
+    version: "3.1.13"
   firebase_database:
     dependency: "direct main"
     description:
@@ -359,12 +359,12 @@ packages:
     source: hosted
     version: "11.2.7"
   firebase_messaging_platform_interface:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: firebase_messaging_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.2.0"
+    version: "3.1.6"
   firebase_messaging_web:
     dependency: transitive
     description:
@@ -648,13 +648,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.4.4"
-  internet_file:
-    dependency: "direct main"
-    description:
-      name: internet_file
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0+2"
   intl:
     dependency: "direct main"
     description:
@@ -717,14 +710,7 @@ packages:
       name: matcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.11"
-  material_color_utilities:
-    dependency: transitive
-    description:
-      name: material_color_utilities
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.3"
+    version: "0.12.10"
   meta:
     dependency: transitive
     description:
@@ -1114,7 +1100,7 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.8"
+    version: "0.4.2"
   timezone:
     dependency: transitive
     description:
@@ -1129,13 +1115,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.0"
-  universal_file:
-    dependency: transitive
-    description:
-      name: universal_file
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0"
   universal_io:
     dependency: transitive
     description:
@@ -1170,7 +1149,7 @@ packages:
       name: vector_math
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.1"
+    version: "2.1.0"
   video_player:
     dependency: "direct main"
     description:
@@ -1256,5 +1235,5 @@ packages:
     source: hosted
     version: "8.0.0"
 sdks:
-  dart: ">=2.14.3 <3.0.0"
+  dart: ">=2.14.0 <3.0.0"
   flutter: ">=2.5.0"

@@ -240,6 +240,7 @@ class ChildController extends GetxController {
       if (json['resultCode'] == "OK") {
         var jsonUser = json['user'];
         parentProfile = ParentProfile.fromJson(jsonUser);
+        otherParentProfile = [];
         for (var e in childProfile.otherParent) {
           ParentProfile otherProfile = ParentProfile.fromJson(e);
           Response res =
