@@ -306,35 +306,41 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                         _serviceAppUsage &&
                         _cameraPermission &&
                         _audioPermission &&
-                        _kunciLayar) {
-                      if (widget.userType == 'child') {
-                        Get.put(FeedController());
-                        Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(
-                              builder: (context) => ChildMain(
-                                    childEmail: widget.email,
-                                    childName: widget.name,
-                                  )),
-                          (Route<dynamic> route) => false,
-                        );
-                      } else {
-                        Get.put(FeedController());
-                        Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (context) => ParentMain()),
-                          (Route<dynamic> route) => false,
-                        );
-                      }
-                      // else Navigator.of(context).push(leftTransitionRoute(ParentMain()));
+                        _kunciLayar &&
+                        widget.userType == 'child') {
+                      Get.put(FeedController());
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (context) => ChildMain(
+                                  childEmail: widget.email,
+                                  childName: widget.name,
+                                )),
+                        (Route<dynamic> route) => false,
+                      );
+                    } else if (_cameraPermission &&
+                        _storage &&
+                        widget.userType == 'parent') {
+                      Get.put(FeedController());
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) => ParentMain()),
+                        (Route<dynamic> route) => false,
+                      );
                     } else {
                       _showMyDialog();
                     }
+                    // else Navigator.of(context).push(leftTransitionRoute(ParentMain()));
                   },
-                  color: _locationPermission &&
-                          _contactPermission &&
-                          _serviceAppUsage &&
-                          _cameraPermission &&
-                          _audioPermission &&
-                          _kunciLayar
+                  color: (_locationPermission &&
+                              _contactPermission &&
+                              _serviceAppUsage &&
+                              _cameraPermission &&
+                              _audioPermission &&
+                              _storage &&
+                              _kunciLayar &&
+                              widget.userType == 'child') ||
+                          (_cameraPermission &&
+                              _storage &&
+                              widget.userType == 'parent')
                       ? cAsiaBlue
                       : Color.fromARGB(255, 80, 80, 80),
                   child: Text(
@@ -367,47 +373,41 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
     final screenHeight = MediaQuery.of(context).size.height;
     return PageView(
       controller: pageController,
+      physics: NeverScrollableScrollPhysics(),
       children: <Widget>[
         Container(
             margin: EdgeInsets.all(10),
             child: Column(children: [
-              Text('Kontak',
+              Text('Media Penyimpanan',
                   style: TextStyle(
                       color: cOrtuText,
                       fontSize: 25,
                       fontWeight: FontWeight.bold)),
-              // Padding(
-              //     padding: EdgeInsets.all(100),
-              //     child: Text('Gambar',
-              //         style: TextStyle(
-              //             backgroundColor: cOrtuText, fontSize: 20))),
               Padding(
                   padding: EdgeInsets.all(10),
-                  child: Image.asset('assets/images/icon/phonebook.png',
+                  child: Image.asset('assets/images/icon/folderdocs.png',
                       height: screenHeight / 4, fit: BoxFit.fill)),
               Padding(
                   padding: EdgeInsets.only(bottom: 10),
                   child: Text(
-                      'Kami membutuhkan akses kontak pada perangkat anak untuk memonitoring kontak anak.',
+                      'Kami membutuhkan akses media penyimpanan untuk menyimpan foto profile Anda.',
                       style: TextStyle(color: cOrtuText))),
               SwitchListTile.adaptive(
                 tileColor: cOrtuGrey,
-                title: Text('Kontak'),
-                value: _contactPermission,
+                title: Text('Media Penyimpanan'),
+                value: _storage,
                 onChanged: (val) async {
-                  print(val);
-                  var _permissionStatus = await Permission.contacts.status;
-                  print('_permissionStatus $_permissionStatus');
+                  var _permissionStatus = await Permission.storage.status;
                   if (_permissionStatus.isDenied) {
                     final s = Stopwatch()..start();
-                    _permissionStatus = await Permission.contacts.request();
+                    _permissionStatus = await Permission.storage.request();
                     s.stop();
                     if (s.elapsedMilliseconds < _waitDelay &&
                         _permissionStatus.isPermanentlyDenied) {
                       await Get.dialog(AlertDialog(
                         title: Text('Akses ditolak'),
                         content: Text(
-                            'Akses untuk kontak telah di tolak sebelum nya. Buka setting untuk merubah akses'),
+                            'Akses untuk akses media penyimpanan telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
                         actions: [
                           TextButton(
                               onPressed: () async {
@@ -417,10 +417,9 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                               child: Text('Buka Setting'))
                         ],
                       ));
-                      _permissionStatus = await Permission.contacts.status;
                     }
                   }
-                  _contactPermission = _permissionStatus.isGranted;
+                  _storage = _permissionStatus.isGranted;
                   nextPage(1);
                   setState(() {});
                 },
@@ -475,7 +474,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                     }
                   }
                   _cameraPermission = _permissionStatus.isGranted;
-                  nextPage(2);
+                  if (widget.userType == 'child') nextPage(2);
                   setState(() {});
                 },
                 contentPadding:
@@ -484,6 +483,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                     borderRadius: BorderRadius.all(Radius.circular(15))),
               )
             ])),
+
         Container(
             margin: EdgeInsets.all(10),
             child: Column(children: [
@@ -541,36 +541,43 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
         Container(
             margin: EdgeInsets.all(10),
             child: Column(children: [
-              Text('Media Penyimpanan',
+              Text('Kontak',
                   style: TextStyle(
                       color: cOrtuText,
                       fontSize: 25,
                       fontWeight: FontWeight.bold)),
+              // Padding(
+              //     padding: EdgeInsets.all(100),
+              //     child: Text('Gambar',
+              //         style: TextStyle(
+              //             backgroundColor: cOrtuText, fontSize: 20))),
               Padding(
                   padding: EdgeInsets.all(10),
-                  child: Image.asset('assets/images/icon/folderdocs.png',
+                  child: Image.asset('assets/images/icon/phonebook.png',
                       height: screenHeight / 4, fit: BoxFit.fill)),
               Padding(
                   padding: EdgeInsets.only(bottom: 10),
                   child: Text(
-                      'Kami membutuhkan akses media penyimpanan untuk menyimpan foto profile Anda.',
+                      'Kami membutuhkan akses kontak pada perangkat anak untuk memonitoring kontak anak.',
                       style: TextStyle(color: cOrtuText))),
               SwitchListTile.adaptive(
                 tileColor: cOrtuGrey,
-                title: Text('Media Penyimpanan'),
-                value: _storage,
+                title: Text('Kontak'),
+                value: _contactPermission,
                 onChanged: (val) async {
-                  var _permissionStatus = await Permission.storage.status;
+                  print(val);
+                  var _permissionStatus = await Permission.contacts.status;
+                  print('_permissionStatus $_permissionStatus');
                   if (_permissionStatus.isDenied) {
                     final s = Stopwatch()..start();
-                    _permissionStatus = await Permission.storage.request();
+                    _permissionStatus = await Permission.contacts.request();
                     s.stop();
                     if (s.elapsedMilliseconds < _waitDelay &&
                         _permissionStatus.isPermanentlyDenied) {
                       await Get.dialog(AlertDialog(
                         title: Text('Akses ditolak'),
                         content: Text(
-                            'Akses untuk akses media penyimpanan telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
+                            'Akses untuk kontak telah di tolak sebelum nya. Buka setting untuk merubah akses'),
                         actions: [
                           TextButton(
                               onPressed: () async {
@@ -580,9 +587,10 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                               child: Text('Buka Setting'))
                         ],
                       ));
+                      _permissionStatus = await Permission.contacts.status;
                     }
                   }
-                  _storage = _permissionStatus.isGranted;
+                  _contactPermission = _permissionStatus.isGranted;
                   nextPage(4);
                   setState(() {});
                 },

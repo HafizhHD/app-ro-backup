@@ -297,7 +297,7 @@ class _MyHomePageState extends State<MyHomePage> {
             print("Internet not connected");
           } else {
             if (prevLogin != null && roUserType != null && roUserType != '') {
-              if (await childNeedPermission() && roUserType == 'child') {
+              if (await childNeedPermission() || await parentNeedPermission()) {
                 SharedPreferences prefs = await SharedPreferences.getInstance();
                 await prefs.clear();
                 await signOutGoogle();
