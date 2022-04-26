@@ -674,7 +674,7 @@ class InviteChildQR extends StatelessWidget {
                         text: TextSpan(children: [
                           TextSpan(text: 'Atau dengan cara kedua\n\n'),
                           TextSpan(
-                              text: 'Periksa Email $userTypeStrings Anda ',
+                              text: 'Periksa Email ${allData![0]} ',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           TextSpan(text: 'lalu '),
                           TextSpan(
