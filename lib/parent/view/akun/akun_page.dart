@@ -149,7 +149,8 @@ class AkunPage extends StatelessWidget {
         child: InkWell(
           onTap: () {
             final bool boolParent = isParent == '' ? false : true;
-            if (isMainAccount == false && isMainParent == false) {
+            if (isMainAccount == true ||
+                (isMainAccount == false && isMainParent == false)) {
               Get.to(
                 () => AkunEditPage(
                   id: id,
