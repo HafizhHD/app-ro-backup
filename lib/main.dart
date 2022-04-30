@@ -126,7 +126,7 @@ Future<Map<String, int>> getDurationAppForeground() async {
             if (i == 0) {
               duration += val[1] - startDate.millisecondsSinceEpoch as int;
               startTime = -1;
-            } else {
+            } else if (lastType == 1) {
               duration += val[1] - startTime as int;
               startTime = -1;
             }
@@ -136,10 +136,11 @@ Future<Map<String, int>> getDurationAppForeground() async {
             if (i == e.length - 1) {
               duration += DateTime.now().millisecondsSinceEpoch - val[1] as int;
               startTime = -1;
-            } else
+              lastType = 2;
+            } else {
               startTime = val[1];
-
-            lastType = val[0];
+              lastType = val[0];
+            }
           }
         }
       });

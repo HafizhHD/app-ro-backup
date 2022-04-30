@@ -630,6 +630,7 @@ class ChildController extends GetxController {
           int startTime = -1;
           int lastType = -1;
           int duration = 0;
+          Duration oneDay = Duration(days: 1);
           e.asMap().forEach((i, val) {
             // print(
             //     'Nama pekej: ${val.packageName}, stamp pertama: ${DateTime.fromMillisecondsSinceEpoch(int.parse(val.firstTimeStamp!))}, stamp terakhir: ${DateTime.fromMillisecondsSinceEpoch(int.parse(val.lastTimeStamp!))}');
@@ -645,16 +646,18 @@ class ChildController extends GetxController {
                     'lastTimeStamp':
                         "${DateTime.fromMillisecondsSinceEpoch(val[1])}"
                   };
-                  usageHour.add(usageStamp);
+                  if (val[1] - startDate.millisecondsSinceEpoch <=
+                      oneDay.inMilliseconds) usageHour.add(usageStamp);
                   startTime = -1;
-                } else {
+                } else if (lastType == 1) {
                   duration += val[1] - startTime as int;
                   var usageStamp = {
                     'durationInStamp': '${val[1] - startTime}',
                     'lastTimeStamp':
                         "${DateTime.fromMillisecondsSinceEpoch(val[1])}"
                   };
-                  usageHour.add(usageStamp);
+                  if (val[1] - startTime <= oneDay.inMilliseconds)
+                    usageHour.add(usageStamp);
                   startTime = -1;
                 }
 
@@ -668,12 +671,14 @@ class ChildController extends GetxController {
                         '${DateTime.now().millisecondsSinceEpoch - val[1]}',
                     'lastTimeStamp': "${DateTime.now()}"
                   };
-                  usageHour.add(usageStamp);
+                  if (DateTime.now().millisecondsSinceEpoch - val[1] <=
+                      oneDay.inMilliseconds) usageHour.add(usageStamp);
                   startTime = -1;
-                } else
+                  lastType = 2;
+                } else {
                   startTime = val[1];
-
-                lastType = val[0];
+                  lastType = val[0];
+                }
               }
             }
           });
