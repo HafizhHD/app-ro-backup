@@ -268,9 +268,11 @@ class AkunPage extends StatelessWidget {
                             SizedBox(height: 5),
                             subsription == null?
                               TextButton(onPressed: () async {
-                              Get.to(
-                                    () => OrderPage(childEmail: childEmail, parentEmail: parentEmail!),
+                              await Get.to(() => OrderPage(childEmail:
+                                childEmail, parentEmail: parentEmail!),
                               );
+                              await Get.find<ParentController>().getParentChildData();
+                              closeOverlay();
                               },
                                 child: Text('Upgrade Paket',
                                     style: TextStyle(

@@ -1050,6 +1050,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                     name: '${childData.name}',
                                     email: '${childData.email}',
                                     toLocation: true,
+                                    subscription: childData.subscription,
                                   )));
                         }),
                     FlatButton(
@@ -1070,6 +1071,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                     title: 'Kontrol dan Konfigurasi',
                                     name: '${childData.name}',
                                     email: '${childData.email}',
+                                    subscription: childData.subscription,
                                   )));
                         }),
                   ]))

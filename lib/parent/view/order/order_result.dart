@@ -34,7 +34,9 @@ class _OrderResultState extends State<OrderResult> {
   @override
   Widget build(BuildContext context) {
     String? va = widget.virtuelAccount;
-    if (widget.paymentMethod == "madiri") {
+    String? billKey = widget.bilKey;
+    String? billCode = widget.bilCode;
+    if (widget.paymentMethod == "mandiri") {
       va = widget.bilCode! + widget.bilKey!;
     }
     return Scaffold(
@@ -57,9 +59,19 @@ class _OrderResultState extends State<OrderResult> {
                       Text(
                       'Silahkan scan QR di atas untuk malakukan pembayaran. Scan QR dapat digunakan melalui aplikasi dompet digital anda(GoPay, OVO, Dana, Shopee, Livin Mandiri, Dll)',
                       style: TextStyle(fontSize: 20.0)),
-                    if ((widget.paymentMethod == "bni") || (widget.paymentMethod == "bri") || (widget.paymentMethod == "mandiri") || (widget.paymentMethod == "permata"))
+                    if ((widget.paymentMethod == "bni") || (widget.paymentMethod == "bri") || (widget.paymentMethod == "permata"))
                       Text(
                         "Virtual Account : $va",
+                        style: TextStyle(fontSize: 20.0),
+                      ),
+                    if (widget.paymentMethod == "mandiri")
+                      Text(
+                        "Penyedia Jasa : $billCode (midtrans)",
+                        style: TextStyle(fontSize: 20.0),
+                      ),
+                    if (widget.paymentMethod == "mandiri")
+                      Text(
+                        "Kode Bayar : $billKey",
                         style: TextStyle(fontSize: 20.0),
                       ),
                     if ((widget.paymentMethod == "bni") || (widget.paymentMethod == "bri") || (widget.paymentMethod == "mandiri") || (widget.paymentMethod == "permata"))

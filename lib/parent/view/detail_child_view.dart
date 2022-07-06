@@ -14,6 +14,7 @@ import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/model/rk_app_list_with_icon.dart';
 import 'package:ruangkeluarga/model/rk_child_app_icon_list.dart';
 import 'package:ruangkeluarga/model/rk_child_apps.dart';
+import 'package:ruangkeluarga/model/rk_child_model.dart';
 import 'package:ruangkeluarga/parent/view/config_rk_access_internet.dart';
 import 'package:ruangkeluarga/parent/view/config_rk_batas_penggunaan.dart';
 import 'package:ruangkeluarga/parent/view/config_rk_block_apps.dart';
@@ -34,13 +35,15 @@ class DetailChildPage extends StatefulWidget {
   final String name;
   final String email;
   final bool toLocation;
+  List<Subscription> subscription;
 
   DetailChildPage(
       {Key? key,
       required this.title,
       required this.name,
       required this.email,
-      this.toLocation = false})
+      this.toLocation = false,
+      required this.subscription})
       : super(key: key);
 }
 
@@ -63,6 +66,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
   bool _loadingGetData = false;
   bool _loadingFeatchData = false;
   int _switchLevel = 0;
+  bool isSubscription = false;
   late List<AppUsages> listAppUsage;
   late List<AppListWithIcons> detailAplikasiChild = [];
   late List<dynamic> dataModeAsuh = [];
@@ -192,6 +196,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
     parentController.getDailyUsageStatistic();
     listAppUsage = parentController.mapChildActivity[widget.email] ?? [];
     avgData = parentController.mapChildScreentime[widget.email] ?? '0s';
+    if (widget.subscription.length > 0) isSubscription = true;
     onGetUsageDataWeekly();
   }
 
@@ -238,23 +243,23 @@ class _DetailChildPageState extends State<DetailChildPage> {
                       //   thickness: 1,
                       //   color: cOrtuText,
                       // ),
-
-                      MaterialButton(
-                        child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.upgrade_rounded,
-                                  color: cOrtuWhite),
-                              SizedBox(width: 10),
-                              Text('Upgrade Paket',
-                                  style: TextStyle(
-                                      color: cOrtuWhite,
-                                      fontSize: 16))
-                            ]),
-                        color: Colors.grey,
-                        onPressed: () {},
-                      ),
+                      if (isSubscription == false)
+                        MaterialButton(
+                          child: Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.upgrade_rounded,
+                                    color: cOrtuWhite),
+                                SizedBox(width: 10),
+                                  Text('Upgrade Paket',
+                                      style: TextStyle(
+                                          color: cOrtuWhite,
+                                          fontSize: 16))
+                              ]),
+                          color: Colors.grey,
+                          onPressed: () {},
+                        ),
                       Container(
                         margin: EdgeInsets.all(10.0),
                         child: Text('MODE ASUH INSTANT',
@@ -263,7 +268,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                                 fontWeight: FontWeight.bold,
                                 color: cOrtuText)),
                       ),
-                      wKontrolInstant(),
+                      wKontrolInstant(isSubscription),
                       // Divider(
                       //   thickness: 1,
                       //   color: cOrtuText,
@@ -292,9 +297,11 @@ class _DetailChildPageState extends State<DetailChildPage> {
     required String title,
     required String content,
     required Function() onTap,
+    bool? isSubscribtion,
   }) {
     return InkWell(
-      onTap: onTap,
+      onTap: isSubscribtion == true ? onTap
+        : null,
       child: Column(
         children: [
           Container(
@@ -362,6 +369,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                 getModeAsuh();
               })
             },
+            isSubscribtion: isSubscription
           ),
           wKontrolKonfigurasiContent(
             title: 'Kontak',
@@ -384,6 +392,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
                 getModeAsuh();
               })
             },
+            isSubscribtion: isSubscription,
           ),
           // wKontrolKonfigurasiContent(
           //   title: 'Akses Internet',
@@ -406,20 +415,23 @@ class _DetailChildPageState extends State<DetailChildPage> {
                 'anda. Anda dapat memantau dan mengontrol perangkat anak-anak anda'
                 'dari mana saja di dunia. Dapatkan aplikasi, internet, dan statistik'
                 'penggunaan telepon langsung dari dasbor anda.',
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute<Object>(
-                  builder: (BuildContext context) =>
-                      RKConfigBatasPenggunaanPage(
-                          title: 'Batas Penggunaan',
-                          name: widget.name,
-                          email: widget.email)),
-            ).then((value) {
-              setState(() {
-                _loadingGetData = true;
-              });
-              getModeAsuh();
-            }),
+            onTap: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute<Object>(
+                    builder: (BuildContext context) =>
+                        RKConfigBatasPenggunaanPage(
+                            title: 'Batas Penggunaan',
+                            name: widget.name,
+                            email: widget.email)),
+                ).then((value) {
+                  setState(() {
+                    _loadingGetData = true;
+                  });
+                  getModeAsuh();
+                }),
+              },
+            isSubscribtion: isSubscription
           ),
           wKontrolKonfigurasiContent(
             title: 'Blok Aplikasi / Games',
@@ -441,6 +453,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
               });
               getModeAsuh();
             }),
+            isSubscribtion: isSubscription
           ),
           wKontrolKonfigurasiContent(
             title: 'Set Jadwal Penggunaan',
@@ -461,13 +474,14 @@ class _DetailChildPageState extends State<DetailChildPage> {
               });
               getModeAsuh();
             }),
+            isSubscribtion: isSubscription
           ),
         ],
       ),
     );
   }
 
-  Widget wKontrolInstant() {
+  Widget wKontrolInstant(bool isSubscription) {
     return Container(
       margin: EdgeInsets.all(5),
       decoration: BoxDecoration(
@@ -491,9 +505,10 @@ class _DetailChildPageState extends State<DetailChildPage> {
                         child: CupertinoSwitch(
                           activeColor: cAsiaBlue,
                           value: _switchLockScreen,
-                          onChanged: (value) {
+                          onChanged: isSubscription == true ? (value) {
                             fetchUpdateModeLock(!_switchLockScreen);
-                          },
+                            }
+                            : null,
                         ),
                       )
                     ],
@@ -523,7 +538,8 @@ class _DetailChildPageState extends State<DetailChildPage> {
                               child: CupertinoSwitch(
                                 activeColor: cAsiaBlue,
                                 value: _switchModeAsuh,
-                                onChanged: (value) async {
+                                onChanged: isSubscription == true ?
+                                    (value) async {
                                   prefs = await SharedPreferences.getInstance();
                                   setState(() {
                                     _loadingGetData = true;
@@ -535,7 +551,8 @@ class _DetailChildPageState extends State<DetailChildPage> {
                                     if (value) _switchLevel = 0;
                                     updateDatatoFirebase(0);
                                   });
-                                },
+                                }
+                                : null,
                               ),
                             )
                           ],

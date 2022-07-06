@@ -237,24 +237,31 @@ class _OrderFormState extends State<OrderForm> {
         if (paymentMethod == "qris") {
           var actions = data['actions'];
           String QRUrl = actions[0]['url'];
-            Get.to(() =>
+          var r = await Get.to(() =>
                 OrderResult(linkImage: QRUrl,
                     virtuelAccount: "",
                     paymentMethod: paymentMethod));
+          if (r) Get.back(result: true);
         }
         else if (paymentMethod == "permata") {
           String VANumber = data['permata_va_number'];
-          Get.to(() => OrderResult(linkImage: "", virtuelAccount: VANumber, paymentMethod: paymentMethod));
+          var r = await Get.to(() => OrderResult(linkImage: "",
+              virtuelAccount: VANumber, paymentMethod: paymentMethod));
+          if (r) Get.back(result: true);
         }
         else if ((paymentMethod == "bni") || (paymentMethod == "bri")) {
           String VANumber = data['va_numbers'][0]["va_number"];
-          Get.to(() => OrderResult(linkImage: "", virtuelAccount: VANumber, paymentMethod: paymentMethod));
+          var r = await Get.to(() => OrderResult(linkImage: "",
+              virtuelAccount: VANumber, paymentMethod: paymentMethod));
+          if (r) Get.back(result: true);
         }
         else if (paymentMethod == "mandiri") {
           String BilCode = data['biller_code'];
           String BilKey = data['bill_key'];
-          Get.to(() => OrderResult(linkImage: "", virtuelAccount: "",
-              bilKey: BilKey, bilCode: BilCode, paymentMethod: paymentMethod));
+          var r = await Get.to(() => OrderResult(linkImage: "",
+              virtuelAccount: "", bilKey: BilKey, bilCode: BilCode,
+              paymentMethod: paymentMethod));
+          if (r) Get.back(result: true);
         }
       }
     }
