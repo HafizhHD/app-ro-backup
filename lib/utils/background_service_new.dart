@@ -338,10 +338,10 @@ class BackgroundServiceNew {
 
   static Future<void> cekAppLaunch(currentApp) async {
     try {
-      // print("cekAppLaunch..");
+      print("cekAppLaunch..");
       if (await AplikasiDB.instance.checkDataAplikasi()) {
         var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
-        // print("dataAplikasiDb : "+dataAplikasiDb.toString());
+        // print("dataAplikasiDb : " + dataAplikasiDb.toString());
         // print("dataAplikasiDb..");
         if (dataAplikasiDb != null) {
           //jika lock membahayakan hidde source dibawah ini sampai if selanjutnya
@@ -440,7 +440,7 @@ class BackgroundServiceNew {
                     ListAplikasiDataUsage listAplikasiDataUsage =
                         new ListAplikasiDataUsage(data: dataTrue);
                     if (Platform.isAndroid) {
-                      // print("Data To Method: " + listAplikasiDataUsage.toJson().toString());
+                      print("Data To Methodx: " + listAplikasiDataUsage.toJson().toString());
                       Map<String, dynamic> data =
                           listAplikasiDataUsage.toJson();
                       data['currentApp'] = currentApp;
@@ -480,7 +480,7 @@ class BackgroundServiceNew {
               ListAplikasiDataUsage listAplikasiDataUsage =
                   new ListAplikasiDataUsage(data: dataTrue);
               if (Platform.isAndroid) {
-                // print("Data To Method : " + listAplikasiDataUsage.toJson().toString());
+                print("Data To Method : " + listAplikasiDataUsage.toJson().toString());
                 Map<String, dynamic> data = listAplikasiDataUsage.toJson();
                 data['currentApp'] = currentApp;
                 _channel.invokeMethod('startServiceCheckApp', data);

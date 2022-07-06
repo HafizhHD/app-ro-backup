@@ -264,7 +264,7 @@ class _SetupPermissionChildPageState extends State<SetupPermissionChildPage> {
               tileColor: cOrtuGrey,
               title: Text('Kamera'),
               subtitle: Text(
-                  'Kami membutuhkan akses kamera pada perangkat anak untuk mengirimkan rekaman video sos.'),
+                  'Kami membutuhkan akses kamera untuk memotret foto profil dan mengirimkan rekaman video SOS pada perangkat anak.'),
               value: _cameraPermission,
               onChanged: (val) async {
                 var _permissionStatus = await Permission.camera.status;

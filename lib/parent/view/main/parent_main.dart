@@ -115,7 +115,7 @@ class _ParentMainState extends State<ParentMain> {
 
   @override
   Widget build(BuildContext context) {
-    final menuTitle = ['Discover', 'Inbox', 'Home', 'Jadwal', 'Akun', 'Forum'];
+    final menuTitle = ['Discover', 'Inbox', 'Home', 'Jadwal', 'Akun'];
     return SafeArea(
       child: WillPopScope(
         onWillPop: () async => onWillCloseApp(),
@@ -251,14 +251,6 @@ class _ParentMainState extends State<ParentMain> {
                 onPressed: () => setState(() {
                       controller.setBottomNavIndex(4);
                     })),
-            IconWithLabel(
-                defaultIcon: Icons.forum_outlined,
-                activeIcon: Icons.forum,
-                label: 'Forum',
-                isSelected: controller.bottomNavIndex == 5,
-                onPressed: () => setState(() {
-                      controller.setBottomNavIndex(5);
-                    })),
             // onPressed: () => showFAQ()),
           ],
         ),
@@ -288,8 +280,6 @@ class ChosenPage extends StatelessWidget {
         return new JadwalPage();
       case 4:
         return new AkunPage();
-      case 5:
-        return new ForumMain();
       default:
         return new HomeParentPage();
     }

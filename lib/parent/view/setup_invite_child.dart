@@ -14,6 +14,7 @@ import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ruangkeluarga/parent/view_model/sekolah_al_azhar_model.dart';
 
 enum StatusStudyLevel { SD, SMP, SMA }
 
@@ -35,15 +36,18 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
   TextEditingController cChildAge = TextEditingController();
   TextEditingController cChildOfNumber = TextEditingController();
   TextEditingController cChildNumber = TextEditingController();
+  TextEditingController cSekolahAlazhar = TextEditingController();
   StatusStudyLevel? _statusLevel = StatusStudyLevel.SD;
   String emailUser = '';
   String nameUser = '';
   String cAddress = '';
+
   GenderCharacter? parentGender;
   late FToast fToast;
   String birthDateString = '';
   DateTime birthDate = DateTime.now().subtract(Duration(days: 365 * 5));
   File? _selectedImage;
+  SekolahAlAzhar? selectedSekolah;
 
   ParentController parentController = Get.find<ParentController>();
 
@@ -56,7 +60,17 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
 
   void onInviteChild() async {
     showLoadingOverlay();
-    String status = "SD";
+    String studyLevel = "SD";
+    String namaSekolah = "";
+    String lokasiSekolah = "";
+    if (selectedSekolah != null) {
+      final s = selectedSekolah?.jenjang;
+      studyLevel = s!;
+      final n = selectedSekolah?.nama;
+      namaSekolah = n!;
+      final l = selectedSekolah?.lokasi;
+      lokasiSekolah = l!;
+    }
     String userTypeString = widget.userTypeStr!;
     String parentStatusString =
         parentGender != null ? parentGender!.toEnumString() : '';
@@ -69,7 +83,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
       cPhoneNumber.text,
       cChildName.text,
       10,
-      status,
+      studyLevel,
       1,
       1,
       _imageBytes != null
@@ -78,6 +92,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
       birthDate.toIso8601String(),
       cAddress,
       userTypeString,
+      namaSekolah,
     ];
     http.Response response = await MediaRepository().inviteChild(
         emailUser,
@@ -85,7 +100,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
         cPhoneNumber.text,
         cChildName.text,
         10,
-        status,
+        studyLevel,
         1,
         1,
         _imageBytes != null
@@ -94,7 +109,10 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
         birthDate.toIso8601String(),
         cAddress,
         userTypeString,
-        parentStatusString);
+        parentStatusString,
+        namaSekolah,
+        lokasiSekolah,
+    );
     print('isi response invite : ${response.body}');
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
@@ -429,6 +447,44 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                           ),
                         ),
                       ),
+                      if (widget.userTypeStr == 'child')
+                        Container(
+                          child: TextField(
+                            onTap: () async {
+                              print('SELECT Sekolah');
+                              final selected = await selectedSekolahAlAzhar(Get.find<ParentController>().listSekolahAlAzhar);
+                              if (selected != null) {
+                                selectedSekolah = selected;
+                                cSekolahAlazhar.text = selected.nama;
+                                setState(() {});
+                              }
+                            },
+                            textAlignVertical: TextAlignVertical.center,
+                            style: TextStyle(fontSize: 14.0, color: Colors.black),
+                            readOnly: true,
+                            minLines: 1,
+                            maxLines: 3,
+                            controller: cSekolahAlazhar,
+                            decoration: InputDecoration(
+                              suffixIcon: Icon(
+                                Icons.arrow_drop_down_rounded,
+                                color: cPrimaryBg,
+                              ),
+                              filled: true,
+                              fillColor: cOrtuWhite,
+                              hintText: 'Pilih Sekolah',
+                              contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: cOrtuWhite),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: cOrtuWhite),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                        ),
                       if (widget.userTypeStr == 'parent')
                         Theme(
                           data: ThemeData.light(),
@@ -500,7 +556,8 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                         ),
                         onPressed: cChildName.text != '' &&
                                 cChildEmail.text != '' &&
-                                isEmail(cChildEmail.text)
+                                isEmail(cChildEmail.text) &&
+                                (parentGender != null || widget.userTypeStr == 'child')
                             ? () {
                                 onInviteChild();
                               }
@@ -674,7 +731,7 @@ class InviteChildQR extends StatelessWidget {
                         text: TextSpan(children: [
                           TextSpan(text: 'Atau dengan cara kedua\n\n'),
                           TextSpan(
-                              text: 'Periksa Email $userTypeStrings Anda ',
+                              text: 'Periksa Email ${allData![1]} Anda ',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           TextSpan(text: 'lalu '),
                           TextSpan(
@@ -793,4 +850,49 @@ class InviteChildQR extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<SekolahAlAzhar?> selectedSekolahAlAzhar(List<SekolahAlAzhar> listSekolah) async {
+  List<SekolahAlAzhar> searchList = listSekolah;
+  return await Get.bottomSheet<SekolahAlAzhar>(
+    StatefulBuilder(
+      builder: (ctx, setState) {
+        return Container(
+          decoration: BoxDecoration(color: cOrtuGrey, borderRadius: BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15))),
+          padding: EdgeInsets.only(top: 20, left: 15, right: 15),
+          child: Column(
+            children: [
+              WSearchBar(
+                hintText: 'Cari Sekolah',
+                fOnChanged: (text) {
+                  searchList = listSekolah
+                      .where((e) =>
+                  e.nama.toLowerCase().contains(text.toLowerCase()) ||
+                      e.deskripsi.toLowerCase().contains(text.toLowerCase()))
+                      .toList();
+                  setState(() {});
+                },
+              ),
+              Flexible(
+                  child: ListView.separated(
+                    physics: BouncingScrollPhysics(),
+                    separatorBuilder: (ctx, idx) => Divider(color: cPrimaryBg),
+                    itemCount: searchList.length,
+                    itemBuilder: (ctx, idx) {
+                      final item = searchList[idx];
+                      return ListTile(
+                        title: Text(item.nama),
+                        // subtitle: item.alamat != '' ? Text(item.alamat) : null,
+                        onTap: () {
+                          Get.back(result: item);
+                        },
+                      );
+                    },
+                  ))
+            ],
+          ),
+        );
+      },
+    ),
+  );
 }

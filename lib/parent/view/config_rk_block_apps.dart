@@ -107,10 +107,10 @@ class _RKConfigBlockAppsPageState extends State<RKConfigBlockAppsPage> {
             data1.addAll(data2);
             data = data1;
 
-            print('SetData');
+            // print('SetData');
             appList = data;
             appListSearch = data;
-            print('id : ' + appDevices['_id']);
+            // print('id : ' + appDevices['_id']);
             setState(() {});
             return data;
           } catch (e, s) {

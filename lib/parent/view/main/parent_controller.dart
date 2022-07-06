@@ -3,13 +3,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/model/package_model.dart';
 import 'package:ruangkeluarga/model/rk_child_model.dart';
 import 'package:ruangkeluarga/model/rk_spouse_model.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
 import 'package:ruangkeluarga/parent/view_model/appUsage_model.dart';
-// import 'package:ruangkeluarga/parent/view_model/gereja_hkbp_model.dart';
 import 'package:ruangkeluarga/parent/view_model/inbox_notification_model.dart';
+import 'package:ruangkeluarga/parent/view_model/sekolah_al_azhar_model.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart' hide Response;
@@ -36,6 +37,9 @@ class ParentController extends GetxController {
   ///INBOX DATA
   var inboxData = <InboxNotif>[];
   var unreadNotif = 0.obs;
+
+  List<SekolahAlAzhar> listSekolahAlAzhar = [];
+  List<PackageModel> listPackage = [];
 
   ///Child Activity Detail
   Map<String, List<AppUsages>> mapChildActivity = {},
@@ -77,6 +81,8 @@ class ParentController extends GetxController {
     super.onInit();
     initAsync();
     getBinding();
+    getListSekolahAlAzhar();
+    getListPackage();
   }
 
   void getBinding() async {
@@ -117,7 +123,7 @@ class ParentController extends GetxController {
         spouseList = parentProfile.spouse ?? [];
         return parentProfile.children ?? [];
       } else {
-        logUserOut();
+        forcedLogOut();
         return [];
       }
     }
@@ -249,6 +255,31 @@ class ParentController extends GetxController {
         ),
       ],
     ));
+  }
+
+  Future getListSekolahAlAzhar() async {
+    Response res = await MediaRepository().fetchSekolahAlAzhar();
+    if (res.statusCode == 200) {
+      // print('print res fetchSekolahAlAzhar ${res.body}');
+      final json = jsonDecode(res.body);
+      if (json['resultCode'] == "OK") {
+        List AlAzharData = json['Data'];
+        listSekolahAlAzhar = AlAzharData.map((e) => SekolahAlAzhar.fromJson(e)).toList();
+        update();
+      }
+    }
+  }
+
+  Future getListPackage() async {
+    Response res = await MediaRepository().fetchPackage();
+    if (res.statusCode == 200) {
+      final json = jsonDecode(res.body);
+      if (json['resultCode'] == "OK") {
+        List Data = json['Data'];
+        listPackage = Data.map((e) => PackageModel.fromJson(e)).toList();
+        update();
+      }
+    }
   }
 
   ///child activity

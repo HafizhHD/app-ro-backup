@@ -180,3 +180,30 @@ void logUserOut() {
     ),
   );
 }
+
+void forcedLogOut() {
+  Get.dialog(
+    AlertDialog(
+      title: const Text('Konfirmasi'),
+      content: const Text('Sesi user sudah berakhir, silahkan login kembali?'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () async {
+            showLoadingOverlay();
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.clear();
+            await signOutGoogle();
+            Get.find<ParentController>().logoutParent();
+            closeOverlay();
+            Navigator.pushAndRemoveUntil(
+              Get.context!,
+              MaterialPageRoute(builder: (builder) => MyHomePage()),
+                  (route) => false,
+            );
+          },
+          child: const Text('OK', style: TextStyle(color: cAsiaBlue)),
+        ),
+      ],
+    ),
+  );
+}

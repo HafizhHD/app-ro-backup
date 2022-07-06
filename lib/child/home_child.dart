@@ -46,6 +46,7 @@ class HomeChild extends StatelessWidget {
       child: Column(
         children: [
           Container(
+              margin: EdgeInsets.only(top: 5),
               // constraints: BoxConstraints(
               //     maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
               child: Obx(
@@ -58,13 +59,14 @@ class HomeChild extends StatelessWidget {
                         shrinkWrap: true,
                         scrollDirection: Axis.vertical,
                         itemCount:
-                            childController.otherParentProfile.length + 1,
+                        childController.otherParentProfile.length + 1,
                         itemBuilder: (BuildContext context, int index) {
                           final screenSize = MediaQuery.of(context).size;
                           final thisParent = index == 0
                               ? childController.parentProfile
                               : childController.otherParentProfile[index - 1];
                           return Container(
+                            margin: EdgeInsets.only(left: 15, right: 15),
                             // constraints: BoxConstraints(maxHeight: screenSize.height / 3, maxWidth: screenSize.width),
                             child: CardWithBottomSheet(
                                 parentData: thisParent, parentIndex: index),
@@ -102,7 +104,7 @@ class CardWithBottomSheet extends StatelessWidget {
       margin: EdgeInsets.all(paddingValue),
       width: screenSize.width - paddingValue * 2,
       decoration: BoxDecoration(
-        color: colorVariant[parentIndex],
+        color: colorVariant[parentIndex % 3],
         borderRadius: BorderRadius.circular(15.0),
       ),
       constraints: BoxConstraints(maxHeight: screenSize.height * 0.3),

@@ -27,7 +27,7 @@ final String rkBaseUrlAppIcon = "rkBaseUrlAppIcon";
 
 const AppIconPathRO = 'assets/images/ruangortu-icon.png';
 const AppIconPathRO_x4 = 'assets/images/ruangortu-icon_4.png';
-const AppIconPathORTU = 'assets/images/asia/logo-asia.png';
+const AppIconPathORTU = 'assets/images/asia/asia.ruangortu.png';
 const currentAppIconPath = AppIconPathORTU;
 
 const ApkDownloadURL =
@@ -46,13 +46,26 @@ Future<bool> childNeedPermission() async {
   final cameraHandler = await Permission.camera.status;
   final audioHandler = await Permission.microphone.status;
   // final smsHandler = await Permission.sms.status;
+  final storageHandler = await Permission.storage.status;
   print('Permision Status location : $locationHandler');
   print('Permision Status contact : $contactHandler');
   print('Permision Status camera : $cameraHandler');
   print('Permision Status microphone : $audioHandler');
+  print('Permission Status storage : $storageHandler');
   // print('Permision Status sms : $smsHandler');
   return locationHandler.isDenied ||
       contactHandler.isDenied ||
       cameraHandler.isDenied ||
-      audioHandler.isDenied;
+      audioHandler.isDenied ||
+      storageHandler.isDenied;
+}
+
+Future<bool> parentNeedPermission() async {
+  final cameraHandler = await Permission.camera.status;
+  final storageHandler = await Permission.storage.status;
+  // final smsHandler = await Permission.sms.status;
+  print('Permision Status camera : $cameraHandler');
+  print('Permission Status storage : $storageHandler');
+  // print('Permision Status sms : $smsHandler');
+  return cameraHandler.isDenied || storageHandler.isDenied;
 }

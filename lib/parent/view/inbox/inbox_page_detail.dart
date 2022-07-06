@@ -169,234 +169,282 @@ class _InboxDetailState extends State<InboxDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: cPrimaryBg,
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text("Notifikasi SOS", style: TextStyle(color: cOrtuWhite)),
-        backgroundColor: Colors.red[900],
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
-          onPressed: () => Navigator.of(context).pop(),
+    final messageType  = widget.inboxNotif.type;
+    String pageTitle = "SOS";
+    if (messageType.name == 'sos') {
+      return Scaffold(
+        backgroundColor: cPrimaryBg,
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(pageTitle, style: TextStyle(color: cOrtuWhite)),
+          backgroundColor: Colors.red[900],
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          elevation: 0,
         ),
-        elevation: 0,
-      ),
-      body: FutureBuilder(
-          future: loadMarker,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState != ConnectionState.done)
-              return wProgressIndicator();
-            return Container(
-                padding: EdgeInsets.only(left: 10, right: 10),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Flexible(
-                          child: Text(
-                              dateFormat_EDMYHM(widget.inboxNotif.createAt),
-                              style: TextStyle(color: cOrtuText)),
-                        ),
-                        Row(
-                          children: [
-                            IconButton(
-                              color: cOrtuText,
-                              icon: Icon(Icons.directions),
-                              onPressed: () async {
-                                showLoadingOverlay();
-                                // await getRoute();
-                                await getLocationMatrix();
-                                closeOverlay();
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Flexible(
-                      child: Container(
-                        height: MediaQuery.of(context).size.height / 3,
-                        child: GoogleMap(
-                            initialCameraPosition: _myLocationLatLng,
-                            mapType: MapType.normal,
-                            markers: Set.of(markers.values),
-                            myLocationEnabled: true,
-                            myLocationButtonEnabled: true,
-                            zoomControlsEnabled: true,
-                            zoomGesturesEnabled: true,
-                            scrollGesturesEnabled: true,
-                            onMapCreated: (GoogleMapController controller) {
-                              _controller.complete(controller);
-                              // fetchMarkers();
-                              // addKml(controller);
-                            },
-                            tiltGesturesEnabled: true,
-                            gestureRecognizers:
-                                <Factory<OneSequenceGestureRecognizer>>[
-                              new Factory<OneSequenceGestureRecognizer>(
-                                () => new EagerGestureRecognizer(),
-                              ),
-                            ].toSet()),
-                      ),
-                    ),
-                    showEta
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        body: FutureBuilder(
+            future: loadMarker,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done)
+                return wProgressIndicator();
+              return Container(
+                  padding: EdgeInsets.only(left: 10, right: 10),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: Text(
+                                dateFormat_EDMYHM(widget.inboxNotif.createAt),
+                                style: TextStyle(color: cOrtuText)),
+                          ),
+                          Row(
                             children: [
-                                Text('ETA: $etaDuration',
-                                    style: TextStyle(
-                                        fontSize: 20, color: cOrtuText)),
-                                Text('Distance: $etaDistance',
-                                    style: TextStyle(
-                                        fontSize: 20, color: cOrtuText))
-                              ])
-                        : Container(),
-                    Container(
-                      padding: EdgeInsets.only(top: 10, bottom: 15),
-                      child: Text(
-                        _myLocationPlace != ''
-                            ? 'Dikirim oleh ${widget.inboxNotif.message.childEmail!} \nNama lokasi: $_myLocationPlace'
-                            : '',
-                        style: TextStyle(fontSize: 16, color: cOrtuText),
+                              IconButton(
+                                color: cOrtuText,
+                                icon: Icon(Icons.directions),
+                                onPressed: () async {
+                                  showLoadingOverlay();
+                                  // await getRoute();
+                                  await getLocationMatrix();
+                                  closeOverlay();
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ),
-                    // Divider(
-                    //   thickness: 1,
-                    //   color: cOrtuText,
-                    // ),
-                    // Container(
-                    //   margin: EdgeInsets.all(10.0),
-                    //   child: Row(
-                    //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //     children: [
-                    //       Text(
-                    //         'Timeline',
-                    //         style: TextStyle(fontSize: 16, color: cOrtuText),
-                    //       ),
-                    //       SizedBox(width: 10),
-                    //       Flexible(
-                    //         child: GestureDetector(
-                    //           child: Text(
-                    //             '$tanggal',
-                    //             maxLines: 2,
-                    //             textAlign: TextAlign.right,
-                    //             style:
-                    //                 TextStyle(fontSize: 16, color: cOrtuBlue),
-                    //           ),
-                    //           onTap: () async {
-                    //             showLoadingOverlay();
-                    //             final pickedRange = await showDateRangePicker(
-                    //                 context: context,
-                    //                 confirmText: 'Confirm Text',
-                    //                 firstDate: DateTime.now().subtract(
-                    //                     const Duration(days: 365 * 3)),
-                    //                 lastDate: DateTime.now()
-                    //                     .add(const Duration(days: 365)),
-                    //                 initialDateRange: selectedRange,
-                    //                 initialEntryMode:
-                    //                     DatePickerEntryMode.calendarOnly,
-                    //                 builder: (ctx, child) {
-                    //                   return Theme(
-                    //                     data: cOrtuTheme,
-                    //                     child: child!,
-                    //                   );
-                    //                 });
-                    //             if (pickedRange != null) {
-                    //               selectedRange = pickedRange;
-                    //               selectedDates = [
-                    //                 pickedRange.start,
-                    //                 pickedRange.end
-                    //               ];
-                    //               tanggal = selectedDates.first ==
-                    //                       selectedDates.last
-                    //                   ? '${dateFormat_EDMY(selectedDates.first)}'
-                    //                   : '${dateFormat_EDMY(selectedDates.first)} -\n ${dateFormat_EDMY(selectedDates.last)}';
-                    //               fetchFilterMarker(selectedDates);
-                    //               setState(() {});
-                    //             }
-                    //             closeOverlay();
-                    //           },
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                    Divider(
-                      thickness: 1,
-                      color: cOrtuText,
-                    ),
-                    // Flexible(
-                    //   child: ListView.builder(
-                    //     itemCount: listLocationChild.length,
-                    //     itemBuilder: (context, index) {
-                    //       final data = listLocationChild[index];
-                    //       return ListTile(
-                    //         title: Text(
-                    //           data.location.place,
-                    //           style: TextStyle(fontSize: 16, color: cOrtuText),
-                    //         ),
-                    //         // isThreeLine: true,
-                    //         // subtitle: Text(
-                    //         //   'on Jln $index where in indonesia',
-                    //         //   style: TextStyle(fontSize: 16, color: cOrtuText),
-                    //         // ),
-                    //         trailing: Text(
-                    //           data.dateHistory,
-                    //           style: TextStyle(fontSize: 16, color: cOrtuText),
-                    //         ),
-                    //         onTap: () async {
-                    //           _myLocationPlace = data.location.place;
-                    //           _myLocationLatLng = CameraPosition(
-                    //             target: LatLng(
-                    //               double.parse(data.location.coordinates[0]),
-                    //               double.parse(data.location.coordinates[1]),
-                    //             ),
-                    //             zoom: 15.0,
-                    //           );
-                    //           final GoogleMapController controller =
-                    //               await _controller.future;
-                    //           controller.animateCamera(
-                    //               CameraUpdate.newCameraPosition(
-                    //                   _myLocationLatLng));
-
-                    //           setState(() {});
-                    //         },
-                    //       );
-                    //     },
-                    //   ),
-                    // ),
-                    Container(
-                        alignment: Alignment.bottomCenter,
-                        margin: EdgeInsets.all(20),
-                        child: roElevatedButton(
-                          cColor: Colors.red,
-                          radius: 10,
-                          text: Padding(
-                              padding: EdgeInsets.all(10),
-                              child: Text(
-                                "Lihat Panic Video",
+                      if (messageType.name == 'sos')
+                        Flexible(
+                          child: Container(
+                            height: MediaQuery
+                                .of(context)
+                                .size
+                                .height / 3,
+                            child: GoogleMap(
+                                initialCameraPosition: _myLocationLatLng,
+                                mapType: MapType.normal,
+                                markers: Set.of(markers.values),
+                                myLocationEnabled: true,
+                                myLocationButtonEnabled: true,
+                                zoomControlsEnabled: true,
+                                zoomGesturesEnabled: true,
+                                scrollGesturesEnabled: true,
+                                onMapCreated: (GoogleMapController controller) {
+                                  _controller.complete(controller);
+                                  // fetchMarkers();
+                                  // addKml(controller);
+                                },
+                                tiltGesturesEnabled: true,
+                                gestureRecognizers:
+                                <Factory<OneSequenceGestureRecognizer>>[
+                                  new Factory<OneSequenceGestureRecognizer>(
+                                        () => new EagerGestureRecognizer(),
+                                  ),
+                                ].toSet()),
+                          ),
+                        ),
+                      showEta
+                          ? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('ETA: $etaDuration',
                                 style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold),
-                              )),
-                          onPress: () {
-                            final String videoUrl =
-                                widget.inboxNotif.message.videoUrl != null
-                                    ? widget.inboxNotif.message.videoUrl
-                                        .toString()
-                                    : "";
-                            if (videoUrl != '') {
-                              showUrl(videoUrl, "Panic Video");
-                            }
-                          },
-                        ))
-                  ],
-                ));
-          }),
-    );
+                                    fontSize: 20, color: cOrtuText)),
+                            Text('Distance: $etaDistance',
+                                style: TextStyle(
+                                    fontSize: 20, color: cOrtuText))
+                          ])
+                          : Container(),
+                      Container(
+                        padding: EdgeInsets.only(top: 10, bottom: 15),
+                        child: Text(
+                          _myLocationPlace != ''
+                              ? 'Dikirim oleh ${widget.inboxNotif.message
+                              .childEmail!} \nNama lokasi: $_myLocationPlace'
+                              : '',
+                          style: TextStyle(fontSize: 16, color: cOrtuText),
+                        ),
+                      ),
+                      // Divider(
+                      //   thickness: 1,
+                      //   color: cOrtuText,
+                      // ),
+                      // Container(
+                      //   margin: EdgeInsets.all(10.0),
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //     children: [
+                      //       Text(
+                      //         'Timeline',
+                      //         style: TextStyle(fontSize: 16, color: cOrtuText),
+                      //       ),
+                      //       SizedBox(width: 10),
+                      //       Flexible(
+                      //         child: GestureDetector(
+                      //           child: Text(
+                      //             '$tanggal',
+                      //             maxLines: 2,
+                      //             textAlign: TextAlign.right,
+                      //             style:
+                      //                 TextStyle(fontSize: 16, color: cOrtuBlue),
+                      //           ),
+                      //           onTap: () async {
+                      //             showLoadingOverlay();
+                      //             final pickedRange = await showDateRangePicker(
+                      //                 context: context,
+                      //                 confirmText: 'Confirm Text',
+                      //                 firstDate: DateTime.now().subtract(
+                      //                     const Duration(days: 365 * 3)),
+                      //                 lastDate: DateTime.now()
+                      //                     .add(const Duration(days: 365)),
+                      //                 initialDateRange: selectedRange,
+                      //                 initialEntryMode:
+                      //                     DatePickerEntryMode.calendarOnly,
+                      //                 builder: (ctx, child) {
+                      //                   return Theme(
+                      //                     data: cOrtuTheme,
+                      //                     child: child!,
+                      //                   );
+                      //                 });
+                      //             if (pickedRange != null) {
+                      //               selectedRange = pickedRange;
+                      //               selectedDates = [
+                      //                 pickedRange.start,
+                      //                 pickedRange.end
+                      //               ];
+                      //               tanggal = selectedDates.first ==
+                      //                       selectedDates.last
+                      //                   ? '${dateFormat_EDMY(selectedDates.first)}'
+                      //                   : '${dateFormat_EDMY(selectedDates.first)} -\n ${dateFormat_EDMY(selectedDates.last)}';
+                      //               fetchFilterMarker(selectedDates);
+                      //               setState(() {});
+                      //             }
+                      //             closeOverlay();
+                      //           },
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
+                      Divider(
+                        thickness: 1,
+                        color: cOrtuText,
+                      ),
+                      // Flexible(
+                      //   child: ListView.builder(
+                      //     itemCount: listLocationChild.length,
+                      //     itemBuilder: (context, index) {
+                      //       final data = listLocationChild[index];
+                      //       return ListTile(
+                      //         title: Text(
+                      //           data.location.place,
+                      //           style: TextStyle(fontSize: 16, color: cOrtuText),
+                      //         ),
+                      //         // isThreeLine: true,
+                      //         // subtitle: Text(
+                      //         //   'on Jln $index where in indonesia',
+                      //         //   style: TextStyle(fontSize: 16, color: cOrtuText),
+                      //         // ),
+                      //         trailing: Text(
+                      //           data.dateHistory,
+                      //           style: TextStyle(fontSize: 16, color: cOrtuText),
+                      //         ),
+                      //         onTap: () async {
+                      //           _myLocationPlace = data.location.place;
+                      //           _myLocationLatLng = CameraPosition(
+                      //             target: LatLng(
+                      //               double.parse(data.location.coordinates[0]),
+                      //               double.parse(data.location.coordinates[1]),
+                      //             ),
+                      //             zoom: 15.0,
+                      //           );
+                      //           final GoogleMapController controller =
+                      //               await _controller.future;
+                      //           controller.animateCamera(
+                      //               CameraUpdate.newCameraPosition(
+                      //                   _myLocationLatLng));
+
+                      //           setState(() {});
+                      //         },
+                      //       );
+                      //     },
+                      //   ),
+                      // ),
+                      Container(
+                          alignment: Alignment.bottomCenter,
+                          margin: EdgeInsets.all(20),
+                          child: roElevatedButton(
+                            cColor: Colors.red,
+                            radius: 10,
+                            text: Padding(
+                                padding: EdgeInsets.all(10),
+                                child: Text(
+                                  "Lihat Panic Video",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                )),
+                            onPress: () {
+                              final String videoUrl =
+                              widget.inboxNotif.message.videoUrl != null
+                                  ? widget.inboxNotif.message.videoUrl
+                                  .toString()
+                                  : "";
+                              if (videoUrl != '') {
+                                showUrl(videoUrl, "Panic Video");
+                              }
+                            },
+                          ))
+                    ],
+                  ));
+            }),
+      );
+    } else {
+      String pageTitle = "Detil Notifikasi";
+      return Scaffold(
+        backgroundColor: cPrimaryBg,
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(pageTitle, style: TextStyle(color: cOrtuWhite)),
+          backgroundColor: Colors.red[900],
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios, color: cOrtuWhite),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          elevation: 0,
+        ),
+        body: FutureBuilder(
+            future: loadMarker,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done)
+                return wProgressIndicator();
+              return Container(
+                  padding: EdgeInsets.only(left: 10, right: 10),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: Text(
+                                widget.inboxNotif.message.message,
+                              style: TextStyle(fontSize: 16, color: cOrtuText)),
+                          ),
+                        ],
+                      )
+                    ],
+                  ));
+            }),
+      );
+    }
   }
 }

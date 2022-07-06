@@ -96,9 +96,6 @@ class ChildAkunPage extends StatelessWidget {
                                 },
                               ),
                             ),
-                            Container(
-                                margin: EdgeInsets.all(10),
-                                child: Text('Versi ${appInfo.version}'))
                           ],
                         ),
                       ),

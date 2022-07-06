@@ -17,6 +17,7 @@ import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 import 'package:ruangkeluarga/child/child_main.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ruangkeluarga/parent/view_model/sekolah_al_azhar_model.dart';
 
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
@@ -513,3 +514,50 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
     );
   }
 }
+
+Future<SekolahAlAzhar?> selectSekolah(List<SekolahAlAzhar> listSekolah) async {
+  List<SekolahAlAzhar> searchList = listSekolah;
+  return await Get.bottomSheet<SekolahAlAzhar>(
+    StatefulBuilder(
+      builder: (ctx, setState) {
+        return Container(
+          decoration: BoxDecoration(color: cOrtuGrey, borderRadius: BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15))),
+          padding: EdgeInsets.only(top: 20, left: 15, right: 15),
+          child: Column(
+            children: [
+              WSearchBar(
+                hintText: 'Cari Gereja',
+                fOnChanged: (text) {
+                  searchList = listSekolah
+                      .where((e) =>
+                  e.nama.toLowerCase().contains(text.toLowerCase()) ||
+                      e.deskripsi.toLowerCase().contains(text.toLowerCase()) ||
+                      e.nama.toLowerCase().contains(text.toLowerCase()))
+                      .toList();
+                  setState(() {});
+                },
+              ),
+              Flexible(
+                  child: ListView.separated(
+                    physics: BouncingScrollPhysics(),
+                    separatorBuilder: (ctx, idx) => Divider(color: cPrimaryBg),
+                    itemCount: searchList.length,
+                    itemBuilder: (ctx, idx) {
+                      final item = searchList[idx];
+                      return ListTile(
+                        title: Text(item.nama),
+                        // subtitle: item.alamat != '' ? Text(item.alamat) : null,
+                        onTap: () {
+                          Get.back(result: item);
+                        },
+                      );
+                    },
+                  ))
+            ],
+          ),
+        );
+      },
+    ),
+  );
+}
+

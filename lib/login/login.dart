@@ -105,7 +105,7 @@ class _LoginState extends State<LoginPage> {
           parentController.userId = jsonUser["_id"];
           parentController.userName = jsonUser["nameUser"];
           parentController.emailUser = jsonUser["emailUser"];
-          if (await childNeedPermission() && jsonUser['userType'] == 'child') {
+          if (await childNeedPermission() || await parentNeedPermission()) {
             Navigator.of(context).pushReplacement(MaterialPageRoute(
                 builder: (context) => SetupPermissionPage(
                     email: jsonUser['emailUser'],

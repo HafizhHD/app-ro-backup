@@ -238,6 +238,23 @@ class _DetailChildPageState extends State<DetailChildPage> {
                       //   thickness: 1,
                       //   color: cOrtuText,
                       // ),
+
+                      MaterialButton(
+                        child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.upgrade_rounded,
+                                  color: cOrtuWhite),
+                              SizedBox(width: 10),
+                              Text('Upgrade Paket',
+                                  style: TextStyle(
+                                      color: cOrtuWhite,
+                                      fontSize: 16))
+                            ]),
+                        color: Colors.grey,
+                        onPressed: () {},
+                      ),
                       Container(
                         margin: EdgeInsets.all(10.0),
                         child: Text('MODE ASUH INSTANT',
@@ -385,7 +402,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
           wKontrolKonfigurasiContent(
             title: 'Batas Penggunaan',
             content:
-                'Dengan menggunakan aplikasi Ruang Keluarga untuk orang tua dari perangkat'
+                'Dengan menggunakan aplikasi Ruang ORTU untuk orang tua dari perangkat'
                 'anda. Anda dapat memantau dan mengontrol perangkat anak-anak anda'
                 'dari mana saja di dunia. Dapatkan aplikasi, internet, dan statistik'
                 'penggunaan telepon langsung dari dasbor anda.',
@@ -790,7 +807,7 @@ class _DetailChildPageState extends State<DetailChildPage> {
   Future<List<dynamic>> fetchListModeAsuhh() async {
     var response = await MediaRepository().fetchListModeAsuh(widget.email);
     if (response.statusCode == 200) {
-      print('Fetch mode asuh: ${response.body}');
+      // print('Fetch mode asuh: ${response.body}');
       var json = jsonDecode(response.body);
       if (json['resultCode'] == 'OK') {
         if (json['modeAsuh'].length > 0) {

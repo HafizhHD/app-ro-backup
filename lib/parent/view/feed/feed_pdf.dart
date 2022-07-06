@@ -3,13 +3,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:path_provider/path_provider.dart';
-// import 'package:pdfx/pdfx.dart';
 import 'package:http/http.dart' as http;
 import 'package:native_pdf_view/native_pdf_view.dart';
-import 'package:internet_file/internet_file.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_comment.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_controller.dart';

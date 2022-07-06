@@ -14,6 +14,7 @@ import 'package:ruangkeluarga/parent/view/feed/feed_page.dart';
 import 'package:ruangkeluarga/parent/view/jadwal/jadwal_page.dart';
 import 'package:ruangkeluarga/utils/background_service_new.dart';
 import 'package:ruangkeluarga/utils/rk_webview.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';
 
@@ -38,6 +39,7 @@ class _ChildMainState extends State<ChildMain> {
     controller.initData();
     startServicePlatform();
     startAppUsagePeriodic();
+    checkServiceStatus();
     // _requestPermissions();
   }
 
@@ -46,12 +48,22 @@ class _ChildMainState extends State<ChildMain> {
   }*/
 
   static Future<void> startAppUsagePeriodic() async {
-    await BackgroundServiceNew.oneShot(
-        const Duration(minutes: 3), 12302, callback,
-        wakeup: true,
-        exact: true,
-        allowWhileIdle: true,
-        rescheduleOnReboot: true);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int alarmId = 12502;
+    try {
+      await BackgroundServiceNew.oneShot(
+          const Duration(minutes: 5), alarmId, callback,
+          wakeup: true,
+          exact: true,
+          alarmClock: true,
+          allowWhileIdle: true,
+          rescheduleOnReboot: true);
+      await prefs.setBool("isStopServiceLocation", false);
+    }
+    catch (e) {
+      print('Error call alarm data location' + e.toString());
+      await prefs.setBool("isStopServiceLocation", true);
+    }
   }
 
   static Future<void> callback() async {
@@ -63,6 +75,35 @@ class _ChildMainState extends State<ChildMain> {
       print("Error alarm location :" + e.toString());
     } finally {
       startAppUsagePeriodic();
+    }
+  }
+
+  static Future<void> checkServiceStatus() async {
+    int alarmId = 12506;
+    await BackgroundServiceNew.periodic(const Duration(minutes: 3), alarmId,
+        callbackCheckServiceStatus,
+        wakeup: true,
+        exact: true,
+        allowWhileIdle: true,
+        rescheduleOnReboot: true);
+  }
+
+  static Future<void> callbackCheckServiceStatus() async {
+    print("check service status : ${DateTime.now()}");
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      bool? isStopService = await prefs.getBool('isStopService');
+      print("isStopService = " + isStopService.toString());
+      if (isStopService == true) {
+        startServicePlatform();
+      }
+      bool? isStopServiceLocation = await prefs.getBool('isStopServiceLocation');
+      print("isStopServiceLocation = " + isStopServiceLocation.toString());
+      if (isStopServiceLocation == true) {
+        startAppUsagePeriodic();
+      }
+    } catch (e) {
+      print("Error Callback Check Service Status :" + e.toString());
     }
   }
 

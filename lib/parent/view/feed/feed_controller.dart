@@ -7,7 +7,7 @@ import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:ruangkeluarga/global/global.dart';
 
 ContentType ContentTypeFromString(String input) {
-  print('ini jenis contentnyaaaaa: ${input.trim().toLowerCase()}');
+  // print('ini jenis contentnyaaaaa: ${input.trim().toLowerCase()}');
   if (input.trim().toLowerCase() == 'video') return ContentType.video;
   if (input.trim().toLowerCase() == 'image') return ContentType.image;
   if (input.trim().toLowerCase() == 'pdf') return ContentType.pdf;
@@ -92,10 +92,11 @@ class FeedController extends GetxController {
 
   final api = MediaRepository();
   Future<bool>? fGetListContent, fGetListCoBrand;
+  String jenisArtikel = '';
   String lastUpdated = DateTime.now().toIso8601String();
   final ScrollController scrollController = new ScrollController();
   int offset = 0;
-  final limit = 10;
+  final limit = 5;
   bool isThereMore = true;
   bool isWaiting = false;
   //bool stillSearching = false;
@@ -110,7 +111,7 @@ class FeedController extends GetxController {
   }
 
   void _scrollListener() {
-    // print("Ini anu: ${scrollController.position.extentAfter}");
+    print("Ini anu: ${scrollController.position.extentAfter}");
     if (scrollController.position.extentAfter < 100 &&
         isThereMore &&
         !isWaiting) {
@@ -120,7 +121,8 @@ class FeedController extends GetxController {
     }
   }
 
-  Future<bool> getContents({bool refresh = false, String cobrand = ''}) async {
+  Future<bool> getContents({bool refresh = false, String cobrand = '',
+    String contentType = 'content'}) async {
     if (refresh == true) {
       lastUpdated = DateTime.now().toIso8601String();
       offset = 0;
@@ -130,7 +132,7 @@ class FeedController extends GetxController {
       selectedCoBrandEmail = '';
     else if (cobrand != '') selectedCoBrandEmail = cobrand;
     final res = await api.fetchCoBrandContents(lastUpdated, limit, offset,
-        key: search, email: selectedCoBrandEmail);
+        key: search, email: selectedCoBrandEmail, jenisContent: this.jenisArtikel);
     if (res.statusCode == 200) {
       // print('print res fetchCoBrandContents ${res.body}');
       final json = jsonDecode(res.body);
@@ -147,7 +149,7 @@ class FeedController extends GetxController {
         //     .where((e) => e.status && e.startDate.isBefore(DateTime.now()))
         //     .toList();
         update();
-        if (contents.length < 10) {
+        if (contents.length < 5) {
           isThereMore = false;
         }
         isWaiting = false;
