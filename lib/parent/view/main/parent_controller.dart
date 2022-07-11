@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ruangkeluarga/global/global.dart';
@@ -36,6 +37,8 @@ class ParentController extends GetxController {
 
   ///INBOX DATA
   var inboxData = <InboxNotif>[];
+  var inboxDataSOS = <InboxNotif>[];
+  var inboxDataNotification = <InboxNotif>[];
   var unreadNotif = 0.obs;
 
   List<SekolahAlAzhar> listSekolahAlAzhar = [];
@@ -192,9 +195,9 @@ class ParentController extends GetxController {
     }
   }
 
-  Future getInboxNotif() async {
+  Future getInboxNotif({String inboxType = ''}) async {
     Response res =
-        await MediaRepository().fetchParentInbox(parentProfile.email);
+        await MediaRepository().fetchParentInbox(parentProfile.email, inboxType);
     if (res.statusCode == 200) {
       print('print res fetchParentInbox ${res.body}');
       final json = jsonDecode(res.body);
@@ -207,8 +210,28 @@ class ParentController extends GetxController {
           return notif;
         }).toList();
         inboxData.sort((a, b) => b.createAt.compareTo(a.createAt));
+        if (inboxType == '') {
+          await inboxNotifFilter('sos');
+          await inboxNotifFilter('notifikasi');
+        } else if (inboxType.toLowerCase() == 'sos')
+          await inboxNotifFilter('sos');
+        else await inboxNotifFilter('notifikasi');
+        // if (inboxType.toLowerCase() == 'sos') inboxDataSOS = inboxData;
+        // else if (inboxType.toLowerCase() == 'notifikasi') inboxDataNotification = inboxData;
         update();
       }
+    }
+  }
+
+  Future inboxNotifFilter(String inboxType) async {
+    if (inboxData.length > 0){
+      var type = inboxType.toLowerCase();
+      if (inboxType.toLowerCase() != 'sos') type = 'alert';
+      final filterData = inboxData.where((e) => e.type.toEnumString() == type).toList();
+      if (inboxType.toLowerCase() == 'sos') inboxDataSOS = filterData;
+      else if (inboxType.toLowerCase() == 'notifikasi') inboxDataNotification = filterData;
+      // print(filterData);
+      update();
     }
   }
 
@@ -271,14 +294,20 @@ class ParentController extends GetxController {
   }
 
   Future getListPackage() async {
-    Response res = await MediaRepository().fetchPackage();
+    Response res = await MediaRepository().fetchPackage(emailUser: emailUser);
     if (res.statusCode == 200) {
       final json = jsonDecode(res.body);
+      print("paket yg ada: ");
+      print(json);
       if (json['resultCode'] == "OK") {
         List Data = json['Data'];
         listPackage = Data.map((e) => PackageModel.fromJson(e)).toList();
         update();
       }
+    }
+    else {
+      print("error get paket ");
+      print(res.statusCode);
     }
   }
 

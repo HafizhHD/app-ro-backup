@@ -42,7 +42,8 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
   String nameUser = '';
   String cAddress = '';
 
-  GenderCharacter? parentGender;
+  ParentCharacter? parentGender;
+  ChildGender? childGender;
   late FToast fToast;
   String birthDateString = '';
   DateTime birthDate = DateTime.now().subtract(Duration(days: 365 * 5));
@@ -72,8 +73,11 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
       lokasiSekolah = l!;
     }
     String userTypeString = widget.userTypeStr!;
+    String genderString =
+      childGender != null ? childGender!.toEnumString() : 'Pria';
     String parentStatusString =
-        parentGender != null ? parentGender!.toEnumString() : '';
+      parentGender != null ? parentGender!.toEnumString() : '';
+    if (parentStatusString== 'Bunda') genderString = 'Wanita';
     await prefs.setString("rkChildName", cChildName.text);
     final Uint8List? _imageBytes =
         _selectedImage != null ? _selectedImage!.readAsBytesSync() : null;
@@ -110,6 +114,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
         cAddress,
         userTypeString,
         parentStatusString,
+        genderString,
         namaSekolah,
         lokasiSekolah,
     );
@@ -448,6 +453,45 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                         ),
                       ),
                       if (widget.userTypeStr == 'child')
+                      Theme(
+                        data: ThemeData.light(),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Flexible(
+                              child: ListTile(
+                                title: Text("Pria"),
+                                horizontalTitleGap: 0,
+                                contentPadding: EdgeInsets.zero,
+                                leading: Radio<ChildGender>(
+                                  value: ChildGender.Pria,
+                                  groupValue: childGender,
+                                  activeColor: cAsiaBlue,
+                                  onChanged: (ChildGender? value) {
+                                    setState(() => childGender = value);
+                                  },
+                                ),
+                              ),
+                            ),
+                            Flexible(
+                              child: ListTile(
+                                title: Text("Wanita"),
+                                horizontalTitleGap: 0,
+                                contentPadding: EdgeInsets.zero,
+                                leading: Radio<ChildGender>(
+                                  value: ChildGender.Wanita,
+                                  groupValue: childGender,
+                                  activeColor: cAsiaBlue,
+                                  onChanged: (ChildGender? value) {
+                                    setState(() => childGender = value);
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (widget.userTypeStr == 'child')
                         Container(
                           child: TextField(
                             onTap: () async {
@@ -485,6 +529,7 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                             ),
                           ),
                         ),
+                      SizedBox(height: 10),
                       if (widget.userTypeStr == 'parent')
                         Theme(
                           data: ThemeData.light(),
@@ -496,11 +541,11 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                                   title: Text("Ayah"),
                                   horizontalTitleGap: 0,
                                   contentPadding: EdgeInsets.zero,
-                                  leading: Radio<GenderCharacter>(
-                                    value: GenderCharacter.Ayah,
+                                  leading: Radio<ParentCharacter>(
+                                    value: ParentCharacter.Ayah,
                                     groupValue: parentGender,
                                     activeColor: cAsiaBlue,
-                                    onChanged: (GenderCharacter? value) {
+                                    onChanged: (ParentCharacter? value) {
                                       setState(() => parentGender = value);
                                     },
                                   ),
@@ -511,11 +556,11 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                                   title: Text("Bunda"),
                                   horizontalTitleGap: 0,
                                   contentPadding: EdgeInsets.zero,
-                                  leading: Radio<GenderCharacter>(
-                                    value: GenderCharacter.Bunda,
+                                  leading: Radio<ParentCharacter>(
+                                    value: ParentCharacter.Bunda,
                                     groupValue: parentGender,
                                     activeColor: cAsiaBlue,
-                                    onChanged: (GenderCharacter? value) {
+                                    onChanged: (ParentCharacter? value) {
                                       setState(() => parentGender = value);
                                     },
                                   ),
@@ -526,11 +571,11 @@ class _SetupInviteChildPageState extends State<SetupInviteChildPage> {
                                   title: Text("Lainnya"),
                                   horizontalTitleGap: 0,
                                   contentPadding: EdgeInsets.zero,
-                                  leading: Radio<GenderCharacter>(
-                                    value: GenderCharacter.Lainnya,
+                                  leading: Radio<ParentCharacter>(
+                                    value: ParentCharacter.Lainnya,
                                     groupValue: parentGender,
                                     activeColor: cAsiaBlue,
-                                    onChanged: (GenderCharacter? value) {
+                                    onChanged: (ParentCharacter? value) {
                                       setState(() => parentGender = value);
                                     },
                                   ),

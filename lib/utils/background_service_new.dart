@@ -397,10 +397,10 @@ class BackgroundServiceNew {
                         }
                       }
                     } else {
-                      print("jadwal harian tidak ada " +
-                          ad.toString() +
-                          "  ss =" +
-                          ss.toString());
+                      // print("jadwal harian tidak ada " +
+                      //     ad.toString() +
+                      //     "  ss =" +
+                      //     ss.toString());
                     }
                   } else if (dataUsage.scheduleType == ScheduleType.terjadwal) {
                     if (dataUsage.deviceUsageStartTime != null &&
@@ -440,7 +440,7 @@ class BackgroundServiceNew {
                     ListAplikasiDataUsage listAplikasiDataUsage =
                         new ListAplikasiDataUsage(data: dataTrue);
                     if (Platform.isAndroid) {
-                      print("Data To Methodx: " + listAplikasiDataUsage.toJson().toString());
+                      // print("Data To Methodx: " + listAplikasiDataUsage.toJson().toString());
                       Map<String, dynamic> data =
                           listAplikasiDataUsage.toJson();
                       data['currentApp'] = currentApp;
@@ -480,7 +480,7 @@ class BackgroundServiceNew {
               ListAplikasiDataUsage listAplikasiDataUsage =
                   new ListAplikasiDataUsage(data: dataTrue);
               if (Platform.isAndroid) {
-                print("Data To Method : " + listAplikasiDataUsage.toJson().toString());
+                // print("Data To Method : " + listAplikasiDataUsage.toJson().toString());
                 Map<String, dynamic> data = listAplikasiDataUsage.toJson();
                 data['currentApp'] = currentApp;
                 _channel.invokeMethod('startServiceCheckApp', data);

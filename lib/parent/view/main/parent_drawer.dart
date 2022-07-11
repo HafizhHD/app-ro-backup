@@ -68,7 +68,7 @@ class ParentDrawer extends StatelessWidget {
                   title: Text('Home'),
                   leading: Icon(Icons.home_filled, color: Colors.black),
                   onTap: () {
-                    controller.setBottomNavIndex(2);
+                    controller.setBottomNavIndex(0);
                     Navigator.pop(context);
                   },
                 ),

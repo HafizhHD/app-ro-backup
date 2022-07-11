@@ -11,6 +11,8 @@ import 'package:ruangkeluarga/parent/view/feed/feed_controller.dart';
 import 'package:html/parser.dart' show parse;
 import 'dart:core';
 
+import '../../../model/cobrand_program_content_model.dart';
+
 class FeedPdf extends StatefulWidget {
   final String emailUser;
   final ContentModel contentModel;
@@ -64,13 +66,6 @@ class _FeedPdfState extends State<FeedPdf> {
       );
       setState(() => _isLoading = false);
     } else {
-      // contentData = document.getElementsByTagName('object');
-      // print('panjang contentData: ${contentData.length}');
-      // urlData = contentData[0].attributes['src']!;
-      // urlData = urlData.split(';base64,')[1];
-      // Uint8List bytes = base64.decode(urlData);
-      // pdfPinchController =
-      //     PdfControllerPinch(document: PdfDocument.openData(bytes));
       http.Response responseData = await http
           .get(Uri.parse('http://www.africau.edu/images/default/sample.pdf'));
       pdfController =
@@ -110,40 +105,6 @@ class _FeedPdfState extends State<FeedPdf> {
                       duration: Duration(milliseconds: 100),
                       curve: Curves.ease);
                 }),
-            // FlatButton(
-            //     color: Colors.transparent,
-            //     child: Icon(Icons.download, color: cOrtuWhite),
-            //     onPressed: () async {
-            //       var storage = await Permission.storage.status;
-            //       if (!storage.isGranted) {
-            //         await Permission.storage.request();
-            //       }
-            //       Directory? directory = await getExternalStorageDirectory();
-            //       if (directory != null) {
-            //         File fileDef = File('${directory.path}/download.pdf');
-            //         await fileDef.create(recursive: true);
-            //         Uint8List bytes1 = toBeDownloaded;
-            //         await fileDef.writeAsBytes(bytes1);
-            //         Fluttertoast.showToast(
-            //             msg:
-            //                 'PDF ini berhasil diunduh ke folder ${directory.path}',
-            //             toastLength: Toast.LENGTH_LONG,
-            //             gravity: ToastGravity.BOTTOM,
-            //             timeInSecForIosWeb: 5,
-            //             backgroundColor: Colors.green,
-            //             textColor: Colors.white,
-            //             fontSize: 16.0);
-            //       } else {
-            //         Fluttertoast.showToast(
-            //             msg: 'PDF ini gagal diunduh.',
-            //             toastLength: Toast.LENGTH_LONG,
-            //             gravity: ToastGravity.BOTTOM,
-            //             timeInSecForIosWeb: 5,
-            //             backgroundColor: Colors.red,
-            //             textColor: Colors.white,
-            //             fontSize: 16.0);
-            //       }
-            //     }),
           ]),
       body: Center(
           child: _isLoading

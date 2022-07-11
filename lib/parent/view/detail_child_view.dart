@@ -28,6 +28,8 @@ import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
+import 'order/order.dart';
+
 class DetailChildPage extends StatefulWidget {
   @override
   _DetailChildPageState createState() => _DetailChildPageState();
@@ -257,8 +259,18 @@ class _DetailChildPageState extends State<DetailChildPage> {
                                           color: cOrtuWhite,
                                           fontSize: 16))
                               ]),
-                          color: Colors.grey,
-                          onPressed: () {},
+                          color: Colors.blue,
+                          onPressed: () async {
+                            await parentController.getListPackage();
+                            var r = await Get.to(() => OrderPage(childEmail:
+                            widget.email, parentEmail:
+                              parentController.parentProfile.email),
+                            );
+                            if (r) {
+                              parentController.getParentChildData();
+                              closeOverlay();
+                            }
+                          },
                         ),
                       Container(
                         margin: EdgeInsets.all(10.0),

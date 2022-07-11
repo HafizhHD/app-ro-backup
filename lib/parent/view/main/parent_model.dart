@@ -9,7 +9,7 @@ class ParentProfile {
   final String name;
   final String phone;
   final String? address;
-  final GenderCharacter parentStatus;
+  final ParentCharacter parentStatus;
   final String userType;
   final String? imgPhoto;
   final DateTime? birdDate;
@@ -52,10 +52,10 @@ class ParentProfile {
             ? DateTime.parse(bdate).toUtc().toLocal()
             : null,
         parentStatus: json['parentStatus'].toString().toLowerCase() == 'ayah'
-            ? GenderCharacter.Ayah
+            ? ParentCharacter.Ayah
             : (json['parentStatus'].toString().toLowerCase() == 'bunda'
-                ? GenderCharacter.Bunda
-                : GenderCharacter.Lainnya),
+                ? ParentCharacter.Bunda
+                : ParentCharacter.Lainnya),
         children: listChild.map((e) => Child.fromJson(e)).toList(),
         spouse: listSpouse.map((e) => Spouse.fromJson(e)).toList(),
         status: json['status'] as String?,
@@ -73,10 +73,10 @@ class ParentProfile {
         imgPhoto: json['imagePhoto'],
         userType: json['userType'],
         parentStatus: json['parentStatus'].toString().toLowerCase() == 'ayah'
-            ? GenderCharacter.Ayah
+            ? ParentCharacter.Ayah
             : (json['parentStatus'].toString().toLowerCase() == 'bunda'
-                ? GenderCharacter.Bunda
-                : GenderCharacter.Lainnya),
+                ? ParentCharacter.Bunda
+                : ParentCharacter.Lainnya),
         children: listChild.map((e) => Child.fromJson(e)).toList(),
         spouse: listSpouse.map((e) => Spouse.fromJson(e)).toList(),
         status: json['status'] as String?,

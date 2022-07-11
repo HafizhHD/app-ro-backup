@@ -1,15 +1,21 @@
-enum GenderCharacter { Ayah, Bunda, Lainnya }
-GenderCharacter? genderCharFromString(String gender) {
+enum ParentCharacter { Ayah, Bunda, Lainnya }
+ParentCharacter? genderCharFromString(String gender) {
   if (gender.trim().toLowerCase() == 'ayah')
-    return GenderCharacter.Ayah;
+    return ParentCharacter.Ayah;
   else if (gender.trim().toLowerCase() == 'bunda')
-    return GenderCharacter.Bunda;
+    return ParentCharacter.Bunda;
   else if (gender.trim().toLowerCase() == 'lainnya')
-    return GenderCharacter.Lainnya;
+    return ParentCharacter.Lainnya;
   else
     return null;
 }
 
-enum ChildGender { Lelaki, Perempuan }
+enum ChildGender { Pria, Wanita }
 
+ChildGender? childGenderFromString(String gender) {
+  if (gender.trim().toLowerCase() == 'Pria')
+    return ChildGender.Pria;
+  else if (gender.trim().toLowerCase() == 'Wanita')
+    return ChildGender.Wanita;
+}
 enum StatusStudyLevel { SD, SMP, SMA }

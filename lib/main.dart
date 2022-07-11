@@ -189,7 +189,7 @@ Future<void> callbackBackgroundService() async {
     await prefs?.setBool("koneksiInternet", false);
   } finally {
     var durationAppForeground = await getDurationAppForeground();
-    print("durasi = " + durationAppForeground.toString());
+    // print("durasi = " + durationAppForeground.toString());
     await BackgroundServiceNew.cekAppLaunch(durationAppForeground);
     startServicePlatform();
   }

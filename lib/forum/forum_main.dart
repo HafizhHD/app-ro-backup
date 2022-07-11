@@ -6,6 +6,8 @@ import 'package:ruangkeluarga/utils/rk_webview.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import '../model/cobrand_program_content_model.dart';
+
 class ForumMain extends GetView<FeedController> {
   @override
   Widget build(BuildContext context) {

@@ -32,6 +32,7 @@ class AkunPage extends StatelessWidget {
                     child: RefreshIndicator(
                       onRefresh: () async {
                         await ctrl.getParentChildData();
+                        await ctrl.getListPackage();
                       },
                       child: SingleChildScrollView(
                         physics: AlwaysScrollableScrollPhysics(),
@@ -113,22 +114,24 @@ class AkunPage extends StatelessWidget {
                         ),
                       ),
                     ))),
-            Align(
-                alignment: Alignment.bottomLeft,
-                child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  InkWell(
-                    child: Text("Kebijakan Privasi",
-                      style: TextStyle(
-                        color: Colors.blue
-                      ),
-                    ),
-                    onTap: () {showPrivacyPolicy();},
-                  ),
-                  Text('Versi ${appInfo.version}'),
-                ]),
-            )
+            // Align(
+            //     alignment: Alignment.bottomLeft,
+            //     child: Column(
+            //     crossAxisAlignment: CrossAxisAlignment.stretch,
+            //     children: [
+            //       Text(''),
+            //       InkWell(
+            //         child: Text("  Kebijakan Privasi",
+            //           style: TextStyle(
+            //             color: Colors.blue
+            //           ),
+            //         ),
+            //         onTap: () {showPrivacyPolicy();},
+            //       ),
+            //       Text(''),
+            //       Text('  Versi ${appInfo.version}'),
+            //     ]),
+            // )
 
           ]);
         },

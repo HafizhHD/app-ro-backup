@@ -40,7 +40,7 @@ class OrderPage extends StatelessWidget {
                     padding: EdgeInsets.all(5),
                     child: RefreshIndicator(
                       onRefresh: () async {
-                        // await ctrl.getParentpackageData();
+                        // getParentpackageData();
                       },
                       child: SingleChildScrollView(
                         physics: AlwaysScrollableScrollPhysics(),
@@ -133,14 +133,15 @@ class OrderPage extends StatelessWidget {
                                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                                 ),
                                 Text(
+                                  'Rp. $harga',
+                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
                                   'Ketentuan: $deskripsi',
                                   // style: TextStyle(fontSize: 20),
                                 ),
                                 SizedBox(height: 5),
-                                Text(
-                                    'Rp. $harga',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
                               ],
                             ),
                           ),

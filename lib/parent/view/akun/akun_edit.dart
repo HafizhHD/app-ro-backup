@@ -21,7 +21,7 @@ class AkunEditPage extends StatefulWidget {
   String? phoneNum;
   String? alamat;
   bool isParent;
-  GenderCharacter? parentGender;
+  ParentCharacter? parentGender;
   DateTime? birthDate;
   SekolahAlAzhar? selectedSekolahAlazhar;
   String? imgUrl;
@@ -33,7 +33,7 @@ class AkunEditPage extends StatefulWidget {
     this.phoneNum,
     this.alamat,
     required this.isParent,
-    this.parentGender = GenderCharacter.Ayah,
+    this.parentGender = ParentCharacter.Ayah,
     this.birthDate,
     this.selectedSekolahAlazhar,
     this.imgUrl,
@@ -404,13 +404,13 @@ class _AkunEditPageState extends State<AkunEditPage> {
                                   title: Text("Ayah"),
                                   horizontalTitleGap: 0,
                                   contentPadding: EdgeInsets.zero,
-                                  leading: Radio<GenderCharacter>(
+                                  leading: Radio<ParentCharacter>(
                                     materialTapTargetSize:
                                         MaterialTapTargetSize.shrinkWrap,
-                                    value: GenderCharacter.Ayah,
+                                    value: ParentCharacter.Ayah,
                                     groupValue: widget.parentGender,
                                     activeColor: cAsiaBlue,
-                                    onChanged: (GenderCharacter? value) {
+                                    onChanged: (ParentCharacter? value) {
                                       setState(
                                           () => widget.parentGender = value);
                                     },
@@ -422,13 +422,13 @@ class _AkunEditPageState extends State<AkunEditPage> {
                                   title: Text("Bunda"),
                                   horizontalTitleGap: 0,
                                   contentPadding: EdgeInsets.zero,
-                                  leading: Radio<GenderCharacter>(
+                                  leading: Radio<ParentCharacter>(
                                     materialTapTargetSize:
                                         MaterialTapTargetSize.shrinkWrap,
-                                    value: GenderCharacter.Bunda,
+                                    value: ParentCharacter.Bunda,
                                     groupValue: widget.parentGender,
                                     activeColor: cAsiaBlue,
-                                    onChanged: (GenderCharacter? value) {
+                                    onChanged: (ParentCharacter? value) {
                                       setState(
                                           () => widget.parentGender = value);
                                     },
@@ -440,13 +440,13 @@ class _AkunEditPageState extends State<AkunEditPage> {
                                   title: Text("Lainnya"),
                                   horizontalTitleGap: 0,
                                   contentPadding: EdgeInsets.zero,
-                                  leading: Radio<GenderCharacter>(
+                                  leading: Radio<ParentCharacter>(
                                     materialTapTargetSize:
                                         MaterialTapTargetSize.shrinkWrap,
-                                    value: GenderCharacter.Lainnya,
+                                    value: ParentCharacter.Lainnya,
                                     groupValue: widget.parentGender,
                                     activeColor: cAsiaBlue,
-                                    onChanged: (GenderCharacter? value) {
+                                    onChanged: (ParentCharacter? value) {
                                       setState(
                                           () => widget.parentGender = value);
                                     },
@@ -539,7 +539,7 @@ class _AkunEditPageState extends State<AkunEditPage> {
       "phoneNumber": cPhoneNumber.text,
       "address": cAlamat.text,
       "parentStatus":
-          (widget.parentGender ?? GenderCharacter.Ayah).toEnumString(),
+          (widget.parentGender ?? ParentCharacter.Ayah).toEnumString(),
     };
     if (_imageBytes != null)
       editedValue["imagePhoto"] =

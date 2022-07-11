@@ -29,7 +29,6 @@ class ChildMain extends StatefulWidget {
 
 class _ChildMainState extends State<ChildMain> {
   final controller = Get.find<ChildController>();
-
   @override
   void initState() {
     // TODO: implement initState
@@ -245,7 +244,7 @@ class ChosenPage extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (bottomNavIndex) {
       case 0:
-        return new FeedPage(emailUser);
+        return new FeedPage(emailUser, 'child');
       case 1:
       // return new AddonPage();
       case 2:

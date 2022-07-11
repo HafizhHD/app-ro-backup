@@ -8,7 +8,7 @@ publish_to: 'none' # Remgoogle_mobile_ads: ^1.0.1ove this line if you wish to pu
 # flutter.versionName=0.0.31-alpha
 # flutter.versionCode=220000310A
 # versionCode: minSDK + major 00 + minor 62+ patch 01 +testing 0 + Alpha / Beta / Release
-version: 0.0.577+220000396B
+version: 0.0.579+220000398B
 
 environment:
   sdk: ">=2.12.0 <3.0.0"

@@ -6,7 +6,7 @@ class Spouse {
   final String? email;
   final String? imgPhoto;
   final String? phone;
-  final GenderCharacter parentStatus;
+  final ParentCharacter parentStatus;
   final String? status;
   final String? address;
   final DateTime? birdDate;
@@ -31,10 +31,10 @@ class Spouse {
         imgPhoto: json['imagePhoto'],
         phone: json['phoneNumber'] as String?,
         parentStatus: json['parentStatus'].toString().toLowerCase() == 'ayah'
-            ? GenderCharacter.Ayah
+            ? ParentCharacter.Ayah
             : (json['parentStatus'].toString().toLowerCase() == 'bunda'
-                ? GenderCharacter.Bunda
-                : GenderCharacter.Lainnya),
+                ? ParentCharacter.Bunda
+                : ParentCharacter.Lainnya),
         status: json['status'] as String?,
         address: json['address'] as String?,
         birdDate: bdate != null && bdate != ''

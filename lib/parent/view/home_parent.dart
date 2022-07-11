@@ -535,7 +535,9 @@ class _HomeParentPageState extends State<HomeParentPage> {
                                           ]),
                                       onPressed: () async {
                                         showSelectUserType(context);
-                                      }))),
+                                      })
+                              )
+                      ),
                       Expanded(
                           child: ListView.builder(
                               // physics: NeverScrollableScrollPhysics(),

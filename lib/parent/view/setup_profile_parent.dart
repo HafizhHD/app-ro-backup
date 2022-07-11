@@ -42,7 +42,7 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
   String accessToken = '';
   String birthDateString = '';
   DateTime birthDate = DateTime.now().subtract(Duration(days: 365 * 5));
-  GenderCharacter? _character = GenderCharacter.Ayah;
+  ParentCharacter? _character = ParentCharacter.Ayah;
   File? _selectedImage;
 
   void onRegister() async {
@@ -60,7 +60,7 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
       photo,
       cPhoneNumber.text,
       cAlamat.text,
-      (_character ?? GenderCharacter.Ayah).toEnumString(),
+      (_character ?? ParentCharacter.Ayah).toEnumString(),
       accessToken,
       _imageBytes != null
           ? "data:image/png;base64,${base64Encode(_imageBytes)}"
@@ -435,11 +435,11 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                                   title: Text("Ayah"),
                                   horizontalTitleGap: 0,
                                   contentPadding: EdgeInsets.zero,
-                                  leading: Radio<GenderCharacter>(
-                                    value: GenderCharacter.Ayah,
+                                  leading: Radio<ParentCharacter>(
+                                    value: ParentCharacter.Ayah,
                                     groupValue: _character,
                                     activeColor: cAsiaBlue,
-                                    onChanged: (GenderCharacter? value) {
+                                    onChanged: (ParentCharacter? value) {
                                       setState(() => _character = value);
                                     },
                                   ),
@@ -450,11 +450,11 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                                   title: Text("Bunda"),
                                   horizontalTitleGap: 0,
                                   contentPadding: EdgeInsets.zero,
-                                  leading: Radio<GenderCharacter>(
-                                    value: GenderCharacter.Bunda,
+                                  leading: Radio<ParentCharacter>(
+                                    value: ParentCharacter.Bunda,
                                     groupValue: _character,
                                     activeColor: cAsiaBlue,
-                                    onChanged: (GenderCharacter? value) {
+                                    onChanged: (ParentCharacter? value) {
                                       setState(() => _character = value);
                                     },
                                   ),
@@ -465,11 +465,11 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                                   title: Text("Lainnya"),
                                   horizontalTitleGap: 0,
                                   contentPadding: EdgeInsets.zero,
-                                  leading: Radio<GenderCharacter>(
-                                    value: GenderCharacter.Lainnya,
+                                  leading: Radio<ParentCharacter>(
+                                    value: ParentCharacter.Lainnya,
                                     groupValue: _character,
                                     activeColor: cAsiaBlue,
-                                    onChanged: (GenderCharacter? value) {
+                                    onChanged: (ParentCharacter? value) {
                                       setState(() => _character = value);
                                     },
                                   ),
