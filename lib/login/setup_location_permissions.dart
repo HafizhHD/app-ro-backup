@@ -166,8 +166,8 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
           children: [
             SwitchListTile.adaptive(
               tileColor: cOrtuGrey,
-              title: Text('Lokasi'),
-              subtitle: Text('Aplikasi Ruang ORTU by ASIA mengumpulkan data lokasi untuk mengaktifkan "Pantau Lokasi Anak", "Riwayat Lokasi Anak", "ETA" dan "Pesan Darurat" bahkan jika aplikasi ditutup atau tidak digunakan.\n' +
+              title: Text('Location'),
+              subtitle: Text('Aplikasi Ruang ORTU by ASIA mengumpulkan data lokasi untuk mengaktifkan fiture "Pantau Lokasi Anak", "Riwayat Lokasi Anak", "ETA" dan "Pesan Darurat" bahkan jika aplikasi ditutup atau tidak digunakan.\n' +
                   '\nLokasi adalah  informasi tempat/posisi berdasarkan lokasi ponsel. Lokasi yang diperlukan dan dikumpulkan berupa Geolokasi dan nama tempat.\n'
                       '\nAplikasi Ruang ORTU by ASIA memungkinkan orang tua dalam memantau lokasi anak.\n'
                       '\nAplikasi Ruang ORTU by ASIA mengumpulkan data dan informasi lokasi perangkat anak sehingga dapat ditampilkan pada dasbor Aplikasi orang tua. ETA Orang tua dapat diketahui oleh Aplikasi anak.\n'

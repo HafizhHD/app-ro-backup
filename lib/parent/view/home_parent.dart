@@ -10,6 +10,9 @@ import 'package:ruangkeluarga/parent/view/setup_invite_child.dart';
 import 'package:ruangkeluarga/plugin_device_app.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ruangkeluarga/model/mitran_model.dart';
+import 'package:ruangkeluarga/utils/repository/media_repository.dart';
+import 'dart:convert';
 
 class HomeParentPage extends StatefulWidget {
   @override
@@ -25,8 +28,10 @@ class _HomeParentPageState extends State<HomeParentPage> {
   String childName = '';
   String userName = '';
   String emailUser = '';
+  String midtranToken = '';
   late Future fLogin;
   final parentController = Get.find<ParentController>();
+  final api = MediaRepository();
 
   // void getUsageStats() async {
   //   try {
@@ -86,6 +91,43 @@ class _HomeParentPageState extends State<HomeParentPage> {
     fLogin = parentController.futureHasLogin();
   }
 
+  Future<List<MidtranAuthModel>> getMidtranToken() async {
+    final res = await api.authMidtrans();
+    if (res.statusCode == 200) {
+      final json = jsonDecode(res.body);
+      if (json['resultCode'] == "OK") {
+        List comments = json['resultData'];
+        final result =
+        comments.map((e) => MidtranAuthModel.fromJson(e)).toList();
+        print('result: $result');
+        setState(() {
+          midtranToken = result[0].token.toString();
+        });
+        return result;
+      }
+    }
+    print('Error fetchContentComment: ${res.statusCode}');
+    return [];
+  }
+
+  Future<List<MidtranAuthModel>> StratMidtranTransaction() async {
+    final res = await api.authMidtrans();
+    if (res.statusCode == 200) {
+      final json = jsonDecode(res.body);
+      if (json['resultCode'] == "OK") {
+        List comments = json['resultData'];
+        final result =
+        comments.map((e) => MidtranAuthModel.fromJson(e)).toList();
+        print('result: $result');
+        setState(() {
+          midtranToken = result[0].token.toString();
+        });
+        return result;
+      }
+    }
+    print('Error fetchContentComment: ${res.statusCode}');
+    return [];
+  }
   void showSelectUserType(context) async {
     showDialog(
       context: context,
@@ -122,15 +164,22 @@ class _HomeParentPageState extends State<HomeParentPage> {
                   final res = await Navigator.push(
                     context,
                     MaterialPageRoute<Object>(
-                        builder: (BuildContext context) => SetupInviteChildPage(
-                            address: parentController.parentProfile.address!,
-                            userTypeStr: "child")),
+                        builder: (BuildContext context) =>
+                            SetupInviteChildPage(
+                                address: parentController.parentProfile
+                                    .address!,
+                                userTypeStr: "child")),
                   );
                   print('Add Child Response: $res');
-                  if (res.toString().toLowerCase() == 'addchild')
-                    setState(() {
-                      parentController.getParentChildData();
-                    });
+                  if (childsList.length >= 1) {
+                    await getMidtranToken();
+                    showPaymentPeriode(context);
+                  } else {
+                    if (res.toString().toLowerCase() == 'addchild')
+                      setState(() {
+                        parentController.getParentChildData();
+                      });
+                  }
                 },
                 child: Image.asset('assets/images/invitation_anak.png'),
               ),
@@ -162,6 +211,72 @@ class _HomeParentPageState extends State<HomeParentPage> {
     );
   }
 
+  void showPaymentPeriode(context) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          backgroundColor: Colors.transparent,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 10.0, right: 10.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      "",
+                      style: TextStyle(fontSize: 14.0),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.close),
+                    color: cOrtuWhite,
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  )
+                ],
+              ),
+            ),
+            Divider(),
+            Padding(
+              padding: EdgeInsets.all(10.0),
+              child: InkWell(
+                onTap: () async {
+                  await getMidtranToken();
+                  if (midtranToken != "") {
+
+                  }
+                },
+                child: Image.asset('assets/images/enam_bulan.png'),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(10.0),
+              child: InkWell(
+                onTap: () async {
+                  Navigator.of(context, rootNavigator: true).pop();
+                  final res = await Navigator.push(
+                    context,
+                    MaterialPageRoute<Object>(
+                        builder: (BuildContext context) => SetupInviteChildPage(
+                            address: parentController.parentProfile.address!,
+                            userTypeStr: "parent")),
+                  );
+                  print('Add Child Response: $res');
+                  if (res.toString().toLowerCase() == 'addchild')
+                    setState(() {
+                      parentController.getParentChildData();
+                    });
+                },
+                child: Image.asset('assets/images/satu_tahun.png'),
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -420,14 +535,16 @@ class _HomeParentPageState extends State<HomeParentPage> {
                                           ]),
                                       onPressed: () async {
                                         showSelectUserType(context);
-                                      }))),
+                                      })
+                              )
+                      ),
                       Expanded(
                           child: ListView.builder(
                               // physics: NeverScrollableScrollPhysics(),
                               physics: AlwaysScrollableScrollPhysics(),
                               shrinkWrap: true,
                               scrollDirection:
-                                  Axis.vertical, //Keluarga HKBP kebawah
+                                  Axis.vertical,
                               itemCount: childsList.length,
                               itemBuilder: (BuildContext context, int index) {
                                 parentController.setModeAsuh(
@@ -935,6 +1052,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                     name: '${childData.name}',
                                     email: '${childData.email}',
                                     toLocation: true,
+                                    subscription: childData.subscription,
                                   )));
                         }),
                     FlatButton(
@@ -955,6 +1073,7 @@ class ChildCardWithBottomSheet extends StatelessWidget {
                                     title: 'Kontrol dan Konfigurasi',
                                     name: '${childData.name}',
                                     email: '${childData.email}',
+                                    subscription: childData.subscription,
                                   )));
                         }),
                   ]))

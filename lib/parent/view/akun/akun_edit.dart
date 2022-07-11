@@ -9,7 +9,10 @@ import 'package:http/http.dart';
 import 'package:ruangkeluarga/global/custom_widget/photo_image_picker.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
+import 'package:ruangkeluarga/parent/view/setup_profile_parent.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
+import 'package:ruangkeluarga/parent/view_model/sekolah_al_azhar_model.dart';
+
 
 class AkunEditPage extends StatefulWidget {
   String id;
@@ -18,8 +21,9 @@ class AkunEditPage extends StatefulWidget {
   String? phoneNum;
   String? alamat;
   bool isParent;
-  GenderCharacter? parentGender;
+  ParentCharacter? parentGender;
   DateTime? birthDate;
+  SekolahAlAzhar? selectedSekolahAlazhar;
   String? imgUrl;
 
   AkunEditPage({
@@ -29,8 +33,9 @@ class AkunEditPage extends StatefulWidget {
     this.phoneNum,
     this.alamat,
     required this.isParent,
-    this.parentGender = GenderCharacter.Ayah,
+    this.parentGender = ParentCharacter.Ayah,
     this.birthDate,
+    this.selectedSekolahAlazhar,
     this.imgUrl,
   });
 
@@ -41,6 +46,7 @@ class AkunEditPage extends StatefulWidget {
 class _AkunEditPageState extends State<AkunEditPage> {
   TextEditingController cName = TextEditingController();
   TextEditingController cEmail = TextEditingController();
+  TextEditingController cSekolah = TextEditingController();
   TextEditingController cPhoneNumber = TextEditingController();
   TextEditingController cAlamat = TextEditingController();
   String birthDateString = '';
@@ -53,6 +59,7 @@ class _AkunEditPageState extends State<AkunEditPage> {
     cEmail.text = widget.email;
     cPhoneNumber.text = widget.phoneNum ?? '';
     cAlamat.text = widget.alamat ?? '';
+    cSekolah.text = widget.selectedSekolahAlazhar != null ? widget.selectedSekolahAlazhar!.deskripsi : '';
     if (widget.birthDate != null)
       birthDateString = dateTimeTo_ddMMMMyyyy(widget.birthDate!);
   }
@@ -209,6 +216,44 @@ class _AkunEditPageState extends State<AkunEditPage> {
                           ),
                         ),
                       ),
+                      if (widget.isParent)
+                        Container(
+                          child: TextField(
+                            onTap: () async {
+                              print('Pilih Sekolah');
+                              final selected = await selectSekolah(Get.find<ParentController>().listSekolahAlAzhar);
+                              if (selected != null) {
+                                widget.selectedSekolahAlazhar = selected;
+                                cSekolah.text = selected.nama;
+                                setState(() {});
+                              }
+                            },
+                            textAlignVertical: TextAlignVertical.center,
+                            style: TextStyle(fontSize: 14.0, color: Colors.black),
+                            readOnly: true,
+                            minLines: 1,
+                            maxLines: 3,
+                            controller: cSekolah,
+                            decoration: InputDecoration(
+                              suffixIcon: Icon(
+                                Icons.arrow_drop_down_rounded,
+                                color: cPrimaryBg,
+                              ),
+                              filled: true,
+                              fillColor: cOrtuWhite,
+                              hintText: 'Pilih Sekolah',
+                              contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: cOrtuWhite),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: cOrtuWhite),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                        ),
                       Container(
                         margin: const EdgeInsets.only(top: 2, bottom: 2),
                         width: MediaQuery.of(context).size.width,
@@ -359,13 +404,13 @@ class _AkunEditPageState extends State<AkunEditPage> {
                                   title: Text("Ayah"),
                                   horizontalTitleGap: 0,
                                   contentPadding: EdgeInsets.zero,
-                                  leading: Radio<GenderCharacter>(
+                                  leading: Radio<ParentCharacter>(
                                     materialTapTargetSize:
                                         MaterialTapTargetSize.shrinkWrap,
-                                    value: GenderCharacter.Ayah,
+                                    value: ParentCharacter.Ayah,
                                     groupValue: widget.parentGender,
                                     activeColor: cAsiaBlue,
-                                    onChanged: (GenderCharacter? value) {
+                                    onChanged: (ParentCharacter? value) {
                                       setState(
                                           () => widget.parentGender = value);
                                     },
@@ -377,13 +422,13 @@ class _AkunEditPageState extends State<AkunEditPage> {
                                   title: Text("Bunda"),
                                   horizontalTitleGap: 0,
                                   contentPadding: EdgeInsets.zero,
-                                  leading: Radio<GenderCharacter>(
+                                  leading: Radio<ParentCharacter>(
                                     materialTapTargetSize:
                                         MaterialTapTargetSize.shrinkWrap,
-                                    value: GenderCharacter.Bunda,
+                                    value: ParentCharacter.Bunda,
                                     groupValue: widget.parentGender,
                                     activeColor: cAsiaBlue,
-                                    onChanged: (GenderCharacter? value) {
+                                    onChanged: (ParentCharacter? value) {
                                       setState(
                                           () => widget.parentGender = value);
                                     },
@@ -395,13 +440,13 @@ class _AkunEditPageState extends State<AkunEditPage> {
                                   title: Text("Lainnya"),
                                   horizontalTitleGap: 0,
                                   contentPadding: EdgeInsets.zero,
-                                  leading: Radio<GenderCharacter>(
+                                  leading: Radio<ParentCharacter>(
                                     materialTapTargetSize:
                                         MaterialTapTargetSize.shrinkWrap,
-                                    value: GenderCharacter.Lainnya,
+                                    value: ParentCharacter.Lainnya,
                                     groupValue: widget.parentGender,
                                     activeColor: cAsiaBlue,
-                                    onChanged: (GenderCharacter? value) {
+                                    onChanged: (ParentCharacter? value) {
                                       setState(
                                           () => widget.parentGender = value);
                                     },
@@ -494,7 +539,7 @@ class _AkunEditPageState extends State<AkunEditPage> {
       "phoneNumber": cPhoneNumber.text,
       "address": cAlamat.text,
       "parentStatus":
-          (widget.parentGender ?? GenderCharacter.Ayah).toEnumString(),
+          (widget.parentGender ?? ParentCharacter.Ayah).toEnumString(),
     };
     if (_imageBytes != null)
       editedValue["imagePhoto"] =

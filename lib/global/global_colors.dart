@@ -6,6 +6,7 @@ import 'package:ruangkeluarga/global/global.dart';
 const cOrtuBlue = Color(0xFF64c7ed);
 const cOrtuDarkBlue = Color(0xFF2266bb);
 const cAsiaBlue = Color(0xFF3d99e2);
+const cAsiaBluex = Color(0x0caff3);
 const cOrtuOrange = Color(0xFFffb703);
 const cOrtuGrey = Color(0xFFdddddd);
 const cOrtuLightGrey = Color(0xFFf5f5f5);
@@ -13,9 +14,8 @@ const cOrtuDarkGrey = Color(0xFF888888);
 const cOrtuWhite = Color(0xFFffffff);
 
 const cPrimaryBg =
-    appName == 'Ruang ORTU by ASIA' ? cOrtuWhite : Color(0xFF333333);
-const cTopBg = appName == 'Ruang ORTU by ASIA' ? cAsiaBlue : Color(0xFF333333);
-// const cPrimaryBg = Color(0xFFffffff);
+appName == 'Ruang ORTU by ASIA' ? cOrtuWhite : Color(0x0caff3);// 0caff3
+const cTopBg = appName == 'Ruang ORTU by ASIA' ? cAsiaBlue : Color(0x0caff3);
 final cAccentButton = cOrtuOrange;
 final cDisabled = Colors.grey.shade600;
 

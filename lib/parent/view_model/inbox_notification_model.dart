@@ -50,12 +50,14 @@ class InboxNotif {
 
 class MessageNotif {
   String message;
+  String subject;
   LocationModel? location;
   String? childEmail;
   String? videoUrl;
 
   MessageNotif({
     required this.message,
+    required this.subject,
     this.location,
     this.childEmail,
     this.videoUrl,
@@ -71,6 +73,7 @@ class MessageNotif {
     }
     return MessageNotif(
       message: json['message'],
+      subject: json['subject'] != null ? json['subject'] : '',
       location: jsonLocation != null ? LocationModel.fromJson(json['location']) : null,
       childEmail: json['childEmail'],
       videoUrl: json['videoUrl'],

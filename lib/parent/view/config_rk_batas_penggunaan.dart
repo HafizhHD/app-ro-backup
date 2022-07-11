@@ -78,7 +78,7 @@ class _RKConfigBatasPenggunaanPageState
 
     Response response = await MediaRepository().fetchAppList(widget.email);
     if (response.statusCode == 200) {
-      print('isi response fetch appList : ${response.body}');
+      // print('isi response fetch appList : ${response.body}');
       var json = jsonDecode(response.body);
       if (json['resultCode'] == 'OK') {
         if (json['appdevices'].length > 0) {

@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/model/rk_child_model.dart';
 import 'package:ruangkeluarga/parent/view/akun/akun_edit.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
+import 'package:ruangkeluarga/parent/view_model/sekolah_al_azhar_model.dart';
 import 'package:ruangkeluarga/utils/base_service/service_controller.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
+import 'package:ruangkeluarga/parent/view/order/order.dart';
+
+import '../../../utils/rk_webview.dart';
+import '../inbox/Inbox_page.dart';
 
 class AkunPage extends StatelessWidget {
   final appInfo = Get.find<RKServiceController>().appInfo;
@@ -26,6 +32,7 @@ class AkunPage extends StatelessWidget {
                     child: RefreshIndicator(
                       onRefresh: () async {
                         await ctrl.getParentChildData();
+                        await ctrl.getListPackage();
                       },
                       child: SingleChildScrollView(
                         physics: AlwaysScrollableScrollPhysics(),
@@ -43,7 +50,8 @@ class AkunPage extends StatelessWidget {
                                 birthDate: parentData.birdDate,
                                 isParent:
                                     parentData.parentStatus.toEnumString(),
-                                isMainAccount: true),
+                                isMainAccount: true,
+                                parentEmail: parentData.email),
                             Flexible(
                               child: ListView.builder(
                                 shrinkWrap: true,
@@ -78,6 +86,10 @@ class AkunPage extends StatelessWidget {
                                 itemCount: children.length,
                                 itemBuilder: (ctx, idx) {
                                   final childData = children[idx];
+                                  var subsciption = null;
+                                  if (childData.subscription.isNotEmpty) {
+                                    subsciption = childData.subscription[0];
+                                  }
                                   print('Nama: ${childData.name}');
                                   print('Telepon: ${childData.phone}');
                                   print('Alamat: ${childData.address}');
@@ -91,7 +103,10 @@ class AkunPage extends StatelessWidget {
                                       id: childData.id,
                                       phone: childData.phone ?? '',
                                       alamat: childData.address ?? '',
-                                      birthDate: childData.birdDate);
+                                      birthDate: childData.birdDate,
+                                      parentEmail: parentData.email,
+                                      subsription: subsciption
+                                  );
                                 },
                               ),
                             ),
@@ -99,11 +114,25 @@ class AkunPage extends StatelessWidget {
                         ),
                       ),
                     ))),
-            Align(
-                alignment: Alignment.bottomLeft,
-                child: Container(
-                    margin: EdgeInsets.all(10),
-                    child: Text('Versi ${appInfo.version}')))
+            // Align(
+            //     alignment: Alignment.bottomLeft,
+            //     child: Column(
+            //     crossAxisAlignment: CrossAxisAlignment.stretch,
+            //     children: [
+            //       Text(''),
+            //       InkWell(
+            //         child: Text("  Kebijakan Privasi",
+            //           style: TextStyle(
+            //             color: Colors.blue
+            //           ),
+            //         ),
+            //         onTap: () {showPrivacyPolicy();},
+            //       ),
+            //       Text(''),
+            //       Text('  Versi ${appInfo.version}'),
+            //     ]),
+            // )
+
           ]);
         },
       ),
@@ -126,9 +155,14 @@ class AkunPage extends StatelessWidget {
     required String id,
     String? phone,
     DateTime? birthDate,
+    SekolahAlAzhar? namaSekolah,
     String? alamat,
+    String? parentEmail,
+    Subscription? subsription
   }) {
     print('Nama: $name, isParent: $isParent');
+    String childEmail = "";
+    if (email != parentEmail) childEmail = email;
     return Dismissible(
       key: Key('$name+$email'),
       direction: isMainAccount == false && isMainParent == false
@@ -161,6 +195,7 @@ class AkunPage extends StatelessWidget {
                   isParent: boolParent,
                   imgUrl: imgUrl,
                   birthDate: birthDate,
+                  selectedSekolahAlazhar: namaSekolah,
                   parentGender:
                       boolParent ? genderCharFromString(isParent) : null,
                 ),
@@ -206,7 +241,9 @@ class AkunPage extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(15.0),
                                 ),
                               ),
+
                       ),
+
                     ),
                     Flexible(
                       child: Container(
@@ -231,12 +268,31 @@ class AkunPage extends StatelessWidget {
                                 '$phone',
                                 // style: TextStyle(fontSize: 20),
                               ),
+                            SizedBox(height: 5),
+                            subsription == null?
+                              TextButton(onPressed: () async {
+                              await Get.to(() => OrderPage(childEmail:
+                                childEmail, parentEmail: parentEmail!),
+                              );
+                              await Get.find<ParentController>().getParentChildData();
+                              closeOverlay();
+                              },
+                                child: Text('Upgrade Paket',
+                                    style: TextStyle(
+                                    color: cOrtuBlue,
+                                    fontSize: 16))
+                            ):
+                            Text(
+                              'Langganan sampai: '  + subsription.dateEnd!,
+                              // style: TextStyle(fontSize: 20),
+                            ),
                           ],
                         ),
                       ),
                     ),
                   ],
-                )),
+                  )
+                ),
                 isMainAccount == false && isMainParent == false
                     ? Align(
                         alignment: Alignment.centerRight,

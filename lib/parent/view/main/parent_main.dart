@@ -22,6 +22,8 @@ import 'package:ruangkeluarga/utils/rk_webview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ruangkeluarga/forum/forum_main.dart';
 
+import '../../../global/help_page.dart';
+
 final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
 class ParentMain extends StatefulWidget {
@@ -107,7 +109,7 @@ class _ParentMainState extends State<ParentMain> {
     super.initState();
     controller.loginData();
     controller.getAppIconList();
-    controller.setBottomNavIndex(2);
+    controller.setBottomNavIndex(0);
     controller.getBinding();
     onMessageListen();
     getUsageStatistik();
@@ -115,7 +117,7 @@ class _ParentMainState extends State<ParentMain> {
 
   @override
   Widget build(BuildContext context) {
-    final menuTitle = ['Discover', 'Inbox', 'Home', 'Jadwal', 'Akun', 'Forum'];
+    final menuTitle = [ 'Home', 'Discover', 'Inbox', 'Jadwal', 'Akun'];
     return SafeArea(
       child: WillPopScope(
         onWillPop: () async => onWillCloseApp(),
@@ -143,7 +145,11 @@ class _ParentMainState extends State<ParentMain> {
               // ),
               IconButton(
                 onPressed: () {
-                  showFAQ();
+                  // showFAQ();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HelpPage()),
+                  );
                 },
                 icon: Icon(
                   Icons.help,
@@ -202,13 +208,13 @@ class _ParentMainState extends State<ParentMain> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             IconWithLabel(
-                defaultIcon: Icons.menu_book_outlined,
-                activeIcon: Icons.menu_book,
-                label: 'Discover',
-                isSelected: controller.bottomNavIndex == 0,
-                onPressed: () => setState(() {
-                      controller.setBottomNavIndex(0);
-                    })),
+        defaultIcon: Icons.home_outlined,
+            activeIcon: Icons.home,
+            label: 'Home',
+            isSelected: controller.bottomNavIndex == 0,
+            onPressed: () => setState(() {
+              controller.setBottomNavIndex(0);
+            })),
             Obx(
               () => Badge(
                 position: BadgePosition.topEnd(end: 5),
@@ -230,13 +236,13 @@ class _ParentMainState extends State<ParentMain> {
               ),
             ),
             IconWithLabel(
-                defaultIcon: Icons.home_outlined,
-                activeIcon: Icons.home,
-                label: 'Home',
+                defaultIcon: Icons.menu_book_outlined,
+                activeIcon: Icons.menu_book,
+                label: 'Discover',
                 isSelected: controller.bottomNavIndex == 2,
                 onPressed: () => setState(() {
-                      controller.setBottomNavIndex(2);
-                    })),
+                  controller.setBottomNavIndex(2);
+                })),
             // IconWithLabel(
             //     defaultIcon: Icons.calendar_today_outlined,
             //     activeIcon: Icons.calendar_today,
@@ -250,14 +256,6 @@ class _ParentMainState extends State<ParentMain> {
                 isSelected: controller.bottomNavIndex == 4,
                 onPressed: () => setState(() {
                       controller.setBottomNavIndex(4);
-                    })),
-            IconWithLabel(
-                defaultIcon: Icons.forum_outlined,
-                activeIcon: Icons.forum,
-                label: 'Forum',
-                isSelected: controller.bottomNavIndex == 5,
-                onPressed: () => setState(() {
-                      controller.setBottomNavIndex(5);
                     })),
             // onPressed: () => showFAQ()),
           ],
@@ -276,20 +274,17 @@ class ChosenPage extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (bottomNavIndex) {
       case 0:
-        return new FeedPage(emailUser);
+        return new HomeParentPage();
+      case 2:
+        return new FeedPage(emailUser, 'parent');
       case 1:
         // Get.find<ParentController>().getInboxNotif();
         return new InboxPage();
       // return new AddonPage();
-      case 2:
-        // Get.find<ParentController>().getParentChildData();
-        return new HomeParentPage();
       case 3:
         return new JadwalPage();
       case 4:
         return new AkunPage();
-      case 5:
-        return new ForumMain();
       default:
         return new HomeParentPage();
     }

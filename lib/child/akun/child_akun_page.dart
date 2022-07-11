@@ -95,7 +95,7 @@ class ChildAkunPage extends StatelessWidget {
                                         );
                                 },
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),

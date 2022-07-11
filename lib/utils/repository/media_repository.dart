@@ -25,6 +25,12 @@ class MediaRepository {
     "Content-Type": "application/json"
   };
 
+  static Map<String, String> midTransAuthHeaders = {
+    'Accept': 'application/json',
+    'Authorization': "SB-Mid-server-pE9aR18XEHj_8YvUS3SLbzLN:",
+    'Content-Type': 'application/json',
+  };
+
   static Map<String, String> authHeaders = {};
 
   Future<List<Media>> fetchMediaList(String value) async {
@@ -165,7 +171,10 @@ class MediaRepository {
       String birthDate,
       String address,
       String userType,
-      String parentGender) async {
+      String parentStatus,
+      String gender,
+      String childSchoolName,
+      String schoolCity) async {
     var url = _rkService.baseUrl + '/user/invite';
     Map<String, dynamic> json = {
       "emailUser": "$email",
@@ -174,12 +183,15 @@ class MediaRepository {
       "childName": "$childName",
       "childAge": childAge,
       "childStudyLevel": "$childStudyLevel",
+      "gender": gender,
+      "schoolName": "$childSchoolName",
+      "schoolCity": "$schoolCity",
       "childOfNumber": childOfNumber,
       "childNumber": childNumber,
       "birdDate": "$birthDate",
       "address": "$address",
       "userType": "$userType",
-      "parentStatus": parentGender,
+      "parentStatus": parentStatus,
       "packageId": "com.byasia.ruangortu"
     };
     if (imgByte != "") json["imagePhoto"] = imgByte;
@@ -228,6 +240,15 @@ class MediaRepository {
     return response;
   }
 
+  Future<Response> orderRequest(Map<String, dynamic> orderValue) async {
+    var url = _rkService.baseUrl + '/payment/orderPayment';
+    print('param order request : $orderValue');
+    Response response = await post(Uri.parse(url),
+        headers: noAuthHeaders, body: jsonEncode(orderValue));
+    print('response update user data: ${response.body}');
+    return response;
+  }
+
   Future<Response> saveChildUsage(String email, List<dynamic> data) async {
     var url = _rkService.baseUrl + '/user/appUsage';
     final usageDate = now_yyyyMMdd();
@@ -238,7 +259,7 @@ class MediaRepository {
       "appUsageHour": "$usageHour",
       "appUsages": data
     };
-    print('param child usage : $json');
+    // print('param child usage : $json');
     Response response = await post(Uri.parse(url),
         headers: noAuthHeaders, body: jsonEncode(json));
     return response;
@@ -430,7 +451,7 @@ class MediaRepository {
       },
       "dateTimeHistory": "$dates"
     };
-    print('param save user location : $json');
+    // print('param save user location : $json');
     Response response = await post(Uri.parse(url),
         headers: noAuthHeaders, body: jsonEncode(json));
     return response;
@@ -511,13 +532,15 @@ class MediaRepository {
     return response;
   }
 
-  Future<Response> fetchParentInbox(String email) async {
+  Future<Response> fetchParentInbox(String email, inboxType) async {
     var url = _rkService.baseUrl + '/user/inboxFilter';
     Map<String, dynamic> json = {
       "whereKeyValues": {
         "emailUser": "$email",
       }
     };
+    if (inboxType != "") json["whereKeyValues"]["type"] =
+        inboxType.toLowerCase();
     print('param fetchParentInbox: $json');
     Response response = await post(Uri.parse(url),
         headers: noAuthHeaders, body: jsonEncode(json));
@@ -716,6 +739,46 @@ class MediaRepository {
     return response;
   }
 
+  Future<Response> fetchSekolahAlAzhar() async {
+    var url = _rkService.baseUrl + '/cobrand/AlAzharSchoolFilter';
+    Response response = await post(Uri.parse(url), headers: noAuthHeaders);
+    return response;
+  }
+
+  Future<Response> fetchCoBrandPrograms(String date, int limit, int offset,
+      {String key = '', String email = ''}) async {
+    var url = _rkService.baseUrl + '/cobrand/programFilter';
+    print('fetchCoBrandPrograms');
+    Map<String, dynamic> json = email == ''
+        ? {
+      "whereKeyValues": {
+        "programName": {"\$regex": key, "\$options": "i"},
+        "cobrandEmail": "admin@asia.ruangortu.id",
+        "status": 'active',
+        "startDate": {"\$lte": date}
+      },
+
+      "orderKeyValues": {"startDate": -1},
+      "limit": limit,
+      "offset": offset
+    }
+        : {
+      "whereKeyValues": {
+        "programName": {"\$regex": key, "\$options": "i"},
+        "cobrandEmail": email,
+        "status": 'active',
+        "startDate": {"\$lte": date}
+      },
+      "orderKeyValues": {"startDate": -1},
+      "limit": limit,
+      "offset": offset
+    };
+    print('param program filter : $json');
+    Response response = await post(Uri.parse(url),
+        headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
   Future<Response> fetchCoBrandContents(String date, int limit, int offset,
       {String key = '', String email = ''}) async {
     var url = _rkService.baseUrl + '/cobrand/contentFilter';
@@ -725,9 +788,11 @@ class MediaRepository {
             "whereKeyValues": {
               "contentName": {"\$regex": key, "\$options": "i"},
               "cobrandEmail": "admin@asia.ruangortu.id",
+              "\$or": [{ "programId": "-1" }, { "programId": "" }],
               "status": 'active',
               "startDate": {"\$lte": date}
             },
+
             "orderKeyValues": {"startDate": -1},
             "limit": limit,
             "offset": offset
@@ -736,6 +801,7 @@ class MediaRepository {
             "whereKeyValues": {
               "contentName": {"\$regex": key, "\$options": "i"},
               "cobrandEmail": email,
+              "\$or": [{ "programId": "-1" }, { "programId": "" }],
               "status": 'active',
               "startDate": {"\$lte": date}
             },
@@ -744,6 +810,25 @@ class MediaRepository {
             "offset": offset
           };
     print('param content filter : $json');
+    Response response = await post(Uri.parse(url),
+        headers: noAuthHeaders, body: jsonEncode(json));
+    // Response response = await post(Uri.parse(url), headers: noAuthHeaders);
+    return response;
+  }
+
+  Future<Response> fetchProgramContents(String programId, int limit, int offset) async {
+    var url = _rkService.baseUrl + '/cobrand/contentFilter';
+    print('fetchCoBrandContents');
+    Map<String, dynamic> json = {
+      "whereKeyValues": {
+        "programId": programId,
+        "status": 'active'
+      },
+      "orderKeyValues": {"startDate": -1},
+      "limit": limit,
+      "offset": offset
+    };
+    print('param program content filter : $json');
     Response response = await post(Uri.parse(url),
         headers: noAuthHeaders, body: jsonEncode(json));
     // Response response = await post(Uri.parse(url), headers: noAuthHeaders);
@@ -760,6 +845,22 @@ class MediaRepository {
     Response response = await post(Uri.parse(url),
         headers: noAuthHeaders, body: jsonEncode(json));
     // Response response = await post(Uri.parse(url), headers: noAuthHeaders);
+    return response;
+  }
+
+  Future<Response> fetchPackage({String emailUser = ""}) async {
+    var url = _rkService.baseUrl + '/payment/getPackage';
+    print('fetchpaket');
+    Map<String, dynamic> json = {
+        "whereKeyValues": {
+          "status": "active",
+          "cobrandEmail" : "admin@asia.ruangortu.id"
+        },
+        "emailUser" : emailUser
+    };
+    print('param paket filter : $json');
+    Response response = await post(Uri.parse(url),
+        headers: noAuthHeaders, body: jsonEncode(json));
     return response;
   }
 
@@ -836,6 +937,15 @@ class MediaRepository {
     print('param body matrix: $jsonBody');
     Response response = await post(Uri.parse(url),
         headers: jsonHeader, body: jsonEncode(jsonBody));
+    return response;
+  }
+
+
+  Future<Response> authMidtrans() async {
+    var url = 'https://api.sandbox.midtrans.com';
+    print('param get parent child data : $json');
+    Response response = await post(Uri.parse(url),
+        headers: midTransAuthHeaders, body: jsonEncode({}));
     return response;
   }
 }

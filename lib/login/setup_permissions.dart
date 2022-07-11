@@ -390,7 +390,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                     Padding(
                         padding: EdgeInsets.only(bottom: 10),
                         child: Text(
-                            'Kami membutuhkan akses media penyimpanan untuk menyimpan foto profile Anda.',
+                            'Aplikasi $appName membutuhkan akses media penyimpanan untuk menyimpan foto profile Anda.',
                             style: TextStyle(color: cOrtuText))),
                     SwitchListTile.adaptive(
                       tileColor: cOrtuGrey,
@@ -445,7 +445,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                     Padding(
                         padding: EdgeInsets.only(bottom: 10),
                         child: Text(
-                            'Kami membutuhkan akses kamera untuk memotret foto profil dan mengirimkan rekaman video SOS pada perangkat anak.',
+                            'Aplikasi $appName membutuhkan akses kamera untuk memotret foto profil dan mengirimkan rekaman video SOS pada perangkat anak.',
                             style: TextStyle(color: cOrtuText))),
                     SwitchListTile.adaptive(
                       tileColor: cOrtuGrey,
@@ -484,7 +484,6 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                           borderRadius: BorderRadius.all(Radius.circular(15))),
                     )
                   ])),
-
               Container(
                   margin: EdgeInsets.all(10),
                   child: Column(children: [
@@ -500,7 +499,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                     Padding(
                         padding: EdgeInsets.only(bottom: 10),
                         child: Text(
-                            'Kami membutuhkan akses microphone pada perangkat anak untuk mengirimkan rekaman suara ketika SOS.',
+                            'Aplikasi $appName membutuhkan akses microphone pada perangkat anak untuk mengirimkan rekaman suara ketika SOS.',
                             style: TextStyle(color: cOrtuText))),
                     SwitchListTile.adaptive(
                       tileColor: cOrtuGrey,
@@ -549,11 +548,6 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                             color: cOrtuText,
                             fontSize: 25,
                             fontWeight: FontWeight.bold)),
-                    // Padding(
-                    //     padding: EdgeInsets.all(100),
-                    //     child: Text('Gambar',
-                    //         style: TextStyle(
-                    //             backgroundColor: cOrtuText, fontSize: 20))),
                     Padding(
                         padding: EdgeInsets.all(10),
                         child: Image.asset('assets/images/icon/phonebook.png',
@@ -561,7 +555,9 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                     Padding(
                         padding: EdgeInsets.only(bottom: 10),
                         child: Text(
-                            'Kami membutuhkan akses kontak pada perangkat anak untuk memonitoring kontak anak.',
+                            'Aplikasi $appName mengumpulkan data kontak pada perangkat anak untuk memonitoring kontak anak.\n'
+                            'Aplikasi mengumpulkan, menyimpan lokasi perangkat anak.'
+                            ' Aplikasi tidak membagikan informasi kontak pada pihak ketiga.',
                             style: TextStyle(color: cOrtuText))),
                     SwitchListTile.adaptive(
                       tileColor: cOrtuGrey,
@@ -621,7 +617,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                     Padding(
                         padding: EdgeInsets.only(bottom: 10),
                         child: Text(
-                            'Kami membutuhkan akses window alert untuk memberikan informasi aplikasi yang dibatasi orang tua.',
+                            'Aplikasi $appName membutuhkan akses window alert untuk memberikan peringata pada perangkat anak yang dibatasi orang tua.',
                             style: TextStyle(color: cOrtuText))),
                     SwitchListTile.adaptive(
                       tileColor: cOrtuGrey,
@@ -662,40 +658,6 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                           borderRadius: BorderRadius.all(Radius.circular(15))),
                     )
                   ])),
-              // SwitchListTile.adaptive(
-              //   tileColor: cOrtuGrey,
-              //   title: Text('SMS'),
-              //   subtitle: Text('Kami membutuhkan akses sms pada perangkat anak untuk mengirimkan sms dari SOS.'),
-              //   value: _smsPermission,
-              //   onChanged: (val) async {
-              //     var _permissionStatus = await Permission.sms.status;
-              //     if (_permissionStatus.isDenied) {
-              //       final s = Stopwatch()..start();
-              //       _permissionStatus = await Permission.sms.request();
-              //       s.stop();
-              //       if (s.elapsedMilliseconds < _waitDelay && _permissionStatus.isPermanentlyDenied) {
-              //         await Get.dialog(AlertDialog(
-              //           title: Text('Akses ditolak'),
-              //           content: Text('Akses untuk sms telah di tolak sebelumnya. Buka setting untuk merubah akses.'),
-              //           actions: [
-              //             TextButton(
-              //                 onPressed: () async {
-              //                   final res = await openAppSettings();
-              //                   if (res) Get.back();
-              //                 },
-              //                 child: Text('Buka Setting'))
-              //           ],
-              //         ));
-              //         _permissionStatus = await Permission.sms.status;
-              //       }
-              //     }
-              //     _smsPermission = _permissionStatus.isGranted;
-              //     setState(() {});
-              //   },
-              //   contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 0),
-              //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
-              // ),
-              // SizedBox(height: 10),
               Container(
                   margin: EdgeInsets.all(10),
                   child: Column(children: [
@@ -711,7 +673,10 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                     Padding(
                         padding: EdgeInsets.only(bottom: 10),
                         child: Text(
-                            'Kami membutuhkan akses data aplikasi pada perangkat anak untuk memonitoring penggunaan aplikasi/game anak.',
+                            'Aplikasi $appName membutuhkan akses dan mengumpulkan data aplikasi pada perangkat '
+                            'anak untuk memonitoring penggunaan aplikasi anak.\n'
+                            'Aplikasi mengumpulkan, menyimpan penggunaan aplikasi pada perangkat anak.'
+                            ' Aplikasi tidak membagikan informasi penggunaan aplikasi pada pihak ketiga.',
                             style: TextStyle(color: cOrtuText))),
                     SwitchListTile.adaptive(
                       tileColor: cOrtuGrey,
@@ -757,7 +722,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                     Padding(
                         padding: EdgeInsets.only(bottom: 10),
                         child: Text(
-                            'Kami membutuhkan akses kunci layar pada perangkat anak untuk memonitoring penggunaan aplikasi/game anak.',
+                            'Aplikasi $appName membutuhkan akses kunci layar pada perangkat anak untuk memonitoring penggunaan aplikasi/game anak.',
                             style: TextStyle(color: cOrtuText))),
                     SwitchListTile.adaptive(
                       tileColor: cOrtuGrey,
@@ -799,7 +764,9 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                         padding: EdgeInsets.only(bottom: 10),
                         child: Column(children: [
                           Text(
-                              'Aplikasi $appName mengumpulkan data lokasi untuk mengaktifkan "Pantau Lokasi Anak", "Riwayat Lokasi Anak", "ETA" dan "Pesan Darurat".',
+                              'Aplikasi $appName mengumpulkan data lokasi untuk mengaktifkan "Pantau Lokasi Anak", "Riwayat Lokasi Anak", "ETA" dan "Pesan Darurat".\n'
+                              'Aplikasi mengumpulkan, menyimpan lokasi perangkat anak.'
+                              ' Aplikasi tidak membagikan informasi lokasi pada pihak ketiga.',
                               style: TextStyle(color: cOrtuText)),
                           InkWell(
                             child: Row(
@@ -819,40 +786,6 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                     SwitchListTile.adaptive(
                       tileColor: cOrtuGrey,
                       title: Text('Lokasi'),
-                      // subtitle: Column(children: [
-                      //   Text(readMore == true
-                      //       ? ('Aplikasi Keluarga HKBP mengumpulkan data lokasi untuk mengaktifkan "Pantau Lokasi Anak", "Riwayat Lokasi Anak", "ETA" dan "Pesan Darurat" bahkan jika aplikasi ditutup atau tidak digunakan.\n' +
-                      //           '\nLokasi adalah  informasi tempat/posisi berdasarkan lokasi ponsel. Lokasi yang diperlukan dan dikumpulkan berupa Geolokasi dan nama tempat.\n'
-                      //               '\nAplikasi Keluarga HKBP memungkinkan orang tua dalam memantau dan mengelola aktivitas penggunaan perangkat anak mereka termasuk melihat lokasi anak.\n'
-                      //               '\nAplikasi keluarga HKBP mengumpulkan data dan informasi lokasi perangkat anak sehingga dapat ditampilkan pada dasbor Aplikasi orang tua.\n'
-                      //               '\nFitur Lokasi yang digunakan dalam aplikasi Keluarga HKBP menggunakan Software Development Kit dari google. Pengguna dapat melihat permission yang digunakan dan memerlukan persetujuan dari pengguna untuk mengaktifkan fitur lokasi.\n'
-                      //               '\nAplikasi Keluarga HKBP selalu meminta akses lokasi bahkan saat aplikasi tidak digunakan untuk memberikan informasi lokasi yang tepat kepada orangtua dan memastikan mereka berada di lokasi yang aman, meskipun anak tidak mengaktifkan aplikasi Keluarga HKBP di perangkat mereka.\n'
-                      //               '\nDengan mengaktifkan fitur akses lokasi orang tua dapat melihat lokasi anak, prediksi perjalanan dan riwayat perjalanan anak.\n'
-                      //               '\nCara Kerja Lokasi pada Perangkat :\n'
-                      //               'Pengguna harus mengunduh aplikasi keluarga HKBP dan mendaftarkan akun gmail sebagai orangtua dan anak\n'
-                      //               'Sistem akan meminta persetujuan pengguna untuk mengaktifkan data lokasi untuk memberikan informasi terkait tempat dan informasi jarak lokasi\n'
-                      //               'Untuk melihat lokasi pada perangkat anak. Pengguna(Orang tua) dapat mendaftarkan perangkat anak yang ingin di monitor dengan memasukkan nama, email dan tanggal lahir anak.\n'
-                      //               'Pengguna(Anak) melakukan aktivasi pada perangkat anak dan login menggunakan akun yang sudah didaftarkan sebagai anak.\n'
-                      //               'Pada Aplikasi akan diminta persetujuan untuk mengaktifkan akses data lokasi untuk memberikan informasi lokasi di perangkat berada.\n'
-                      //               'Dengan kondisi lokasi sudah aktif, maka secara berkala aplikasi akan melakukan pengumpulan lokasi pada perangkat anak sehingga orang tua dapat mengetahui informasi lokasi anak mereka melalui aplikasi keluarga HKBP di perangkat orangtua.')
-                      //       : ('Aplikasi Keluarga HKBP mengumpulkan data lokasi untuk mengaktifkan "Pantau Lokasi Anak", "Riwayat Lokasi Anak"...')),
-                      //   InkWell(
-                      //     child: Row(
-                      //       mainAxisAlignment: MainAxisAlignment.end,
-                      //       children: [
-                      //         Text(
-                      //           readMore == true ? "Show less..." : "Show more...",
-                      //           style: TextStyle(color: cOrtuInkWell),
-                      //         ),
-                      //       ],
-                      //     ),
-                      //     onTap: () {
-                      //       setState(() {
-                      //         readMore = !readMore;
-                      //       });
-                      //     },
-                      //   ),
-                      // ]),
                       value: _locationPermission,
                       onChanged: (val) async {
                         var _permissionStatus =
@@ -920,7 +853,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                     Padding(
                         padding: EdgeInsets.only(bottom: 10),
                         child: Text(
-                            'Kami membutuhkan akses media penyimpanan untuk menyimpan foto profile Anda.',
+                            'Aplikasi $appName membutuhkan akses media penyimpanan untuk menyimpan foto profile Anda.',
                             style: TextStyle(color: cOrtuText))),
                     SwitchListTile.adaptive(
                       tileColor: cOrtuGrey,
@@ -975,7 +908,7 @@ class _SetupPermissionPageState extends State<SetupPermissionPage> {
                     Padding(
                         padding: EdgeInsets.only(bottom: 10),
                         child: Text(
-                            'Kami membutuhkan akses kamera untuk memotret foto profil dan mengirimkan rekaman video SOS pada perangkat anak.',
+                            'Aplikasi $appName membutuhkan akses kamera untuk memotret foto profil dan mengirimkan rekaman video SOS pada perangkat anak.',
                             style: TextStyle(color: cOrtuText))),
                     SwitchListTile.adaptive(
                       tileColor: cOrtuGrey,

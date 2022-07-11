@@ -1,15 +1,17 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/model/package_model.dart';
 import 'package:ruangkeluarga/model/rk_child_model.dart';
 import 'package:ruangkeluarga/model/rk_spouse_model.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
 import 'package:ruangkeluarga/parent/view_model/appUsage_model.dart';
-// import 'package:ruangkeluarga/parent/view_model/gereja_hkbp_model.dart';
 import 'package:ruangkeluarga/parent/view_model/inbox_notification_model.dart';
+import 'package:ruangkeluarga/parent/view_model/sekolah_al_azhar_model.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart' hide Response;
@@ -35,7 +37,12 @@ class ParentController extends GetxController {
 
   ///INBOX DATA
   var inboxData = <InboxNotif>[];
+  var inboxDataSOS = <InboxNotif>[];
+  var inboxDataNotification = <InboxNotif>[];
   var unreadNotif = 0.obs;
+
+  List<SekolahAlAzhar> listSekolahAlAzhar = [];
+  List<PackageModel> listPackage = [];
 
   ///Child Activity Detail
   Map<String, List<AppUsages>> mapChildActivity = {},
@@ -77,6 +84,8 @@ class ParentController extends GetxController {
     super.onInit();
     initAsync();
     getBinding();
+    getListSekolahAlAzhar();
+    getListPackage();
   }
 
   void getBinding() async {
@@ -117,7 +126,7 @@ class ParentController extends GetxController {
         spouseList = parentProfile.spouse ?? [];
         return parentProfile.children ?? [];
       } else {
-        logUserOut();
+        forcedLogOut();
         return [];
       }
     }
@@ -186,9 +195,9 @@ class ParentController extends GetxController {
     }
   }
 
-  Future getInboxNotif() async {
+  Future getInboxNotif({String inboxType = ''}) async {
     Response res =
-        await MediaRepository().fetchParentInbox(parentProfile.email);
+        await MediaRepository().fetchParentInbox(parentProfile.email, inboxType);
     if (res.statusCode == 200) {
       print('print res fetchParentInbox ${res.body}');
       final json = jsonDecode(res.body);
@@ -201,8 +210,28 @@ class ParentController extends GetxController {
           return notif;
         }).toList();
         inboxData.sort((a, b) => b.createAt.compareTo(a.createAt));
+        if (inboxType == '') {
+          await inboxNotifFilter('sos');
+          await inboxNotifFilter('notifikasi');
+        } else if (inboxType.toLowerCase() == 'sos')
+          await inboxNotifFilter('sos');
+        else await inboxNotifFilter('notifikasi');
+        // if (inboxType.toLowerCase() == 'sos') inboxDataSOS = inboxData;
+        // else if (inboxType.toLowerCase() == 'notifikasi') inboxDataNotification = inboxData;
         update();
       }
+    }
+  }
+
+  Future inboxNotifFilter(String inboxType) async {
+    if (inboxData.length > 0){
+      var type = inboxType.toLowerCase();
+      if (inboxType.toLowerCase() != 'sos') type = 'alert';
+      final filterData = inboxData.where((e) => e.type.toEnumString() == type).toList();
+      if (inboxType.toLowerCase() == 'sos') inboxDataSOS = filterData;
+      else if (inboxType.toLowerCase() == 'notifikasi') inboxDataNotification = filterData;
+      // print(filterData);
+      update();
     }
   }
 
@@ -249,6 +278,37 @@ class ParentController extends GetxController {
         ),
       ],
     ));
+  }
+
+  Future getListSekolahAlAzhar() async {
+    Response res = await MediaRepository().fetchSekolahAlAzhar();
+    if (res.statusCode == 200) {
+      // print('print res fetchSekolahAlAzhar ${res.body}');
+      final json = jsonDecode(res.body);
+      if (json['resultCode'] == "OK") {
+        List AlAzharData = json['Data'];
+        listSekolahAlAzhar = AlAzharData.map((e) => SekolahAlAzhar.fromJson(e)).toList();
+        update();
+      }
+    }
+  }
+
+  Future getListPackage() async {
+    Response res = await MediaRepository().fetchPackage(emailUser: emailUser);
+    if (res.statusCode == 200) {
+      final json = jsonDecode(res.body);
+      print("paket yg ada: ");
+      print(json);
+      if (json['resultCode'] == "OK") {
+        List Data = json['Data'];
+        listPackage = Data.map((e) => PackageModel.fromJson(e)).toList();
+        update();
+      }
+    }
+    else {
+      print("error get paket ");
+      print(res.statusCode);
+    }
   }
 
   ///child activity

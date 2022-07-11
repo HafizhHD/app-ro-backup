@@ -82,13 +82,25 @@ late AndroidNotificationChannel channel;
 /// Initialize the [FlutterLocalNotificationsPlugin] package.
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
-void startServicePlatform() async {
-  await BackgroundServiceNew.oneShot(
-      const Duration(milliseconds: 5000), 12304, callbackBackgroundService,
-      wakeup: true,
-      exact: true,
-      allowWhileIdle: true,
-      rescheduleOnReboot: true);
+Future<void> startServicePlatform() async {
+  print("alarm manager service on");
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  try {
+    int alarmId = 12504;
+    await BackgroundServiceNew.oneShot(
+        const Duration(milliseconds: 15000), alarmId, callbackBackgroundService,
+        wakeup: true,
+        exact: true,
+        alarmClock: true,
+        allowWhileIdle: true,
+        rescheduleOnReboot: true);
+    await prefs.setBool("isStopService", false);
+  } catch (e) {
+    print('Error call alarm controling' + e.toString());
+    sleep(const Duration(minutes: 1));
+    // callbackBackgroundService();
+    await prefs.setBool("isStopService", true);
+  }
 }
 
 Future<Map<String, int>> getDurationAppForeground() async {
@@ -151,27 +163,29 @@ Future<Map<String, int>> getDurationAppForeground() async {
   return (data);
 }
 
-void callbackBackgroundService() async {
-  print("background service on: ${DateTime.now()}");
-  SharedPreferences prefs = await SharedPreferences.getInstance();
+Future<void> callbackBackgroundService() async {
+  print("calback alarm service on: ${DateTime.now()}");
+  SharedPreferences? prefs;
   try {
+    prefs = await SharedPreferences.getInstance();
     final result = await InternetAddress.lookup('ruangortu.id');
-    var koneksiInternet = prefs.getBool('koneksiInternet');
+    bool koneksiInternet = false;
+    var k = prefs.getBool('koneksiInternet');
+    if (k != null) koneksiInternet = k;
     if (result.isNotEmpty &&
         result[0].rawAddress.isNotEmpty &&
-        koneksiInternet != null &&
         !koneksiInternet) {
       print("Internet connected");
       ChildController controller = new ChildController();
       controller.fetchDataApp();
       await prefs.setBool("koneksiInternet", true);
     }
-  } on SocketException catch (_) {
-    print("Diskonnect internet SocketException");
-    await prefs.setBool("koneksiInternet", false);
-  } on Exception catch (_) {
-    print("Diskonnect internet Exception");
-    await prefs.setBool("koneksiInternet", false);
+  } on SocketException catch (e) {
+    print("Diskonnect internet SocketException : " + e.toString());
+    await prefs?.setBool("koneksiInternet", false);
+  } on Exception catch (e) {
+    print("Diskonnect internet Exception : " + e.toString());
+    await prefs?.setBool("koneksiInternet", false);
   } finally {
     var durationAppForeground = await getDurationAppForeground();
     // print("durasi = " + durationAppForeground.toString());
@@ -285,10 +299,10 @@ class _MyHomePageState extends State<MyHomePage> {
       // Add Your Code here.
       Future.delayed(Duration(seconds: 2), () async {
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        final prevLogin = prefs.getBool(isPrefLogin);
-        final roUserType = prefs.getString(rkUserType);
-        final roUserEmail = prefs.getString(rkEmailUser) ?? '';
-        final roUserName = prefs.getString(rkUserName) ?? '';
+        final prevLogin = await prefs.getBool(isPrefLogin);
+        final roUserType = await prefs.getString(rkUserType);
+        final roUserEmail = await prefs.getString(rkEmailUser) ?? '';
+        final roUserName = await prefs.getString(rkUserName) ?? '';
 
         try {
           final result = await InternetAddress.lookup('ruangortu.id');
@@ -297,8 +311,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 bgColor: Colors.red, pShowDuration: Duration(seconds: 10));
             print("Internet not connected");
           } else {
-            if (prevLogin != null && roUserType != null && roUserType != '') {
-              if (await childNeedPermission() || await parentNeedPermission()) {
+            if ((prevLogin != null) &&
+                (roUserType != null && roUserType != '')) {
+              bool childPermission = await childNeedPermission();
+              bool parentPermission = await parentNeedPermission();
+
+              if (childPermission && parentPermission) {
                 SharedPreferences prefs = await SharedPreferences.getInstance();
                 await prefs.clear();
                 await signOutGoogle();

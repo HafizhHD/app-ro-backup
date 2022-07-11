@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:convert';
-
+import 'package:url_launcher/url_launcher.dart';
 import '../parent/view/feed/feed_comment.dart';
 
 class RKWebViewDialog extends StatefulWidget {
@@ -40,6 +40,14 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
   }
 
+  _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,6 +62,24 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
           onWebViewCreated: (WebViewController webViewController) {
             _webViewController = webViewController;
             loadAsset();
+          },
+          navigationDelegate: (NavigationRequest request) async {
+            if ((request.url.startsWith('https://api.whatsapp.com/send/')) ||
+                (request.url.startsWith('whatsapp://send/?phone'))) {
+              //https://api.whatsapp.com/send/?phone=628119004410&text&app_absent=0
+              print('blocking navigation to $request}');
+              List<String> urlSplitted = request.url.split("text=");
+
+              String phone = "628119004410";
+              String message = '';
+              // String message = urlSplitted.last.toString().replaceAll("%20", " ");
+              await _launchURL(
+                  "https://wa.me/$phone/?text=${Uri.parse(message)}");
+              return NavigationDecision.prevent;
+            }
+
+            print('allowing navigation to $request');
+            return NavigationDecision.navigate;
           },
         ),
         floatingActionButton: widget.contentId != ''

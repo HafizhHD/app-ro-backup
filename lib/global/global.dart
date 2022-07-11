@@ -27,7 +27,7 @@ final String rkBaseUrlAppIcon = "rkBaseUrlAppIcon";
 
 const AppIconPathRO = 'assets/images/ruangortu-icon.png';
 const AppIconPathRO_x4 = 'assets/images/ruangortu-icon_4.png';
-const AppIconPathORTU = 'assets/images/asia/logo-asia.png';
+const AppIconPathORTU = 'assets/images/asia/asia.ruangortu.png';
 const currentAppIconPath = AppIconPathORTU;
 
 const ApkDownloadURL =
@@ -47,6 +47,7 @@ Future<bool> childNeedPermission() async {
   final audioHandler = await Permission.microphone.status;
   final storageHandler = await Permission.storage.status;
   // final smsHandler = await Permission.sms.status;
+  // final storageHandler = await Permission.storage.status;
   print('Permision Status location : $locationHandler');
   print('Permision Status contact : $contactHandler');
   print('Permision Status camera : $cameraHandler');

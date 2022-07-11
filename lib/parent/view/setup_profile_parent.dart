@@ -17,6 +17,7 @@ import 'package:ruangkeluarga/parent/view/main/parent_main.dart';
 import 'package:ruangkeluarga/child/child_main.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ruangkeluarga/parent/view_model/sekolah_al_azhar_model.dart';
 
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
@@ -41,7 +42,7 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
   String accessToken = '';
   String birthDateString = '';
   DateTime birthDate = DateTime.now().subtract(Duration(days: 365 * 5));
-  GenderCharacter? _character = GenderCharacter.Ayah;
+  ParentCharacter? _character = ParentCharacter.Ayah;
   File? _selectedImage;
 
   void onRegister() async {
@@ -59,7 +60,7 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
       photo,
       cPhoneNumber.text,
       cAlamat.text,
-      (_character ?? GenderCharacter.Ayah).toEnumString(),
+      (_character ?? ParentCharacter.Ayah).toEnumString(),
       accessToken,
       _imageBytes != null
           ? "data:image/png;base64,${base64Encode(_imageBytes)}"
@@ -434,11 +435,11 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                                   title: Text("Ayah"),
                                   horizontalTitleGap: 0,
                                   contentPadding: EdgeInsets.zero,
-                                  leading: Radio<GenderCharacter>(
-                                    value: GenderCharacter.Ayah,
+                                  leading: Radio<ParentCharacter>(
+                                    value: ParentCharacter.Ayah,
                                     groupValue: _character,
                                     activeColor: cAsiaBlue,
-                                    onChanged: (GenderCharacter? value) {
+                                    onChanged: (ParentCharacter? value) {
                                       setState(() => _character = value);
                                     },
                                   ),
@@ -449,11 +450,11 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                                   title: Text("Bunda"),
                                   horizontalTitleGap: 0,
                                   contentPadding: EdgeInsets.zero,
-                                  leading: Radio<GenderCharacter>(
-                                    value: GenderCharacter.Bunda,
+                                  leading: Radio<ParentCharacter>(
+                                    value: ParentCharacter.Bunda,
                                     groupValue: _character,
                                     activeColor: cAsiaBlue,
-                                    onChanged: (GenderCharacter? value) {
+                                    onChanged: (ParentCharacter? value) {
                                       setState(() => _character = value);
                                     },
                                   ),
@@ -464,11 +465,11 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
                                   title: Text("Lainnya"),
                                   horizontalTitleGap: 0,
                                   contentPadding: EdgeInsets.zero,
-                                  leading: Radio<GenderCharacter>(
-                                    value: GenderCharacter.Lainnya,
+                                  leading: Radio<ParentCharacter>(
+                                    value: ParentCharacter.Lainnya,
                                     groupValue: _character,
                                     activeColor: cAsiaBlue,
-                                    onChanged: (GenderCharacter? value) {
+                                    onChanged: (ParentCharacter? value) {
                                       setState(() => _character = value);
                                     },
                                   ),
@@ -513,3 +514,50 @@ class _SetupParentProfilePageState extends State<SetupParentProfilePage> {
     );
   }
 }
+
+Future<SekolahAlAzhar?> selectSekolah(List<SekolahAlAzhar> listSekolah) async {
+  List<SekolahAlAzhar> searchList = listSekolah;
+  return await Get.bottomSheet<SekolahAlAzhar>(
+    StatefulBuilder(
+      builder: (ctx, setState) {
+        return Container(
+          decoration: BoxDecoration(color: cOrtuGrey, borderRadius: BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15))),
+          padding: EdgeInsets.only(top: 20, left: 15, right: 15),
+          child: Column(
+            children: [
+              WSearchBar(
+                hintText: 'Cari Gereja',
+                fOnChanged: (text) {
+                  searchList = listSekolah
+                      .where((e) =>
+                  e.nama.toLowerCase().contains(text.toLowerCase()) ||
+                      e.deskripsi.toLowerCase().contains(text.toLowerCase()) ||
+                      e.nama.toLowerCase().contains(text.toLowerCase()))
+                      .toList();
+                  setState(() {});
+                },
+              ),
+              Flexible(
+                  child: ListView.separated(
+                    physics: BouncingScrollPhysics(),
+                    separatorBuilder: (ctx, idx) => Divider(color: cPrimaryBg),
+                    itemCount: searchList.length,
+                    itemBuilder: (ctx, idx) {
+                      final item = searchList[idx];
+                      return ListTile(
+                        title: Text(item.nama),
+                        // subtitle: item.alamat != '' ? Text(item.alamat) : null,
+                        onTap: () {
+                          Get.back(result: item);
+                        },
+                      );
+                    },
+                  ))
+            ],
+          ),
+        );
+      },
+    ),
+  );
+}
+

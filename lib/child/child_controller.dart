@@ -79,14 +79,19 @@ class ChildController extends GetxController {
   }
 
   void sendData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    childEmail = prefs.getString(rkEmailUser) ?? '';
-    // await getChildData();
-    if (childEmail != '') {
-      fetchDataApp();
-      getAppUsageData();
-      // fetchChildLocation();
-      getCurrentLocation();
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      childEmail = prefs.getString(rkEmailUser) ?? '';
+      // await getChildData();
+      if (childEmail != '') {
+        fetchDataApp();
+        getAppUsageData();
+        // fetchChildLocation();
+        getCurrentLocation();
+      }
+    }
+    catch(e) {
+      print('Error kirim data lokasi, appusage: ' + e.toString());
     }
   }
 
@@ -108,10 +113,10 @@ class ChildController extends GetxController {
                   childEmail, currentPosition, DateTime.now().toIso8601String())
               .then((response) {
             if (response.statusCode == 200) {
-              print('isi response save location Current: ${response.body}');
+              // print('isi response save location Current: ${response.body}');
+              print('isi response save location Current: ${response.statusCode}');
             } else {
-              print(
-                  'isi response save location Current: ${response.statusCode}');
+              print('isi response save location Current: ${response.statusCode}');
             }
           });
         } catch (e, s) {
@@ -222,7 +227,7 @@ class ChildController extends GetxController {
         update();
         return true;
       } else {
-        logUserOut();
+        forcedLogOut();
         print('no user found');
       }
     } else {
@@ -257,7 +262,7 @@ class ChildController extends GetxController {
         update();
         return true;
       } else {
-        logUserOut();
+        forcedLogOut();
         print('no user found');
       }
     } else {
@@ -313,15 +318,15 @@ class ChildController extends GetxController {
         for (var n = 0; n < listAppIcon["appIcons"].length && ada == 0; n++) {
           final appIcon = listAppIcon["appIcons"][n];
           if (appIcon["appId"].toString() == localApp.packageName.toString()) {
-            print('${localApp.appName.toString()} iconnya ada!');
+            // print('${localApp.appName.toString()} iconnya ada!');
             ada = 1;
             break;
           }
         }
         if (ada == 0) {
-          print('Ini adalah ${localApp.appName.toString()}');
+          // print('Ini adalah ${localApp.appName.toString()}');
           if (localApp is ApplicationWithIcon)
-            print('Ini iconnya: ${base64Encode(localApp.icon)}');
+            // print('Ini iconnya: ${base64Encode(localApp.icon)}');
           await MediaRepository().saveIconApp(
             childEmail,
             localApp.appName,
@@ -620,7 +625,7 @@ class ChildController extends GetxController {
       infoList3.forEach((app, e) {
         // print(app);
         final hasData =
-            listAppLocal.where((e) => e.packageName == app).toList();
+          listAppLocal.where((e) => e.packageName == app).toList();
 
         if (hasData.length > 0) {
           final appName = hasData.first.appName;
@@ -642,9 +647,9 @@ class ChildController extends GetxController {
                   duration += val[1] - startDate.millisecondsSinceEpoch as int;
                   var usageStamp = {
                     'durationInStamp':
-                        '${val[1] - startDate.millisecondsSinceEpoch}',
+                      '${val[1] - startDate.millisecondsSinceEpoch}',
                     'lastTimeStamp':
-                        "${DateTime.fromMillisecondsSinceEpoch(val[1])}"
+                      "${DateTime.fromMillisecondsSinceEpoch(val[1])}"
                   };
                   if (val[1] - startDate.millisecondsSinceEpoch <=
                       oneDay.inMilliseconds) usageHour.add(usageStamp);
@@ -654,7 +659,7 @@ class ChildController extends GetxController {
                   var usageStamp = {
                     'durationInStamp': '${val[1] - startTime}',
                     'lastTimeStamp':
-                        "${DateTime.fromMillisecondsSinceEpoch(val[1])}"
+                      "${DateTime.fromMillisecondsSinceEpoch(val[1])}"
                   };
                   if (val[1] - startTime <= oneDay.inMilliseconds)
                     usageHour.add(usageStamp);
@@ -668,7 +673,7 @@ class ChildController extends GetxController {
                       DateTime.now().millisecondsSinceEpoch - val[1] as int;
                   var usageStamp = {
                     'durationInStamp':
-                        '${DateTime.now().millisecondsSinceEpoch - val[1]}',
+                      '${DateTime.now().millisecondsSinceEpoch - val[1]}',
                     'lastTimeStamp': "${DateTime.now()}"
                   };
                   if (DateTime.now().millisecondsSinceEpoch - val[1] <=
@@ -699,7 +704,7 @@ class ChildController extends GetxController {
       });
 
       Response response =
-          await MediaRepository().saveChildUsage(childEmail, usageDataList);
+        await MediaRepository().saveChildUsage(childEmail, usageDataList);
       if (response.statusCode == 200) {
         // print('isi response save app usage : ${response.body}');
         print('isi response save app usage : 200');
@@ -781,7 +786,7 @@ class ChildController extends GetxController {
         if (dataAplikasiDb != null) {
           Response response =
               await MediaRepository().fetchModeLock(dataAplikasiDb['email']);
-          print('isi response fetch featStatusLockScreen : ${response.body}');
+          // print('isi response fetch featStatusLockScreen : ${response.body}');
           if (response.statusCode == 200) {
             var json = jsonDecode(response.body);
             if (json['resultData'] != null) {
@@ -913,78 +918,84 @@ class ChildController extends GetxController {
   }
 
   void fetchDataApp() async {
-    if (childEmail != null && childEmail.isNotEmpty) {
-      childEmail = childEmail;
-    } else {
-      print("fxetchDataApp qxueryAllRowsAplikasi");
-      var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
-      if (dataAplikasiDb != null) {
-        if (dataAplikasiDb['email'] != null && dataAplikasiDb['email'] != '') {
-          childEmail = dataAplikasiDb['email'];
+    try {
+      if (childEmail != null && childEmail.isNotEmpty) {
+        childEmail = childEmail;
+      } else {
+        print("fxetchDataApp qxueryAllRowsAplikasi");
+        var dataAplikasiDb = await AplikasiDB.instance.queryAllRowsAplikasi();
+        if (dataAplikasiDb != null) {
+          if (dataAplikasiDb['email'] != null &&
+              dataAplikasiDb['email'] != '') {
+            childEmail = dataAplikasiDb['email'];
+          }
         }
       }
-    }
-    if (childEmail != null && childEmail.isNotEmpty) {
-      print('EMAIL : ' + childEmail);
-      Response response = await MediaRepository().fetchAppList(childEmail);
-      if (response.statusCode == 200) {
-        print('isi response fetch appList : ${response.body}');
-        var json = jsonDecode(response.body);
-        if (json['resultCode'] == 'OK') {
-          if (json['appdevices'].length > 0) {
-            try {
-              var appDevices = json['appdevices'][0];
-              List<dynamic> tmpData = appDevices['appName'];
-              List<Map<String, dynamic>> dataList = [];
+      if (childEmail != null && childEmail.isNotEmpty) {
+        print('EMAIL : ' + childEmail);
+        Response response = await MediaRepository().fetchAppList(childEmail);
+        if (response.statusCode == 200) {
+          // print('isi response fetch appList : ${response.body}');
+          var json = jsonDecode(response.body);
+          if (json['resultCode'] == 'OK') {
+            if (json['appdevices'].length > 0) {
+              try {
+                var appDevices = json['appdevices'][0];
+                List<dynamic> tmpData = appDevices['appName'];
+                List<Map<String, dynamic>> dataList = [];
 
-              List<ApplicationInstalled> dataAppsInstalled =
-                  List<ApplicationInstalled>.from(tmpData
-                      .map((model) => ApplicationInstalled.fromJson(model)));
+                List<ApplicationInstalled> dataAppsInstalled =
+                List<ApplicationInstalled>.from(tmpData
+                    .map((model) => ApplicationInstalled.fromJson(model)));
 
-              for (int i = 0; i < dataAppsInstalled.length; i++) {
-                Map<String, dynamic> dataAplikasi = {
-                  "appName": "${dataAppsInstalled[i].appName}",
-                  "packageId": "${dataAppsInstalled[i].packageId}",
-                  "blacklist": dataAppsInstalled[i].blacklist,
-                  "appCategory": dataAppsInstalled[i].appCategory,
-                  "limit": (dataAppsInstalled[i].limit != null)
-                      ? dataAppsInstalled[i].limit.toString()
-                      : '0',
-                };
-                dataList.add(dataAplikasi);
+                for (int i = 0; i < dataAppsInstalled.length; i++) {
+                  Map<String, dynamic> dataAplikasi = {
+                    "appName": "${dataAppsInstalled[i].appName}",
+                    "packageId": "${dataAppsInstalled[i].packageId}",
+                    "blacklist": dataAppsInstalled[i].blacklist,
+                    "appCategory": dataAppsInstalled[i].appCategory,
+                    "limit": (dataAppsInstalled[i].limit != null)
+                        ? dataAppsInstalled[i].limit.toString()
+                        : '0',
+                  };
+                  dataList.add(dataAplikasi);
+                }
+                var dataAplikasiDb =
+                await AplikasiDB.instance.queryAllRowsAplikasi();
+                if (dataAplikasiDb != null) {
+                  // await AplikasiDB.instance.deleteAllData();
+                  Map<String, dynamic> dataAplikasi = new Map();
+                  dataAplikasi['idUsage'] = dataAplikasiDb['idUsage'];
+                  dataAplikasi['email'] = childEmail;
+                  dataAplikasi['dataAplikasi'] = jsonEncode(dataList);
+                  dataAplikasi['kunciLayar'] = dataAplikasiDb['kunciLayar'];
+                  dataAplikasi['modekunciLayar'] =
+                  (dataAplikasiDb['modekunciLayar'] != null)
+                      ? dataAplikasiDb['modekunciLayar']
+                      : '';
+                  await AplikasiDB.instance.deleteAllData();
+                  AplikasiDB.instance.insertData(dataAplikasi);
+                } else {
+                  Map<String, dynamic> dataAplikasi = new Map();
+                  dataAplikasi['idUsage'] = appDevices['_id'];
+                  dataAplikasi['email'] = childEmail;
+                  dataAplikasi['dataAplikasi'] = jsonEncode(dataList);
+                  dataAplikasi['kunciLayar'] = '';
+                  dataAplikasi['modekunciLayar'] = '';
+                  AplikasiDB.instance.insertData(dataAplikasi);
+                }
+                featLockScreen();
+              } catch (e, s) {
+                print(e);
+                print(s);
               }
-              var dataAplikasiDb =
-                  await AplikasiDB.instance.queryAllRowsAplikasi();
-              if (dataAplikasiDb != null) {
-                // await AplikasiDB.instance.deleteAllData();
-                Map<String, dynamic> dataAplikasi = new Map();
-                dataAplikasi['idUsage'] = dataAplikasiDb['idUsage'];
-                dataAplikasi['email'] = childEmail;
-                dataAplikasi['dataAplikasi'] = jsonEncode(dataList);
-                dataAplikasi['kunciLayar'] = dataAplikasiDb['kunciLayar'];
-                dataAplikasi['modekunciLayar'] =
-                    (dataAplikasiDb['modekunciLayar'] != null)
-                        ? dataAplikasiDb['modekunciLayar']
-                        : '';
-                await AplikasiDB.instance.deleteAllData();
-                AplikasiDB.instance.insertData(dataAplikasi);
-              } else {
-                Map<String, dynamic> dataAplikasi = new Map();
-                dataAplikasi['idUsage'] = appDevices['_id'];
-                dataAplikasi['email'] = childEmail;
-                dataAplikasi['dataAplikasi'] = jsonEncode(dataList);
-                dataAplikasi['kunciLayar'] = '';
-                dataAplikasi['modekunciLayar'] = '';
-                AplikasiDB.instance.insertData(dataAplikasi);
-              }
-              featLockScreen();
-            } catch (e, s) {
-              print(e);
-              print(s);
             }
           }
         }
       }
+    }
+    catch (e){
+      print('Error fetchDataApp ' + e.toString());
     }
   }
 }
