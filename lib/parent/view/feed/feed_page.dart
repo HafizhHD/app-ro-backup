@@ -38,7 +38,7 @@ class FeedPage extends StatelessWidget {
             controller.jenisArtikel = '';
             if (tabController.index == 0) {
               this.jenisArtikel = 'artikel';
-            } else  {
+            } else {
               this.jenisArtikel = 'program';
             }
             controller.jenisArtikel = this.jenisArtikel;
@@ -68,39 +68,54 @@ class FeedPage extends StatelessWidget {
                             fOnSubmitted: (text) {
                               controller.setSearchData(text);
                             },
-                            tecController: TextEditingController(text: controller.search)),
+                            tecController:
+                                TextEditingController(text: controller.search)),
                       ),
                       Flexible(
                         flex: 4,
                         child: FutureBuilder<bool>(
                             future: controller.fGetListContent,
                             builder: (context, snapshot) {
-                              if (!snapshot.hasData) return wProgressIndicator();
+                              if (!snapshot.hasData)
+                                return wProgressIndicator();
                               return RefreshIndicator(
-                                onRefresh: () => controller.getContents(refresh: true),
+                                onRefresh: () =>
+                                    controller.getContents(refresh: true),
                                 child: Container(
                                   padding: EdgeInsets.all(5),
                                   child: GetBuilder<FeedController>(
                                     builder: (builderCtrl) {
-                                      if (builderCtrl.listSearchContent.length == 0)
+                                      if (builderCtrl
+                                              .listSearchContent.length ==
+                                          0)
                                         return Center(
                                             child: Text('Tidak ada konten',
-                                                style: TextStyle(color: cOrtuText)));
+                                                style: TextStyle(
+                                                    color: cOrtuText)));
                                       else
                                         return ListView.separated(
-                                          controller: builderCtrl.scrollController,
+                                          controller:
+                                              builderCtrl.scrollController,
                                           shrinkWrap: true,
                                           itemCount: builderCtrl.isThereMore
-                                              ? builderCtrl.listSearchContent.length + 1
-                                              : builderCtrl.listSearchContent.length,
+                                              ? builderCtrl.listSearchContent
+                                                      .length +
+                                                  1
+                                              : builderCtrl
+                                                  .listSearchContent.length,
                                           itemBuilder: (context, index) =>
-                                          index < builderCtrl.listSearchContent.length
-                                              ? feedContainer(
-                                              builderCtrl.listSearchContent[index],
-                                              context)
-                                              : builderCtrl.isThereMore
-                                              ? wProgressIndicator()
-                                              : Container(),
+                                              index <
+                                                      builderCtrl
+                                                          .listSearchContent
+                                                          .length
+                                                  ? feedContainer(
+                                                      builderCtrl
+                                                              .listSearchContent[
+                                                          index],
+                                                      context)
+                                                  : builderCtrl.isThereMore
+                                                      ? wProgressIndicator()
+                                                      : Container(),
                                           separatorBuilder: (ctx, idx) =>
                                               Divider(color: cOrtuGrey),
                                         );
@@ -129,40 +144,54 @@ class FeedPage extends StatelessWidget {
                             fOnSubmitted: (text) {
                               controller.setSearchProgramData(text);
                             },
-                            tecController: TextEditingController(text: controller.search)),
+                            tecController:
+                                TextEditingController(text: controller.search)),
                       ),
-
                       Flexible(
                         flex: 4,
                         child: FutureBuilder<bool>(
                             future: controller.fGetListProgram,
                             builder: (context, snapshot) {
-                              if (!snapshot.hasData) return wProgressIndicator();
+                              if (!snapshot.hasData)
+                                return wProgressIndicator();
                               return RefreshIndicator(
-                                onRefresh: () => controller.getPrograms(refresh: true),
+                                onRefresh: () =>
+                                    controller.getPrograms(refresh: true),
                                 child: Container(
                                   padding: EdgeInsets.all(5),
                                   child: GetBuilder<FeedController>(
                                     builder: (builderCtrl) {
-                                      if (builderCtrl.listSearchProgram.length == 0)
+                                      if (builderCtrl
+                                              .listSearchProgram.length ==
+                                          0)
                                         return Center(
                                             child: Text('Tidak ada konten',
-                                                style: TextStyle(color: cOrtuText)));
+                                                style: TextStyle(
+                                                    color: cOrtuText)));
                                       else
                                         return ListView.separated(
-                                          controller: builderCtrl.scrollController,
+                                          controller:
+                                              builderCtrl.scrollController,
                                           shrinkWrap: true,
                                           itemCount: builderCtrl.isThereMore
-                                              ? builderCtrl.listSearchProgram.length + 1
-                                              : builderCtrl.listSearchProgram.length,
+                                              ? builderCtrl.listSearchProgram
+                                                      .length +
+                                                  1
+                                              : builderCtrl
+                                                  .listSearchProgram.length,
                                           itemBuilder: (context, index) =>
-                                          index < builderCtrl.listSearchProgram.length
-                                              ? feedProgramContainer(
-                                              builderCtrl.listSearchProgram[index],
-                                              context)
-                                              : builderCtrl.isThereMore
-                                              ? wProgressIndicator()
-                                              : Container(),
+                                              index <
+                                                      builderCtrl
+                                                          .listSearchProgram
+                                                          .length
+                                                  ? feedProgramContainer(
+                                                      builderCtrl
+                                                              .listSearchProgram[
+                                                          index],
+                                                      context)
+                                                  : builderCtrl.isThereMore
+                                                      ? wProgressIndicator()
+                                                      : Container(),
                                           separatorBuilder: (ctx, idx) =>
                                               Divider(color: cOrtuGrey),
                                         );
@@ -230,8 +259,16 @@ class FeedPage extends StatelessWidget {
           if (data.contentType == ContentType.artikel) {
             String imgData = '';
             if (data.contentThumbnail != null) imgData = data.contentThumbnail!;
-            showContent(context, emailUser, data.id, data.contents,
-                data.contentName, imgData, '', data.contentSource);
+            showContent(
+                context,
+                emailUser,
+                data.id,
+                data.contents,
+                data.contentName,
+                imgData,
+                '',
+                data.contentSource,
+                data.response);
           } else if (data.contentType == ContentType.video) {
             showContent(
                 context,
@@ -241,7 +278,8 @@ class FeedPage extends StatelessWidget {
                 data.contentName,
                 '',
                 data.contentDescription,
-                data.contentSource);
+                data.contentSource,
+                data.response);
           } else if (data.contentType == ContentType.pdf) {
             Navigator.push(
                 context,
@@ -249,7 +287,7 @@ class FeedPage extends StatelessWidget {
                     FeedPdf(contentModel: data, emailUser: emailUser)));
           } else {
             showContent(context, emailUser, data.id, data.contents,
-                data.contentName, '', '', data.contentSource);
+                data.contentName, '', '', data.contentSource, data.response);
           }
         });
   }
@@ -288,7 +326,7 @@ class FeedPage extends StatelessWidget {
                       // ),
                       Container(
                         padding:
-                        EdgeInsets.only(bottom: 2, right: 10, left: 10),
+                            EdgeInsets.only(bottom: 2, right: 10, left: 10),
                         child: Text('\n${dateFormat_EDMY(data.startDate)}',
                             style: TextStyle(fontSize: 10, color: textColor)),
                       ),
@@ -301,13 +339,15 @@ class FeedPage extends StatelessWidget {
           if (userType == 'parent') {
             print("orang tua");
             showLoadingOverlay();
-            await controller.getProgramContents(refresh: true, programId: data.id);
+            await controller.getProgramContents(
+                refresh: true, programId: data.id);
             closeOverlay();
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => ProgramxPage(data.id, emailUser)));
           } else {
             showLoadingOverlay();
-            await controller.getProgramContents(refresh: true, programId: data.id);
+            await controller.getProgramContents(
+                refresh: true, programId: data.id);
             closeOverlay();
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => ProgramxPage(data.id, emailUser)));

@@ -28,7 +28,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
-        android:name="io.flutter.app.FlutterApplication"
+        android:name="${applicationName}"
         android:label="Ruang ORTU by ASIA"
         android:icon="@mipmap/launcher_icon"
         android:usesCleartextTraffic="true"

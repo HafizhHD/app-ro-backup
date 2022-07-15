@@ -28,14 +28,14 @@ class ProgramxPage extends StatelessWidget {
             child: controller.listProgramContent.length > 0
                 ? _body(context, controller)
                 : CustomScrollView(
-                physics: AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  SliverFillRemaining(
-                    child: Center(
-                        child: Text('Isi Program Kosong',
-                            style: TextStyle(color: cOrtuText))),
-                  )
-                ]),
+                    physics: AlwaysScrollableScrollPhysics(),
+                    slivers: [
+                        SliverFillRemaining(
+                          child: Center(
+                              child: Text('Isi Program Kosong',
+                                  style: TextStyle(color: cOrtuText))),
+                        )
+                      ]),
           ),
         ),
       ),
@@ -68,9 +68,18 @@ class ProgramxPage extends StatelessWidget {
                 onTap: () async {
                   if (contentData.contentType == ContentType.artikel) {
                     String imgData = '';
-                    if (contentData.contentThumbnail != null) imgData = contentData.contentThumbnail!;
-                    showContent(context, emailUser, contentData.id, contentData.contents,
-                        contentData.contentName, imgData, '', contentData.contentSource);
+                    if (contentData.contentThumbnail != null)
+                      imgData = contentData.contentThumbnail!;
+                    showContent(
+                        context,
+                        emailUser,
+                        contentData.id,
+                        contentData.contents,
+                        contentData.contentName,
+                        imgData,
+                        '',
+                        contentData.contentSource,
+                        contentData.response);
                   } else if (contentData.contentType == ContentType.video) {
                     showContent(
                         context,
@@ -80,15 +89,24 @@ class ProgramxPage extends StatelessWidget {
                         contentData.contentName,
                         '',
                         contentData.contentDescription,
-                        contentData.contentSource);
+                        contentData.contentSource,
+                        contentData.response);
                   } else if (contentData.contentType == ContentType.pdf) {
                     Navigator.push(
                         context,
-                        leftTransitionRoute(
-                            FeedPdf(contentModel: contentData, emailUser: emailUser)));
+                        leftTransitionRoute(FeedPdf(
+                            contentModel: contentData, emailUser: emailUser)));
                   } else {
-                    showContent(context, emailUser, contentData.id, contentData.contents,
-                        contentData.contentName, '', '', contentData.contentSource);
+                    showContent(
+                        context,
+                        emailUser,
+                        contentData.id,
+                        contentData.contents,
+                        contentData.contentName,
+                        '',
+                        '',
+                        contentData.contentSource,
+                        contentData.response);
                   }
                 },
                 title: Text(
@@ -98,7 +116,8 @@ class ProgramxPage extends StatelessWidget {
                           ? FontWeight.normal
                           : FontWeight.bold),
                 ),
-                subtitle: Text('\n${dateFormat_EDMYHM(contentData.dateCreated)}'),
+                subtitle:
+                    Text('\n${dateFormat_EDMYHM(contentData.dateCreated)}'),
               ),
             ),
           );

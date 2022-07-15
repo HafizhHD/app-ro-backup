@@ -105,8 +105,7 @@ class AkunPage extends StatelessWidget {
                                       alamat: childData.address ?? '',
                                       birthDate: childData.birdDate,
                                       parentEmail: parentData.email,
-                                      subsription: subsciption
-                                  );
+                                      subsription: subsciption);
                                 },
                               ),
                             ),
@@ -132,7 +131,6 @@ class AkunPage extends StatelessWidget {
             //       Text('  Versi ${appInfo.version}'),
             //     ]),
             // )
-
           ]);
         },
       ),
@@ -145,21 +143,20 @@ class AkunPage extends StatelessWidget {
     );
   }
 
-  Widget profileContainer({
-    String isParent = '',
-    bool isMainAccount = false,
-    bool isMainParent = false,
-    String? imgUrl,
-    required String name,
-    required String email,
-    required String id,
-    String? phone,
-    DateTime? birthDate,
-    SekolahAlAzhar? namaSekolah,
-    String? alamat,
-    String? parentEmail,
-    Subscription? subsription
-  }) {
+  Widget profileContainer(
+      {String isParent = '',
+      bool isMainAccount = false,
+      bool isMainParent = false,
+      String? imgUrl,
+      required String name,
+      required String email,
+      required String id,
+      String? phone,
+      DateTime? birthDate,
+      SekolahAlAzhar? namaSekolah,
+      String? alamat,
+      String? parentEmail,
+      Subscription? subsription}) {
     print('Nama: $name, isParent: $isParent');
     String childEmail = "";
     if (email != parentEmail) childEmail = email;
@@ -241,9 +238,7 @@ class AkunPage extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(15.0),
                                 ),
                               ),
-
                       ),
-
                     ),
                     Flexible(
                       child: Container(
@@ -269,30 +264,31 @@ class AkunPage extends StatelessWidget {
                                 // style: TextStyle(fontSize: 20),
                               ),
                             SizedBox(height: 5),
-                            subsription == null?
-                              TextButton(onPressed: () async {
-                              await Get.to(() => OrderPage(childEmail:
-                                childEmail, parentEmail: parentEmail!),
-                              );
-                              await Get.find<ParentController>().getParentChildData();
-                              closeOverlay();
-                              },
-                                child: Text('Upgrade Paket',
-                                    style: TextStyle(
-                                    color: cOrtuBlue,
-                                    fontSize: 16))
-                            ):
-                            Text(
-                              'Langganan sampai: '  + subsription.dateEnd!,
-                              // style: TextStyle(fontSize: 20),
-                            ),
+                            subsription == null
+                                ? TextButton(
+                                    onPressed: () async {
+                                      await Get.to(
+                                        () => OrderPage(
+                                            childEmail: childEmail,
+                                            parentEmail: parentEmail!),
+                                      );
+                                      await Get.find<ParentController>()
+                                          .getParentChildData();
+                                      closeOverlay();
+                                    },
+                                    child: Text('Upgrade Paket',
+                                        style: TextStyle(
+                                            color: cOrtuBlue, fontSize: 16)))
+                                : Text(
+                                    'Langganan sampai: ' + subsription.dateEnd!,
+                                    // style: TextStyle(fontSize: 20),
+                                  ),
                           ],
                         ),
                       ),
                     ),
                   ],
-                  )
-                ),
+                )),
                 isMainAccount == false && isMainParent == false
                     ? Align(
                         alignment: Alignment.centerRight,

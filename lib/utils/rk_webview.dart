@@ -17,6 +17,7 @@ class RKWebViewDialog extends StatefulWidget {
   final String source;
   final String contentId;
   final String emailUser;
+  final Map<String, dynamic>? response;
 
   RKWebViewDialog(
       {required this.url,
@@ -26,7 +27,8 @@ class RKWebViewDialog extends StatefulWidget {
       this.description = '',
       this.source = '',
       this.contentId = '',
-      this.emailUser = ''});
+      this.emailUser = '',
+      this.response});
 
   @override
   _RKWebViewDialogState createState() => _RKWebViewDialogState();
@@ -34,10 +36,19 @@ class RKWebViewDialog extends StatefulWidget {
 
 class _RKWebViewDialogState extends State<RKWebViewDialog> {
   late WebViewController _webViewController;
+  String selectedResponse = '';
+  List<DropdownMenuItem<String>> choice = [];
   @override
   void initState() {
     super.initState();
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
+    print(widget.contentId);
+    print(widget.response);
+    if (widget.response != null)
+      widget.response!.keys.forEach((e) {
+        choice.add(DropdownMenuItem(child: Text(e), value: e));
+        if (selectedResponse == '') selectedResponse = e;
+      });
   }
 
   _launchURL(String url) async {
@@ -56,32 +67,83 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
           centerTitle: true,
           title: Text(widget.title),
         ),
-        body: WebView(
-          initialUrl: widget.url,
-          javascriptMode: JavascriptMode.unrestricted,
-          onWebViewCreated: (WebViewController webViewController) {
-            _webViewController = webViewController;
-            loadAsset();
-          },
-          navigationDelegate: (NavigationRequest request) async {
-            if ((request.url.startsWith('https://api.whatsapp.com/send/')) ||
-                (request.url.startsWith('whatsapp://send/?phone'))) {
-              //https://api.whatsapp.com/send/?phone=628119004410&text&app_absent=0
-              print('blocking navigation to $request}');
-              List<String> urlSplitted = request.url.split("text=");
+        body: widget.response == null || widget.response!.keys.length <= 1
+            ? WebView(
+                initialUrl: widget.url,
+                javascriptMode: JavascriptMode.unrestricted,
+                onWebViewCreated: (WebViewController webViewController) {
+                  _webViewController = webViewController;
+                  loadAsset();
+                },
+                navigationDelegate: (NavigationRequest request) async {
+                  if ((request.url
+                          .startsWith('https://api.whatsapp.com/send/')) ||
+                      (request.url.startsWith('whatsapp://send/?phone'))) {
+                    //https://api.whatsapp.com/send/?phone=628119004410&text&app_absent=0
+                    print('blocking navigation to $request}');
+                    List<String> urlSplitted = request.url.split("text=");
 
-              String phone = "628119004410";
-              String message = '';
-              // String message = urlSplitted.last.toString().replaceAll("%20", " ");
-              await _launchURL(
-                  "https://wa.me/$phone/?text=${Uri.parse(message)}");
-              return NavigationDecision.prevent;
-            }
+                    String phone = "628119004410";
+                    String message = '';
+                    // String message = urlSplitted.last.toString().replaceAll("%20", " ");
+                    await _launchURL(
+                        "https://wa.me/$phone/?text=${Uri.parse(message)}");
+                    return NavigationDecision.prevent;
+                  }
 
-            print('allowing navigation to $request');
-            return NavigationDecision.navigate;
-          },
-        ),
+                  print('allowing navigation to $request');
+                  return NavigationDecision.navigate;
+                },
+              )
+            : Column(children: [
+                Expanded(
+                    child: WebView(
+                  initialUrl: widget.url,
+                  javascriptMode: JavascriptMode.unrestricted,
+                  onWebViewCreated: (WebViewController webViewController) {
+                    _webViewController = webViewController;
+                    loadAsset();
+                  },
+                  navigationDelegate: (NavigationRequest request) async {
+                    if ((request.url
+                            .startsWith('https://api.whatsapp.com/send/')) ||
+                        (request.url.startsWith('whatsapp://send/?phone'))) {
+                      //https://api.whatsapp.com/send/?phone=628119004410&text&app_absent=0
+                      print('blocking navigation to $request}');
+                      List<String> urlSplitted = request.url.split("text=");
+
+                      String phone = "628119004410";
+                      String message = '';
+                      // String message = urlSplitted.last.toString().replaceAll("%20", " ");
+                      await _launchURL(
+                          "https://wa.me/$phone/?text=${Uri.parse(message)}");
+                      return NavigationDecision.prevent;
+                    }
+
+                    print('allowing navigation to $request');
+                    return NavigationDecision.navigate;
+                  },
+                )),
+                Container(
+                    // height: MediaQuery.of(context).size.height * 0.1,
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                      DropdownButton(
+                          value: selectedResponse,
+                          items: choice,
+                          onChanged: (String? e) {
+                            setState(() {
+                              selectedResponse = e!;
+                            });
+                          }),
+                      FlatButton(
+                          child: Text('Pilih Jawaban'),
+                          onPressed: () {},
+                          textColor: Colors.white,
+                          color: cAsiaBlue)
+                    ]))
+              ]),
         floatingActionButton: widget.contentId != ''
             ? FloatingActionButton(
                 elevation: 0,
@@ -172,7 +234,7 @@ void showFAQ() {
 }
 
 void showContent(context, String emailUser, String contentId, String contents,
-    title, image, desc, source) {
+    title, image, desc, source, response) {
   Get.dialog(
     RKWebViewDialog(
         url: "",
@@ -182,7 +244,8 @@ void showContent(context, String emailUser, String contentId, String contents,
         description: desc,
         source: source,
         contentId: contentId,
-        emailUser: emailUser),
+        emailUser: emailUser,
+        response: response),
     transitionCurve: Curves.decelerate,
   );
 }

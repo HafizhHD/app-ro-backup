@@ -539,8 +539,8 @@ class MediaRepository {
         "emailUser": "$email",
       }
     };
-    if (inboxType != "") json["whereKeyValues"]["type"] =
-        inboxType.toLowerCase();
+    if (inboxType != "")
+      json["whereKeyValues"]["type"] = inboxType.toLowerCase();
     print('param fetchParentInbox: $json');
     Response response = await post(Uri.parse(url),
         headers: noAuthHeaders, body: jsonEncode(json));
@@ -751,28 +751,27 @@ class MediaRepository {
     print('fetchCoBrandPrograms');
     Map<String, dynamic> json = email == ''
         ? {
-      "whereKeyValues": {
-        "programName": {"\$regex": key, "\$options": "i"},
-        "cobrandEmail": "admin@asia.ruangortu.id",
-        "status": 'active',
-        "startDate": {"\$lte": date}
-      },
-
-      "orderKeyValues": {"startDate": -1},
-      "limit": limit,
-      "offset": offset
-    }
+            "whereKeyValues": {
+              "programName": {"\$regex": key, "\$options": "i"},
+              "cobrandEmail": "admin@asia.ruangortu.id",
+              "status": 'active',
+              "startDate": {"\$lte": date}
+            },
+            "orderKeyValues": {"startDate": -1},
+            "limit": limit,
+            "offset": offset
+          }
         : {
-      "whereKeyValues": {
-        "programName": {"\$regex": key, "\$options": "i"},
-        "cobrandEmail": email,
-        "status": 'active',
-        "startDate": {"\$lte": date}
-      },
-      "orderKeyValues": {"startDate": -1},
-      "limit": limit,
-      "offset": offset
-    };
+            "whereKeyValues": {
+              "programName": {"\$regex": key, "\$options": "i"},
+              "cobrandEmail": email,
+              "status": 'active',
+              "startDate": {"\$lte": date}
+            },
+            "orderKeyValues": {"startDate": -1},
+            "limit": limit,
+            "offset": offset
+          };
     print('param program filter : $json');
     Response response = await post(Uri.parse(url),
         headers: noAuthHeaders, body: jsonEncode(json));
@@ -788,11 +787,13 @@ class MediaRepository {
             "whereKeyValues": {
               "contentName": {"\$regex": key, "\$options": "i"},
               "cobrandEmail": "admin@asia.ruangortu.id",
-              "\$or": [{ "programId": "-1" }, { "programId": "" }],
+              "\$or": [
+                {"programId": "-1"},
+                {"programId": ""}
+              ],
               "status": 'active',
               "startDate": {"\$lte": date}
             },
-
             "orderKeyValues": {"startDate": -1},
             "limit": limit,
             "offset": offset
@@ -801,7 +802,10 @@ class MediaRepository {
             "whereKeyValues": {
               "contentName": {"\$regex": key, "\$options": "i"},
               "cobrandEmail": email,
-              "\$or": [{ "programId": "-1" }, { "programId": "" }],
+              "\$or": [
+                {"programId": "-1"},
+                {"programId": ""}
+              ],
               "status": 'active',
               "startDate": {"\$lte": date}
             },
@@ -816,14 +820,12 @@ class MediaRepository {
     return response;
   }
 
-  Future<Response> fetchProgramContents(String programId, int limit, int offset) async {
+  Future<Response> fetchProgramContents(
+      String programId, int limit, int offset) async {
     var url = _rkService.baseUrl + '/cobrand/contentFilter';
     print('fetchCoBrandContents');
     Map<String, dynamic> json = {
-      "whereKeyValues": {
-        "programId": programId,
-        "status": 'active'
-      },
+      "whereKeyValues": {"programId": programId, "status": 'active'},
       "orderKeyValues": {"startDate": -1},
       "limit": limit,
       "offset": offset
@@ -852,11 +854,11 @@ class MediaRepository {
     var url = _rkService.baseUrl + '/payment/getPackage';
     print('fetchpaket');
     Map<String, dynamic> json = {
-        "whereKeyValues": {
-          "status": "active",
-          "cobrandEmail" : "admin@asia.ruangortu.id"
-        },
-        "emailUser" : emailUser
+      "whereKeyValues": {
+        "status": "active",
+        "cobrandEmail": "admin@asia.ruangortu.id"
+      },
+      "emailUser": emailUser
     };
     print('param paket filter : $json');
     Response response = await post(Uri.parse(url),
@@ -918,6 +920,60 @@ class MediaRepository {
     return response;
   }
 
+  Future<Response> addContentResponse(
+      String contentId, String emailUser, String respons) async {
+    var url = _rkService.baseUrl + '/user/userContentResponAdd';
+    print('userContentResponAdd');
+    Map<String, dynamic> json = {
+      "contentId": contentId,
+      "emailUser": emailUser,
+      "respon": respons
+    };
+    print('param content respon add: $json');
+    Response response = await post(Uri.parse(url),
+        headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> editContentResponse(String responId, String respons) async {
+    var url = _rkService.baseUrl + '/user/userContentResponUpdate';
+    print('userContentResponUpdate');
+    Map<String, dynamic> json = {
+      "whereKeyValues": {"_id": responId},
+      "newValues": {"respon": respons}
+    };
+    print('param content respon edit: $json');
+    Response response = await post(Uri.parse(url),
+        headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> deleteContentResponse(
+      String responId, String respons) async {
+    var url = _rkService.baseUrl + '/user/userContentResponRemove';
+    print('userContentResponUpdate');
+    Map<String, dynamic> json = {
+      "whereValues": {"_id": responId}
+    };
+    print('param content respon delete: $json');
+    Response response = await post(Uri.parse(url),
+        headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> fetchContentResponse(
+      String contentId, String emailUser, String respons) async {
+    var url = _rkService.baseUrl + '/user/userContentResponFilter';
+    print('userContentResponFilter');
+    Map<String, dynamic> json = {
+      "whereKeyValues": {"contentId": contentId, "emailUser": emailUser}
+    };
+    print('param content respon add: $json');
+    Response response = await post(Uri.parse(url),
+        headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
   Future<Response> getLocationMatrix(
       List<double> origin, List<double> destination, String apiKey) async {
     var url = 'https://api.openrouteservice.org/v2/matrix/driving-car';
@@ -939,7 +995,6 @@ class MediaRepository {
         headers: jsonHeader, body: jsonEncode(jsonBody));
     return response;
   }
-
 
   Future<Response> authMidtrans() async {
     var url = 'https://api.sandbox.midtrans.com';
