@@ -7,6 +7,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 import '../parent/view/feed/feed_comment.dart';
+import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 
 class RKWebViewDialog extends StatefulWidget {
   final String url;
@@ -38,6 +39,7 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
   late WebViewController _webViewController;
   String selectedResponse = '';
   List<DropdownMenuItem<String>> choice = [];
+  final api = MediaRepository();
   @override
   void initState() {
     super.initState();
@@ -138,8 +140,26 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
                             });
                           }),
                       FlatButton(
-                          child: Text('Pilih Jawaban'),
-                          onPressed: () {},
+                          child: Text('Pilih Respon'),
+                          onPressed: () async {
+                            showLoadingOverlay();
+                            final response = await api.addContentResponse(
+                                widget.contentId,
+                                widget.emailUser,
+                                selectedResponse);
+                            if (response.statusCode == 200) {
+                              showToastSuccess(
+                                  ctx: context,
+                                  successText: 'Respon berhasil terkirim!');
+                              closeOverlay();
+                            } else {
+                              closeOverlay();
+                              showToastFailed(
+                                  ctx: context,
+                                  failedText:
+                                      'Gagal mengirim respon. Coba beberapa saat lagi.');
+                            }
+                          },
                           textColor: Colors.white,
                           color: cAsiaBlue)
                     ]))
