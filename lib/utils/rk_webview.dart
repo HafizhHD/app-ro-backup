@@ -69,101 +69,98 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
           centerTitle: true,
           title: Text(widget.title),
         ),
-        body: widget.response == null || widget.response!.keys.length <= 1
-            ? WebView(
-                initialUrl: widget.url,
-                javascriptMode: JavascriptMode.unrestricted,
-                onWebViewCreated: (WebViewController webViewController) {
-                  _webViewController = webViewController;
-                  loadAsset();
-                },
-                navigationDelegate: (NavigationRequest request) async {
-                  if ((request.url
-                          .startsWith('https://api.whatsapp.com/send/')) ||
-                      (request.url.startsWith('whatsapp://send/?phone'))) {
-                    //https://api.whatsapp.com/send/?phone=628119004410&text&app_absent=0
-                    print('blocking navigation to $request}');
-                    List<String> urlSplitted = request.url.split("text=");
+        body: //widget.response == null || widget.response!.keys.length <= 1
+            // ? WebView(
+            //     initialUrl: widget.url,
+            //     javascriptMode: JavascriptMode.unrestricted,
+            //     onWebViewCreated: (WebViewController webViewController) {
+            //       _webViewController = webViewController;
+            //       loadAsset();
+            //     },
+            //     navigationDelegate: (NavigationRequest request) async {
+            //       if ((request.url
+            //               .startsWith('https://api.whatsapp.com/send/')) ||
+            //           (request.url.startsWith('whatsapp://send/?phone'))) {
+            //         //https://api.whatsapp.com/send/?phone=628119004410&text&app_absent=0
+            //         print('blocking navigation to $request}');
+            //         List<String> urlSplitted = request.url.split("text=");
 
-                    String phone = "628119004410";
-                    String message = '';
-                    // String message = urlSplitted.last.toString().replaceAll("%20", " ");
-                    await _launchURL(
-                        "https://wa.me/$phone/?text=${Uri.parse(message)}");
-                    return NavigationDecision.prevent;
-                  }
+            //         String phone = "628119004410";
+            //         String message = '';
+            //         // String message = urlSplitted.last.toString().replaceAll("%20", " ");
+            //         await _launchURL(
+            //             "https://wa.me/$phone/?text=${Uri.parse(message)}");
+            //         return NavigationDecision.prevent;
+            //       }
 
-                  print('allowing navigation to $request');
-                  return NavigationDecision.navigate;
-                },
-              )
-            : Column(children: [
-                Expanded(
-                    child: WebView(
-                  initialUrl: widget.url,
-                  javascriptMode: JavascriptMode.unrestricted,
-                  onWebViewCreated: (WebViewController webViewController) {
-                    _webViewController = webViewController;
-                    loadAsset();
-                  },
-                  navigationDelegate: (NavigationRequest request) async {
-                    if ((request.url
-                            .startsWith('https://api.whatsapp.com/send/')) ||
-                        (request.url.startsWith('whatsapp://send/?phone'))) {
-                      //https://api.whatsapp.com/send/?phone=628119004410&text&app_absent=0
-                      print('blocking navigation to $request}');
-                      List<String> urlSplitted = request.url.split("text=");
+            //       print('allowing navigation to $request');
+            //       return NavigationDecision.navigate;
+            //     },
+            //   ) :
+            Column(children: [
+          Expanded(
+              child: WebView(
+            initialUrl: widget.url,
+            javascriptMode: JavascriptMode.unrestricted,
+            onWebViewCreated: (WebViewController webViewController) {
+              _webViewController = webViewController;
+              loadAsset();
+            },
+            navigationDelegate: (NavigationRequest request) async {
+              if ((request.url.startsWith('https://api.whatsapp.com/send/')) ||
+                  (request.url.startsWith('whatsapp://send/?phone'))) {
+                //https://api.whatsapp.com/send/?phone=628119004410&text&app_absent=0
+                print('blocking navigation to $request}');
+                List<String> urlSplitted = request.url.split("text=");
 
-                      String phone = "628119004410";
-                      String message = '';
-                      // String message = urlSplitted.last.toString().replaceAll("%20", " ");
-                      await _launchURL(
-                          "https://wa.me/$phone/?text=${Uri.parse(message)}");
-                      return NavigationDecision.prevent;
-                    }
+                String phone = "628119004410";
+                String message = '';
+                // String message = urlSplitted.last.toString().replaceAll("%20", " ");
+                await _launchURL(
+                    "https://wa.me/$phone/?text=${Uri.parse(message)}");
+                return NavigationDecision.prevent;
+              }
 
-                    print('allowing navigation to $request');
-                    return NavigationDecision.navigate;
-                  },
-                )),
-                Container(
-                    // height: MediaQuery.of(context).size.height * 0.1,
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                      DropdownButton(
-                          value: selectedResponse,
-                          items: choice,
-                          onChanged: (String? e) {
-                            setState(() {
-                              selectedResponse = e!;
-                            });
-                          }),
-                      FlatButton(
-                          child: Text('Pilih Respon'),
-                          onPressed: () async {
-                            showLoadingOverlay();
-                            final response = await api.addContentResponse(
-                                widget.contentId,
-                                widget.emailUser,
-                                selectedResponse);
-                            if (response.statusCode == 200) {
-                              showToastSuccess(
-                                  ctx: context,
-                                  successText: 'Respon berhasil terkirim!');
-                              closeOverlay();
-                            } else {
-                              closeOverlay();
-                              showToastFailed(
-                                  ctx: context,
-                                  failedText:
-                                      'Gagal mengirim respon. Coba beberapa saat lagi.');
-                            }
-                          },
-                          textColor: Colors.white,
-                          color: cAsiaBlue)
-                    ]))
-              ]),
+              print('allowing navigation to $request');
+              return NavigationDecision.navigate;
+            },
+          )),
+          Container(
+              // height: MediaQuery.of(context).size.height * 0.1,
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                DropdownButton(
+                    value: selectedResponse,
+                    items: choice,
+                    onChanged: (String? e) {
+                      setState(() {
+                        selectedResponse = e!;
+                      });
+                    }),
+                FlatButton(
+                    child: Text('Pilih Respon'),
+                    onPressed: () async {
+                      showLoadingOverlay();
+                      final response = await api.addContentResponse(
+                          widget.contentId, widget.emailUser, selectedResponse);
+                      if (response.statusCode == 200) {
+                        showToastSuccess(
+                            ctx: context,
+                            successText: 'Respon berhasil terkirim!');
+                        closeOverlay();
+                      } else {
+                        closeOverlay();
+                        showToastFailed(
+                            ctx: context,
+                            failedText:
+                                'Gagal mengirim respon. Coba beberapa saat lagi.');
+                      }
+                    },
+                    textColor: Colors.white,
+                    color: cAsiaBlue)
+              ]))
+        ]),
         floatingActionButton: widget.contentId != ''
             ? FloatingActionButton(
                 elevation: 0,
