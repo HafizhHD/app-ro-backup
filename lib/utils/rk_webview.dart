@@ -69,113 +69,160 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
           centerTitle: true,
           title: Text(widget.title),
         ),
-        body: //widget.response == null || widget.response!.keys.length <= 1
-            // ? WebView(
-            //     initialUrl: widget.url,
-            //     javascriptMode: JavascriptMode.unrestricted,
-            //     onWebViewCreated: (WebViewController webViewController) {
-            //       _webViewController = webViewController;
-            //       loadAsset();
-            //     },
-            //     navigationDelegate: (NavigationRequest request) async {
-            //       if ((request.url
-            //               .startsWith('https://api.whatsapp.com/send/')) ||
-            //           (request.url.startsWith('whatsapp://send/?phone'))) {
-            //         //https://api.whatsapp.com/send/?phone=628119004410&text&app_absent=0
-            //         print('blocking navigation to $request}');
-            //         List<String> urlSplitted = request.url.split("text=");
+        body: widget.response == null || widget.response!.keys.length <= 1
+            ? WebView(
+                initialUrl: widget.url,
+                javascriptMode: JavascriptMode.unrestricted,
+                onWebViewCreated: (WebViewController webViewController) {
+                  _webViewController = webViewController;
+                  loadAsset();
+                },
+                navigationDelegate: (NavigationRequest request) async {
+                  if ((request.url
+                          .startsWith('https://api.whatsapp.com/send/')) ||
+                      (request.url.startsWith('whatsapp://send/?phone'))) {
+                    //https://api.whatsapp.com/send/?phone=628119004410&text&app_absent=0
+                    print('blocking navigation to $request}');
+                    List<String> urlSplitted = request.url.split("text=");
 
-            //         String phone = "628119004410";
-            //         String message = '';
-            //         // String message = urlSplitted.last.toString().replaceAll("%20", " ");
-            //         await _launchURL(
-            //             "https://wa.me/$phone/?text=${Uri.parse(message)}");
-            //         return NavigationDecision.prevent;
-            //       }
+                    String phone = "628119004410";
+                    String message = '';
+                    // String message = urlSplitted.last.toString().replaceAll("%20", " ");
+                    await _launchURL(
+                        "https://wa.me/$phone/?text=${Uri.parse(message)}");
+                    return NavigationDecision.prevent;
+                  }
 
-            //       print('allowing navigation to $request');
-            //       return NavigationDecision.navigate;
-            //     },
-            //   ) :
-            Column(children: [
-          Expanded(
-              child: WebView(
-            initialUrl: widget.url,
-            javascriptMode: JavascriptMode.unrestricted,
-            onWebViewCreated: (WebViewController webViewController) {
-              _webViewController = webViewController;
-              loadAsset();
-            },
-            navigationDelegate: (NavigationRequest request) async {
-              if ((request.url.startsWith('https://api.whatsapp.com/send/')) ||
-                  (request.url.startsWith('whatsapp://send/?phone'))) {
-                //https://api.whatsapp.com/send/?phone=628119004410&text&app_absent=0
-                print('blocking navigation to $request}');
-                List<String> urlSplitted = request.url.split("text=");
+                  print('allowing navigation to $request');
+                  return NavigationDecision.navigate;
+                },
+              )
+            : Column(children: [
+                Expanded(
+                    child: WebView(
+                  initialUrl: widget.url,
+                  javascriptMode: JavascriptMode.unrestricted,
+                  onWebViewCreated: (WebViewController webViewController) {
+                    _webViewController = webViewController;
+                    loadAsset();
+                  },
+                  navigationDelegate: (NavigationRequest request) async {
+                    if ((request.url
+                            .startsWith('https://api.whatsapp.com/send/')) ||
+                        (request.url.startsWith('whatsapp://send/?phone'))) {
+                      //https://api.whatsapp.com/send/?phone=628119004410&text&app_absent=0
+                      print('blocking navigation to $request}');
+                      List<String> urlSplitted = request.url.split("text=");
 
-                String phone = "628119004410";
-                String message = '';
-                // String message = urlSplitted.last.toString().replaceAll("%20", " ");
-                await _launchURL(
-                    "https://wa.me/$phone/?text=${Uri.parse(message)}");
-                return NavigationDecision.prevent;
-              }
+                      String phone = "628119004410";
+                      String message = '';
+                      // String message = urlSplitted.last.toString().replaceAll("%20", " ");
+                      await _launchURL(
+                          "https://wa.me/$phone/?text=${Uri.parse(message)}");
+                      return NavigationDecision.prevent;
+                    }
 
-              print('allowing navigation to $request');
-              return NavigationDecision.navigate;
-            },
-          )),
-          Container(
-              // height: MediaQuery.of(context).size.height * 0.1,
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                DropdownButton(
-                    value: selectedResponse,
-                    items: choice,
-                    onChanged: (String? e) {
-                      setState(() {
-                        selectedResponse = e!;
-                      });
-                    }),
-                FlatButton(
-                    child: Text('Pilih Respon'),
-                    onPressed: () async {
-                      showLoadingOverlay();
-                      final response = await api.addContentResponse(
-                          widget.contentId, widget.emailUser, selectedResponse);
-                      if (response.statusCode == 200) {
-                        showToastSuccess(
-                            ctx: context,
-                            successText: 'Respon berhasil terkirim!');
-                        closeOverlay();
-                      } else {
-                        closeOverlay();
-                        showToastFailed(
-                            ctx: context,
-                            failedText:
-                                'Gagal mengirim respon. Coba beberapa saat lagi.');
-                      }
-                    },
-                    textColor: Colors.white,
-                    color: cAsiaBlue)
-              ]))
-        ]),
+                    print('allowing navigation to $request');
+                    return NavigationDecision.navigate;
+                  },
+                )),
+                Container(
+                    // height: MediaQuery.of(context).size.height * 0.1,
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                      DropdownButton(
+                          value: selectedResponse,
+                          items: choice,
+                          onChanged: (String? e) {
+                            setState(() {
+                              selectedResponse = e!;
+                            });
+                          }),
+                      FlatButton(
+                          child: Text('Pilih Respon'),
+                          onPressed: () async {
+                            showLoadingOverlay();
+                            final response = await api.addContentResponse(
+                                widget.contentId,
+                                widget.emailUser,
+                                selectedResponse);
+                            if (response.statusCode == 200) {
+                              showToastSuccess(
+                                  ctx: context,
+                                  successText: 'Respon berhasil terkirim!');
+                              closeOverlay();
+                            } else {
+                              closeOverlay();
+                              showToastFailed(
+                                  ctx: context,
+                                  failedText:
+                                      'Gagal mengirim respon. Coba beberapa saat lagi.');
+                            }
+                          },
+                          textColor: Colors.white,
+                          color: cAsiaBlue)
+                    ]))
+              ]),
         floatingActionButton: widget.contentId != ''
-            ? FloatingActionButton(
-                elevation: 0,
-                focusElevation: 0,
-                hoverElevation: 0,
-                highlightElevation: 0,
-                backgroundColor: cAsiaBlue.withOpacity(0.8),
-                child: Icon(Icons.forum_sharp, color: cOrtuWhite),
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => FeedComment(
-                          emailUser: widget.emailUser,
-                          contentId: widget.contentId,
-                          contentName: widget.title)));
-                })
+            ? widget.response != null && widget.response!.keys.contains('like')
+                ? Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                    FloatingActionButton(
+                        elevation: 0,
+                        focusElevation: 0,
+                        hoverElevation: 0,
+                        highlightElevation: 0,
+                        backgroundColor: cAsiaBlue.withOpacity(0.8),
+                        child: Icon(Icons.thumb_up, color: cOrtuWhite),
+                        onPressed: () async {
+                          showLoadingOverlay();
+                          final response = await api.addContentResponse(
+                              widget.contentId, widget.emailUser, 'like');
+                          if (response.statusCode == 200) {
+                            // showToastSuccess(
+                            //     ctx: context,
+                            //     successText: 'Respon berhasil terkirim!');
+                            closeOverlay();
+                          } else {
+                            closeOverlay();
+                            // showToastFailed(
+                            //     ctx: context,
+                            //     failedText:
+                            //         'Gagal mengirim respon. Coba beberapa saat lagi.');
+                          }
+                        }),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    FloatingActionButton(
+                        elevation: 0,
+                        focusElevation: 0,
+                        hoverElevation: 0,
+                        highlightElevation: 0,
+                        backgroundColor: cAsiaBlue.withOpacity(0.8),
+                        child: Icon(Icons.forum_sharp, color: cOrtuWhite),
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => FeedComment(
+                                  emailUser: widget.emailUser,
+                                  contentId: widget.contentId,
+                                  contentName: widget.title)));
+                        })
+                  ])
+                : FloatingActionButton(
+                    elevation: 0,
+                    focusElevation: 0,
+                    hoverElevation: 0,
+                    highlightElevation: 0,
+                    backgroundColor: cAsiaBlue.withOpacity(0.8),
+                    child: Icon(Icons.forum_sharp, color: cOrtuWhite),
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => FeedComment(
+                              emailUser: widget.emailUser,
+                              contentId: widget.contentId,
+                              contentName: widget.title)));
+                    })
             : null);
   }
 
