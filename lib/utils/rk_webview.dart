@@ -131,14 +131,16 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                      DropdownButton(
-                          value: selectedResponse,
-                          items: choice,
-                          onChanged: (String? e) {
-                            setState(() {
-                              selectedResponse = e!;
-                            });
-                          }),
+                      Container(
+                          margin: EdgeInsets.symmetric(horizontal: 40),
+                          child: DropdownButton(
+                              value: selectedResponse,
+                              items: choice,
+                              onChanged: (String? e) {
+                                setState(() {
+                                  selectedResponse = e!;
+                                });
+                              })),
                       FlatButton(
                           child: Text('Pilih Respon'),
                           onPressed: () async {
@@ -246,7 +248,7 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
             widget.source +
             "</h4>" +
             "</body></html>";
-      else
+      else if (widget.source != '')
         fileHtmlContents = "<!DOCTYPE html> <html>" +
             header +
             "<body>" +
@@ -259,6 +261,17 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
             "<h4>Source: " +
             widget.source +
             "</h4>" +
+            "</body></html>";
+      else
+        fileHtmlContents = "<!DOCTYPE html> <html>" +
+            header +
+            "<body>" +
+            "<h2>" +
+            widget.title +
+            "</h2>" +
+            widget.contents +
+            "<br/>" +
+            widget.description +
             "</body></html>";
       _webViewController.loadUrl(Uri.dataFromString(fileHtmlContents,
               mimeType: 'text/html', encoding: Encoding.getByName('utf-8'))
