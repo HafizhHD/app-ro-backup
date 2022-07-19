@@ -51,7 +51,7 @@ class ContentModel {
         dateCreated: DateTime.parse(json["dateCreated"]).toUtc().toLocal(),
         status:
             json["status"].toString().toLowerCase() == 'active' ? true : false,
-        response: json["respon"]);
+        response: json["respons"]);
   }
 }
 
