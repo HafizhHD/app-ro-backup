@@ -9,6 +9,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../parent/view/feed/feed_comment.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 
+import 'package:flutter_html/flutter_html.dart';
+
 class RKWebViewDialog extends StatefulWidget {
   final String url;
   final String title;
@@ -37,6 +39,7 @@ class RKWebViewDialog extends StatefulWidget {
 
 class _RKWebViewDialogState extends State<RKWebViewDialog> {
   late WebViewController _webViewController;
+  String fileHtmlContentReal = '';
   String selectedResponse = '';
   List<DropdownMenuItem<String>> choice = [];
   final api = MediaRepository();
@@ -44,6 +47,7 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
   void initState() {
     super.initState();
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
+    loadContent();
     print(widget.contentId);
     print(widget.response);
     if (widget.response != null)
@@ -69,7 +73,7 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
           centerTitle: true,
           title: Text(widget.title),
         ),
-        body: widget.response == null || widget.response!.keys.length <= 1
+        body: widget.response == null
             ? WebView(
                 initialUrl: widget.url,
                 javascriptMode: JavascriptMode.unrestricted,
@@ -97,75 +101,50 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
                   return NavigationDecision.navigate;
                 },
               )
-            : Column(children: [
-                Expanded(
-                    child: WebView(
-                  initialUrl: widget.url,
-                  javascriptMode: JavascriptMode.unrestricted,
-                  onWebViewCreated: (WebViewController webViewController) {
-                    _webViewController = webViewController;
-                    loadAsset();
-                  },
-                  navigationDelegate: (NavigationRequest request) async {
-                    if ((request.url
-                            .startsWith('https://api.whatsapp.com/send/')) ||
-                        (request.url.startsWith('whatsapp://send/?phone'))) {
-                      //https://api.whatsapp.com/send/?phone=628119004410&text&app_absent=0
-                      print('blocking navigation to $request}');
-                      List<String> urlSplitted = request.url.split("text=");
-
-                      String phone = "628119004410";
-                      String message = '';
-                      // String message = urlSplitted.last.toString().replaceAll("%20", " ");
-                      await _launchURL(
-                          "https://wa.me/$phone/?text=${Uri.parse(message)}");
-                      return NavigationDecision.prevent;
-                    }
-
-                    print('allowing navigation to $request');
-                    return NavigationDecision.navigate;
-                  },
-                )),
-                Container(
-                    // height: MediaQuery.of(context).size.height * 0.1,
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                      Container(
-                          margin: EdgeInsets.symmetric(horizontal: 40),
-                          child: DropdownButton(
-                              value: selectedResponse,
-                              items: choice,
-                              onChanged: (String? e) {
-                                setState(() {
-                                  selectedResponse = e!;
-                                });
-                              })),
-                      FlatButton(
-                          child: Text('Pilih Respon'),
-                          onPressed: () async {
-                            showLoadingOverlay();
-                            final response = await api.addContentResponse(
-                                widget.contentId,
-                                widget.emailUser,
-                                selectedResponse);
-                            if (response.statusCode == 200) {
-                              showToastSuccess(
-                                  ctx: context,
-                                  successText: 'Respon berhasil terkirim!');
-                              closeOverlay();
-                            } else {
-                              closeOverlay();
-                              showToastFailed(
-                                  ctx: context,
-                                  failedText:
-                                      'Gagal mengirim respon. Coba beberapa saat lagi.');
-                            }
-                          },
-                          textColor: Colors.white,
-                          color: cAsiaBlue)
-                    ]))
-              ]),
+            : widget.response!.keys.length <= 1
+                ? SingleChildScrollView(child: Html(data: fileHtmlContentReal))
+                : Column(children: [
+                    Expanded(child: Html(data: fileHtmlContentReal)),
+                    Container(
+                        // height: MediaQuery.of(context).size.height * 0.1,
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                          Container(
+                              margin: EdgeInsets.symmetric(horizontal: 40),
+                              child: DropdownButton(
+                                  value: selectedResponse,
+                                  items: choice,
+                                  onChanged: (String? e) {
+                                    setState(() {
+                                      selectedResponse = e!;
+                                    });
+                                  })),
+                          FlatButton(
+                              child: Text('Pilih Respon'),
+                              onPressed: () async {
+                                showLoadingOverlay();
+                                final response = await api.addContentResponse(
+                                    widget.contentId,
+                                    widget.emailUser,
+                                    selectedResponse);
+                                if (response.statusCode == 200) {
+                                  showToastSuccess(
+                                      ctx: context,
+                                      successText: 'Respon berhasil terkirim!');
+                                  closeOverlay();
+                                } else {
+                                  closeOverlay();
+                                  showToastFailed(
+                                      ctx: context,
+                                      failedText:
+                                          'Gagal mengirim respon. Coba beberapa saat lagi.');
+                                }
+                              },
+                              textColor: Colors.white,
+                              color: cAsiaBlue)
+                        ]))
+                  ]),
         floatingActionButton: widget.contentId != ''
             ? widget.response != null && widget.response!.keys.contains('like')
                 ? Row(mainAxisAlignment: MainAxisAlignment.end, children: [
@@ -276,6 +255,53 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
       _webViewController.loadUrl(Uri.dataFromString(fileHtmlContents,
               mimeType: 'text/html', encoding: Encoding.getByName('utf-8'))
           .toString());
+    }
+  }
+
+  loadContent() {
+    if (widget.contents != '') {
+      String header =
+          '<head> <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"> </head>';
+      if (widget.image != '')
+        fileHtmlContentReal = "<!DOCTYPE html> <html>" +
+            header +
+            "<body> "
+                '<img src="' +
+            widget.image +
+            '" alt="Red dot" width="100%"/> </p>' +
+            "<h2>" +
+            widget.title +
+            "</h2>" +
+            widget.contents +
+            "<h4>Source: " +
+            widget.source +
+            "</h4>" +
+            "</body></html>";
+      else if (widget.source != '')
+        fileHtmlContentReal = "<!DOCTYPE html> <html>" +
+            header +
+            "<body>" +
+            "<h2>" +
+            widget.title +
+            "</h2>" +
+            widget.contents +
+            "<br/>" +
+            widget.description +
+            "<h4>Source: " +
+            widget.source +
+            "</h4>" +
+            "</body></html>";
+      else
+        fileHtmlContentReal = "<!DOCTYPE html> <html>" +
+            header +
+            "<body>" +
+            "<h2>" +
+            widget.title +
+            "</h2>" +
+            widget.contents +
+            "<br/>" +
+            widget.description +
+            "</body></html>";
     }
   }
 }
