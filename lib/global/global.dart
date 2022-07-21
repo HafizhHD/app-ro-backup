@@ -6,6 +6,7 @@ export 'custom_widget/toggle_bar.dart';
 export 'global_formatter.dart';
 export 'global_snackbar.dart';
 export 'global_enum.dart';
+export 'global_html.dart';
 
 import 'package:permission_handler/permission_handler.dart';
 

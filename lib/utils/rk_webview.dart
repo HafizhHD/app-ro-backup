@@ -48,6 +48,7 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
     super.initState();
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
     loadContent();
+    print('Isi file html: ' + fileHtmlContentReal);
     print(widget.contentId);
     print(widget.response);
     if (widget.response != null)
@@ -73,78 +74,50 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
           centerTitle: true,
           title: Text(widget.title),
         ),
-        body: widget.response == null
-            ? WebView(
-                initialUrl: widget.url,
-                javascriptMode: JavascriptMode.unrestricted,
-                onWebViewCreated: (WebViewController webViewController) {
-                  _webViewController = webViewController;
-                  loadAsset();
-                },
-                navigationDelegate: (NavigationRequest request) async {
-                  if ((request.url
-                          .startsWith('https://api.whatsapp.com/send/')) ||
-                      (request.url.startsWith('whatsapp://send/?phone'))) {
-                    //https://api.whatsapp.com/send/?phone=628119004410&text&app_absent=0
-                    print('blocking navigation to $request}');
-                    List<String> urlSplitted = request.url.split("text=");
-
-                    String phone = "628119004410";
-                    String message = '';
-                    // String message = urlSplitted.last.toString().replaceAll("%20", " ");
-                    await _launchURL(
-                        "https://wa.me/$phone/?text=${Uri.parse(message)}");
-                    return NavigationDecision.prevent;
-                  }
-
-                  print('allowing navigation to $request');
-                  return NavigationDecision.navigate;
-                },
-              )
-            : widget.response!.keys.length <= 1
-                ? SingleChildScrollView(child: Html(data: fileHtmlContentReal))
-                : Column(children: [
-                    Expanded(child: Html(data: fileHtmlContentReal)),
-                    Container(
-                        // height: MediaQuery.of(context).size.height * 0.1,
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                          Container(
-                              margin: EdgeInsets.symmetric(horizontal: 40),
-                              child: DropdownButton(
-                                  value: selectedResponse,
-                                  items: choice,
-                                  onChanged: (String? e) {
-                                    setState(() {
-                                      selectedResponse = e!;
-                                    });
-                                  })),
-                          FlatButton(
-                              child: Text('Pilih Respon'),
-                              onPressed: () async {
-                                showLoadingOverlay();
-                                final response = await api.addContentResponse(
-                                    widget.contentId,
-                                    widget.emailUser,
-                                    selectedResponse);
-                                if (response.statusCode == 200) {
-                                  showToastSuccess(
-                                      ctx: context,
-                                      successText: 'Respon berhasil terkirim!');
-                                  closeOverlay();
-                                } else {
-                                  closeOverlay();
-                                  showToastFailed(
-                                      ctx: context,
-                                      failedText:
-                                          'Gagal mengirim respon. Coba beberapa saat lagi.');
-                                }
-                              },
-                              textColor: Colors.white,
-                              color: cAsiaBlue)
-                        ]))
-                  ]),
+        body: widget.response == null || widget.response!.keys.length <= 1
+            ? SingleChildScrollView(child: Html(data: fileHtmlContentReal))
+            : Column(children: [
+                Expanded(child: Html(data: fileHtmlContentReal)),
+                Container(
+                    // height: MediaQuery.of(context).size.height * 0.1,
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                      Container(
+                          margin: EdgeInsets.symmetric(horizontal: 40),
+                          child: DropdownButton(
+                              value: selectedResponse,
+                              items: choice,
+                              onChanged: (String? e) {
+                                setState(() {
+                                  selectedResponse = e!;
+                                });
+                              })),
+                      FlatButton(
+                          child: Text('Pilih Respon'),
+                          onPressed: () async {
+                            showLoadingOverlay();
+                            final response = await api.addContentResponse(
+                                widget.contentId,
+                                widget.emailUser,
+                                selectedResponse);
+                            if (response.statusCode == 200) {
+                              showToastSuccess(
+                                  ctx: context,
+                                  successText: 'Respon berhasil terkirim!');
+                              closeOverlay();
+                            } else {
+                              closeOverlay();
+                              showToastFailed(
+                                  ctx: context,
+                                  failedText:
+                                      'Gagal mengirim respon. Coba beberapa saat lagi.');
+                            }
+                          },
+                          textColor: Colors.white,
+                          color: cAsiaBlue)
+                    ]))
+              ]),
         floatingActionButton: widget.contentId != ''
             ? widget.response != null && widget.response!.keys.contains('like')
                 ? Row(mainAxisAlignment: MainAxisAlignment.end, children: [
@@ -259,7 +232,7 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
   }
 
   loadContent() {
-    if (widget.contents != '') {
+    if (widget.contents != '' && widget.contentId != '') {
       String header =
           '<head> <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"> </head>';
       if (widget.image != '')
@@ -302,16 +275,15 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
             "<br/>" +
             widget.description +
             "</body></html>";
+    } else {
+      fileHtmlContentReal = widget.contents;
     }
   }
 }
 
 void showPrivacyPolicy() {
   Get.dialog(
-    RKWebViewDialog(
-      url: urlPP,
-      title: 'Privacy Policy',
-    ),
+    RKWebViewDialog(url: urlPP, title: 'Privacy Policy', contents: ppHtml()),
     transitionCurve: Curves.decelerate,
   );
 }
@@ -319,19 +291,14 @@ void showPrivacyPolicy() {
 void showTermCondition() {
   Get.dialog(
     RKWebViewDialog(
-      url: urlTOC,
-      title: 'Syarat dan Ketentuan',
-    ),
+        url: urlTOC, title: 'Syarat dan Ketentuan', contents: tocHtml()),
     transitionCurve: Curves.decelerate,
   );
 }
 
 void showFAQ() {
   Get.dialog(
-    RKWebViewDialog(
-      url: urlFAQ,
-      title: 'FAQ',
-    ),
+    RKWebViewDialog(url: urlFAQ, title: 'FAQ', contents: faqHtml()),
     transitionCurve: Curves.decelerate,
   );
 }
