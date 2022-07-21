@@ -55,6 +55,37 @@ class ContentModel {
   }
 }
 
+class ContentResponseModel {
+  String id;
+  String emailUser;
+  String contentId;
+  String programId;
+  String respon;
+  int point;
+  DateTime dateCreated;
+
+  ContentResponseModel(
+      {required this.id,
+      required this.emailUser,
+      required this.contentId,
+      required this.programId,
+      required this.respon,
+      required this.point,
+      required this.dateCreated});
+  factory ContentResponseModel.fromJson(Map<String, dynamic> json) {
+    int nomor = 0;
+    if (json["point"] != null) nomor = json["point"];
+    return ContentResponseModel(
+        id: json["_id"],
+        emailUser: json["emailUser"],
+        contentId: json["contentId"],
+        programId: json["programId"],
+        respon: json["respon"],
+        point: nomor,
+        dateCreated: DateTime.parse(json["dateCreated"]).toUtc().toLocal());
+  }
+}
+
 ContentType ContentTypeFromString(String input) {
   // print('ini jenis contentnyaaaaa: ${input.trim().toLowerCase()}');
   if (input.trim().toLowerCase() == 'video') return ContentType.video;

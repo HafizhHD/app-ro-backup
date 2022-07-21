@@ -21,7 +21,9 @@ class FeedController extends GetxController {
   String selectedCoBrandEmail = '';
 
   final api = MediaRepository();
-  Future<bool>? fGetListContent, fGetListCoBrand, fGetListProgram,
+  Future<bool>? fGetListContent,
+      fGetListCoBrand,
+      fGetListProgram,
       fGetListProgramContent;
   String jenisArtikel = 'artikel';
   String lastUpdated = DateTime.now().toIso8601String();
@@ -42,7 +44,7 @@ class FeedController extends GetxController {
     fGetListContent = getContents();
     fGetListProgram = getPrograms();
     fGetListCoBrand = getCoBrand();
-    fGetListProgramContent= getProgramContents();
+    fGetListProgramContent = getProgramContents();
   }
 
   void _scrollListener() {
@@ -100,8 +102,8 @@ class FeedController extends GetxController {
     return false;
   }
 
-  Future<bool> getProgramContents({bool refresh = false,
-    String programId = ''}) async {
+  Future<bool> getProgramContents(
+      {bool refresh = false, String programId = ''}) async {
     if (refresh == true) {
       lastUpdated = DateTime.now().toIso8601String();
       offset = 0;
@@ -114,10 +116,13 @@ class FeedController extends GetxController {
       if (json['resultCode'] == "OK") {
         List contents = json['contents'];
         if (offset == 0)
-          listProgramContent = contents.map((e) => ContentModel.fromJson(e)).toList();
+          listProgramContent =
+              contents.map((e) => ContentModel.fromJson(e)).toList();
         else
-          listProgramContent += contents.map((e) => ContentModel.fromJson(e)).toList();
-        listProgramContent.sort((b, a) => a.nomerUrutTahapan!.compareTo(a.nomerUrutTahapan!));
+          listProgramContent +=
+              contents.map((e) => ContentModel.fromJson(e)).toList();
+        listProgramContent
+            .sort((b, a) => a.nomerUrutTahapan!.compareTo(a.nomerUrutTahapan!));
         update();
         if (contents.length < 5) {
           isThereMore = false;
@@ -131,8 +136,8 @@ class FeedController extends GetxController {
     return false;
   }
 
-  Future<bool> getPrograms({bool refresh = false, String cobrand = '',
-    String}) async {
+  Future<bool> getPrograms(
+      {bool refresh = false, String cobrand = '', String}) async {
     if (refresh == true) {
       lastUpdated = DateTime.now().toIso8601String();
       offset = 0;
@@ -206,5 +211,4 @@ class FeedController extends GetxController {
     // //stillSearching = false;
     getPrograms();
   }
-
 }

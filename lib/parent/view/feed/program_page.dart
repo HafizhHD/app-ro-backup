@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_controller.dart';
+import 'package:ruangkeluarga/parent/view/feed/program_child_response.dart';
 import 'package:ruangkeluarga/parent/view/main/parent_controller.dart';
 import 'package:ruangkeluarga/utils/rk_webview.dart';
 import 'package:ruangkeluarga/parent/view/inbox/inbox_page_detail.dart';
@@ -9,9 +10,10 @@ import 'package:ruangkeluarga/parent/view/inbox/inbox_page_detail.dart';
 import 'feed_pdf.dart';
 
 class ProgramxPage extends StatelessWidget {
-  ProgramxPage(this.programId, this.emailUser);
+  ProgramxPage(this.programId, this.emailUser, this.userType);
   final String programId;
   final String emailUser;
+  final String userType;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -66,47 +68,54 @@ class ProgramxPage extends StatelessWidget {
               padding: EdgeInsets.only(top: 5, bottom: 2),
               child: ListTile(
                 onTap: () async {
-                  if (contentData.contentType == ContentType.artikel) {
-                    String imgData = '';
-                    if (contentData.contentThumbnail != null)
-                      imgData = contentData.contentThumbnail!;
-                    showContent(
-                        context,
-                        emailUser,
-                        contentData.id,
-                        contentData.contents,
-                        contentData.contentName,
-                        imgData,
-                        '',
-                        contentData.contentSource,
-                        contentData.response);
-                  } else if (contentData.contentType == ContentType.video) {
-                    showContent(
-                        context,
-                        emailUser,
-                        contentData.id,
-                        contentData.contents,
-                        contentData.contentName,
-                        '',
-                        contentData.contentDescription,
-                        contentData.contentSource,
-                        contentData.response);
-                  } else if (contentData.contentType == ContentType.pdf) {
-                    Navigator.push(
-                        context,
-                        leftTransitionRoute(FeedPdf(
-                            contentModel: contentData, emailUser: emailUser)));
+                  if (userType == 'parent') {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) =>
+                            ProgramChildResponse(contentId: contentData.id)));
                   } else {
-                    showContent(
-                        context,
-                        emailUser,
-                        contentData.id,
-                        contentData.contents,
-                        contentData.contentName,
-                        '',
-                        '',
-                        contentData.contentSource,
-                        contentData.response);
+                    if (contentData.contentType == ContentType.artikel) {
+                      String imgData = '';
+                      if (contentData.contentThumbnail != null)
+                        imgData = contentData.contentThumbnail!;
+                      showContent(
+                          context,
+                          emailUser,
+                          contentData.id,
+                          contentData.contents,
+                          contentData.contentName,
+                          imgData,
+                          '',
+                          contentData.contentSource,
+                          contentData.response);
+                    } else if (contentData.contentType == ContentType.video) {
+                      showContent(
+                          context,
+                          emailUser,
+                          contentData.id,
+                          contentData.contents,
+                          contentData.contentName,
+                          '',
+                          contentData.contentDescription,
+                          contentData.contentSource,
+                          contentData.response);
+                    } else if (contentData.contentType == ContentType.pdf) {
+                      Navigator.push(
+                          context,
+                          leftTransitionRoute(FeedPdf(
+                              contentModel: contentData,
+                              emailUser: emailUser)));
+                    } else {
+                      showContent(
+                          context,
+                          emailUser,
+                          contentData.id,
+                          contentData.contents,
+                          contentData.contentName,
+                          '',
+                          '',
+                          contentData.contentSource,
+                          contentData.response);
+                    }
                   }
                 },
                 title: Text(

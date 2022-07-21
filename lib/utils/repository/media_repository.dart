@@ -962,11 +962,14 @@ class MediaRepository {
   }
 
   Future<Response> fetchContentResponse(
-      String contentId, String emailUser, String respons) async {
+      String contentId, List<String> emailUser) async {
     var url = _rkService.baseUrl + '/user/userContentResponFilter';
     print('userContentResponFilter');
     Map<String, dynamic> json = {
-      "whereKeyValues": {"contentId": contentId, "emailUser": emailUser}
+      "whereKeyValues": {
+        "contentId": contentId,
+        "emailUser": {"\$in": emailUser}
+      }
     };
     print('param content respon add: $json');
     Response response = await post(Uri.parse(url),
