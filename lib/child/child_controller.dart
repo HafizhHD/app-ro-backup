@@ -89,8 +89,7 @@ class ChildController extends GetxController {
         // fetchChildLocation();
         getCurrentLocation();
       }
-    }
-    catch(e) {
+    } catch (e) {
       print('Error kirim data lokasi, appusage: ' + e.toString());
     }
   }
@@ -114,9 +113,11 @@ class ChildController extends GetxController {
               .then((response) {
             if (response.statusCode == 200) {
               // print('isi response save location Current: ${response.body}');
-              print('isi response save location Current: ${response.statusCode}');
+              print(
+                  'isi response save location Current: ${response.statusCode}');
             } else {
-              print('isi response save location Current: ${response.statusCode}');
+              print(
+                  'isi response save location Current: ${response.statusCode}');
             }
           });
         } catch (e, s) {
@@ -327,15 +328,15 @@ class ChildController extends GetxController {
           // print('Ini adalah ${localApp.appName.toString()}');
           if (localApp is ApplicationWithIcon)
             // print('Ini iconnya: ${base64Encode(localApp.icon)}');
-          await MediaRepository().saveIconApp(
-            childEmail,
-            localApp.appName,
-            localApp.packageName,
-            localApp is ApplicationWithIcon
-                ? "data:image/png;base64,${base64Encode(localApp.icon)}"
-                : '',
-            cat == 'undefined' ? 'other' : cat,
-          );
+            await MediaRepository().saveIconApp(
+              childEmail,
+              localApp.appName,
+              localApp.packageName,
+              localApp is ApplicationWithIcon
+                  ? "data:image/png;base64,${base64Encode(localApp.icon)}"
+                  : '',
+              cat == 'undefined' ? 'other' : cat,
+            );
         }
         ada = 0;
       } catch (e, s) {
@@ -625,7 +626,7 @@ class ChildController extends GetxController {
       infoList3.forEach((app, e) {
         // print(app);
         final hasData =
-          listAppLocal.where((e) => e.packageName == app).toList();
+            listAppLocal.where((e) => e.packageName == app).toList();
 
         if (hasData.length > 0) {
           final appName = hasData.first.appName;
@@ -644,40 +645,46 @@ class ChildController extends GetxController {
             if (val[0] == 1 || val[0] == 2) {
               if ((val[0] == 2) && (lastType != 2)) {
                 if (i == 0) {
-                  duration += val[1] - startDate.millisecondsSinceEpoch as int;
-                  var usageStamp = {
-                    'durationInStamp':
-                      '${val[1] - startDate.millisecondsSinceEpoch}',
-                    'lastTimeStamp':
-                      "${DateTime.fromMillisecondsSinceEpoch(val[1])}"
-                  };
                   if (val[1] - startDate.millisecondsSinceEpoch <=
-                      oneDay.inMilliseconds) usageHour.add(usageStamp);
+                      oneDay.inMilliseconds) {
+                    duration +=
+                        val[1] - startDate.millisecondsSinceEpoch as int;
+                    var usageStamp = {
+                      'durationInStamp':
+                          '${val[1] - startDate.millisecondsSinceEpoch}',
+                      'lastTimeStamp':
+                          "${DateTime.fromMillisecondsSinceEpoch(val[1])}"
+                    };
+                    usageHour.add(usageStamp);
+                  }
                   startTime = -1;
                 } else if (lastType == 1) {
-                  duration += val[1] - startTime as int;
-                  var usageStamp = {
-                    'durationInStamp': '${val[1] - startTime}',
-                    'lastTimeStamp':
-                      "${DateTime.fromMillisecondsSinceEpoch(val[1])}"
-                  };
-                  if (val[1] - startTime <= oneDay.inMilliseconds)
+                  if (val[1] - startTime <= oneDay.inMilliseconds) {
+                    duration += val[1] - startTime as int;
+                    var usageStamp = {
+                      'durationInStamp': '${val[1] - startTime}',
+                      'lastTimeStamp':
+                          "${DateTime.fromMillisecondsSinceEpoch(val[1])}"
+                    };
                     usageHour.add(usageStamp);
+                  }
                   startTime = -1;
                 }
 
                 lastType = val[0];
               } else if (val[0] == 1 && lastType != 1) {
                 if (i == e.length - 1) {
-                  duration +=
-                      DateTime.now().millisecondsSinceEpoch - val[1] as int;
-                  var usageStamp = {
-                    'durationInStamp':
-                      '${DateTime.now().millisecondsSinceEpoch - val[1]}',
-                    'lastTimeStamp': "${DateTime.now()}"
-                  };
                   if (DateTime.now().millisecondsSinceEpoch - val[1] <=
-                      oneDay.inMilliseconds) usageHour.add(usageStamp);
+                      oneDay.inMilliseconds) {
+                    duration +=
+                        DateTime.now().millisecondsSinceEpoch - val[1] as int;
+                    var usageStamp = {
+                      'durationInStamp':
+                          '${DateTime.now().millisecondsSinceEpoch - val[1]}',
+                      'lastTimeStamp': "${DateTime.now()}"
+                    };
+                    usageHour.add(usageStamp);
+                  }
                   startTime = -1;
                   lastType = 2;
                 } else {
@@ -704,7 +711,7 @@ class ChildController extends GetxController {
       });
 
       Response response =
-        await MediaRepository().saveChildUsage(childEmail, usageDataList);
+          await MediaRepository().saveChildUsage(childEmail, usageDataList);
       if (response.statusCode == 200) {
         // print('isi response save app usage : ${response.body}');
         print('isi response save app usage : 200');
@@ -945,8 +952,8 @@ class ChildController extends GetxController {
                 List<Map<String, dynamic>> dataList = [];
 
                 List<ApplicationInstalled> dataAppsInstalled =
-                List<ApplicationInstalled>.from(tmpData
-                    .map((model) => ApplicationInstalled.fromJson(model)));
+                    List<ApplicationInstalled>.from(tmpData
+                        .map((model) => ApplicationInstalled.fromJson(model)));
 
                 for (int i = 0; i < dataAppsInstalled.length; i++) {
                   Map<String, dynamic> dataAplikasi = {
@@ -961,7 +968,7 @@ class ChildController extends GetxController {
                   dataList.add(dataAplikasi);
                 }
                 var dataAplikasiDb =
-                await AplikasiDB.instance.queryAllRowsAplikasi();
+                    await AplikasiDB.instance.queryAllRowsAplikasi();
                 if (dataAplikasiDb != null) {
                   // await AplikasiDB.instance.deleteAllData();
                   Map<String, dynamic> dataAplikasi = new Map();
@@ -970,9 +977,9 @@ class ChildController extends GetxController {
                   dataAplikasi['dataAplikasi'] = jsonEncode(dataList);
                   dataAplikasi['kunciLayar'] = dataAplikasiDb['kunciLayar'];
                   dataAplikasi['modekunciLayar'] =
-                  (dataAplikasiDb['modekunciLayar'] != null)
-                      ? dataAplikasiDb['modekunciLayar']
-                      : '';
+                      (dataAplikasiDb['modekunciLayar'] != null)
+                          ? dataAplikasiDb['modekunciLayar']
+                          : '';
                   await AplikasiDB.instance.deleteAllData();
                   AplikasiDB.instance.insertData(dataAplikasi);
                 } else {
@@ -993,8 +1000,7 @@ class ChildController extends GetxController {
           }
         }
       }
-    }
-    catch (e){
+    } catch (e) {
       print('Error fetchDataApp ' + e.toString());
     }
   }
