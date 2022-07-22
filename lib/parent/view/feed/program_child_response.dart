@@ -26,8 +26,7 @@ class _ProgramChildResponse extends State<ProgramChildResponse> {
   late List<ContentResponseModel> listResponse;
   Future<bool>? fGetListResponse;
   final api = MediaRepository();
-  final ctrl = new ParentController();
-  late ParentProfile parentData;
+  ParentProfile parentData = Get.find<ParentController>().parentProfile;
   late List<Child> children;
   final TextEditingController tec = TextEditingController();
   final FocusNode focusNode = FocusNode();
@@ -40,13 +39,13 @@ class _ProgramChildResponse extends State<ProgramChildResponse> {
   }
 
   void initAsync() {
-    parentData = ctrl.parentProfile;
     children = parentData.children ?? [];
     List<String> childrenEmail = [];
     children.forEach((x) {
       if (x.email != null) childrenEmail.add(x.email!);
     });
     fGetListResponse = getContentResponse(childrenEmail);
+    setState(() {});
   }
 
   Future<bool> getContentResponse(List<String>? emailUser) async {
@@ -71,7 +70,6 @@ class _ProgramChildResponse extends State<ProgramChildResponse> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
       body: Column(mainAxisSize: MainAxisSize.max, children: [
         Expanded(
             child: Container(
@@ -81,7 +79,8 @@ class _ProgramChildResponse extends State<ProgramChildResponse> {
                     future: fGetListResponse,
                     builder: (context, AsyncSnapshot<bool> snapshot) {
                       if (!snapshot.hasData) return wProgressIndicator();
-                      return ListView.builder(
+                      return SingleChildScrollView(
+                          child: ListView.builder(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
                         itemCount: children.length,
@@ -100,7 +99,7 @@ class _ProgramChildResponse extends State<ProgramChildResponse> {
                               name: childData.name ?? 'Nama Anak',
                               respon: respon);
                         },
-                      );
+                      ));
                     }))),
         // Align(
         //     alignment: Alignment.bottomLeft,
