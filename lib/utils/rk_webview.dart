@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ruangkeluarga/global/global.dart';
+import 'package:ruangkeluarga/model/cobrand_program_content_model.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
@@ -41,8 +42,12 @@ class RKWebViewDialog extends StatefulWidget {
 
 class _RKWebViewDialogState extends State<RKWebViewDialog> {
   late WebViewController _webViewController;
+  late List<ContentResponseModel> listLike;
   String fileHtmlContentReal = '';
   String selectedResponse = '';
+  int totalLike = 0;
+  String responId = '';
+  bool liked = false;
   List<DropdownMenuItem<String>> choice = [];
   final api = MediaRepository();
   @override
@@ -53,11 +58,38 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
     print('Isi file html: ' + fileHtmlContentReal);
     print(widget.contentId);
     print(widget.response);
-    if (widget.response != null)
+    if (widget.response != null) {
       widget.response!.keys.forEach((e) {
         choice.add(DropdownMenuItem(child: Text(e), value: e));
         if (selectedResponse == '') selectedResponse = e;
       });
+      if (widget.response!.keys.contains('like')) {
+        getContentResponse();
+      }
+    }
+  }
+
+  void getContentResponse() async {
+    final res2 = await api.fetchContentResponseAll(widget.contentId);
+    if (res2.statusCode == 200) {
+      // print('Print res fetchCoBrand: ${res2.body}');
+      final json = jsonDecode(res2.body);
+      if (json['resultCode'] == "OK") {
+        List contentResponse = json['resultData'];
+        listLike = contentResponse
+            .map((e) => ContentResponseModel.fromJson(e))
+            .toList();
+        for (int i = 0; i < listLike.length; i++) {
+          if (listLike[i].emailUser == widget.emailUser) {
+            liked = true;
+            break;
+          }
+        }
+        setState(() {
+          totalLike = listLike.length;
+        });
+      }
+    }
   }
 
   _launchURL(String url) async {
@@ -131,22 +163,65 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
                         hoverElevation: 0,
                         highlightElevation: 0,
                         backgroundColor: cAsiaBlue.withOpacity(0.8),
-                        child: Icon(Icons.thumb_up, color: cOrtuWhite),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: <Widget>[
+                            Icon(Icons.thumb_up,
+                                color: liked ? cOrtuOrange : cOrtuWhite),
+                            Text(
+                              "$totalLike",
+                              style:
+                                  TextStyle(fontSize: 10, color: Colors.black),
+                            ),
+                          ],
+                        ),
                         onPressed: () async {
                           showLoadingOverlay();
-                          final response = await api.addContentResponse(
-                              widget.contentId, widget.emailUser, 'like');
-                          if (response.statusCode == 200) {
-                            // showToastSuccess(
-                            //     ctx: context,
-                            //     successText: 'Respon berhasil terkirim!');
-                            closeOverlay();
+                          if (!liked) {
+                            final response = await api.addContentResponse(
+                                widget.contentId, widget.emailUser, 'like');
+                            if (response.statusCode == 200) {
+                              // showToastSuccess(
+                              //     ctx: context,
+                              //     successText: 'Respon berhasil terkirim!');
+                              final json = jsonDecode(response.body);
+                              print(json);
+                              // if (json['resultCode'] == "OK") {
+                              //   ContentResponseModel contentResponse =
+                              //       json['resultData'];
+                              //   responId = contentResponse.id;
+                              // }
+                              setState(() {
+                                liked = true;
+                                totalLike++;
+                              });
+                              closeOverlay();
+                            } else {
+                              closeOverlay();
+                              // showToastFailed(
+                              //     ctx: context,
+                              //     failedText:
+                              //         'Gagal mengirim respon. Coba beberapa saat lagi.');
+                            }
                           } else {
-                            closeOverlay();
-                            // showToastFailed(
-                            //     ctx: context,
-                            //     failedText:
-                            //         'Gagal mengirim respon. Coba beberapa saat lagi.');
+                            final response = await api.deleteContentResponse(
+                                widget.emailUser, widget.contentId);
+                            if (response.statusCode == 200) {
+                              // showToastSuccess(
+                              //     ctx: context,
+                              //     successText: 'Respon berhasil terkirim!');
+                              setState(() {
+                                liked = false;
+                                totalLike--;
+                              });
+                              closeOverlay();
+                            } else {
+                              closeOverlay();
+                              // showToastFailed(
+                              //     ctx: context,
+                              //     failedText:
+                              //         'Gagal mengirim respon. Coba beberapa saat lagi.');
+                            }
                           }
                         }),
                     SizedBox(

@@ -948,12 +948,11 @@ class MediaRepository {
     return response;
   }
 
-  Future<Response> deleteContentResponse(
-      String responId, String respons) async {
+  Future<Response> deleteContentResponse(String email, String contentId) async {
     var url = _rkService.baseUrl + '/user/userContentResponRemove';
     print('userContentResponUpdate');
     Map<String, dynamic> json = {
-      "whereValues": {"_id": responId}
+      "whereValues": {"emailUser": email, "contentId": contentId}
     };
     print('param content respon delete: $json');
     Response response = await post(Uri.parse(url),
@@ -970,6 +969,18 @@ class MediaRepository {
         "contentId": contentId,
         "emailUser": {"\$in": emailUser}
       }
+    };
+    print('param content respon add: $json');
+    Response response = await post(Uri.parse(url),
+        headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> fetchContentResponseAll(String contentId) async {
+    var url = _rkService.baseUrl + '/user/userContentResponFilter';
+    print('userContentResponFilter');
+    Map<String, dynamic> json = {
+      "whereKeyValues": {"contentId": contentId}
     };
     print('param content respon add: $json');
     Response response = await post(Uri.parse(url),
