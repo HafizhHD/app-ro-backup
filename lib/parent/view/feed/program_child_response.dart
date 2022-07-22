@@ -12,13 +12,23 @@ import 'package:ruangkeluarga/parent/view_model/sekolah_al_azhar_model.dart';
 import 'package:ruangkeluarga/utils/base_service/service_controller.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:ruangkeluarga/parent/view/order/order.dart';
+import 'package:ruangkeluarga/utils/rk_webview.dart';
 
 class ProgramChildResponse extends StatefulWidget {
   @override
   _ProgramChildResponse createState() => _ProgramChildResponse();
+  final String emailUser;
+  final ContentModel contentData;
   final String contentId;
+  final String contentName;
 
-  ProgramChildResponse({Key? key, required this.contentId}) : super(key: key);
+  ProgramChildResponse(
+      {Key? key,
+      required this.emailUser,
+      required this.contentData,
+      required this.contentId,
+      required this.contentName})
+      : super(key: key);
 }
 
 class _ProgramChildResponse extends State<ProgramChildResponse> {
@@ -70,6 +80,12 @@ class _ProgramChildResponse extends State<ProgramChildResponse> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: cPrimaryBg,
+      appBar: AppBar(
+        backgroundColor: cTopBg,
+        title: Text(widget.contentName, style: TextStyle(color: cOrtuWhite)),
+        elevation: 0,
+      ),
       body: Column(mainAxisSize: MainAxisSize.max, children: [
         Expanded(
             child: Container(
@@ -83,21 +99,42 @@ class _ProgramChildResponse extends State<ProgramChildResponse> {
                           child: ListView.builder(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
-                        itemCount: children.length,
+                        itemCount: children.length + 1,
                         itemBuilder: (ctx, idx) {
-                          final childData = children[idx];
-                          String respon = "-";
-                          for (int i = 0; i < listResponse.length; i++) {
-                            if (listResponse[i].emailUser == childData.email) {
-                              respon = listResponse[i].respon;
-                              break;
+                          if (idx >= children.length) {
+                            return FlatButton(
+                                child: Text('Lihat isi tahap'),
+                                onPressed: () async {
+                                  showContent(
+                                      context,
+                                      widget.emailUser,
+                                      widget.contentData.id,
+                                      widget.contentData.contents,
+                                      widget.contentData.contentName,
+                                      '',
+                                      '',
+                                      '',
+                                      widget.contentData.response,
+                                      userType: 'parent');
+                                },
+                                textColor: Colors.white,
+                                color: cAsiaBlue);
+                          } else {
+                            final childData = children[idx];
+                            String respon = "-";
+                            for (int i = 0; i < listResponse.length; i++) {
+                              if (listResponse[i].emailUser ==
+                                  childData.email) {
+                                respon = listResponse[i].respon;
+                                break;
+                              }
                             }
+                            print('Nama: ${childData.name}');
+                            print('Respon: $respon');
+                            return responseContainer(
+                                name: childData.name ?? 'Nama Anak',
+                                respon: respon);
                           }
-                          print('Nama: ${childData.name}');
-                          print('Respon: $respon');
-                          return responseContainer(
-                              name: childData.name ?? 'Nama Anak',
-                              respon: respon);
                         },
                       ));
                     }))),

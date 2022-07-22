@@ -977,6 +977,22 @@ class MediaRepository {
     return response;
   }
 
+  Future<Response> fetchContentResponseWithProgram(
+      String programId, List<String> emailUser) async {
+    var url = _rkService.baseUrl + '/user/userContentResponFilter';
+    print('userContentResponFilter');
+    Map<String, dynamic> json = {
+      "whereKeyValues": {
+        "programId": programId,
+        "emailUser": {"\$in": emailUser}
+      }
+    };
+    print('param content respon add: $json');
+    Response response = await post(Uri.parse(url),
+        headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
   Future<Response> getLocationMatrix(
       List<double> origin, List<double> destination, String apiKey) async {
     var url = 'https://api.openrouteservice.org/v2/matrix/driving-car';

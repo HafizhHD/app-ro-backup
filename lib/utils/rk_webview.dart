@@ -21,6 +21,7 @@ class RKWebViewDialog extends StatefulWidget {
   final String contentId;
   final String emailUser;
   final Map<String, dynamic>? response;
+  final String userType;
 
   RKWebViewDialog(
       {required this.url,
@@ -31,7 +32,8 @@ class RKWebViewDialog extends StatefulWidget {
       this.source = '',
       this.contentId = '',
       this.emailUser = '',
-      this.response});
+      this.response,
+      this.userType = ''});
 
   @override
   _RKWebViewDialogState createState() => _RKWebViewDialogState();
@@ -93,29 +95,31 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
                                   selectedResponse = e!;
                                 });
                               })),
-                      FlatButton(
-                          child: Text('Pilih Respon'),
-                          onPressed: () async {
-                            showLoadingOverlay();
-                            final response = await api.addContentResponse(
-                                widget.contentId,
-                                widget.emailUser,
-                                selectedResponse);
-                            if (response.statusCode == 200) {
-                              showToastSuccess(
-                                  ctx: context,
-                                  successText: 'Respon berhasil terkirim!');
-                              closeOverlay();
-                            } else {
-                              closeOverlay();
-                              showToastFailed(
-                                  ctx: context,
-                                  failedText:
-                                      'Gagal mengirim respon. Coba beberapa saat lagi.');
-                            }
-                          },
-                          textColor: Colors.white,
-                          color: cAsiaBlue)
+                      widget.userType != 'parent'
+                          ? FlatButton(
+                              child: Text('Pilih Respon'),
+                              onPressed: () async {
+                                showLoadingOverlay();
+                                final response = await api.addContentResponse(
+                                    widget.contentId,
+                                    widget.emailUser,
+                                    selectedResponse);
+                                if (response.statusCode == 200) {
+                                  showToastSuccess(
+                                      ctx: context,
+                                      successText: 'Respon berhasil terkirim!');
+                                  closeOverlay();
+                                } else {
+                                  closeOverlay();
+                                  showToastFailed(
+                                      ctx: context,
+                                      failedText:
+                                          'Gagal mengirim respon. Coba beberapa saat lagi.');
+                                }
+                              },
+                              textColor: Colors.white,
+                              color: cAsiaBlue)
+                          : Container()
                     ]))
               ]),
         floatingActionButton: widget.contentId != ''
@@ -304,7 +308,8 @@ void showFAQ() {
 }
 
 void showContent(context, String emailUser, String contentId, String contents,
-    title, image, desc, source, response) {
+    title, image, desc, source, response,
+    {String userType = ''}) {
   Get.dialog(
     RKWebViewDialog(
         url: "",
@@ -315,7 +320,8 @@ void showContent(context, String emailUser, String contentId, String contents,
         source: source,
         contentId: contentId,
         emailUser: emailUser,
-        response: response),
+        response: response,
+        userType: userType),
     transitionCurve: Curves.decelerate,
   );
 }

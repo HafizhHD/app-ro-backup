@@ -343,16 +343,24 @@ class FeedPage extends StatelessWidget {
                 refresh: true, programId: data.id);
             closeOverlay();
             Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) =>
-                    ProgramxPage(data.id, emailUser, userType)));
+                builder: (context) => ProgramxPage(
+                    programId: data.id,
+                    emailUser: emailUser,
+                    userType: userType,
+                    programName: data.programName,
+                    category: data.category)));
           } else {
             showLoadingOverlay();
             await controller.getProgramContents(
                 refresh: true, programId: data.id);
             closeOverlay();
             Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) =>
-                    ProgramxPage(data.id, emailUser, userType)));
+                builder: (context) => ProgramxPage(
+                    programId: data.id,
+                    emailUser: emailUser,
+                    userType: userType,
+                    programName: data.programName,
+                    category: data.category)));
           }
         });
   }

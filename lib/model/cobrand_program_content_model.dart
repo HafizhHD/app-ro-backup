@@ -17,6 +17,7 @@ class ContentModel {
   DateTime startDate;
   DateTime dateCreated;
   Map<String, dynamic>? response;
+  String answerKey;
 
   ContentModel(
       {required this.id,
@@ -32,7 +33,8 @@ class ContentModel {
       required this.status,
       required this.startDate,
       required this.dateCreated,
-      this.response});
+      this.response,
+      required this.answerKey});
   factory ContentModel.fromJson(Map<String, dynamic> json) {
     int nomor = 0;
     if (json["nomerUrutTahapan"] != null) nomor = json["nomerUrutTahapan"];
@@ -51,7 +53,8 @@ class ContentModel {
         dateCreated: DateTime.parse(json["dateCreated"]).toUtc().toLocal(),
         status:
             json["status"].toString().toLowerCase() == 'active' ? true : false,
-        response: json["respons"]);
+        response: json["respons"],
+        answerKey: json["answerKey"] ?? 'Kunci jawaban tidak ada');
   }
 }
 
@@ -123,28 +126,29 @@ class ProgramModel {
   DateTime startDate;
   DateTime dateCreated;
   bool status;
+  List<String> category;
 
-  ProgramModel({
-    required this.id,
-    required this.coBrandEmail,
-    required this.programName,
-    required this.ProgramDescription,
-    this.thumbnail,
-    required this.startDate,
-    required this.dateCreated,
-    required this.status,
-  });
+  ProgramModel(
+      {required this.id,
+      required this.coBrandEmail,
+      required this.programName,
+      required this.ProgramDescription,
+      this.thumbnail,
+      required this.startDate,
+      required this.dateCreated,
+      required this.status,
+      required this.category});
   factory ProgramModel.fromJson(Map<String, dynamic> json) {
     return ProgramModel(
-      id: json["_id"],
-      coBrandEmail: json["cobrandEmail"],
-      programName: json["programName"],
-      ProgramDescription: json["ProgramDescription"],
-      thumbnail: json["programthumnail"],
-      startDate: DateTime.parse(json["startDate"]).toUtc().toLocal(),
-      dateCreated: DateTime.parse(json["dateCreated"]).toUtc().toLocal(),
-      status:
-          json["status"].toString().toLowerCase() == 'active' ? true : false,
-    );
+        id: json["_id"],
+        coBrandEmail: json["cobrandEmail"],
+        programName: json["programName"],
+        ProgramDescription: json["ProgramDescription"],
+        thumbnail: json["programthumnail"],
+        startDate: DateTime.parse(json["startDate"]).toUtc().toLocal(),
+        dateCreated: DateTime.parse(json["dateCreated"]).toUtc().toLocal(),
+        status:
+            json["status"].toString().toLowerCase() == 'active' ? true : false,
+        category: List<String>.from(json['category']));
   }
 }
