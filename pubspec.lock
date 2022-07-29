@@ -414,6 +414,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.0-alpha.5"
+  flutter_html_iframe:
+    dependency: "direct main"
+    description:
+      name: flutter_html_iframe
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0-alpha.3"
   flutter_inappwebview:
     dependency: transitive
     description:

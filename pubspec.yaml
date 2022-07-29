@@ -84,6 +84,7 @@ dependencies:
   internet_file: ^1.0.0+2
   url_launcher: ^6.1.0
   flutter_html: ^3.0.0-alpha.5
+  flutter_html_iframe: ^3.0.0-alpha.3
 
 dev_dependencies:
   flutter_test:

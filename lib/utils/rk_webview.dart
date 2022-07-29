@@ -11,6 +11,7 @@ import '../parent/view/feed/feed_comment.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html_iframe/flutter_html_iframe.dart';
 
 class RKWebViewDialog extends StatefulWidget {
   final String url;
@@ -109,9 +110,17 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
           title: Text(widget.title),
         ),
         body: widget.response == null || widget.response!.keys.length <= 1
-            ? SingleChildScrollView(child: Html(data: fileHtmlContentReal))
+            ? SingleChildScrollView(
+                child: Html(
+                    data: fileHtmlContentReal,
+                    customRenders: {iframeMatcher(): iframeRender()},
+                    style: {'iframe': Style(alignment: Alignment.center)}))
             : Column(children: [
-                Expanded(child: Html(data: fileHtmlContentReal)),
+                Expanded(
+                    child: Html(
+                        data: fileHtmlContentReal,
+                        customRenders: {iframeMatcher(): iframeRender()},
+                        style: {'iframe': Style(alignment: Alignment.center)})),
                 Container(
                     // height: MediaQuery.of(context).size.height * 0.1,
                     child: Column(
