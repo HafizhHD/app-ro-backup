@@ -41,7 +41,7 @@ class _ProgramxPage extends State<ProgramxPage> {
   late List<ContentResponseModel> listResponse;
   Future<bool>? fGetListResponse;
   final api = MediaRepository();
-  ParentProfile parentData = Get.find<ParentController>().parentProfile;
+  late ParentProfile parentData;
   late List<Child> children;
   final TextEditingController tec = TextEditingController();
   final FocusNode focusNode = FocusNode();
@@ -54,12 +54,15 @@ class _ProgramxPage extends State<ProgramxPage> {
   }
 
   void initAsync() {
-    children = parentData.children ?? [];
-    List<String> childrenEmail = [];
-    children.forEach((x) {
-      if (x.email != null) childrenEmail.add(x.email!);
-    });
-    fGetListResponse = getContentResponse(childrenEmail);
+    if (widget.userType == 'parent') {
+      parentData = Get.find<ParentController>().parentProfile;
+      children = parentData.children ?? [];
+      List<String> childrenEmail = [];
+      children.forEach((x) {
+        if (x.email != null) childrenEmail.add(x.email!);
+      });
+      fGetListResponse = getContentResponse(childrenEmail);
+    }
     setState(() {});
   }
 
@@ -210,7 +213,9 @@ class _ProgramxPage extends State<ProgramxPage> {
       );
     }
 
-    if (widget.category.contains("ujian") || widget.category.contains("Ujian"))
+    if (widget.userType == 'parent' &&
+        (widget.category.contains("ujian") ||
+            widget.category.contains("Ujian")))
       return SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
           child: Column(children: [
