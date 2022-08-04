@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Response;
+import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/model/cobrand_program_content_model.dart';
@@ -14,6 +15,7 @@ import 'package:ruangkeluarga/parent/view/main/parent_model.dart';
 import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:ruangkeluarga/utils/rk_webview.dart';
 import 'package:ruangkeluarga/parent/view/inbox/inbox_page_detail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'feed_pdf.dart';
 
@@ -46,6 +48,10 @@ class _ProgramxPage extends State<ProgramxPage> {
   final TextEditingController tec = TextEditingController();
   final FocusNode focusNode = FocusNode();
   var outputFormat = DateFormat('dd LLL yyyy, HH:mm');
+  var allAnswered = true;
+  var hasAnswered = false;
+  late int countAnswered;
+  late SharedPreferences prefs;
 
   @override
   void initState() {
@@ -53,7 +59,9 @@ class _ProgramxPage extends State<ProgramxPage> {
     initAsync();
   }
 
-  void initAsync() {
+  void initAsync() async {
+    countAnswered = 0;
+    prefs = await SharedPreferences.getInstance();
     if (widget.userType == 'parent') {
       parentData = Get.find<ParentController>().parentProfile;
       children = parentData.children ?? [];
@@ -61,6 +69,9 @@ class _ProgramxPage extends State<ProgramxPage> {
       children.forEach((x) {
         if (x.email != null) childrenEmail.add(x.email!);
       });
+      fGetListResponse = getContentResponse(childrenEmail);
+    } else {
+      List<String> childrenEmail = [widget.emailUser];
       fGetListResponse = getContentResponse(childrenEmail);
     }
     setState(() {});
@@ -121,96 +132,162 @@ class _ProgramxPage extends State<ProgramxPage> {
     final inbox = controller.listProgramContent;
     contentContainer(ScrollPhysics scrollphysics) {
       return Container(
-        child: ListView.builder(
-          physics: scrollphysics,
-          shrinkWrap: true,
-          itemCount: inbox.length,
-          itemBuilder: (ctx, idx) {
-            final contentData = inbox[idx];
-            String Nomor = contentData.nomerUrutTahapan.toString() + '. ';
-            String strContent = Nomor + contentData.contentName;
-            return Dismissible(
-              key: Key(contentData.id),
-              // direction: if == '' ? DismissDirection.horizontal : DismissDirection.none,
-              confirmDismiss: (_) async {
-                // return await controller.deleteData(contentData.id);
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                    color: cOrtuGrey,
-                    borderRadius: BorderRadius.all(Radius.circular(15))),
-                margin: EdgeInsets.all(5),
-                padding: EdgeInsets.only(top: 5, bottom: 2),
-                child: ListTile(
-                  onTap: () async {
-                    if (widget.userType == 'parent') {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => ProgramChildResponse(
-                              emailUser: widget.emailUser,
-                              contentData: contentData,
-                              contentId: contentData.id,
-                              contentName: contentData.contentName)));
-                    } else {
-                      if (contentData.contentType == ContentType.artikel) {
-                        String imgData = '';
-                        if (contentData.contentThumbnail != null)
-                          imgData = contentData.contentThumbnail!;
-                        showContent(
-                            context,
-                            widget.emailUser,
-                            contentData.id,
-                            contentData.contents,
-                            contentData.contentName,
-                            imgData,
-                            '',
-                            contentData.contentSource,
-                            contentData.response);
-                      } else if (contentData.contentType == ContentType.video) {
-                        showContent(
-                            context,
-                            widget.emailUser,
-                            contentData.id,
-                            contentData.contents,
-                            contentData.contentName,
-                            '',
-                            contentData.contentDescription,
-                            contentData.contentSource,
-                            contentData.response);
-                      } else if (contentData.contentType == ContentType.pdf) {
-                        Navigator.push(
-                            context,
-                            leftTransitionRoute(FeedPdf(
-                                contentModel: contentData,
-                                emailUser: widget.emailUser)));
-                      } else {
-                        showContent(
-                            context,
-                            widget.emailUser,
-                            contentData.id,
-                            contentData.contents,
-                            contentData.contentName,
-                            '',
-                            '',
-                            contentData.contentSource,
-                            contentData.response);
+          child: FutureBuilder(
+              future: fGetListResponse,
+              builder: (context, AsyncSnapshot<bool> snapshot) {
+                if (!snapshot.hasData) return wProgressIndicator();
+                return SingleChildScrollView(
+                    child: ListView.builder(
+                  physics: scrollphysics,
+                  shrinkWrap: true,
+                  itemCount: inbox.length,
+                  itemBuilder: (ctx, idx) {
+                    bool answered = false;
+                    String isAnswered = '';
+                    final contentData = inbox[idx];
+                    for (int i = 0; i < listResponse.length; i++) {
+                      if (contentData.id == listResponse[i].contentId) {
+                        answered = true;
+                        countAnswered++;
+                        isAnswered = '(Sudah dijawab/direspon)';
+                        break;
                       }
                     }
+                    if (idx == inbox.length - 1) {
+                      if (countAnswered == inbox.length) {
+                        String parentEmails =
+                            prefs.getString('parentEmails') ?? '';
+                        String childName = prefs.getString('rkFullName') ?? '';
+                        api.sendNotification(
+                            parentEmails,
+                            "Pengerjaan Program Anak",
+                            "Anak Anda, $childName, sudah selesai mengerjakan program ${widget.programName}. Cek nilainya sekarang.");
+                      } else if (countAnswered > 0) {
+                        String parentEmails =
+                            prefs.getString('parentEmails') ?? '';
+                        String childName = prefs.getString('rkFullName') ?? '';
+                        api.sendNotification(
+                            parentEmails,
+                            "Pengerjaan Program Anak",
+                            "Anak Anda, $childName, sedang menjalankan program ${widget.programName} dengan progres $countAnswered dari ${inbox.length}. Cek nilainya sekarang.");
+                      }
+                    }
+                    String Nomor =
+                        contentData.nomerUrutTahapan.toString() + '. ';
+                    String strContent = Nomor + contentData.contentName;
+                    return Dismissible(
+                      key: Key(contentData.id),
+                      // direction: if == '' ? DismissDirection.horizontal : DismissDirection.none,
+                      confirmDismiss: (_) async {
+                        // return await controller.deleteData(contentData.id);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: answered ? Colors.green : cOrtuGrey,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(15))),
+                        margin: EdgeInsets.all(5),
+                        padding: EdgeInsets.only(top: 5, bottom: 2),
+                        child: ListTile(
+                            onTap: () async {
+                              if (widget.userType == 'parent') {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => ProgramChildResponse(
+                                        emailUser: widget.emailUser,
+                                        contentData: contentData,
+                                        contentId: contentData.id,
+                                        contentName: contentData.contentName)));
+                              } else {
+                                if (contentData.contentType ==
+                                    ContentType.artikel) {
+                                  String imgData = '';
+                                  if (contentData.contentThumbnail != null)
+                                    imgData = contentData.contentThumbnail!;
+                                  bool responded = await showContent(
+                                      context,
+                                      widget.emailUser,
+                                      contentData.id,
+                                      contentData.contents,
+                                      contentData.contentName,
+                                      imgData,
+                                      '',
+                                      contentData.contentSource,
+                                      contentData.response,
+                                      contentType: widget.category
+                                                  .contains("ujian") ||
+                                              widget.category.contains("Ujian")
+                                          ? 'ujian'
+                                          : '');
+                                  if (responded)
+                                    setState(() {
+                                      initAsync();
+                                    });
+                                } else if (contentData.contentType ==
+                                    ContentType.video) {
+                                  bool responded = await showContent(
+                                      context,
+                                      widget.emailUser,
+                                      contentData.id,
+                                      contentData.contents,
+                                      contentData.contentName,
+                                      '',
+                                      contentData.contentDescription,
+                                      contentData.contentSource,
+                                      contentData.response,
+                                      contentType: widget.category
+                                                  .contains("ujian") ||
+                                              widget.category.contains("Ujian")
+                                          ? 'ujian'
+                                          : '');
+                                  if (responded)
+                                    setState(() {
+                                      initAsync();
+                                    });
+                                } else if (contentData.contentType ==
+                                    ContentType.pdf) {
+                                  Navigator.push(
+                                      context,
+                                      leftTransitionRoute(FeedPdf(
+                                          contentModel: contentData,
+                                          emailUser: widget.emailUser)));
+                                } else {
+                                  bool responded = await showContent(
+                                      context,
+                                      widget.emailUser,
+                                      contentData.id,
+                                      contentData.contents,
+                                      contentData.contentName,
+                                      '',
+                                      '',
+                                      contentData.contentSource,
+                                      contentData.response,
+                                      contentType: widget.category
+                                                  .contains("ujian") ||
+                                              widget.category.contains("Ujian")
+                                          ? 'ujian'
+                                          : '');
+
+                                  if (responded)
+                                    setState(() {
+                                      initAsync();
+                                    });
+                                }
+                              }
+                            },
+                            title: Text(
+                              strContent,
+                              style: TextStyle(
+                                  fontWeight: contentData.status
+                                      ? FontWeight.normal
+                                      : FontWeight.bold),
+                            ),
+                            subtitle: Text(
+                                '\n${dateFormat_EDMYHM(contentData.dateCreated)} ${isAnswered}')),
+                      ),
+                    );
                   },
-                  title: Text(
-                    strContent,
-                    style: TextStyle(
-                        fontWeight: contentData.status
-                            ? FontWeight.normal
-                            : FontWeight.bold),
-                  ),
-                  subtitle:
-                      Text('\n${dateFormat_EDMYHM(contentData.dateCreated)}'),
-                ),
-              ),
-            );
-          },
-        ),
-      );
+                ));
+              }));
     }
 
     if (widget.userType == 'parent' &&

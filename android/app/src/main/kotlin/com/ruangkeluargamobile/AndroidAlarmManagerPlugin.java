@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.Log;
 import java.util.Iterator;
+import java.net.HttpURLConnection;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.JSONMethodCodec;
@@ -179,6 +180,84 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
                             appForeground.setAppName(jsonObject.getString("appName"));
                             appForeground.setBlacklist(jsonObject.getString("blacklist"));
                             closeApps(context, appForeground);
+                          }
+                          else if(Double.parseDouble(jsonObject.getString("limit" )) - duration > 29.8 && Double.parseDouble(jsonObject.getString("limit" )) - duration <= 30) {
+                            try {
+                              URL url = new URL("https://as01.prod.ruangortu.id:8080/api/user/broadcastAdd");
+                              HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                              conn.setRequestMethod("POST");
+                              conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                              conn.setRequestProperty("Accept","application/json");
+                              conn.setDoOutput(true);
+                              conn.setDoInput(true);
+
+                              SharedPreferences prefs = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE);
+                              String parentEmails = prefs.getString("flutter.parentEmails", "");
+                              String childName = prefs.getString("flutter.rkFullName", "");
+                              String messageContent = "Pemakaian aplikasi " + jsonObject.getString("appName") + " pada gadget anak Anda, " + childName + " tersisa 30 menit lagi. Cek pemakaiannya sekarang.";
+              
+                              JSONObject jsonParam = new JSONObject();
+                              jsonParam.put("destination", parentEmails);
+                              jsonParam.put("messageSubject", "Pemberitahuan Pembatasan Aplikasi");
+                              jsonParam.put("messageContent", messageContent);
+                              jsonParam.put("scheduleTime", "");
+                              jsonParam.put("mediaType", "Device");
+                              jsonParam.put("category", "Informasi");
+              
+                              Log.i("JSON", jsonParam.toString());
+                              DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+                              //os.writeBytes(URLEncoder.encode(jsonParam.toString(), "UTF-8"));
+                              os.writeBytes(jsonParam.toString());
+              
+                              os.flush();
+                              os.close();
+              
+                              Log.i("STATUS", String.valueOf(conn.getResponseCode()));
+                              Log.i("MSG" , conn.getResponseMessage());
+              
+                              conn.disconnect();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                          }
+                          else if(Double.parseDouble(jsonObject.getString("limit" )) - duration > 59.8 && Double.parseDouble(jsonObject.getString("limit" )) - duration <= 60) {
+                            try {
+                              URL url = new URL("https://as01.prod.ruangortu.id:8080/api/user/broadcastAdd");
+                              HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                              conn.setRequestMethod("POST");
+                              conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                              conn.setRequestProperty("Accept","application/json");
+                              conn.setDoOutput(true);
+                              conn.setDoInput(true);
+
+                              SharedPreferences prefs = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE);
+                              String parentEmails = prefs.getString("flutter.parentEmails", "");
+                              String childName = prefs.getString("flutter.rkFullName", "");
+                              String messageContent = "Pemakaian aplikasi " + jsonObject.getString("appName") + " pada gadget anak Anda, " + childName + " tersisa 1 jam lagi. Cek pemakaiannya sekarang.";
+              
+                              JSONObject jsonParam = new JSONObject();
+                              jsonParam.put("destination", parentEmails);
+                              jsonParam.put("messageSubject", "Pemberitahuan Pembatasan Aplikasi");
+                              jsonParam.put("messageContent", messageContent);
+                              jsonParam.put("scheduleTime", "");
+                              jsonParam.put("mediaType", "Device");
+                              jsonParam.put("category", "Informasi");
+              
+                              Log.i("JSON", jsonParam.toString());
+                              DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+                              //os.writeBytes(URLEncoder.encode(jsonParam.toString(), "UTF-8"));
+                              os.writeBytes(jsonParam.toString());
+              
+                              os.flush();
+                              os.close();
+              
+                              Log.i("STATUS", String.valueOf(conn.getResponseCode()));
+                              Log.i("MSG" , conn.getResponseMessage());
+              
+                              conn.disconnect();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                           }
                         }
                       }

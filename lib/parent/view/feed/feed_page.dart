@@ -4,7 +4,9 @@ import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_controller.dart';
 import 'package:ruangkeluarga/parent/view/feed/feed_pdf.dart';
 import 'package:ruangkeluarga/parent/view/feed/program_page.dart';
+import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:ruangkeluarga/utils/rk_webview.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -255,7 +257,7 @@ class FeedPage extends StatelessWidget {
             ],
           ),
         ),
-        onTap: () {
+        onTap: () async {
           if (data.contentType == ContentType.artikel) {
             String imgData = '';
             if (data.contentThumbnail != null) imgData = data.contentThumbnail!;
@@ -289,6 +291,13 @@ class FeedPage extends StatelessWidget {
             showContent(context, emailUser, data.id, data.contents,
                 data.contentName, '', '', data.contentSource, data.response);
           }
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          String parentEmails = prefs.getString('parentEmails') ?? '';
+          String childName = prefs.getString('rkFullName') ?? '';
+          await MediaRepository().sendNotification(
+              parentEmails,
+              "Artikel Sedang Dibaca Anak",
+              "Anak Anda, $childName, sedang membaca artikel ${data.contentName}. Cek sekarang.");
         });
   }
 

@@ -1004,6 +1004,39 @@ class MediaRepository {
     return response;
   }
 
+  Future<Response> fetchScreenTimeStandard(String category) async {
+    var url = _rkService.baseUrl + '/cobrand/configurationFilter';
+    print('ScreenTimeFilter');
+    Map<String, dynamic> json = {
+      "whereKeyValues": {
+        "cobrandEmail": "admin@asia.ruangortu.id",
+        "controlParameterName": category
+      }
+    };
+    print('param filter screen time: $json');
+    Response response = await post(Uri.parse(url),
+        headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
+  Future<Response> sendNotification(
+      String destination, String messageSubject, String messageContent) async {
+    var url = _rkService.baseUrl + '/user/broadcastAdd';
+    print('sendNotification');
+    Map<String, dynamic> json = {
+      "destination": destination,
+      "messageSubject": messageSubject,
+      "messageContent": messageContent,
+      "scheduleTime": '',
+      "mediaType": "Device",
+      "category": "Informasi"
+    };
+    print('param broadcast add: $json');
+    Response response = await post(Uri.parse(url),
+        headers: noAuthHeaders, body: jsonEncode(json));
+    return response;
+  }
+
   Future<Response> getLocationMatrix(
       List<double> origin, List<double> destination, String apiKey) async {
     var url = 'https://api.openrouteservice.org/v2/matrix/driving-car';

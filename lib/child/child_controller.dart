@@ -13,6 +13,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:http/http.dart';
 import 'package:location/location.dart';
+import 'package:ruangkeluarga/model/screen_time_standard_model.dart';
 import 'package:ruangkeluarga/utils/database/aplikasiDb.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:ruangkeluarga/child/child_model.dart';
@@ -219,6 +220,13 @@ class ChildController extends GetxController {
         childProfile = ChildProfile.fromJson(jsonUser);
         childID = childProfile.id;
         childEmail = childProfile.email;
+        String childStudyLevel = '';
+        if (childProfile.childInfo != null &&
+            childProfile.childInfo!.studyLevel != null) {
+          childStudyLevel = childProfile.childInfo!.studyLevel!;
+        }
+        await prefs.setString('rkFullName', childProfile.name);
+        await prefs.setString('rkStudyLevel', childStudyLevel);
         // var blackList = jsonUser['blacklistNumbers'];
         // List<BlackListContact> data = List<BlackListContact>.from(blackList.map((model) => BlackListContact.fromJson(model)));
         // if (data != null && data.length > 0) {
@@ -242,10 +250,12 @@ class ChildController extends GetxController {
         await MediaRepository().getParentChildData(childProfile.parent.id);
     print('response getParentData: ${response.body}');
     if (response.statusCode == 200) {
+      var parentEmails = '';
       var json = jsonDecode(response.body);
       if (json['resultCode'] == "OK") {
         var jsonUser = json['user'];
         parentProfile = ParentProfile.fromJson(jsonUser);
+        parentEmails += parentProfile.email;
         otherParentProfile = [];
         for (var e in childProfile.otherParent) {
           ParentProfile otherProfile = ParentProfile.fromJson(e);
@@ -256,10 +266,14 @@ class ChildController extends GetxController {
             var json2 = jsonDecode(res.body);
             if (json2['resultCode'] == "OK") {
               var jsonUser2 = json2['user'];
-              otherParentProfile.add(ParentProfile.fromJson(jsonUser2));
+              var otherPar = ParentProfile.fromJson(jsonUser2);
+              otherParentProfile.add(otherPar);
+              parentEmails += ',' + otherPar.email;
             }
           }
         }
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('parentEmails', parentEmails);
         update();
         return true;
       } else {
@@ -565,6 +579,8 @@ class ChildController extends GetxController {
           ? DateTime.fromMillisecondsSinceEpoch(thisApp.installTimeMillis)
           : startDate;
 
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
       // // Menghitung Usage dari waktu install aplikasi ini untuk hari pertama. Hapus line di bawah jika ingin dihitung dari jam 00.00 di hari tsb
       // if (installDate.compareTo(startDate) >= 0) startDate = installDate;
 
@@ -573,6 +589,26 @@ class ChildController extends GetxController {
           includeAppIcons: true,
           includeSystemApps: true,
           onlyAppsWithLaunchIntent: true);
+
+      int totalAppsInstalled = await prefs.getInt('totalApps') ?? 0;
+
+      print("$totalAppsInstalled, updated: ${listAppLocal.length}");
+      if (totalAppsInstalled < listAppLocal.length && totalAppsInstalled > 0) {
+        String parentEmails = await prefs.getString('parentEmails') ?? '';
+        String childName = await prefs.getString('rkFullName') ?? '';
+        Response response = await MediaRepository().sendNotification(
+            parentEmails,
+            "Aplikasi Baru Pada Gadget Anak",
+            "Anak Anda, $childName, baru saja menginstal aplikasi pada gadgetnya. Cek sekarang.");
+        if (response.statusCode == 200) {
+          // print('save appList ${response.body}');
+          print('kirim new app notification ok ${response.body}');
+        } else {
+          print('gagal kirim notifikasi ${response.statusCode}');
+        }
+      }
+      await prefs.setInt('totalApps', listAppLocal.length);
+      print('Total apps: $totalAppsInstalled');
       final List<EventUsageInfo> infoList =
           await UsageStats.queryEvents(startDate, endDate);
 
@@ -611,6 +647,7 @@ class ChildController extends GetxController {
       // });
 
       Map<String, List<List<int>>> infoList3 = {};
+      int finalDuration = 0;
       infoList.forEach((e) {
         int eventType = int.parse(e.eventType!);
         int eventTime = int.parse(e.timeStamp!);
@@ -707,8 +744,72 @@ class ChildController extends GetxController {
           // print('durasinya getAppUsageData: $duration');
           // print('pair event: $e');
           // print('usage: $usageHour');
+          finalDuration += duration;
         }
       });
+
+      String childLevel = await prefs.getString('rkStudyLevel') ?? '';
+
+      Response res =
+          await MediaRepository().fetchScreenTimeStandard(childLevel);
+      if (res.statusCode == 200) {
+        // print('isi response save app usage : ${response.body}');
+        print('isi response save app usage : 200');
+        var json = jsonDecode(res.body);
+        if (json['resultCode'] == "OK") {
+          if (json['Data'].length > 0) {
+            var category = json['Data'][0];
+            ScreenTimeStandard sts = ScreenTimeStandard.fromJson(category);
+            int standardValue = sts.controlParameterValue ?? 0;
+            int currentScreenTime = await prefs.getInt('rkScreenTime') ?? 0;
+            print(
+                'standar valu= $standardValue, cursckrin= $currentScreenTime');
+            if (sts.unit != null) {
+              if (sts.unit! == 'jam')
+                standardValue *= 3600000;
+              else if (sts.unit! == 'menit')
+                standardValue *= 60000;
+              else if (sts.unit! == 'detik') standardValue *= 1000;
+            }
+            if (standardValue > 0) {
+              if (finalDuration >= standardValue &&
+                  currentScreenTime < standardValue) {
+                String parentEmails =
+                    await prefs.getString('parentEmails') ?? '';
+                String childName = await prefs.getString('rkFullName') ?? '';
+                String localMessage =
+                    "Penggunaan gadget kamu sudah melebihi batas standar kami, nih. Cobalah beristirahat untuk hari ini agar pemakaian gadget tidak berlebihan.";
+                flutterLocalNotificationsPlugin.show(
+                    2480,
+                    "Penggunaan Gadget Kamu Melebihi Batas!",
+                    localMessage,
+                    NotificationDetails(
+                      android: AndroidNotificationDetails(
+                          channel.id, channel.name,
+                          channelDescription: channel.description,
+                          styleInformation:
+                              BigTextStyleInformation(localMessage)),
+                    ));
+                Response response = await MediaRepository().sendNotification(
+                    parentEmails,
+                    "Penggunaan Gadget Anak Melebihi Standar",
+                    "Penggunaan gadget anak Anda, $childName, telah melebihi standar kami, yaitu ${sts.controlParameterValue!} ${sts.unit!}! Cek sekarang.");
+                if (response.statusCode == 200) {
+                  // print('save appList ${response.body}');
+                  print('kirim new app notification ok ${response.body}');
+                } else {
+                  print('gagal kirim notifikasi ${response.statusCode}');
+                }
+              }
+              print("Aman!");
+            }
+          }
+        }
+      } else {
+        print('isi response fetch screen time standard: ${res.statusCode}');
+      }
+
+      await prefs.setInt('rkScreenTime', finalDuration);
 
       Response response =
           await MediaRepository().saveChildUsage(childEmail, usageDataList);

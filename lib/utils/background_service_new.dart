@@ -12,6 +12,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart';
 import 'package:ruangkeluarga/child/child_controller.dart';
 import 'package:ruangkeluarga/global/global.dart';
 import 'package:ruangkeluarga/main.dart';
@@ -19,6 +20,8 @@ import 'package:ruangkeluarga/model/content_aplikasi_data_usage.dart';
 import 'package:ruangkeluarga/model/rk_schedule_model.dart';
 import 'package:ruangkeluarga/utils/app_usage.dart';
 import 'package:ruangkeluarga/utils/database/aplikasiDb.dart';
+import 'package:ruangkeluarga/utils/repository/media_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:usage_stats/usage_stats.dart';
 
 const String _backgroundName =
@@ -344,6 +347,8 @@ class BackgroundServiceNew {
         // print("dataAplikasiDb : " + dataAplikasiDb.toString());
         // print("dataAplikasiDb..");
         if (dataAplikasiDb != null) {
+          bool checkBlockApps = false;
+          bool checkSchedule = false;
           //jika lock membahayakan hidde source dibawah ini sampai if selanjutnya
           if (dataAplikasiDb['modekunciLayar'] != null &&
               dataAplikasiDb['modekunciLayar'] == 'true') {
@@ -393,6 +398,7 @@ class BackgroundServiceNew {
                           if (now.isAfter(startTime) && now.isBefore(endTime)) {
                             print("LOCK LAYAR HARIAN : " + now.toString());
                             cekScheduleLayar = true;
+                            checkSchedule = true;
                           }
                         }
                       }
@@ -416,6 +422,7 @@ class BackgroundServiceNew {
                         if (now.isAfter(startTime) && now.isBefore(endTime)) {
                           print("LOCK LAYAR SCHEDULE : " + now.toString());
                           cekScheduleLayar = true;
+                          checkSchedule = true;
                         }
                       } catch (e) {}
                     }
@@ -437,6 +444,7 @@ class BackgroundServiceNew {
                           element.blacklist == 'true' || element.limit != '0')
                       .toList();
                   if (dataTrue != null && dataTrue.length > 0) {
+                    checkBlockApps = true;
                     ListAplikasiDataUsage listAplikasiDataUsage =
                         new ListAplikasiDataUsage(data: dataTrue);
                     if (Platform.isAndroid) {
@@ -458,6 +466,7 @@ class BackgroundServiceNew {
                       element.blacklist == 'true' || element.limit != '0')
                   .toList();
               if (dataTrue != null && dataTrue.length > 0) {
+                checkBlockApps = true;
                 ListAplikasiDataUsage listAplikasiDataUsage =
                     new ListAplikasiDataUsage(data: dataTrue);
                 if (Platform.isAndroid) {
@@ -477,6 +486,7 @@ class BackgroundServiceNew {
                     element.blacklist == 'true' || element.limit != '0')
                 .toList();
             if (dataTrue != null && dataTrue.length > 0) {
+              checkBlockApps = true;
               ListAplikasiDataUsage listAplikasiDataUsage =
                   new ListAplikasiDataUsage(data: dataTrue);
               if (Platform.isAndroid) {
@@ -485,6 +495,24 @@ class BackgroundServiceNew {
                 data['currentApp'] = currentApp;
                 _channel.invokeMethod('startServiceCheckApp', data);
               }
+            }
+          }
+          if (dataAplikasiDb['modekunciLayar'] == null &&
+              dataAplikasiDb['kunciLayar'] == null &&
+              !checkSchedule &&
+              !checkBlockApps) {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            String parentEmails = await prefs.getString('parentEmails') ?? '';
+            String childName = await prefs.getString('rkFullName') ?? '';
+            Response response = await MediaRepository().sendNotification(
+                parentEmails,
+                "Pengaturan Gadget Anak Belum Diterapkan",
+                "Gadget anak Anda, $childName, belum diterapkan fitur pembatasan apapun. Aktifkan sekarang.");
+            if (response.statusCode == 200) {
+              // print('save appList ${response.body}');
+              print('kirim new app notification ok ${response.body}');
+            } else {
+              print('gagal kirim notifikasi ${response.statusCode}');
             }
           }
         }

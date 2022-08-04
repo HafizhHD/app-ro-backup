@@ -24,6 +24,7 @@ class RKWebViewDialog extends StatefulWidget {
   final String emailUser;
   final Map<String, dynamic>? response;
   final String userType;
+  final String contentType;
 
   RKWebViewDialog(
       {required this.url,
@@ -35,7 +36,8 @@ class RKWebViewDialog extends StatefulWidget {
       this.contentId = '',
       this.emailUser = '',
       this.response,
-      this.userType = ''});
+      this.userType = '',
+      this.contentType = ''});
 
   @override
   _RKWebViewDialogState createState() => _RKWebViewDialogState();
@@ -59,6 +61,7 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
     print('Isi file html: ' + fileHtmlContentReal);
     print(widget.contentId);
     print(widget.response);
+    print('ContentType ' + widget.contentType);
     if (widget.response != null) {
       widget.response!.keys.forEach((e) {
         choice.add(DropdownMenuItem(child: Text(e), value: e));
@@ -103,169 +106,183 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: cTopBg,
-          centerTitle: true,
-          title: Text(widget.title),
-        ),
-        body: widget.response == null || widget.response!.keys.length <= 1
-            ? SingleChildScrollView(
-                child: Html(
-                    data: fileHtmlContentReal,
-                    customRenders: {iframeMatcher(): iframeRender()},
-                    style: {'iframe': Style(alignment: Alignment.center)}))
-            : Column(children: [
-                Expanded(
-                    child: Html(
-                        data: fileHtmlContentReal,
-                        customRenders: {iframeMatcher(): iframeRender()},
-                        style: {'iframe': Style(alignment: Alignment.center)})),
-                Container(
-                    // height: MediaQuery.of(context).size.height * 0.1,
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                      Container(
-                          margin: EdgeInsets.symmetric(horizontal: 40),
-                          child: DropdownButton(
-                              value: selectedResponse,
-                              items: choice,
-                              onChanged: (String? e) {
+    return WillPopScope(
+      child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: cTopBg,
+            centerTitle: true,
+            title: Text(widget.title),
+          ),
+          body: widget.response == null || widget.response!.keys.length <= 1
+              ? SingleChildScrollView(
+                  child: Html(
+                      data: fileHtmlContentReal,
+                      customRenders: {iframeMatcher(): iframeRender()},
+                      style: {'iframe': Style(alignment: Alignment.center)}))
+              : Column(children: [
+                  Expanded(
+                      child: Html(data: fileHtmlContentReal, customRenders: {
+                    iframeMatcher(): iframeRender()
+                  }, style: {
+                    'iframe': Style(alignment: Alignment.center)
+                  })),
+                  Container(
+                      // height: MediaQuery.of(context).size.height * 0.1,
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                        Container(
+                            margin: EdgeInsets.symmetric(horizontal: 40),
+                            child: DropdownButton(
+                                isExpanded: true,
+                                value: selectedResponse,
+                                items: choice,
+                                onChanged: (String? e) {
+                                  setState(() {
+                                    selectedResponse = e!;
+                                  });
+                                })),
+                        widget.userType != 'parent'
+                            ? FlatButton(
+                                child: Text('Pilih Respon'),
+                                onPressed: () async {
+                                  showLoadingOverlay();
+                                  final response = await api.addContentResponse(
+                                      widget.contentId,
+                                      widget.emailUser,
+                                      selectedResponse);
+                                  if (response.statusCode == 200) {
+                                    showToastSuccess(
+                                        ctx: context,
+                                        successText:
+                                            'Respon berhasil terkirim!');
+                                    liked = true;
+                                    closeOverlay();
+                                  } else {
+                                    closeOverlay();
+                                    showToastFailed(
+                                        ctx: context,
+                                        failedText:
+                                            'Gagal mengirim respon. Coba beberapa saat lagi.');
+                                  }
+                                },
+                                textColor: Colors.white,
+                                color: cAsiaBlue)
+                            : Container()
+                      ]))
+                ]),
+          floatingActionButton: widget.contentId != ''
+              ? widget.response != null &&
+                      widget.response!.keys.contains('like')
+                  ? Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                      FloatingActionButton(
+                          elevation: 0,
+                          focusElevation: 0,
+                          hoverElevation: 0,
+                          highlightElevation: 0,
+                          backgroundColor: cAsiaBlue.withOpacity(0.8),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: <Widget>[
+                              Icon(Icons.thumb_up,
+                                  color: liked ? cOrtuOrange : cOrtuWhite),
+                              Text(
+                                "$totalLike",
+                                style: TextStyle(
+                                    fontSize: 10, color: Colors.black),
+                              ),
+                            ],
+                          ),
+                          onPressed: () async {
+                            showLoadingOverlay();
+                            if (!liked) {
+                              final response = await api.addContentResponse(
+                                  widget.contentId, widget.emailUser, 'like');
+                              if (response.statusCode == 200) {
+                                // showToastSuccess(
+                                //     ctx: context,
+                                //     successText: 'Respon berhasil terkirim!');
+                                final json = jsonDecode(response.body);
+                                print(json);
+                                // if (json['resultCode'] == "OK") {
+                                //   ContentResponseModel contentResponse =
+                                //       json['resultData'];
+                                //   responId = contentResponse.id;
+                                // }
                                 setState(() {
-                                  selectedResponse = e!;
+                                  liked = true;
+                                  totalLike++;
                                 });
-                              })),
-                      widget.userType != 'parent'
-                          ? FlatButton(
-                              child: Text('Pilih Respon'),
-                              onPressed: () async {
-                                showLoadingOverlay();
-                                final response = await api.addContentResponse(
-                                    widget.contentId,
-                                    widget.emailUser,
-                                    selectedResponse);
-                                if (response.statusCode == 200) {
-                                  showToastSuccess(
-                                      ctx: context,
-                                      successText: 'Respon berhasil terkirim!');
-                                  closeOverlay();
-                                } else {
-                                  closeOverlay();
-                                  showToastFailed(
-                                      ctx: context,
-                                      failedText:
-                                          'Gagal mengirim respon. Coba beberapa saat lagi.');
-                                }
-                              },
-                              textColor: Colors.white,
-                              color: cAsiaBlue)
-                          : Container()
-                    ]))
-              ]),
-        floatingActionButton: widget.contentId != ''
-            ? widget.response != null && widget.response!.keys.contains('like')
-                ? Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                    FloatingActionButton(
-                        elevation: 0,
-                        focusElevation: 0,
-                        hoverElevation: 0,
-                        highlightElevation: 0,
-                        backgroundColor: cAsiaBlue.withOpacity(0.8),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: <Widget>[
-                            Icon(Icons.thumb_up,
-                                color: liked ? cOrtuOrange : cOrtuWhite),
-                            Text(
-                              "$totalLike",
-                              style:
-                                  TextStyle(fontSize: 10, color: Colors.black),
-                            ),
-                          ],
-                        ),
-                        onPressed: () async {
-                          showLoadingOverlay();
-                          if (!liked) {
-                            final response = await api.addContentResponse(
-                                widget.contentId, widget.emailUser, 'like');
-                            if (response.statusCode == 200) {
-                              // showToastSuccess(
-                              //     ctx: context,
-                              //     successText: 'Respon berhasil terkirim!');
-                              final json = jsonDecode(response.body);
-                              print(json);
-                              // if (json['resultCode'] == "OK") {
-                              //   ContentResponseModel contentResponse =
-                              //       json['resultData'];
-                              //   responId = contentResponse.id;
-                              // }
-                              setState(() {
-                                liked = true;
-                                totalLike++;
-                              });
-                              closeOverlay();
+                                closeOverlay();
+                              } else {
+                                closeOverlay();
+                                // showToastFailed(
+                                //     ctx: context,
+                                //     failedText:
+                                //         'Gagal mengirim respon. Coba beberapa saat lagi.');
+                              }
                             } else {
-                              closeOverlay();
-                              // showToastFailed(
-                              //     ctx: context,
-                              //     failedText:
-                              //         'Gagal mengirim respon. Coba beberapa saat lagi.');
+                              final response = await api.deleteContentResponse(
+                                  widget.emailUser, widget.contentId);
+                              if (response.statusCode == 200) {
+                                // showToastSuccess(
+                                //     ctx: context,
+                                //     successText: 'Respon berhasil terkirim!');
+                                setState(() {
+                                  liked = false;
+                                  totalLike--;
+                                });
+                                closeOverlay();
+                              } else {
+                                closeOverlay();
+                                // showToastFailed(
+                                //     ctx: context,
+                                //     failedText:
+                                //         'Gagal mengirim respon. Coba beberapa saat lagi.');
+                              }
                             }
-                          } else {
-                            final response = await api.deleteContentResponse(
-                                widget.emailUser, widget.contentId);
-                            if (response.statusCode == 200) {
-                              // showToastSuccess(
-                              //     ctx: context,
-                              //     successText: 'Respon berhasil terkirim!');
-                              setState(() {
-                                liked = false;
-                                totalLike--;
-                              });
-                              closeOverlay();
-                            } else {
-                              closeOverlay();
-                              // showToastFailed(
-                              //     ctx: context,
-                              //     failedText:
-                              //         'Gagal mengirim respon. Coba beberapa saat lagi.');
-                            }
-                          }
-                        }),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    FloatingActionButton(
-                        elevation: 0,
-                        focusElevation: 0,
-                        hoverElevation: 0,
-                        highlightElevation: 0,
-                        backgroundColor: cAsiaBlue.withOpacity(0.8),
-                        child: Icon(Icons.forum_sharp, color: cOrtuWhite),
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => FeedComment(
-                                  emailUser: widget.emailUser,
-                                  contentId: widget.contentId,
-                                  contentName: widget.title)));
-                        })
-                  ])
-                : FloatingActionButton(
-                    elevation: 0,
-                    focusElevation: 0,
-                    hoverElevation: 0,
-                    highlightElevation: 0,
-                    backgroundColor: cAsiaBlue.withOpacity(0.8),
-                    child: Icon(Icons.forum_sharp, color: cOrtuWhite),
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => FeedComment(
-                              emailUser: widget.emailUser,
-                              contentId: widget.contentId,
-                              contentName: widget.title)));
-                    })
-            : null);
+                          }),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      FloatingActionButton(
+                          elevation: 0,
+                          focusElevation: 0,
+                          hoverElevation: 0,
+                          highlightElevation: 0,
+                          backgroundColor: cAsiaBlue.withOpacity(0.8),
+                          child: Icon(Icons.forum_sharp, color: cOrtuWhite),
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => FeedComment(
+                                    emailUser: widget.emailUser,
+                                    contentId: widget.contentId,
+                                    contentName: widget.title)));
+                          })
+                    ])
+                  : widget.contentType == 'ujian' ||
+                          widget.contentType == 'Ujian'
+                      ? null
+                      : FloatingActionButton(
+                          elevation: 0,
+                          focusElevation: 0,
+                          hoverElevation: 0,
+                          highlightElevation: 0,
+                          backgroundColor: cAsiaBlue.withOpacity(0.8),
+                          child: Icon(Icons.forum_sharp, color: cOrtuWhite),
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => FeedComment(
+                                    emailUser: widget.emailUser,
+                                    contentId: widget.contentId,
+                                    contentName: widget.title)));
+                          })
+              : null),
+      onWillPop: () async {
+        Get.back(result: liked ? 'answered' : '');
+        return false;
+      },
+    );
   }
 
   loadAsset() async {
@@ -391,10 +408,10 @@ void showFAQ() {
   );
 }
 
-void showContent(context, String emailUser, String contentId, String contents,
-    title, image, desc, source, response,
-    {String userType = ''}) {
-  Get.dialog(
+Future<bool> showContent(context, String emailUser, String contentId,
+    String contents, title, image, desc, source, response,
+    {String userType = '', String contentType = ''}) async {
+  var data = await Get.dialog(
     RKWebViewDialog(
         url: "",
         title: title,
@@ -405,9 +422,14 @@ void showContent(context, String emailUser, String contentId, String contents,
         contentId: contentId,
         emailUser: emailUser,
         response: response,
-        userType: userType),
+        userType: userType,
+        contentType: contentType),
     transitionCurve: Curves.decelerate,
   );
+  if (data == 'answered')
+    return true;
+  else
+    return false;
 }
 
 void showUrl(String url, title) {
