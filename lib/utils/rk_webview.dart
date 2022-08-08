@@ -123,11 +123,15 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
                       style: {'iframe': Style(alignment: Alignment.center)}))
               : Column(children: [
                   Expanded(
-                      child: Html(data: fileHtmlContentReal, customRenders: {
-                    iframeMatcher(): iframeRender()
-                  }, style: {
-                    'iframe': Style(alignment: Alignment.center)
-                  })),
+                      child: SingleChildScrollView(
+                          child: Html(
+                              data: fileHtmlContentReal,
+                              customRenders: {
+                        iframeMatcher(): iframeRender()
+                      },
+                              style: {
+                        'iframe': Style(alignment: Alignment.center)
+                      }))),
                   Container(
                       // height: MediaQuery.of(context).size.height * 0.1,
                       child: Column(
