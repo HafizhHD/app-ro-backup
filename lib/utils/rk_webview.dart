@@ -25,6 +25,7 @@ class RKWebViewDialog extends StatefulWidget {
   final Map<String, dynamic>? response;
   final String userType;
   final String contentType;
+  final String answerKey;
 
   RKWebViewDialog(
       {required this.url,
@@ -37,7 +38,8 @@ class RKWebViewDialog extends StatefulWidget {
       this.emailUser = '',
       this.response,
       this.userType = '',
-      this.contentType = ''});
+      this.contentType = '',
+      this.answerKey = ''});
 
   @override
   _RKWebViewDialogState createState() => _RKWebViewDialogState();
@@ -150,7 +152,11 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
                                   final response = await api.addContentResponse(
                                       widget.contentId,
                                       widget.emailUser,
-                                      selectedResponse);
+                                      selectedResponse,
+                                      point:
+                                          selectedResponse == widget.answerKey
+                                              ? 1
+                                              : 0);
                                   if (response.statusCode == 200) {
                                     showToastSuccess(
                                         ctx: context,
@@ -410,7 +416,9 @@ void showFAQ() {
 
 Future<bool> showContent(context, String emailUser, String contentId,
     String contents, title, image, desc, source, response,
-    {String userType = '', String contentType = ''}) async {
+    {String userType = '',
+    String contentType = '',
+    String answerKey = ''}) async {
   var data = await Get.dialog(
     RKWebViewDialog(
         url: "",
@@ -423,7 +431,8 @@ Future<bool> showContent(context, String emailUser, String contentId,
         emailUser: emailUser,
         response: response,
         userType: userType,
-        contentType: contentType),
+        contentType: contentType,
+        answerKey: answerKey),
     transitionCurve: Curves.decelerate,
   );
   if (data == 'answered')

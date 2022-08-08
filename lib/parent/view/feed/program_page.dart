@@ -217,7 +217,8 @@ class _ProgramxPage extends State<ProgramxPage> {
                                                   .contains("ujian") ||
                                               widget.category.contains("Ujian")
                                           ? 'ujian'
-                                          : '');
+                                          : '',
+                                      answerKey: contentData.answerKey);
                                   if (responded)
                                     setState(() {
                                       initAsync();

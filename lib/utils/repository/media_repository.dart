@@ -921,13 +921,15 @@ class MediaRepository {
   }
 
   Future<Response> addContentResponse(
-      String contentId, String emailUser, String respons) async {
+      String contentId, String emailUser, String respons,
+      {int point = 0}) async {
     var url = _rkService.baseUrl + '/user/userContentResponAdd';
     print('userContentResponAdd');
     Map<String, dynamic> json = {
       "contentId": contentId,
       "emailUser": emailUser,
-      "respon": respons
+      "respon": respons,
+      "point": point
     };
     print('param content respon add: $json');
     Response response = await post(Uri.parse(url),
