@@ -7,10 +7,14 @@ package com.ruangkeluargamobile;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.util.Log;
 import java.util.Iterator;
 import java.net.HttpURLConnection;
+import java.net.URL;
+import java.io.DataOutputStream;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.JSONMethodCodec;
@@ -191,7 +195,7 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
                               conn.setDoOutput(true);
                               conn.setDoInput(true);
 
-                              SharedPreferences prefs = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE);
+                              SharedPreferences prefs = context.getSharedPreferences("FlutterSharedPreferences", context.MODE_PRIVATE);
                               String parentEmails = prefs.getString("flutter.parentEmails", "");
                               String childName = prefs.getString("flutter.rkFullName", "");
                               String messageContent = "Pemakaian aplikasi " + jsonObject.getString("appName") + " pada gadget anak Anda, " + childName + " tersisa 30 menit lagi. Cek pemakaiannya sekarang.";
@@ -230,7 +234,7 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
                               conn.setDoOutput(true);
                               conn.setDoInput(true);
 
-                              SharedPreferences prefs = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE);
+                              SharedPreferences prefs = context.getSharedPreferences("FlutterSharedPreferences", context.MODE_PRIVATE);
                               String parentEmails = prefs.getString("flutter.parentEmails", "");
                               String childName = prefs.getString("flutter.rkFullName", "");
                               String messageContent = "Pemakaian aplikasi " + jsonObject.getString("appName") + " pada gadget anak Anda, " + childName + " tersisa 1 jam lagi. Cek pemakaiannya sekarang.";
