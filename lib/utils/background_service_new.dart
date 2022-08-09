@@ -506,8 +506,8 @@ class BackgroundServiceNew {
             String childName = await prefs.getString('rkFullName') ?? '';
             Response response = await MediaRepository().sendNotification(
                 parentEmails,
-                "Pengaturan Gadget Anak Belum Diterapkan",
-                "Gadget anak Anda, $childName, belum diterapkan fitur pembatasan apapun. Aktifkan sekarang.");
+                "Anda Belum melakukan kontrol pada Perangkat Anak",
+                "Papa Mama, saat ini anda masih belum melakukan pengaturan atau kontrol terhadap perangkat anak Anda, $childName. Gunakan fitur Mode Asuh Instant untuk mengontrol perangkat anak anda secara mudah & cepat.");
             if (response.statusCode == 200) {
               // print('save appList ${response.body}');
               print('kirim new app notification ok ${response.body}');

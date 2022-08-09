@@ -160,16 +160,16 @@ class _ProgramxPage extends State<ProgramxPage> {
                         String childName = prefs.getString('rkFullName') ?? '';
                         api.sendNotification(
                             parentEmails,
-                            "Pengerjaan Program Anak",
-                            "Anak Anda, $childName, sudah selesai mengerjakan program ${widget.programName}. Cek nilainya sekarang.");
+                            "Anak $childName sudah Menyelesaikan Program.",
+                            "Papa mama, anak anda saat ini sudah menyelesaikan konten program ${widget.programName}, yuk lihat hasil jawaban program yang sudah diikuti oleh anak. Lihat disini.");
                       } else if (countAnswered > 0) {
                         String parentEmails =
                             prefs.getString('parentEmails') ?? '';
                         String childName = prefs.getString('rkFullName') ?? '';
                         api.sendNotification(
                             parentEmails,
-                            "Pengerjaan Program Anak",
-                            "Anak Anda, $childName, sedang menjalankan program ${widget.programName} dengan progres $countAnswered dari ${inbox.length}. Cek nilainya sekarang.");
+                            "Anak $childName sedang mengikuti Program",
+                            "Papa mama, anak anda saat ini sedang mengikuti konten program ${widget.programName}, yuk lihat program yang sedang diikuti oleh anak. Lihat disini.");
                       }
                     }
                     String Nomor =

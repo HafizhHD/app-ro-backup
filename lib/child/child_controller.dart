@@ -608,8 +608,8 @@ class ChildController extends GetxController {
         String childName = await prefs.getString('rkFullName') ?? '';
         Response response = await MediaRepository().sendNotification(
             parentEmails,
-            "Aplikasi Baru Pada Gadget Anak",
-            "Anak Anda, $childName, baru saja menginstal aplikasi [${newAppName.join(', ')}] pada gadgetnya. Cek sekarang.");
+            "Anak Anda Install Aplikasi Baru",
+            "Hai Papa Mama, Anak Anda, $childName, baru saja melakukan install aplikasi [${newAppName.join(', ')}] pada perangkatnya. Awasi & Kontrol penggunaan aplikasi pada anak Anda melalui aplikasi ${thisApp != null ? thisApp.appName : 'Ruang Ortu'}.");
         if (response.statusCode == 200) {
           // print('save appList ${response.body}');
           print('kirim new app notification ok ${response.body}');
@@ -789,7 +789,7 @@ class ChildController extends GetxController {
                     await prefs.getString('parentEmails') ?? '';
                 String childName = await prefs.getString('rkFullName') ?? '';
                 String localMessage =
-                    "Penggunaan gadget kamu sudah melebihi batas standar kami, nih. Cobalah beristirahat untuk hari ini agar pemakaian gadget tidak berlebihan.";
+                    "Hi adik $childName, penggunaan gadget kamu sudah melebihi batas standar kami, nih. Cobalah beristirahat untuk hari ini agar pemakaian gadget tidak berlebihan.";
                 flutterLocalNotificationsPlugin.show(
                     2480,
                     "Penggunaan Gadget Kamu Melebihi Batas!",
@@ -804,7 +804,7 @@ class ChildController extends GetxController {
                 Response response = await MediaRepository().sendNotification(
                     parentEmails,
                     "Penggunaan Gadget Anak Melebihi Standar",
-                    "Penggunaan gadget anak Anda, $childName, telah melebihi standar kami, yaitu ${sts.controlParameterValue!} ${sts.unit!}! Cek sekarang.");
+                    "Papa Mama, saat ini penggunaan gadget anak Anda, $childName, telah melebihi standar kami, yaitu ${sts.controlParameterValue!} ${sts.unit!}! Gunakan Aplikasi ${thisApp != null ? thisApp.appName : 'Ruang Ortu'} untuk melakukan kontrol & pengawasan pada perangkat anak Anda.");
                 if (response.statusCode == 200) {
                   // print('save appList ${response.body}');
                   print('kirim new app notification ok ${response.body}');

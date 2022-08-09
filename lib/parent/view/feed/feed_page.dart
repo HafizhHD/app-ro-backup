@@ -296,8 +296,8 @@ class FeedPage extends StatelessWidget {
           String childName = prefs.getString('rkFullName') ?? '';
           await MediaRepository().sendNotification(
               parentEmails,
-              "Artikel Sedang Dibaca Anak",
-              "Anak Anda, $childName, sedang membaca artikel ${data.contentName}. Cek sekarang.");
+              "Anak $childName sudah membaca artikel",
+              "Papa mama, anak anda sudah membaca artikel ${data.contentName} dan memberikan respon terhadap artikel tersebut, papa mama juga bisa membaca & merespon artikel yang dibuat oleh mitra asuh.");
         });
   }
 

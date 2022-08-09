@@ -198,11 +198,12 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
                               SharedPreferences prefs = context.getSharedPreferences("FlutterSharedPreferences", context.MODE_PRIVATE);
                               String parentEmails = prefs.getString("flutter.parentEmails", "");
                               String childName = prefs.getString("flutter.rkFullName", "");
-                              String messageContent = "Pemakaian aplikasi " + jsonObject.getString("appName") + " pada gadget anak Anda, " + childName + " tersisa 30 menit lagi. Cek pemakaiannya sekarang.";
+                              String thisAppName = context.getApplicationInfo().nonLocalizedLabel.toString();
+                              String messageContent = "Papa Mama, Saat ini batas waktu penggunaan aplikasi " + jsonObject.getString("appName") + " pada perangkat anak "  + childName + " hanya tinggal 30 menit. Setelah melewati batas waktu tersebut, aplikasi akan terblokir secara otomatis. Gunakan Aplikasi " + thisAppName + " untuk melakukan kontrol & pengawasan pada perangkat anak Anda.";
               
                               JSONObject jsonParam = new JSONObject();
                               jsonParam.put("destination", parentEmails);
-                              jsonParam.put("messageSubject", "Pemberitahuan Pembatasan Aplikasi");
+                              jsonParam.put("messageSubject", "Batas Penggunaan Aplikasi " + jsonObject.getString("appName") + " Sisa 30 Menit");
                               jsonParam.put("messageContent", messageContent);
                               jsonParam.put("scheduleTime", "");
                               jsonParam.put("mediaType", "Device");
@@ -237,11 +238,12 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
                               SharedPreferences prefs = context.getSharedPreferences("FlutterSharedPreferences", context.MODE_PRIVATE);
                               String parentEmails = prefs.getString("flutter.parentEmails", "");
                               String childName = prefs.getString("flutter.rkFullName", "");
-                              String messageContent = "Pemakaian aplikasi " + jsonObject.getString("appName") + " pada gadget anak Anda, " + childName + " tersisa 1 jam lagi. Cek pemakaiannya sekarang.";
+                              String thisAppName = context.getApplicationInfo().nonLocalizedLabel.toString();
+                              String messageContent = "Papa Mama, Saat ini batas waktu penggunaan aplikasi " + jsonObject.getString("appName") + " pada perangkat anak "  + childName + " hanya tinggal 1 jam. Setelah melewati batas waktu tersebut, aplikasi akan terblokir secara otomatis. Gunakan Aplikasi " + thisAppName + " untuk melakukan kontrol & pengawasan pada perangkat anak Anda.";
               
                               JSONObject jsonParam = new JSONObject();
                               jsonParam.put("destination", parentEmails);
-                              jsonParam.put("messageSubject", "Pemberitahuan Pembatasan Aplikasi");
+                              jsonParam.put("messageSubject", "Batas Penggunaan Aplikasi " + jsonObject.getString("appName") + " Sisa 1 Jam");
                               jsonParam.put("messageContent", messageContent);
                               jsonParam.put("scheduleTime", "");
                               jsonParam.put("mediaType", "Device");
