@@ -169,7 +169,7 @@ class _InboxDetailState extends State<InboxDetail> {
 
   @override
   Widget build(BuildContext context) {
-    final messageType  = widget.inboxNotif.type;
+    final messageType = widget.inboxNotif.type;
     String pageTitle = "SOS";
     if (messageType.name == 'sos') {
       return Scaffold(
@@ -222,10 +222,7 @@ class _InboxDetailState extends State<InboxDetail> {
                       if (messageType.name == 'sos')
                         Flexible(
                           child: Container(
-                            height: MediaQuery
-                                .of(context)
-                                .size
-                                .height / 3,
+                            height: MediaQuery.of(context).size.height / 3,
                             child: GoogleMap(
                                 initialCameraPosition: _myLocationLatLng,
                                 mapType: MapType.normal,
@@ -242,31 +239,30 @@ class _InboxDetailState extends State<InboxDetail> {
                                 },
                                 tiltGesturesEnabled: true,
                                 gestureRecognizers:
-                                <Factory<OneSequenceGestureRecognizer>>[
+                                    <Factory<OneSequenceGestureRecognizer>>[
                                   new Factory<OneSequenceGestureRecognizer>(
-                                        () => new EagerGestureRecognizer(),
+                                    () => new EagerGestureRecognizer(),
                                   ),
                                 ].toSet()),
                           ),
                         ),
                       showEta
                           ? Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('ETA: $etaDuration',
-                                style: TextStyle(
-                                    fontSize: 20, color: cOrtuText)),
-                            Text('Distance: $etaDistance',
-                                style: TextStyle(
-                                    fontSize: 20, color: cOrtuText))
-                          ])
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                  Text('ETA: $etaDuration',
+                                      style: TextStyle(
+                                          fontSize: 20, color: cOrtuText)),
+                                  Text('Distance: $etaDistance',
+                                      style: TextStyle(
+                                          fontSize: 20, color: cOrtuText))
+                                ])
                           : Container(),
                       Container(
                         padding: EdgeInsets.only(top: 10, bottom: 15),
                         child: Text(
                           _myLocationPlace != ''
-                              ? 'Dikirim oleh ${widget.inboxNotif.message
-                              .childEmail!} \nNama lokasi: $_myLocationPlace'
+                              ? 'Dikirim oleh ${widget.inboxNotif.message.childEmail!} \nNama lokasi: $_myLocationPlace'
                               : '',
                           style: TextStyle(fontSize: 16, color: cOrtuText),
                         ),
@@ -393,12 +389,12 @@ class _InboxDetailState extends State<InboxDetail> {
                                 )),
                             onPress: () {
                               final String videoUrl =
-                              widget.inboxNotif.message.videoUrl != null
-                                  ? widget.inboxNotif.message.videoUrl
-                                  .toString()
-                                  : "";
+                                  widget.inboxNotif.message.videoUrl != null
+                                      ? widget.inboxNotif.message.videoUrl
+                                          .toString()
+                                      : "";
                               if (videoUrl != '') {
-                                showUrl(videoUrl, "Panic Video");
+                                showUrl(videoUrl, "Panic Video", 'SOS');
                               }
                             },
                           ))
@@ -435,9 +431,9 @@ class _InboxDetailState extends State<InboxDetail> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Flexible(
-                            child: Text(
-                                widget.inboxNotif.message.message,
-                              style: TextStyle(fontSize: 16, color: cOrtuText)),
+                            child: Text(widget.inboxNotif.message.message,
+                                style:
+                                    TextStyle(fontSize: 16, color: cOrtuText)),
                           ),
                         ],
                       )

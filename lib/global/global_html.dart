@@ -1,3 +1,12 @@
+String sosHtml(String url) {
+  String a = "";
+  a += '<iframe width="100%" height="100%" src="' +
+      url +
+      '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>';
+  a += '</iframe>';
+  return a;
+}
+
 String faqHtml() {
   String a = "";
   a +=

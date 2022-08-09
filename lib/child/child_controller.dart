@@ -590,16 +590,26 @@ class ChildController extends GetxController {
           includeSystemApps: true,
           onlyAppsWithLaunchIntent: true);
 
-      int totalAppsInstalled = await prefs.getInt('totalApps') ?? 0;
+      // int totalAppsInstalled = await prefs.getInt('totalApps') ?? 0;
+      List<String> totalAppName =
+          await prefs.getStringList('totalAppName') ?? [];
 
-      print("$totalAppsInstalled, updated: ${listAppLocal.length}");
-      if (totalAppsInstalled < listAppLocal.length && totalAppsInstalled > 0) {
+      List<String> listAppName = [];
+      List<String> newAppName = [];
+      listAppLocal.forEach((x) {
+        if (!totalAppName.contains(x.appName)) newAppName.add(x.appName);
+        listAppName.add(x.appName);
+      });
+
+      // print("$totalAppsInstalled, updated: ${listAppLocal.length}");
+      // if (totalAppsInstalled < listAppLocal.length && totalAppsInstalled > 0) {
+      if (newAppName.length > 0 && totalAppName.length > 0) {
         String parentEmails = await prefs.getString('parentEmails') ?? '';
         String childName = await prefs.getString('rkFullName') ?? '';
         Response response = await MediaRepository().sendNotification(
             parentEmails,
             "Aplikasi Baru Pada Gadget Anak",
-            "Anak Anda, $childName, baru saja menginstal aplikasi pada gadgetnya. Cek sekarang.");
+            "Anak Anda, $childName, baru saja menginstal aplikasi [${newAppName.join(', ')}] pada gadgetnya. Cek sekarang.");
         if (response.statusCode == 200) {
           // print('save appList ${response.body}');
           print('kirim new app notification ok ${response.body}');
@@ -607,8 +617,9 @@ class ChildController extends GetxController {
           print('gagal kirim notifikasi ${response.statusCode}');
         }
       }
-      await prefs.setInt('totalApps', listAppLocal.length);
-      print('Total apps: $totalAppsInstalled');
+      await prefs.setStringList('totalAppName', listAppName);
+      // await prefs.setInt('totalApps', listAppLocal.length);
+      // print('Total apps: $totalAppsInstalled');
       final List<EventUsageInfo> infoList =
           await UsageStats.queryEvents(startDate, endDate);
 

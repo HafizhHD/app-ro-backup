@@ -116,11 +116,21 @@ class _RKWebViewDialogState extends State<RKWebViewDialog> {
             title: Text(widget.title),
           ),
           body: widget.response == null || widget.response!.keys.length <= 1
-              ? SingleChildScrollView(
-                  child: Html(
-                      data: fileHtmlContentReal,
-                      customRenders: {iframeMatcher(): iframeRender()},
-                      style: {'iframe': Style(alignment: Alignment.center)}))
+              ? widget.contentType == 'SOS'
+                  ? SingleChildScrollView(
+                      child: Html(data: fileHtmlContentReal, customRenders: {
+                      iframeMatcher(): iframeRender()
+                    }, style: {
+                      'iframe': Style(
+                          height: MediaQuery.of(context).size.height / 2,
+                          width: MediaQuery.of(context).size.width)
+                    }))
+                  : SingleChildScrollView(
+                      child: Html(data: fileHtmlContentReal, customRenders: {
+                      iframeMatcher(): iframeRender()
+                    }, style: {
+                      'iframe': Style(alignment: Alignment.center)
+                    }))
               : Column(children: [
                   Expanded(
                       child: SingleChildScrollView(
@@ -445,13 +455,13 @@ Future<bool> showContent(context, String emailUser, String contentId,
     return false;
 }
 
-void showUrl(String url, title) {
+void showUrl(String url, title, contentType) {
   Get.dialog(
     RKWebViewDialog(
-      url: url,
-      title: title,
-      contents: "",
-    ),
+        url: url,
+        title: title,
+        contents: sosHtml(url),
+        contentType: contentType),
     transitionCurve: Curves.decelerate,
   );
 }
