@@ -25,6 +25,10 @@ final String rkUserType = "rkUserType";
 final String rkChilds = "rkChilds";
 final String rkListAppIcons = "rkListAppIcons";
 final String rkBaseUrlAppIcon = "rkBaseUrlAppIcon";
+final String rkSchoolLongitude = "rkSchoolLongitude";
+final String rkSchoolLatitude = "rkSchoolLatitude";
+final String rkHomeLongitude = "rkHomeLongitude";
+final String rkHomeLatitude = "rkHomeLatitude";
 
 const AppIconPathRO = 'assets/images/ruangortu-icon.png';
 const AppIconPathRO_x4 = 'assets/images/ruangortu-icon_4.png';

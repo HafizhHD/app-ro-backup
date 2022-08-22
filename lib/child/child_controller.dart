@@ -32,6 +32,7 @@ import 'package:ruangkeluarga/utils/repository/media_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:usage_stats/usage_stats.dart';
+import 'package:flutter_geocoder/geocoder.dart';
 
 late List<CameraDescription> cameras;
 
@@ -106,7 +107,139 @@ class ChildController extends GetxController {
         Position currentPosition = await Geolocator.getCurrentPosition();
         print("Longitude" + currentPosition.longitude.toString());
         print("latitude" + currentPosition.latitude.toString());
+        late double schoolLongitude,
+            schoolLatitude,
+            homeLongitude,
+            homeLatitude;
 
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        if (prefs.getDouble(rkSchoolLatitude) != null &&
+            prefs.getDouble(rkSchoolLongitude) != null) {
+          schoolLongitude = prefs.getDouble(rkSchoolLongitude)!;
+          schoolLatitude = prefs.getDouble(rkSchoolLatitude)!;
+        } else {
+          String school = prefs.getString('rkSchoolName') ?? '';
+          print('Nama sekolah: $school');
+          if (school != '') {
+            try {
+              var addresses =
+                  await Geocoder.local.findAddressesFromQuery(school);
+              if (addresses.length > 0) {
+                if (addresses[0].coordinates.longitude != null) {
+                  schoolLongitude = addresses[0].coordinates.longitude!;
+                  prefs.setDouble(
+                      rkSchoolLongitude, addresses[0].coordinates.longitude!);
+                } else
+                  schoolLongitude = 200;
+                if (addresses[0].coordinates.latitude != null) {
+                  schoolLatitude = addresses[0].coordinates.latitude!;
+                  prefs.setDouble(
+                      rkSchoolLatitude, addresses[0].coordinates.latitude!);
+                } else
+                  schoolLatitude = 200;
+              } else {
+                schoolLongitude = 200;
+                schoolLatitude = 200;
+              }
+            } catch (e) {
+              print('error: $e');
+              schoolLongitude = 200;
+              schoolLatitude = 200;
+            }
+          } else {
+            schoolLongitude = 200;
+            schoolLatitude = 200;
+          }
+        }
+        if (schoolLongitude < 200 && schoolLatitude < 200) {
+          bool isInSchool = prefs.getBool('rkIsInSchool') ?? false;
+          bool currentlyInSchool = Geolocator.distanceBetween(
+                  currentPosition.latitude,
+                  currentPosition.longitude,
+                  schoolLatitude,
+                  schoolLongitude) <=
+              30; //Jika Anak berada di dalam radius 30 meter dari sekolah
+          if (currentlyInSchool && !isInSchool) {
+            prefs.setBool('rkIsInSchool', true);
+            String parentEmails = await prefs.getString('parentEmails') ?? '';
+            String childName = await prefs.getString('rkFullName') ?? '';
+            Response response = await MediaRepository().sendNotification(
+                parentEmails,
+                "Anak Anda Sudah Sampai Sekolah",
+                "Hai Papa Mama, Anak Anda, $childName, baru saja sampai sekolah. Gunakan aplikasi $appName untuk memantau lokasi anak anda hari ini.");
+            if (response.statusCode == 200) {
+              // print('save appList ${response.body}');
+              print('kirim school location notification ok ${response.body}');
+            } else {
+              print('gagal kirim notifikasi ${response.statusCode}');
+            }
+          } else if (!currentlyInSchool && isInSchool) {
+            prefs.setBool('rkIsInSchool', false);
+          }
+        }
+        if (prefs.getDouble(rkHomeLatitude) != null &&
+            prefs.getDouble(rkHomeLongitude) != null) {
+          schoolLongitude = prefs.getDouble(rkHomeLongitude)!;
+          schoolLatitude = prefs.getDouble(rkHomeLatitude)!;
+        } else {
+          String home = prefs.getString('rkHomeAddress') ?? '';
+          print('Nama rumah: $home');
+          if (home != '') {
+            try {
+              var addresses = await Geocoder.local.findAddressesFromQuery(home);
+              if (addresses.length > 0) {
+                if (addresses[0].coordinates.longitude != null) {
+                  homeLongitude = addresses[0].coordinates.longitude!;
+                  prefs.setDouble(
+                      rkHomeLongitude, addresses[0].coordinates.longitude!);
+                } else
+                  homeLongitude = 200;
+                if (addresses[0].coordinates.latitude != null) {
+                  homeLatitude = addresses[0].coordinates.latitude!;
+                  prefs.setDouble(
+                      rkHomeLatitude, addresses[0].coordinates.latitude!);
+                } else
+                  homeLatitude = 200;
+              } else {
+                homeLongitude = 200;
+                homeLatitude = 200;
+              }
+            } catch (e) {
+              print('error: $e');
+              homeLongitude = 200;
+              homeLatitude = 200;
+            }
+          } else {
+            homeLongitude = 200;
+            homeLatitude = 200;
+          }
+        }
+        if (homeLongitude < 200 && homeLatitude < 200) {
+          bool isAtHome = prefs.getBool('rkIsAtHome') ?? false;
+          bool currentlyAtHome = Geolocator.distanceBetween(
+                  currentPosition.latitude,
+                  currentPosition.longitude,
+                  homeLatitude,
+                  homeLongitude) <=
+              30; //Jika Anak berada di dalam radius 30 meter dari rumah
+          if (currentlyAtHome && !isAtHome) {
+            prefs.setBool('rkIsAtHome', true);
+            String parentEmails = await prefs.getString('parentEmails') ?? '';
+            String childName = await prefs.getString('rkFullName') ?? '';
+            Response response = await MediaRepository().sendNotification(
+                parentEmails,
+                "Anak Anda Sudah Pulang",
+                "Hai Papa Mama, Anak Anda, $childName, baru saja sampai rumah. Gunakan aplikasi $appName untuk memantau lokasi anak anda hari ini.");
+            if (response.statusCode == 200) {
+              // print('save appList ${response.body}');
+              print('kirim home location notification ok ${response.body}');
+            } else {
+              print('gagal kirim notifikasi ${response.statusCode}');
+            }
+          } else if (!currentlyAtHome && isAtHome) {
+            prefs.setBool('rkIsAtHome', false);
+          }
+        }
         try {
           await MediaRepository()
               .saveUserLocationx(
@@ -220,13 +353,16 @@ class ChildController extends GetxController {
         childProfile = ChildProfile.fromJson(jsonUser);
         childID = childProfile.id;
         childEmail = childProfile.email;
-        String childStudyLevel = '';
+        String childStudyLevel = '', childSchoolName = '';
         if (childProfile.childInfo != null &&
-            childProfile.childInfo!.studyLevel != null) {
+            childProfile.childInfo!.studyLevel != null &&
+            childProfile.childInfo!.schoolName != null) {
           childStudyLevel = childProfile.childInfo!.studyLevel!;
+          childSchoolName = childProfile.childInfo!.schoolName!;
         }
         await prefs.setString('rkFullName', childProfile.name);
         await prefs.setString('rkStudyLevel', childStudyLevel);
+        await prefs.setString('rkSchoolName', childSchoolName);
         // var blackList = jsonUser['blacklistNumbers'];
         // List<BlackListContact> data = List<BlackListContact>.from(blackList.map((model) => BlackListContact.fromJson(model)));
         // if (data != null && data.length > 0) {
@@ -252,9 +388,12 @@ class ChildController extends GetxController {
     if (response.statusCode == 200) {
       var parentEmails = '';
       var json = jsonDecode(response.body);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       if (json['resultCode'] == "OK") {
         var jsonUser = json['user'];
         parentProfile = ParentProfile.fromJson(jsonUser);
+        if (parentProfile.address != null)
+          await prefs.setString('rkHomeAddress', parentProfile.address!);
         parentEmails += parentProfile.email;
         otherParentProfile = [];
         for (var e in childProfile.otherParent) {
@@ -272,7 +411,6 @@ class ChildController extends GetxController {
             }
           }
         }
-        SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('parentEmails', parentEmails);
         update();
         return true;

@@ -433,6 +433,7 @@ class MediaRepository {
       addresses =
           await Geocoder.local.findAddressesFromCoordinates(coordinates);
     } finally {}
+    print(addresses[0].subAdminArea!);
     var url = _rkService.baseUrl + '/user/timeLineAdd';
     var place = "";
     if (addresses.length > 0) {
