@@ -111,8 +111,11 @@ class ChildController extends GetxController {
             schoolLatitude,
             homeLongitude,
             homeLatitude;
-
         SharedPreferences prefs = await SharedPreferences.getInstance();
+        String homeAddress = await prefs.getString('rkHomeAddress') ?? '';
+
+        /* AMBIL KOORDINAT SEKOLAH UNTUK NOTIFIKASI PULANG PERGI (BELUM JALAN GEOCODERNYA) */
+
         if (prefs.getDouble(rkSchoolLatitude) != null &&
             prefs.getDouble(rkSchoolLongitude) != null) {
           schoolLongitude = prefs.getDouble(rkSchoolLongitude)!;
@@ -121,28 +124,24 @@ class ChildController extends GetxController {
           String school = prefs.getString('rkSchoolName') ?? '';
           print('Nama sekolah: $school');
           if (school != '') {
-            try {
-              var addresses =
-                  await Geocoder.local.findAddressesFromQuery(school);
-              if (addresses.length > 0) {
-                if (addresses[0].coordinates.longitude != null) {
-                  schoolLongitude = addresses[0].coordinates.longitude!;
-                  prefs.setDouble(
-                      rkSchoolLongitude, addresses[0].coordinates.longitude!);
-                } else
-                  schoolLongitude = 200;
-                if (addresses[0].coordinates.latitude != null) {
-                  schoolLatitude = addresses[0].coordinates.latitude!;
-                  prefs.setDouble(
-                      rkSchoolLatitude, addresses[0].coordinates.latitude!);
-                } else
-                  schoolLatitude = 200;
-              } else {
+            var addresses = [];
+            // try {
+            //   addresses = await Geocoder.local.findAddressesFromQuery(school);
+            // } finally {} //Belum berfungsi
+            if (addresses.length > 0) {
+              if (addresses[0].coordinates.longitude != null) {
+                schoolLongitude = addresses[0].coordinates.longitude!;
+                prefs.setDouble(
+                    rkSchoolLongitude, addresses[0].coordinates.longitude!);
+              } else
                 schoolLongitude = 200;
+              if (addresses[0].coordinates.latitude != null) {
+                schoolLatitude = addresses[0].coordinates.latitude!;
+                prefs.setDouble(
+                    rkSchoolLatitude, addresses[0].coordinates.latitude!);
+              } else
                 schoolLatitude = 200;
-              }
-            } catch (e) {
-              print('error: $e');
+            } else {
               schoolLongitude = 200;
               schoolLatitude = 200;
             }
@@ -175,37 +174,50 @@ class ChildController extends GetxController {
             }
           } else if (!currentlyInSchool && isInSchool) {
             prefs.setBool('rkIsInSchool', false);
+            String parentEmails = await prefs.getString('parentEmails') ?? '';
+            String childName = await prefs.getString('rkFullName') ?? '';
+            Response response = await MediaRepository().sendNotification(
+                parentEmails,
+                "Anak Anda Sudah Keluar Sekolah",
+                "Hai Papa Mama, Anak Anda, $childName, baru saja keluar sekolah. Gunakan aplikasi $appName untuk memantau lokasi anak anda hari ini.");
+            if (response.statusCode == 200) {
+              // print('save appList ${response.body}');
+              print('kirim school location notification ok ${response.body}');
+            } else {
+              print('gagal kirim notifikasi ${response.statusCode}');
+            }
           }
         }
+
+        /* AMBIL KOORDINAT RUMAH UNTUK NOTIFIKASI PULANG PERGI (BELUM JALAN GEOCODERNYA) */
+
         if (prefs.getDouble(rkHomeLatitude) != null &&
             prefs.getDouble(rkHomeLongitude) != null) {
-          schoolLongitude = prefs.getDouble(rkHomeLongitude)!;
-          schoolLatitude = prefs.getDouble(rkHomeLatitude)!;
+          homeLongitude = prefs.getDouble(rkHomeLongitude)!;
+          homeLatitude = prefs.getDouble(rkHomeLatitude)!;
         } else {
           String home = prefs.getString('rkHomeAddress') ?? '';
+          homeAddress = home;
           print('Nama rumah: $home');
           if (home != '') {
-            try {
-              var addresses = await Geocoder.local.findAddressesFromQuery(home);
-              if (addresses.length > 0) {
-                if (addresses[0].coordinates.longitude != null) {
-                  homeLongitude = addresses[0].coordinates.longitude!;
-                  prefs.setDouble(
-                      rkHomeLongitude, addresses[0].coordinates.longitude!);
-                } else
-                  homeLongitude = 200;
-                if (addresses[0].coordinates.latitude != null) {
-                  homeLatitude = addresses[0].coordinates.latitude!;
-                  prefs.setDouble(
-                      rkHomeLatitude, addresses[0].coordinates.latitude!);
-                } else
-                  homeLatitude = 200;
-              } else {
+            var addresses = [];
+            // try {
+            //   addresses = await Geocoder.local.findAddressesFromQuery(home);
+            // } catch(e) {} finally {} //belum berfungsi
+            if (addresses.length > 0) {
+              if (addresses[0].coordinates.longitude != null) {
+                homeLongitude = addresses[0].coordinates.longitude!;
+                prefs.setDouble(
+                    rkHomeLongitude, addresses[0].coordinates.longitude!);
+              } else
                 homeLongitude = 200;
+              if (addresses[0].coordinates.latitude != null) {
+                homeLatitude = addresses[0].coordinates.latitude!;
+                prefs.setDouble(
+                    rkHomeLatitude, addresses[0].coordinates.latitude!);
+              } else
                 homeLatitude = 200;
-              }
-            } catch (e) {
-              print('error: $e');
+            } else {
               homeLongitude = 200;
               homeLatitude = 200;
             }
@@ -214,6 +226,7 @@ class ChildController extends GetxController {
             homeLatitude = 200;
           }
         }
+        print('ini lat: $homeLatitude, ini long: $homeLongitude');
         if (homeLongitude < 200 && homeLatitude < 200) {
           bool isAtHome = prefs.getBool('rkIsAtHome') ?? false;
           bool currentlyAtHome = Geolocator.distanceBetween(
@@ -238,8 +251,73 @@ class ChildController extends GetxController {
             }
           } else if (!currentlyAtHome && isAtHome) {
             prefs.setBool('rkIsAtHome', false);
+            String parentEmails = await prefs.getString('parentEmails') ?? '';
+            String childName = await prefs.getString('rkFullName') ?? '';
+            Response response = await MediaRepository().sendNotification(
+                parentEmails,
+                "Anak Anda Keluar Rumah",
+                "Hai Papa Mama, Anak Anda, $childName, baru saja keluar rumah. Gunakan aplikasi $appName untuk memantau lokasi anak anda hari ini.");
+            if (response.statusCode == 200) {
+              // print('save appList ${response.body}');
+              print('kirim home location notification ok ${response.body}');
+            } else {
+              print('gagal kirim notifikasi ${response.statusCode}');
+            }
           }
         }
+
+        /* AMBIL DATA JADWAL SHOLAT BERDASARKAN ALAMAT RUMAH (BISA DIGANTI KOORDINAT AGAR LEBIH AKURAT) */
+        DateTime today = DateTime.now();
+        List<String> curPrayTime =
+            await prefs.getStringList('asiaSholat') ?? [];
+        if (int.parse(curPrayTime[0]) != today.day) {
+          Response responsePrayer = await MediaRepository()
+              .getPrayerTimes(homeAddress, today.month, today.year);
+          if (responsePrayer.statusCode == 200) {
+            print('Ini adalah jadwal sholat: ${responsePrayer.body}');
+            List x = json.decode(responsePrayer.body)['data'];
+            for (int i = 0; i < x.length; i++) {
+              int day = int.parse(x[i]['date']['gregorian']['day']);
+              if (day == today.day) {
+                List<String> curPrayTime =
+                    await prefs.getStringList('asiaSholat') ?? [];
+                if (curPrayTime.length <= 0) {
+                  List<String> prayTime = [today.day.toString()];
+
+                  String subuh = x[i]['timings']['Fajr'];
+                  subuh = subuh.split(' ')[0];
+                  prayTime.add(subuh);
+
+                  String zuhur = x[i]['timings']['Dhuhr'];
+                  zuhur = zuhur.split(' ')[0];
+                  prayTime.add(zuhur);
+
+                  String asar = x[i]['timings']['Asr'];
+                  asar = asar.split(' ')[0];
+                  prayTime.add(asar);
+
+                  String magrib = x[i]['timings']['Maghrib'];
+                  magrib = magrib.split(' ')[0];
+                  prayTime.add(magrib);
+
+                  String isya = x[i]['timings']['Isha'];
+                  isya = isya.split(' ')[0];
+                  prayTime.add(isya);
+
+                  print('Waktu sol: $prayTime');
+                  await prefs.setStringList('asiaSholat', prayTime);
+                  await prefs.setInt('asiaSholatSekarang', 0);
+                }
+
+                break;
+              }
+            }
+          } else {
+            print('gagal minta jadwal sholat ${responsePrayer.statusCode}');
+          }
+        }
+        print('udah keluar dari dapetin jadwal sholat');
+
         try {
           await MediaRepository()
               .saveUserLocationx(

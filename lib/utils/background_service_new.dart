@@ -519,6 +519,48 @@ class BackgroundServiceNew {
       }
     } catch (e) {
       print('error cekAppLaunch: ' + e.toString());
+    } finally {
+      /* CEK WAKTU SHOLAT */
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int asiaSholatSekarang = await prefs.getInt('asiaSholatSekarang') ?? 0;
+      List<String> asiaSholat = await prefs.getStringList('asiaSholat') ?? [];
+      DateTime today = DateTime.now();
+      String clockTime = DateFormat.Hm().format(today);
+      print('clocktime: $clockTime');
+      print('try waktu sholat');
+      for (int i = 1; i < asiaSholat.length; i++) {
+        if (asiaSholat[i] == clockTime) {
+          print('saatnya waktu sholat');
+          String childEmail = await prefs.getString(rkEmailUser) ?? '';
+          String parentEmail = await prefs.getString('parentEmails') ?? '';
+          String allEmails = childEmail + ',' + parentEmail;
+          String waktuSholat = i == 1
+              ? 'Subuh'
+              : i == 2
+                  ? 'Dzuhur'
+                  : i == 3
+                      ? 'Asar'
+                      : i == 4
+                          ? 'Maghrib'
+                          : 'Isya';
+          if (asiaSholatSekarang != i) {
+            Response response = await MediaRepository().sendNotification(
+                allEmails,
+                "Waktu Sholat $waktuSholat Sudah Tiba",
+                "Sudah masuk waktu sholat $waktuSholat nih. Yuk segera laksanakan sholat.");
+            if (response.statusCode == 200) {
+              // print('save appList ${response.body}');
+              print('kirim new app notification ok ${response.body}');
+              await prefs.setInt('asiaSholatSekarang', i);
+              break;
+            } else {
+              print('gagal kirim notifikasi ${response.statusCode}');
+              break;
+            }
+          }
+        }
+      }
     }
   }
 }

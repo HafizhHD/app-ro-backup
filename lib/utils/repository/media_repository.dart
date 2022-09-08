@@ -1062,6 +1062,17 @@ class MediaRepository {
     return response;
   }
 
+  Future<Response> getPrayerTimes(String address, int month, int year) async {
+    var url = 'http://api.aladhan.com/v1/calendarByAddress?address=' +
+        address +
+        '&method=11&month=' +
+        month.toString() +
+        '&year=' +
+        year.toString();
+    Response response = await get(Uri.parse(url), headers: noAuthHeaders);
+    return response;
+  }
+
   Future<Response> authMidtrans() async {
     var url = 'https://api.sandbox.midtrans.com';
     print('param get parent child data : $json');
