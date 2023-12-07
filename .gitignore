@@ -38,6 +38,7 @@
 **/ios/Runner.xcworkspace
 **/ios/Podfile.lock
 **/android/app/release
+**/android/app/build
 
 # Web related
 lib/generated_plugin_registrant.dart
